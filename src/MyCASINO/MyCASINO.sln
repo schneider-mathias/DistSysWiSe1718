@@ -25,6 +25,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dotNet", "dotNet", "{9BBC07
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AuthServiceLib", "..\_shared\cpp\AuthServiceLib\AuthServiceLib.vcxproj", "{3952EC0A-C8A0-4B4B-865B-580DEDA72A6B}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CmdInterpreterLib", "..\_shared\cpp\CmdInterpreterLib\CmdInterpreterLib.vcxproj", "{4D45D42D-D6F8-4458-9CDB-EAFC5A0A5576}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -41,6 +43,14 @@ Global
 		{3952EC0A-C8A0-4B4B-865B-580DEDA72A6B}.Release|x64.Build.0 = Release|x64
 		{3952EC0A-C8A0-4B4B-865B-580DEDA72A6B}.Release|x86.ActiveCfg = Release|Win32
 		{3952EC0A-C8A0-4B4B-865B-580DEDA72A6B}.Release|x86.Build.0 = Release|Win32
+		{4D45D42D-D6F8-4458-9CDB-EAFC5A0A5576}.Debug|x64.ActiveCfg = Debug|x64
+		{4D45D42D-D6F8-4458-9CDB-EAFC5A0A5576}.Debug|x64.Build.0 = Debug|x64
+		{4D45D42D-D6F8-4458-9CDB-EAFC5A0A5576}.Debug|x86.ActiveCfg = Debug|Win32
+		{4D45D42D-D6F8-4458-9CDB-EAFC5A0A5576}.Debug|x86.Build.0 = Debug|Win32
+		{4D45D42D-D6F8-4458-9CDB-EAFC5A0A5576}.Release|x64.ActiveCfg = Release|x64
+		{4D45D42D-D6F8-4458-9CDB-EAFC5A0A5576}.Release|x64.Build.0 = Release|x64
+		{4D45D42D-D6F8-4458-9CDB-EAFC5A0A5576}.Release|x86.ActiveCfg = Release|Win32
+		{4D45D42D-D6F8-4458-9CDB-EAFC5A0A5576}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -51,5 +61,6 @@ Global
 		{125EE5F6-BFBB-4EFF-896A-59A7988B158F} = {D8265C43-F2F2-40FF-82A3-2E3BC928FCD2}
 		{9BBC0730-CB6E-4E7D-BEE1-C5BA41CAE464} = {A4B4E147-E599-49D2-9B16-69E54FE78563}
 		{3952EC0A-C8A0-4B4B-865B-580DEDA72A6B} = {83B8111A-0F34-407B-AC15-3F25AC40AAE8}
+		{4D45D42D-D6F8-4458-9CDB-EAFC5A0A5576} = {83B8111A-0F34-407B-AC15-3F25AC40AAE8}
 	EndGlobalSection
 EndGlobal
