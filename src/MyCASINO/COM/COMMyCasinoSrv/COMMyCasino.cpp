@@ -5,9 +5,10 @@
 #include "BstrStringConverter.h"
 
 // CCOMMyCasino
-CCOMMyCasino::CCOMMyCasino()
+CCOMMyCasino::CCOMMyCasino() 
+	: m_AuthService(&std::wstring(L"USERDATA"))
 {
-	m_AuthService.readRegisteredUser(L".\\..\\_data\\test.txt");
+	m_AuthService.readRegisteredUser(L"test.txt");
 }
 
 STDMETHODIMP CCOMMyCasino::login(BSTR username, BSTR password, ULONG* sessionId, BSTR* errMsg)

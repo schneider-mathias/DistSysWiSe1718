@@ -24,9 +24,9 @@
 class CAuthService
 {
 public:
-	CAuthService();
+	CAuthService(std::wstring* userDataDirRootEnv = nullptr);
 	~CAuthService();
-	BOOL readRegisteredUser(std::wstring userDatabaseFilePath);
+	BOOL readRegisteredUser(std::wstring filename);
 	BOOL login(std::wstring username, std::wstring password, ULONG* sessinId);
 	BOOL isLoggedIn(ULONG sessionId, std::wstring* name = nullptr);
 	BOOL logout(ULONG sessionId);
@@ -36,6 +36,7 @@ private:
 	BOOL isUsedSessionId(ULONG newSessionId);
 	ULONG generateSessionId();
 
+	std::wstring m_userDataDirRoot;
 	std::map< std::wstring, std::wstring > m_registeredUser;
 	std::map<std::wstring, ULONG> m_loggedInUsers;
 	CRITICAL_SECTION m_critSection;

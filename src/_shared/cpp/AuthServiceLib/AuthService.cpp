@@ -13,8 +13,23 @@
 #include <fstream>
 #include <sstream>
 
-CAuthService::CAuthService()
+CAuthService::CAuthService(std::wstring* userDataDirRootEnv)
 {
+	// set root directory for authentification 
+	// data using environment variable
+	m_userDataDirRoot = L"";
+	if (NULL != userDataDirRootEnv)
+	{
+		wchar_t *buf = nullptr;
+		size_t sz = 0;
+		if (_wdupenv_s(&buf, &sz, (*userDataDirRootEnv).c_str()) == 0 && buf != nullptr)
+		{
+			m_userDataDirRoot = std::wstring(buf);
+			free(buf);
+		}
+	}
+
+
 	srand((ULONG)time(NULL));
 
 	InitializeCriticalSection(&m_critSection);
@@ -26,11 +41,15 @@ CAuthService::~CAuthService()
 }
 
 
-BOOL CAuthService::readRegisteredUser(std::wstring userDatabaseFilePath)
+BOOL CAuthService::readRegisteredUser(std::wstring filename)
 {
 	// open file
 	std::ifstream infile;
-	infile.open(userDatabaseFilePath);
+
+	std::wstring filePath(m_userDataDirRoot);
+	filePath.append(filename);
+
+	infile.open(filePath);
 	if (infile.fail())
 	{
 		return FALSE;

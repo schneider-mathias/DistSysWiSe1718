@@ -13,10 +13,10 @@
 
 BOOL AuthTest()
 {
-	CAuthService* AuthService = new CAuthService();
+	CAuthService* AuthService = new CAuthService(&std::wstring(L"USERDATA"));
 	// Important: Set project property -> Debugging -> Working directory -> $(TargetDir)
 	// in order to use relative paths during debugging!
-	if (!AuthService->readRegisteredUser(L".\\..\\_data\\test.txt"))
+	if (!AuthService->readRegisteredUser(L"test.txt"))
 	{
 		std::cout << "Cannot read Test.txt" << std::endl;
 		return FALSE;
