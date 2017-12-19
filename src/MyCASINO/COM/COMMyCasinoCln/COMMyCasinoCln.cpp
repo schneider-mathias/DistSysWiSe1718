@@ -4,6 +4,8 @@
 
 #include <string>
 
+#include <atlsafe.h>
+
 #import "COMMyCasinoSrv.dll"
 
 #include "../COMMyCasinoSrv/COMMyCasinoSrv_i.c"
@@ -84,7 +86,6 @@ int main(int argc, char**argv)
 
 
 
-
 	CoInitialize(NULL);
 	IClassFactory *pCF = NULL;
 	
@@ -126,10 +127,7 @@ int main(int argc, char**argv)
 	ULONG sessionId;
 	BSTR errMsg;
 
-	BSTR* username= new BSTR(L"Mathias");
-	BSTR* password = new BSTR(L"Mathias");
-
-	hr = p_ICOMMyCasinoSrv->login(*username, *password, &sessionId, &errMsg);
+	hr = p_ICOMMyCasinoSrv->login(CComBSTR(L"Mathias").Detach(), CComBSTR(L"Passwort").Detach(), &sessionId, &errMsg);
 	if (FAILED(hr))
 	{
 		std::cout << "Failure: Could not log in to server - " << std::hex << hr << std::endl;
