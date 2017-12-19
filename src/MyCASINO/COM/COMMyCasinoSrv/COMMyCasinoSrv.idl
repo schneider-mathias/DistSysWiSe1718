@@ -1,0 +1,36 @@
+// COMMyCasinoSrv.idl : IDL source for COMMyCasinoSrv
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (COMMyCasinoSrv.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+[
+	object,
+	uuid(148D7498-389E-476E-8A40-311800A25CE4),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface ICOMMyCasino : IDispatch{
+	[id(1)] HRESULT login([in] BSTR username, [in] BSTR password, [out] ULONG* sessionId, [out] BSTR* errMsg);
+	[id(2)] HRESULT logout([in] ULONG sessionId, [out] BSTR* errMsg);
+};
+[
+	uuid(3A059A5C-FFE7-4566-B65D-897DA62F7326),
+	version(1.0),
+]
+library COMMyCasinoSrvLib
+{
+	importlib("stdole2.tlb");
+	[
+		uuid(C45F55FC-76D5-4D30-A7D0-2DF66C22ED0D)		
+	]
+	coclass COMMyCasino
+	{
+		[default] interface ICOMMyCasino;
+	};
+};
+
