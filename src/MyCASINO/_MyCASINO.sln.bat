@@ -14,5 +14,5 @@ echo Set environmental variables:
 echo USERDATA %USERDATA%
 
 echo Start solution:
-echo "%VS140COMNTOOLS%\..\IDE\devenv.exe" %solutionName%
-"%VS140COMNTOOLS%\..\IDE\devenv.exe" %solutionName%
+echo "%VS140COMNTOOLS%\..\IDE\devenv.exe" "%~dp0%solutionName%"
+"%VS140COMNTOOLS%\..\IDE\devenv.exe" "%~dp0%solutionName%"
