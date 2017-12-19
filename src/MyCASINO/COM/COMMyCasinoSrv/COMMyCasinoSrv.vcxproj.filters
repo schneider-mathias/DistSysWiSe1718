@@ -70,7 +70,6 @@
     <None Include="COMMyCasinoSrv.def">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="ClassDiagram.cd" />
     <None Include="COMMyCasino.rgs">
       <Filter>Resource Files</Filter>
     </None>

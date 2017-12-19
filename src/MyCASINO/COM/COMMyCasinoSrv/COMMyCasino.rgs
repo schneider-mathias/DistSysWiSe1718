@@ -11,6 +11,15 @@ HKCR
 			}
 			TypeLib = s '{3A059A5C-FFE7-4566-B65D-897DA62F7326}'
 			Version = s '1.0'
+			val AppID = s '{C45F55FC-76D5-4D30-A7D0-2DF66C22ED0D}'
+		}
+	}
+
+	NoRemove AppID
+	{
+		'{C45F55FC-76D5-4D30-A7D0-2DF66C22ED0D}'
+		{
+			val DllSurrogate = s ''
 		}
 	}
 }

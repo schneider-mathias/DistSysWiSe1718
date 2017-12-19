@@ -1,3 +1,25 @@
 HKCR
 {
+	NoRemove CLSID
+	{
+		ForceRemove {C45F55FC-76D5-4D30-A7D0-2DF66C22ED0D} = s 'COMMyCasinoSrv Class'
+		{
+			ForceRemove Programmable
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			TypeLib = s '{09E4B20C-6BA3-4E91-A314-87CB885EE5E9}'
+			Version = s '1.0'
+			val AppID = s '{C45F55FC-76D5-4D30-A7D0-2DF66C22ED0D}'
+		}
+	}
+
+	NoRemove AppID
+	{
+		'{C45F55FC-76D5-4D30-A7D0-2DF66C22ED0D}'
+		{
+			val DllSurrogate = s ''
+		}
+	}
 }
