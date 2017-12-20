@@ -56,6 +56,14 @@ public:
 
 	STDMETHOD(login)(BSTR username, BSTR password, ULONG* sessionId, BSTR* errMsg);
 	STDMETHOD(logout)(ULONG sessionId, BSTR* errMsg);
+	STDMETHOD(deposit)(ULONG sessionId, BSTR name, DOUBLE amountMoney, BSTR* errMsg);
+	STDMETHOD(bet)(ULONG sessionId, DOUBLE amountMoney, SHORT firstNumber, SHORT secondNumber, BSTR* errMsg);
+	STDMETHOD(calculateProfit)(ULONG sessionId, DOUBLE amountMoney, DOUBLE* profitForOneMatch, DOUBLE* profitForTwoMatches, BSTR* errMsg);
+	STDMETHOD(showbets)(ULONG sessionId, SAFEARR_VAR* bets, ULONG* count, BSTR* errMsg);
+	STDMETHOD(drawTest)(ULONG sessionId, SHORT firstNumberTest, SHORT secondNumberTest, BSTR* errMsg);
+	STDMETHOD(draw)(ULONG sessionId, SHORT* firstNumber, SHORT* secondNumber, BSTR* errMsg);
+	STDMETHOD(getTransactions)(ULONG sessionId, BOOL* isFinished, SAFEARR_VAR* transaction, ULONG* transactionType, BSTR* errMsg);
+	STDMETHOD(getTransactionInformation)(ULONG sessionId, ULONG transactionId, SAFEARR_VAR* information, ULONG* informationType, BSTR* errMsg);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(COMMyCasino), CCOMMyCasino)

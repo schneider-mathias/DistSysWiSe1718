@@ -7,6 +7,8 @@
 import "oaidl.idl";
 import "ocidl.idl";
 
+typedef SAFEARRAY(VARIANT) SAFEARR_VAR;
+
 [
 	object,
 	uuid(148D7498-389E-476E-8A40-311800A25CE4),
@@ -17,6 +19,46 @@ import "ocidl.idl";
 interface ICOMMyCasino : IDispatch{
 	[id(1)] HRESULT login([in] BSTR username, [in] BSTR password, [out] ULONG* sessionId, [out] BSTR* errMsg);
 	[id(2)] HRESULT logout([in] ULONG sessionId, [out] BSTR* errMsg);
+
+	[id(3)] HRESULT deposit([in] ULONG sessionId, [in] BSTR name, [in] DOUBLE amountMoney, [out] BSTR* errMsg);
+
+	[id(4)] HRESULT bet([in] ULONG sessionId, [in] DOUBLE amountMoney, [in] SHORT firstNumber, [in] SHORT secondNumber, [out] BSTR* errMsg);
+	
+
+	[id(5)] HRESULT calculateProfit([in] ULONG sessionId, [in] DOUBLE amountMoney, [out] DOUBLE* profitForOneMatch, [out] DOUBLE* profitForTwoMatches, [out] BSTR* errMsg);
+	
+	// would also be possible to have only one SAFEARRAY_VARIANT
+	//[id(6)] HRESULT showbets([in] ULONG sessionId, [out] SAFEARRAY(VARIANT)* names, [out] SAFEARRAY(VARIANT)* firstNumbers, [out] SAFEARRAY(VARIANT)* secondNumbers, [out] SAFEARRAY(VARIANT)* amountsOfMoney, [out] ULONG* count, [out] BSTR* errMsg);
+	
+	//bet structure:
+	// [0] - name
+	// [1] - first
+	// [2] - second
+	// [3] - amount
+	[id(6)] HRESULT showbets([in] ULONG sessionId, [out] SAFEARR_VAR* bets, [out] ULONG* count, [out] BSTR* errMsg);
+
+
+	// result numbers equal input
+	[id(7)] HRESULT drawTest([in] ULONG sessionId, [in] SHORT firstNumberTest, [in] SHORT secondNumberTest, [out] BSTR* errMsg);
+	[id(8)] HRESULT draw([in] ULONG sessionId, [out] SHORT* firstNumber, [out] SHORT* secondNumber, [out] BSTR* errMsg);
+
+	// transaction structure:
+	// [0] - id
+	// [1] - currentAmount (=previous + change)
+	// [2] - changeAmount
+
+	[id(9)] HRESULT getTransactions([in] ULONG sessionId, [out] BOOL* isFinished, [out] SAFEARR_VAR* transaction, [out] ULONG* transactionType, [out] BSTR* errMsg);
+
+	// informationTypes:
+	// - BetType
+	// - NoInformationType
+
+	// information e.g. =>bet structure:
+	// [0] - name
+	// [1] - first
+	// [2] - second
+	// [3] - amount
+	[id(10)] HRESULT getTransactionInformation([in] ULONG sessionId, [in] ULONG transactionId, [out] SAFEARR_VAR* information, [out] ULONG* informationType, [out] BSTR* errMsg);
 };
 [
 	uuid(3A059A5C-FFE7-4566-B65D-897DA62F7326),
