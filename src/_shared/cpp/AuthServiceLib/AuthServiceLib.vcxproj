@@ -111,9 +111,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AuthService.h" />
+    <ClInclude Include="AuthServiceDefaultUser.h" />
+    <ClInclude Include="AuthServiceTemplate.h" />
+    <ClInclude Include="IAuthServiceUser.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AuthService.cpp" />
+    <ClCompile Include="AuthServiceDefaultUser.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
