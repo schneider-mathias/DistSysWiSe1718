@@ -8,7 +8,7 @@
 CCOMMyCasino::CCOMMyCasino() 
 	: m_AuthService(&std::wstring(L"USERDATA"))
 {
-	m_AuthService.readRegisteredUser(L"test.txt");
+	m_AuthService.readRegisteredUser(L"mycasino_user.txt");
 }
 
 STDMETHODIMP CCOMMyCasino::login(BSTR username, BSTR password, ULONG* sessionId, BSTR* errMsg)

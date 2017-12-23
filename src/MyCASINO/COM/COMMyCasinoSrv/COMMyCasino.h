@@ -3,7 +3,7 @@
 #pragma once
 #include "resource.h"       // main symbols
 #include "AuthServiceTemplate.h"
-#include "AuthServiceDefaultUser.h"
+#include "MyCasinoUser.h"
 
 #include "COMMyCasinoSrv_i.h"
 
@@ -48,7 +48,7 @@ END_COM_MAP()
 	}
 
 private:
-	CAuthServiceTemplate<AuthServiceDefaultUser> m_AuthService;
+	CAuthServiceTemplate<MyCasinoUser> m_AuthService;
 
 public:
 
