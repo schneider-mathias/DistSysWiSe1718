@@ -6,11 +6,12 @@
 #include <vector>
 #include <map>
 #include <type_traits>
-#include "IAuthServiceUser.h"
 #include <cstdlib>
 #include <time.h>
 #include <fstream>
 #include <sstream>
+
+#include "IAuthServiceUser.h"
 
 
 template<typename TAuthServiceUser>
