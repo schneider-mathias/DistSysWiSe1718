@@ -32,6 +32,12 @@ STDMETHODIMP CCOMMyCasino::login(BSTR username, BSTR password, ULONG* sessionId,
 
 STDMETHODIMP CCOMMyCasino::logout(ULONG sessionId, BSTR* errMsg)
 {
+	MyCasinoUser user;
+	if (!m_AuthService.isLoggedIn(sessionId, &user))
+	{
+		return E_FAIL;
+	}
+
 	// TODO: Add your implementation code here
 	if (!m_AuthService.logout(sessionId))
 	{
@@ -44,40 +50,88 @@ STDMETHODIMP CCOMMyCasino::logout(ULONG sessionId, BSTR* errMsg)
 
 STDMETHODIMP CCOMMyCasino::deposit(ULONG sessionId, BSTR name, DOUBLE amountMoney, BSTR* errMsg)
 {
+	MyCasinoUser user;
+	if (!m_AuthService.isLoggedIn(sessionId, &user))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
 STDMETHODIMP CCOMMyCasino::bet(ULONG sessionId, DOUBLE amountMoney, SHORT firstNumber, SHORT secondNumber, BSTR* errMsg)
 {
+	MyCasinoUser user;
+	if (!m_AuthService.isLoggedIn(sessionId, &user))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
 STDMETHODIMP CCOMMyCasino::calculateProfit(ULONG sessionId, DOUBLE amountMoney, DOUBLE* profitForOneMatch, DOUBLE* profitForTwoMatches, BSTR* errMsg)
 {
+	MyCasinoUser user;
+	if (!m_AuthService.isLoggedIn(sessionId, &user))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
 STDMETHODIMP CCOMMyCasino::showbets(ULONG sessionId, SAFEARR_VAR* bets, ULONG* count, BSTR* errMsg)
 {
+	MyCasinoUser user;
+	if (!m_AuthService.isLoggedIn(sessionId, &user))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
 STDMETHODIMP CCOMMyCasino::drawTest(ULONG sessionId, SHORT firstNumberTest, SHORT secondNumberTest, BSTR* errMsg)
 {
+	MyCasinoUser user;
+	if (!m_AuthService.isLoggedIn(sessionId, &user))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
 STDMETHODIMP CCOMMyCasino::draw(ULONG sessionId, SHORT* firstNumber, SHORT* secondNumber, BSTR* errMsg)
 {
+	MyCasinoUser user;
+	if (!m_AuthService.isLoggedIn(sessionId, &user))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
 STDMETHODIMP CCOMMyCasino::getTransactions(ULONG sessionId, BOOL* isFinished, SAFEARR_VAR* transaction, ULONG* transactionType, BSTR* errMsg)
 {
+	MyCasinoUser user;
+	if (!m_AuthService.isLoggedIn(sessionId, &user))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 
 STDMETHODIMP CCOMMyCasino::getTransactionInformation(ULONG sessionId, ULONG transactionId, SAFEARR_VAR* information, ULONG* informationType, BSTR* errMsg)
 {
+	MyCasinoUser user;
+	if (!m_AuthService.isLoggedIn(sessionId, &user))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
