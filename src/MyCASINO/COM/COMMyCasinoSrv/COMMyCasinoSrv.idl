@@ -17,7 +17,7 @@ typedef SAFEARRAY(VARIANT) SAFEARR_VAR;
 	pointer_default(unique)
 ]
 interface ICOMMyCasino : IDispatch{
-	[id(1)] HRESULT login([in] BSTR username, [in] BSTR password, [out] ULONG* sessionId, [out] BSTR* errMsg);
+	[id(1)] HRESULT login([in] BSTR username, [in] BSTR password, [out] ULONG* sessionId, [out] SHORT* userType, [out] BSTR* errMsg);
 	[id(2)] HRESULT logout([in] ULONG sessionId, [out] BSTR* errMsg);
 
 	[id(3)] HRESULT deposit([in] ULONG sessionId, [in] BSTR name, [in] DOUBLE amountMoney, [out] BSTR* errMsg);

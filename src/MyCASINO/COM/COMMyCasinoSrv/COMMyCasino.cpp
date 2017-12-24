@@ -11,7 +11,7 @@ CCOMMyCasino::CCOMMyCasino()
 	m_AuthService.readRegisteredUser(L"mycasino_user.txt");
 }
 
-STDMETHODIMP CCOMMyCasino::login(BSTR username, BSTR password, ULONG* sessionId, BSTR* errMsg)
+STDMETHODIMP CCOMMyCasino::login(BSTR username, BSTR password, ULONG* sessionId, SHORT* userType, BSTR* errMsg)
 {
 	
 	if (!m_AuthService.login(bstr_to_wstr(username), bstr_to_wstr(password), sessionId))
@@ -19,6 +19,14 @@ STDMETHODIMP CCOMMyCasino::login(BSTR username, BSTR password, ULONG* sessionId,
 		return E_ACCESSDENIED;
 	}
 	
+	MyCasinoUser user;
+	if (!m_AuthService.isLoggedIn(*sessionId, &user))
+	{
+		return E_FAIL;
+	}
+
+	*userType = user.GetUserType();
+
 	return S_OK;
 }
 

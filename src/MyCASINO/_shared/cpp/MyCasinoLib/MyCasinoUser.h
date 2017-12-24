@@ -20,6 +20,7 @@ public:
 	std::wstring Serialize();
 	BOOL Deserialize(std::wstring in);
 	BOOL IsUserType(MyCasinoUserTypes userType);
+	MyCasinoUserTypes GetUserType();
 
 private:
 	int m_id;

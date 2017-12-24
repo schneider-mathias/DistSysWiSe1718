@@ -59,6 +59,11 @@ BOOL MyCasinoUser::Deserialize(std::wstring in)
 	return TRUE;
 }
 
+MyCasinoUserTypes MyCasinoUser::GetUserType()
+{
+	return m_userType;
+}
+
 BOOL MyCasinoUser::IsUserType(MyCasinoUserTypes userType)
 {
 	return userType == m_userType;

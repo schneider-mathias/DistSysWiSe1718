@@ -125,9 +125,10 @@ int main(int argc, char**argv)
 
 
 	ULONG sessionId;
+	SHORT userType;
 	BSTR errMsg;
 
-	hr = p_ICOMMyCasinoSrv->login(CComBSTR(L"Mathias").Detach(), CComBSTR(L"Passwort").Detach(), &sessionId, &errMsg);
+	hr = p_ICOMMyCasinoSrv->login(CComBSTR(L"Mathias").Detach(), CComBSTR(L"Passwort").Detach(), &sessionId, &userType, &errMsg);
 	if (FAILED(hr))
 	{
 		std::cout << "Failure: Could not log in to server - " << std::hex << hr << std::endl;
@@ -135,6 +136,8 @@ int main(int argc, char**argv)
 	else 
 	{
 		std::cout << "Success: Could log in to server" << std::endl;
+		std::cout << "Session Id: " << sessionId << std::endl;
+		std::cout << "User Type: " << (userType? "gamer":"operator") << std::endl;
 	}
 	
 

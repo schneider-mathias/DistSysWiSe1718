@@ -54,7 +54,7 @@ public:
 
 
 
-	STDMETHOD(login)(BSTR username, BSTR password, ULONG* sessionId, BSTR* errMsg);
+	STDMETHOD(login)(BSTR username, BSTR password, ULONG* sessionId, SHORT* userType, BSTR* errMsg);
 	STDMETHOD(logout)(ULONG sessionId, BSTR* errMsg);
 	STDMETHOD(deposit)(ULONG sessionId, BSTR name, DOUBLE amountMoney, BSTR* errMsg);
 	STDMETHOD(bet)(ULONG sessionId, DOUBLE amountMoney, SHORT firstNumber, SHORT secondNumber, BSTR* errMsg);
