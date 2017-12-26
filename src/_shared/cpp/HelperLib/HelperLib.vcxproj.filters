@@ -18,5 +18,8 @@
     <ClInclude Include="BstrStringConverter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TaggedUnion.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
