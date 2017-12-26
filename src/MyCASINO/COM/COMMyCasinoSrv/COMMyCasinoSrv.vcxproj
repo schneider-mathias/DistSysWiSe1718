@@ -267,6 +267,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="COMMyCasino.rgs" />
     <None Include="COMMyCasinoSrv.def" />
     <None Include="COMMyCasinoSrv.rgs" />
   </ItemGroup>
