@@ -35,7 +35,7 @@ private:
 
 	std::wstring m_userDataDirRoot;
 	std::vector< TAuthServiceUser > m_registeredUser;
-	std::map<ULONG, TAuthServiceUser> m_loggedInUsers;
+	std::map<ULONG, TAuthServiceUser*> m_loggedInUsers;
 	CRITICAL_SECTION m_critSection;
 };
 
@@ -65,7 +65,15 @@ CAuthServiceTemplate<TAuthServiceUser>::CAuthServiceTemplate(std::wstring* userD
 template <class TAuthServiceUser>
 CAuthServiceTemplate<TAuthServiceUser>::~CAuthServiceTemplate()
 {
+	EnterCriticalSection(&m_critSection);
+
+	for (std::map<ULONG, TAuthServiceUser*>::iterator it = m_loggedInUsers.begin(); it != m_loggedInUsers.end(); ++it) {
+		delete (it->second);
+	}
+
+	LeaveCriticalSection(&m_critSection);
 	DeleteCriticalSection(&m_critSection);
+
 }
 
 template <class TAuthServiceUser>
@@ -106,6 +114,7 @@ BOOL CAuthServiceTemplate<TAuthServiceUser>::login(std::wstring username, std::w
 	// check if credentials are valid
 	BOOL isValidUserName = FALSE;
 	BOOL isValidPassword = FALSE;
+	TAuthServiceUser* userAccount;
 	for (std::vector<TAuthServiceUser>::iterator it = m_registeredUser.begin(); it != m_registeredUser.end(); ++it)
 	{
 		if((*it).m_username == username)
@@ -114,7 +123,11 @@ BOOL CAuthServiceTemplate<TAuthServiceUser>::login(std::wstring username, std::w
 			isValidPassword = TRUE;
 
 		if (isValidUserName && isValidPassword)
+		{
+			userAccount = (&(*it));
 			break;
+		}
+			
 	}
 		
 	if (!isValidUserName)
@@ -137,13 +150,10 @@ BOOL CAuthServiceTemplate<TAuthServiceUser>::login(std::wstring username, std::w
 		*sessionId = generateSessionId();
 	} while (isUsedSessionId(*sessionId));
 
-	TAuthServiceUser user;
-	user.m_username = username;
-	user.m_password = password;
 
 	EnterCriticalSection(&m_critSection);
 	// add new session id and assign sessinId value
-	m_loggedInUsers.insert(std::pair<ULONG, TAuthServiceUser>(*sessionId, user));
+	m_loggedInUsers.insert(std::pair<ULONG, TAuthServiceUser*>(*sessionId, userAccount));
 	LeaveCriticalSection(&m_critSection);
 
 	return TRUE;
@@ -168,11 +178,14 @@ BOOL CAuthServiceTemplate<TAuthServiceUser>::isLoggedIn(std::wstring username, U
 	// accessing logged-in user list in a thread-safe way
 	EnterCriticalSection(&m_critSection);
 
-	for (std::map<ULONG, TAuthServiceUser>::iterator it = m_loggedInUsers.begin(); it != m_loggedInUsers.end(); ++it) {
-		if (it->second.m_username == username)
+	for (std::map<ULONG, TAuthServiceUser*>::iterator it = m_loggedInUsers.begin(); it != m_loggedInUsers.end(); ++it) {
+		if ((*it->second).m_username == username)
 		{
 			isLoggedIn = TRUE;
-			*sessionId = it->first;
+			if (NULL != sessionId)
+			{
+				*sessionId = it->first;
+			}
 			break;
 		}
 	}
@@ -189,7 +202,7 @@ BOOL CAuthServiceTemplate<TAuthServiceUser>::isUsedSessionId(ULONG newSessionId)
 
 	EnterCriticalSection(&m_critSection);
 
-	std::map< ULONG, TAuthServiceUser>::iterator it = m_loggedInUsers.find(newSessionId);
+	std::map< ULONG, TAuthServiceUser*>::iterator it = m_loggedInUsers.find(newSessionId);
 	if (it != m_loggedInUsers.end())
 		sessionIdAlreadyUsed = TRUE;
 
@@ -205,13 +218,13 @@ BOOL CAuthServiceTemplate<TAuthServiceUser>::isLoggedIn(ULONG sessionId, TAuthSe
 
 	// accessing logged-in user list in a thread-safe way
 	EnterCriticalSection(&m_critSection);
-	for (std::map<ULONG, TAuthServiceUser>::iterator it = m_loggedInUsers.begin(); it != m_loggedInUsers.end(); ++it) {
+	for (std::map<ULONG, TAuthServiceUser*>::iterator it = m_loggedInUsers.begin(); it != m_loggedInUsers.end(); ++it) {
 		if (it->first == sessionId)
 		{
 			isLoggedIn = TRUE;
 			if (NULL != user)
 			{
-				*user = (it->second);
+				*user = (*it->second);
 			}
 			break;
 		}
@@ -224,7 +237,7 @@ BOOL CAuthServiceTemplate<TAuthServiceUser>::isLoggedIn(ULONG sessionId, TAuthSe
 template <class TAuthServiceUser>
 BOOL CAuthServiceTemplate<TAuthServiceUser>::logout(ULONG sessionId)
 {
-	if (!isLoggedIn(sessionId))
+	if (!isLoggedIn(sessionId, NULL))
 	{
 		// invalid session id, user is not logged-in
 		return FALSE;
