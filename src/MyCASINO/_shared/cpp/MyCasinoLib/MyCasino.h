@@ -15,6 +15,7 @@ public:
 	BOOL Bet(MyCasinoUser user, MyCasinoBet bet);
 	BOOL Deposit(MyCasinoUser user, DOUBLE amount);
 	BOOL Withdraw(MyCasinoUser user, DOUBLE amount);
+	std::list<MyCasinoBet> CreateSnapshot();
 	BOOL Close();
 
 private:

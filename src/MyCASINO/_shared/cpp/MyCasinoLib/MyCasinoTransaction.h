@@ -1,5 +1,7 @@
 #pragma once
 #include <windows.h>
+#include <vector>
+#include "TaggedUnion.h"
 
 enum MyCasinoTransactionsTypes
 {
@@ -9,15 +11,30 @@ enum MyCasinoTransactionsTypes
 };
 
 
+class IMyCasinoTransactionInformation
+{
+public:
+	virtual std::vector<TaggedUnion> GetInformation() = 0;
+	virtual SHORT GetInformationCount() = 0;
+};
+
+
 class MyCasinoTransaction
 {
 public:
-	MyCasinoTransaction(DOUBLE startAmount, DOUBLE changeAmount);
+	MyCasinoTransaction(ULONG id, DOUBLE startAmount, DOUBLE changeAmount);
 	~MyCasinoTransaction();
 
-	BOOL SetTransactionType(MyCasinoTransactionsTypes type, void* transactionDetails);
-private:
-	MyCasinoTransactionsTypes m_transactionType;
-	void* m_transactionDetails;
+	DOUBLE GetId();
+	DOUBLE GetStartAmount();
+	DOUBLE GetChangeAmount();
+	MyCasinoTransactionsTypes GetTransactionType();
+	BOOL SetTransactionType(MyCasinoTransactionsTypes type, IMyCasinoTransactionInformation* transactionDetails);
 
+private:
+	ULONG m_id;
+	DOUBLE m_startAmount;
+	DOUBLE m_changeAmount;
+	MyCasinoTransactionsTypes m_transactionType;
+	IMyCasinoTransactionInformation* m_pTransactionDetails;
 };
