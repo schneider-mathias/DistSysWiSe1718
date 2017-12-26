@@ -33,7 +33,7 @@ inline std::wstring bstr_to_wstr(BSTR bs) {
 	return ws;
 }
 
-inline std::wstring wstr_to_bstr(std::wstring ws) {
+inline BSTR wstr_to_bstr(std::wstring ws) {
 	assert(!ws.empty());
 	BSTR bs = SysAllocStringLen(ws.data(), ws.size());
 	assert(0 == wcscmp(ws.c_str(), bs));
