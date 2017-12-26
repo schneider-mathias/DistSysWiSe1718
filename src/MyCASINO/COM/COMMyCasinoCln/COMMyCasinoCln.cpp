@@ -11,6 +11,9 @@
 #include "../COMMyCasinoSrv/COMMyCasinoSrv_i.c"
 #include "../COMMyCasinoSrv/COMMyCasinoSrv_i.h"
 
+#include "BstrStringConverter.h"
+
+
 BOOL AuthTest()
 {
 	CAuthService* AuthService = new CAuthService(&std::wstring(L"USERDATA"));
@@ -128,7 +131,7 @@ int main(int argc, char**argv)
 	SHORT userType;
 	BSTR errMsg;
 
-	hr = p_ICOMMyCasinoSrv->login(CComBSTR(L"Mathias").Detach(), CComBSTR(L"Passwort").Detach(), &sessionId, &userType, &errMsg);
+	hr = p_ICOMMyCasinoSrv->login(wstr_to_bstr(L"Mathias"), wstr_to_bstr(L"Passwort"), &sessionId, &userType, &errMsg);
 	if (FAILED(hr))
 	{
 		std::cout << "Failure: Could not log in to server - " << std::hex << hr << std::endl;
@@ -138,6 +141,7 @@ int main(int argc, char**argv)
 		std::cout << "Success: Could log in to server" << std::endl;
 		std::cout << "Session Id: " << sessionId << std::endl;
 		std::cout << "User Type: " << (userType? "gamer":"operator") << std::endl;
+		std::cout << "Message: " << bstr_to_str(errMsg) << std::endl;
 	}
 	
 	hr = p_ICOMMyCasinoSrv->logout(sessionId, &errMsg);

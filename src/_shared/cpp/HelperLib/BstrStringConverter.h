@@ -20,24 +20,30 @@
 
 
 #include <string>
+#include <cassert>
 #include <comutil.h>
 
 // link necessary comsuppw.lib library when using this header
 #pragma comment(lib,"comsuppw.lib")
-
-inline std::wstring bstr_to_wstr(BSTR bs) {
-	// given BSTR bs
-	assert(bs != nullptr);
-	std::wstring ws(bs, SysStringLen(bs));
-	assert(0 == wcscmp(ws.c_str(), bs));
-	return ws;
+inline std::string bstr_to_str(BSTR str)
+{
+	USES_CONVERSION;
+	assert(str != nullptr);
+	return std::string(W2A(str));
 }
 
-inline BSTR wstr_to_bstr(std::wstring ws) {
-	assert(!ws.empty());
-	BSTR bs = SysAllocStringLen(ws.data(), ws.size());
-	assert(0 == wcscmp(ws.c_str(), bs));
-	return bs;
+inline std::wstring bstr_to_wstr(BSTR str)
+{
+	USES_CONVERSION;
+	assert(str != nullptr);
+	return std::wstring(str);
+}
+
+inline BSTR wstr_to_bstr(std::wstring str)
+{
+	USES_CONVERSION;
+	assert(!str.empty());
+	return CComBSTR(str.c_str()).Detach();
 }
 
 #endif // !__BSTR_STRING_CONVERSION__ 
