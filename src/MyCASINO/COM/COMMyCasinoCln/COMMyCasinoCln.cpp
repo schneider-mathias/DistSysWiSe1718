@@ -140,7 +140,15 @@ int main(int argc, char**argv)
 		std::cout << "User Type: " << (userType? "gamer":"operator") << std::endl;
 	}
 	
-
+	hr = p_ICOMMyCasinoSrv->logout(sessionId, &errMsg);
+	if (FAILED(hr))
+	{
+		std::cout << "Failure: Could not log out to server - " << std::hex << hr << std::endl;
+	}
+	else
+	{
+		std::cout << "Success: Could log out from server" << std::endl;
+	}
 
 	//console(p_ICOMMyINVENTSvr); //Konsoleneingabe in dauerschleife auslesen
 
