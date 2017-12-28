@@ -1,0 +1,10 @@
+[
+	uuid(BEE48EE5-830F-453C-AAE4-9B6B3F4FC270),
+	version(1.0),
+	pointer_default(unique)
+]
+interface MyCasino_i
+{
+	error_status_t login([out]long* sessionId, [in, string] char *username, [in, string] char *password, [out] unsigned short* userType);
+	error_status_t logout([in]long sessionId);
+}

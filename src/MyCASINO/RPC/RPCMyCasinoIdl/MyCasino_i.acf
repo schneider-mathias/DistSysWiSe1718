@@ -1,0 +1,4 @@
+[implicit_handle(handle_t hMyCasino_i)]
+interface MyCasino_i
+{
+}

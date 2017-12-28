@@ -21,5 +21,8 @@
     <ClInclude Include="TaggedUnion.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CharStringConverter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
