@@ -17,6 +17,9 @@ MyCasinoBet::~MyCasinoBet()
 
 BOOL MyCasinoBet::SetBetResult(SHORT drawnFirstNumber, SHORT drawnSecondNumber, DOUBLE resultAmount)
 {
+	if (m_isDrawn)
+		return FALSE;
+	
 	m_drawnFirstNumber = drawnFirstNumber;
 	m_drawnSecondNumber = drawnSecondNumber;
 	m_resultAmount = resultAmount;
@@ -51,13 +54,17 @@ std::vector<TaggedUnion> MyCasinoBet::GetInformation()
 	betInformation.push_back(TaggedUnion(m_secondNumber));
 	betInformation.push_back(TaggedUnion(m_setAmount));
 	betInformation.push_back(TaggedUnion(m_isDrawn));
-	betInformation.push_back(TaggedUnion(m_drawnFirstNumber));
-	betInformation.push_back(TaggedUnion(m_drawnSecondNumber));
-	betInformation.push_back(TaggedUnion(m_resultAmount));
+	if(m_isDrawn)
+	{
+		betInformation.push_back(TaggedUnion(m_drawnFirstNumber));
+		betInformation.push_back(TaggedUnion(m_drawnSecondNumber));
+		betInformation.push_back(TaggedUnion(m_resultAmount));
+	}
+
 	return betInformation;
 }
 
 SHORT MyCasinoBet::GetInformationCount()
 {
-	return BET_INFORMATION_PROPERTY_COUNT;
+	return m_isDrawn? 7:4;
 }
