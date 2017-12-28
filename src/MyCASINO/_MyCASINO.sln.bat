@@ -13,6 +13,11 @@ set "USERDATA=%~dp0_data\"
 echo Set environmental variables:
 echo USERDATA %USERDATA%
 
+REM add RPC registry file
+echo regedit.exe /S SP2RpcNoRestriction.reg
+regedit.exe /S SP2RpcNoRestriction.reg
+
+
 echo Start solution:
 echo "%VS140COMNTOOLS%\..\IDE\devenv.exe" "%~dp0%solutionName%"
 "%VS140COMNTOOLS%\..\IDE\devenv.exe" "%~dp0%solutionName%"
