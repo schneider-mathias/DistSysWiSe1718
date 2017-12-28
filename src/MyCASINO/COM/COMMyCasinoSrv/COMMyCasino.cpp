@@ -135,6 +135,7 @@ STDMETHODIMP CCOMMyCasino::showbets(ULONG sessionId, SAFEARR_VAR* bets, ULONG* c
 	}
 
 	betsSafeArray.CopyTo(bets);
+	*count = dataCount;
 
 	return S_OK;
 }
@@ -216,11 +217,11 @@ STDMETHODIMP CCOMMyCasino::getTransactionInformation(ULONG sessionId, ULONG tran
 #ifdef STUB_METHODS
 	MyCasinoTransaction currentTransaction(1, 50.0, 100.0);
 	MyCasinoBet currentDetails(1, 1, 50.0);
+	currentDetails.SetBetResult(2, 2, 20.5);
 	currentTransaction.SetTransactionType(MyCasinoTransactionsTypes::BET, &currentDetails);
 
-	
-
-	CComSafeArray<VARIANT> transactionInformationSafeArray(TRANSACTION_PROPTERY_COUNT);
+	int safearraySize = currentDetails.GetInformationCount();
+	CComSafeArray<VARIANT> transactionInformationSafeArray(safearraySize);
 	int dataCount = STUB_DATA_COUNT;
 	*errMsg = wstr_to_bstr(L"STUB_METHOD - getTransactions");
 #endif
@@ -245,9 +246,6 @@ STDMETHODIMP CCOMMyCasino::getTransactionInformation(ULONG sessionId, ULONG tran
 				break;
 			case TaggedUnion::Type::Int:
 				transactionInformationSafeArray[safeArrayIterator++] = (*it).getInt();
-				break;
-			case TaggedUnion::Type::WString:
-				transactionInformationSafeArray[safeArrayIterator++] = wstr_to_bstr((*it).getWString());
 				break;
 			default:
 				assert("Unknown TaggedUnion::Type");
