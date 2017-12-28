@@ -139,11 +139,175 @@ int main(int argc, char**argv)
 	else 
 	{
 		std::cout << "Success: Could log in to server" << std::endl;
+		std::cout << "Message: " << bstr_to_str(errMsg) << std::endl;
 		std::cout << "Session Id: " << sessionId << std::endl;
 		std::cout << "User Type: " << (userType? "gamer":"operator") << std::endl;
-		std::cout << "Message: " << bstr_to_str(errMsg) << std::endl;
 	}
 	
+	hr = p_ICOMMyCasinoSrv->deposit(sessionId, wstr_to_bstr(L"Manuel"), 50.0, &errMsg);
+	if (FAILED(hr))
+	{
+		std::cout << "Failure: deposit - " << std::hex << hr << std::endl;
+	}
+	else
+	{
+		std::cout << "Success: deposit" << std::endl;
+		std::cout << "Message: " << bstr_to_str(errMsg) << std::endl;
+	}
+
+	hr = p_ICOMMyCasinoSrv->bet(sessionId, 50.0, 1, 1, &errMsg);
+	if (FAILED(hr))
+	{
+		std::cout << "Failure: bet - " << std::hex << hr << std::endl;
+	}
+	else
+	{
+		std::cout << "Success: bet" << std::endl;
+		std::cout << "Message: " << bstr_to_str(errMsg) << std::endl;
+	}
+
+	DOUBLE profitForOne;
+	DOUBLE profitForTwo;
+	hr = p_ICOMMyCasinoSrv->calculateProfit(sessionId, 50.0, &profitForOne, &profitForTwo, &errMsg);
+	if (FAILED(hr))
+	{
+		std::cout << "Failure: calculateProfit - " << std::hex << hr << std::endl;
+	}
+	else
+	{
+		std::cout << "Success: calculateProfit" << std::endl;
+		std::cout << "Message: " << bstr_to_str(errMsg) << std::endl;
+		std::cout << "Profit for one: " << profitForOne << std::endl;
+		std::cout << "Profit for two: " << profitForTwo << std::endl;
+	}
+
+	SAFEARR_VAR bets;
+	ULONG betCount;
+	hr = p_ICOMMyCasinoSrv->showbets(sessionId, &bets, &betCount, &errMsg);
+	if (FAILED(hr))
+	{
+		std::cout << "Failure: showbets - " << std::hex << hr << std::endl;
+	}
+	else
+	{
+		std::cout << "Success: showbets" << std::endl;
+		std::cout << "Message: " << bstr_to_str(errMsg) << std::endl;
+		std::cout << "Bets: " << betCount << std::endl;
+		CComSafeArray<VARIANT> betsResult(bets);
+
+		#define BET_DETAILS_PROPTERY_COUNT 3
+		for (int i = 0; i < betCount*BET_DETAILS_PROPTERY_COUNT; i++)
+		{
+			if(i % BET_DETAILS_PROPTERY_COUNT == 0 || i % BET_DETAILS_PROPTERY_COUNT == 1)
+				std::cout << betsResult[i].intVal << std::endl;
+			else if (i % BET_DETAILS_PROPTERY_COUNT == 2)
+				std::cout << betsResult[i].dblVal << std::endl;
+		}
+	}
+
+	hr = p_ICOMMyCasinoSrv->drawTest(sessionId, 1, 1, &errMsg);
+	if (FAILED(hr))
+	{
+		std::cout << "Failure: drawTest - " << std::hex << hr << std::endl;
+	}
+	else
+	{
+		std::cout << "Success: drawTest" << std::endl;
+		std::cout << "Message: " << bstr_to_str(errMsg) << std::endl;
+	}
+
+	SHORT firstNumber;
+	SHORT secondNumber;
+	hr = p_ICOMMyCasinoSrv->draw(sessionId, &firstNumber, &secondNumber, &errMsg);
+	if (FAILED(hr))
+	{
+		std::cout << "Failure: draw - " << std::hex << hr << std::endl;
+	}
+	else
+	{
+		std::cout << "Success: draw" << std::endl;
+		std::cout << "Message: " << bstr_to_str(errMsg) << std::endl;
+		std::cout << "First number: " << firstNumber << std::endl;
+		std::cout << "Second number: " << secondNumber << std::endl;
+	}
+
+
+	BOOL isFinished = FALSE;
+	SAFEARR_VAR transaction;
+	SAFEARR_VAR transactionInformation;
+	ULONG informationType;
+	ULONG transactionType;
+	ULONG currentTransactionId;
+	while (!isFinished)
+	{
+		
+		hr = p_ICOMMyCasinoSrv->getTransactions(sessionId, &isFinished, &transaction, &transactionType, &errMsg);
+		if (FAILED(hr))
+		{
+			std::cout << "Failure: getTransactions - " << std::hex << hr << std::endl;
+		}
+		else
+		{
+			std::cout << "Success: getTransactions" << std::endl;
+			std::cout << "Message: " << bstr_to_str(errMsg) << std::endl;
+			CComSafeArray<VARIANT> transactionResult(transaction);
+			
+			#define TRANSACTION_PROPTERY_COUNT 3
+			for (int i = 0; i < TRANSACTION_PROPTERY_COUNT; i++)
+			{
+				if (i % TRANSACTION_PROPTERY_COUNT == 0)
+				{
+					currentTransactionId = transactionResult[i].intVal;
+					std::cout << currentTransactionId << std::endl;
+				}
+				else if (i % TRANSACTION_PROPTERY_COUNT == 1 || i % TRANSACTION_PROPTERY_COUNT == 2)
+					std::cout << transactionResult[i].dblVal << std::endl;
+			}
+
+
+			if (transactionType == 2) // bet
+			{
+				hr = p_ICOMMyCasinoSrv->getTransactionInformation(sessionId, currentTransactionId, &transactionInformation, &informationType, &errMsg);
+				if (FAILED(hr))
+				{
+					std::cout << "Failure: getTransactionInformation - " << std::hex << hr << std::endl;
+				}
+				else
+				{
+					std::cout << "Success: getTransactionInformation" << std::endl;
+					std::cout << "Message: " << bstr_to_str(errMsg) << std::endl;
+
+					CComSafeArray<VARIANT> transactionInformationResult(transactionInformation);
+
+					if (informationType == 2) // = bet
+					{
+						#define BET_FULL_DETAILS_PROPTERY_COUNT  7
+						for (int i = 0; i < BET_FULL_DETAILS_PROPTERY_COUNT; i++)
+						{
+							if (i % BET_FULL_DETAILS_PROPTERY_COUNT == 0
+								|| i % BET_FULL_DETAILS_PROPTERY_COUNT == 1
+								|| i % BET_FULL_DETAILS_PROPTERY_COUNT == 4
+								|| i % BET_FULL_DETAILS_PROPTERY_COUNT == 5)
+								std::cout << transactionInformationResult[i].intVal << std::endl;
+							else if (i % BET_FULL_DETAILS_PROPTERY_COUNT == 2
+								|| i % BET_FULL_DETAILS_PROPTERY_COUNT == 6)
+								std::cout << transactionInformationResult[i].dblVal << std::endl;
+							else if (i % BET_FULL_DETAILS_PROPTERY_COUNT == 3)
+							{
+								BOOL isDrawn = transactionInformationResult[i].boolVal;
+								std::cout << isDrawn << std::endl;
+								if (!isDrawn)
+									break;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+
+
 	hr = p_ICOMMyCasinoSrv->logout(sessionId, &errMsg);
 	if (FAILED(hr))
 	{
