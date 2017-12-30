@@ -125,8 +125,7 @@ STDMETHODIMP CCOMMyCasino::showbets(ULONG sessionId, SAFEARR_VAR* bets, ULONG* c
 
 	// stub method:
 #ifdef STUB_METHODS
-	#define STUB_DATA_COUNT 2
-	#define BET_DETAILS_PROPTERY_COUNT 3
+	const int STUB_DATA_COUNT = 2;
 	MyCasinoBet betsStub[STUB_DATA_COUNT] = { MyCasinoBet(1, 1, 10.0), MyCasinoBet(2, 2, 20.0) };
 	CComSafeArray<VARIANT> betsSafeArray(STUB_DATA_COUNT * BET_DETAILS_PROPTERY_COUNT);
 	int dataCount = STUB_DATA_COUNT;
@@ -189,15 +188,12 @@ STDMETHODIMP CCOMMyCasino::getTransactions(ULONG sessionId, BOOL* isFinished, SA
 
 #ifdef STUB_METHODS
 	*isFinished = TRUE;
-	#define STUB_DATA_COUNT 1
-	#define TRANSACTION_PROPTERY_COUNT 3
 
 	MyCasinoTransaction currentTransaction(1, 50.0, 100.0);
 	MyCasinoBet betStub(1, 1, 50.0);
 	currentTransaction.SetTransactionType(MyCasinoTransactionsTypes::BET, &betStub);
 
 	CComSafeArray<VARIANT> transactionSafeArray(TRANSACTION_PROPTERY_COUNT);
-	int dataCount = STUB_DATA_COUNT;
 	*errMsg = wstr_to_bstr(L"STUB_METHOD - getTransactions");
 #endif
 
@@ -229,7 +225,6 @@ STDMETHODIMP CCOMMyCasino::getTransactionInformation(ULONG sessionId, ULONG tran
 
 	int safearraySize = currentDetails.GetInformationCount();
 	CComSafeArray<VARIANT> transactionInformationSafeArray(safearraySize);
-	int dataCount = STUB_DATA_COUNT;
 	*errMsg = wstr_to_bstr(L"STUB_METHOD - getTransactions");
 #endif
 
