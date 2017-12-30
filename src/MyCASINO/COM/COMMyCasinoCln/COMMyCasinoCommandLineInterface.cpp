@@ -7,16 +7,10 @@
 COMMyCasinoCommandLineInterface::COMMyCasinoCommandLineInterface(ICOMMyCasino* pICOMMyCasinoSrv)
 {
 	m_pICOMMyCasinoSrv = pICOMMyCasinoSrv;
-	m_pSessionId = NULL;
-	m_pUserType = NULL;
 }
 
 COMMyCasinoCommandLineInterface::~COMMyCasinoCommandLineInterface()
 {
-	if(NULL != m_pSessionId)
-		delete m_pSessionId;
-	if (NULL != m_pUserType)
-		delete m_pUserType;
 }
 
 bool COMMyCasinoCommandLineInterface::user(std::wstring user, std::wstring password)
@@ -157,7 +151,7 @@ bool COMMyCasinoCommandLineInterface::draw(unsigned short* firstNumberTest, unsi
 	{
 		//Test
 		
-		HRESULT hr = m_pICOMMyCasinoSrv->drawTest(*m_pSessionId, *firstNumberTest, 1, &errMsg);
+		HRESULT hr = m_pICOMMyCasinoSrv->drawTest(*m_pSessionId, *firstNumberTest, *secondNumberTest, &errMsg);
 		if (FAILED(hr))
 		{
 			std::cout << "Failure: drawTest - " << std::hex << hr << std::endl;
