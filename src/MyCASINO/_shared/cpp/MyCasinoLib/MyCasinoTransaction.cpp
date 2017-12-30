@@ -2,8 +2,7 @@
 
 
 MyCasinoTransaction::MyCasinoTransaction(ULONG id, DOUBLE startAmount, DOUBLE changeAmount)
-	:m_id(id),
-	m_startAmount(startAmount),
+	:m_startAmount(startAmount),
 	m_changeAmount(changeAmount)
 {
 }
@@ -39,4 +38,10 @@ BOOL MyCasinoTransaction::SetTransactionType(MyCasinoTransactionsTypes type, IMy
 	m_transactionType = type;
 	m_pTransactionDetails = transactionDetails;
 	return TRUE;
+}
+
+
+IMyCasinoTransactionInformation* MyCasinoTransaction::GetTransactionInformation()
+{
+	return m_pTransactionDetails;
 }

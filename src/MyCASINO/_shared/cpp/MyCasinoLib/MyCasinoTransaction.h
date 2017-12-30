@@ -2,14 +2,7 @@
 #include <windows.h>
 #include <vector>
 #include "TaggedUnion.h"
-
-enum MyCasinoTransactionsTypes
-{
-	DEPOSIT = 0,
-	WITHDRAWAL,
-	BET
-};
-
+#include "../IncPub/MyCasinoDefines.h"
 
 class IMyCasinoTransactionInformation
 {
@@ -28,6 +21,7 @@ public:
 	DOUBLE GetId();
 	DOUBLE GetStartAmount();
 	DOUBLE GetChangeAmount();
+	IMyCasinoTransactionInformation* GetTransactionInformation();
 	MyCasinoTransactionsTypes GetTransactionType();
 	BOOL SetTransactionType(MyCasinoTransactionsTypes type, IMyCasinoTransactionInformation* transactionDetails);
 

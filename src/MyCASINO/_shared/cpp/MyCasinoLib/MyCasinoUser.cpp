@@ -69,3 +69,7 @@ BOOL MyCasinoUser::IsUserType(MyCasinoUserTypes userType)
 	return userType == m_userType;
 }
 
+bool MyCasinoUser::operator==(const MyCasinoUser& ref)
+{
+	return ref.m_id == m_id;
+}

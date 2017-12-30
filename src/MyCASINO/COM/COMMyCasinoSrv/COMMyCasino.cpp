@@ -7,6 +7,7 @@
 #include "BstrStringConverter.h"
 #include "MyCasinoBet.h"
 #include "MyCasinoTransaction.h"
+#include "MyCasinoDefines.h"
 
 // CCOMMyCasino
 CCOMMyCasino::CCOMMyCasino() 
@@ -30,6 +31,12 @@ STDMETHODIMP CCOMMyCasino::login(BSTR username, BSTR password, ULONG* sessionId,
 	}
 
 	*userType = user.GetUserType();
+	if (*userType == MyCasinoUserTypes::Operator)
+	{
+		m_casino.Open(user);
+	}
+	
+
 
 #ifdef STUB_METHODS
 	*errMsg = wstr_to_bstr(L"STUB_METHOD - login");

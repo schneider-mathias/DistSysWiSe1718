@@ -3,6 +3,7 @@
 
 #include "COMMyCasinoCommandLineInterface.h"
 #include "BstrStringConverter.h"
+#include "MyCasinoDefines.h"
 
 COMMyCasinoCommandLineInterface::COMMyCasinoCommandLineInterface(ICOMMyCasino* pICOMMyCasinoSrv)
 {
@@ -97,8 +98,6 @@ bool COMMyCasinoCommandLineInterface::showbets()
 	std::cout << "Message: " << bstr_to_str(errMsg) << std::endl;
 	std::cout << "Bets: " << betCount << std::endl;
 	CComSafeArray<VARIANT> betsResult(bets);
-
-#define BET_DETAILS_PROPTERY_COUNT 3
 	
 	SHORT* currentFirstNumber = NULL;
 	SHORT* currentSecondNumber = NULL;
@@ -211,7 +210,7 @@ bool COMMyCasinoCommandLineInterface::showstatus()
 			std::cout << "Message: " << bstr_to_str(errMsg) << std::endl;
 			CComSafeArray<VARIANT> transactionResult(transaction);
 
-#define TRANSACTION_PROPTERY_COUNT 3
+
 			for (int i = 0; i < TRANSACTION_PROPTERY_COUNT; i++)
 			{
 				if (i % TRANSACTION_PROPTERY_COUNT == 0)
@@ -240,7 +239,7 @@ bool COMMyCasinoCommandLineInterface::showstatus()
 
 					if (informationType == 2) // = bet
 					{
-#define BET_FULL_DETAILS_PROPTERY_COUNT  7
+
 						for (int i = 0; i < BET_FULL_DETAILS_PROPTERY_COUNT; i++)
 						{
 							if (i % BET_FULL_DETAILS_PROPTERY_COUNT == 0

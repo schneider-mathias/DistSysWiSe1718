@@ -5,8 +5,6 @@
 #include <OAIdl.h>
 
 
-#define BET_INFORMATION_PROPERTY_COUNT 7
-
 class MyCasinoBet : public IMyCasinoTransactionInformation
 {
 public:
