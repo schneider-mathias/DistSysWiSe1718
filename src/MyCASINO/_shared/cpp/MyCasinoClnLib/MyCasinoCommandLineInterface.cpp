@@ -3,11 +3,16 @@
 
 MyCasinoCommandLineInterface::MyCasinoCommandLineInterface()
 {
+	m_pSessionId = NULL;
+	m_pUserType = NULL;
 }
 
 MyCasinoCommandLineInterface::~MyCasinoCommandLineInterface()
 {
-
+	if (NULL != m_pSessionId)
+		delete m_pSessionId;
+	if (NULL != m_pUserType)
+		delete m_pUserType;
 }
 
 bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> arguments)
