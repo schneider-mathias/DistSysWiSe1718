@@ -1,5 +1,13 @@
 #pragma once
+#include <type_traits>
+
 #include "ICommandLineInterface.h"
+
+
+#define USER_TYPE_OPERATOR 0
+#define USER_TYPE_GAMER 1
+#define USER_TYPE_ANY 2
+
 
 class MyCasinoCommandLineInterface : public ICommandLineInterface
 {
@@ -16,6 +24,11 @@ public:
 	virtual bool draw(unsigned short* firstNumberTest = nullptr, unsigned short* secondNumberTest = nullptr) = 0;
 	virtual bool showstatus() = 0;
 	virtual bool bye() = 0;
+
+private:
+	bool isLoggedIn();
+	bool fullfillsPermissionLevel(short minRequiredUserType);
+	bool checkCallPrerequisites(short minRequiredUserType);
 
 protected:
 	unsigned long* m_pSessionId;

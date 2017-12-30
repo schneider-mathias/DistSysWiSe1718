@@ -38,6 +38,11 @@ bool COMMyCasinoCommandLineInterface::user(std::wstring user, std::wstring passw
 	HRESULT hr = m_pICOMMyCasinoSrv->login(wstr_to_bstr(user), wstr_to_bstr(password), m_pSessionId, m_pUserType, &errMsg);
 	if (FAILED(hr))
 	{
+		delete m_pSessionId;
+		m_pSessionId = NULL;
+		delete m_pUserType;
+		m_pUserType = NULL;
+
 		std::cout << "Failure: Could not log in to server - " << std::hex << hr << std::endl;
 		return false;
 	}
@@ -271,13 +276,6 @@ bool COMMyCasinoCommandLineInterface::showstatus()
 
 bool COMMyCasinoCommandLineInterface::bye()
 {
-	if (NULL == m_pSessionId)
-	{
-		std::cout << "Failure: no user logged in yet." << std::endl;
-		return false;
-	}
-
-
 	BSTR errMsg;
 	HRESULT hr = m_pICOMMyCasinoSrv->logout(*m_pSessionId, &errMsg);
 	if (FAILED(hr))
