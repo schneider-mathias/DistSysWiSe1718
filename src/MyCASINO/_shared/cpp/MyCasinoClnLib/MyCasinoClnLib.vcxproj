@@ -19,19 +19,19 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{200D1EAB-9CFD-4E99-9010-5CB086AFF3C4}</ProjectGuid>
-    <RootNamespace>RPCMyCasinoCln</RootNamespace>
+    <ProjectGuid>{C9FE9D3D-6D81-411E-A119-2AF17C067DFC}</ProjectGuid>
+    <RootNamespace>MyCasinoClnLib</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -74,12 +74,12 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>../../../_shared/cpp/CmdInterpreterLib;..\RPCMyCasino;..\RPCMyCasinoIdl\$(Configuration)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../../_shared/cpp/CmdInterpreterLib</AdditionalIncludeDirectories>
     </ClCompile>
-    <Link>
-      <AdditionalDependencies>MyCasinoClnLib.lib;rpcrt4.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../$(Configuration)</AdditionalLibraryDirectories>
-    </Link>
+    <Lib>
+      <AdditionalDependencies>CmdInterpreterLib.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../../$(Configuration)</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -95,14 +95,16 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>../../../_shared/cpp/CmdInterpreterLib;..\RPCMyCasino;..\RPCMyCasinoIdl\$(Configuration)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../../_shared/cpp/CmdInterpreterLib</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>MyCasinoClnLib.lib;rpcrt4.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../$(Configuration)</AdditionalLibraryDirectories>
     </Link>
+    <Lib>
+      <AdditionalDependencies>CmdInterpreterLib.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../../$(Configuration)</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -118,8 +120,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="RPCMyCasinoCln.cpp" />
-    <ClCompile Include="RPCMyCasinoClnStub.cpp" />
+    <ClInclude Include="MyCasinoCommandLineInterface.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="MyCasinoCommandLineInterface.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

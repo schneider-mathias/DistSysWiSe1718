@@ -23,5 +23,8 @@
     <ClInclude Include="CmdInterpreter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ICommandLineInterface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
