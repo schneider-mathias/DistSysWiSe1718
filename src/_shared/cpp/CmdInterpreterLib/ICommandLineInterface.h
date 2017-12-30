@@ -53,8 +53,82 @@ protected:
 			std::wcerr << "Invalid number of parameters for command " << arguments.at(0) << std::endl;
 		}
 
+		size_t maxSize=0;
+		for (std::vector<size_t>::iterator it = validArgumentsCount.begin(); it != validArgumentsCount.end(); ++it)
+			if (maxSize < (*it))
+				maxSize = (*it);
+
+		if (argumentsCountWithoutCommand > maxSize)
+		{
+			argumentCountIsValid = true;
+			std::wcerr << "[Warning] Too many parameters for command " << arguments.at(0) << " - ignored last " << std::to_wstring(argumentsCountWithoutCommand-maxSize) << " arguments" << std::endl;
+		}
+
 		return argumentCountIsValid;
 	}
+
+
+	template< typename T>
+	bool safeArgumentCast(std::vector<std::wstring>& arguments, int position, T** castedValue, int* minBound = nullptr, int* maxBound = nullptr, ArgumentType type = ArgumentType::DEFAULT)
+	{
+		try
+		{
+			if (std::is_same<T, unsigned short>::value)
+			{
+				// first "argument" is command
+				if (position > arguments.size() - 1)
+				{
+					delete *castedValue;
+					*castedValue = nullptr;
+					return true;
+				}
+				else
+				{
+					**castedValue = (unsigned short)stoi(arguments.at(position));
+				}
+			}
+			else
+			{
+				std::cerr << "Method safeArgumentCast is unable to cast this type." << std::endl;
+				return false;
+			}
+
+			bool isInRange = checkNumericArgument(**castedValue, minBound, maxBound);
+			if (!isInRange)
+			{
+				std::wstring boundaries;
+				if (NULL != minBound && NULL != maxBound)
+				{
+					boundaries.append(std::to_wstring(*minBound));
+					boundaries.append(L"-");
+					boundaries.append(std::to_wstring(*maxBound));
+				}
+				else if (NULL != minBound && NULL == maxBound)
+				{
+					boundaries.append(L">=");
+					boundaries.append(std::to_wstring(*minBound));
+				}
+				else if (NULL == minBound && NULL != maxBound)
+				{
+					boundaries.append(L"<=");
+					boundaries.append(std::to_wstring(*maxBound));
+				}
+
+				if (!boundaries.empty())
+					std::wcerr << "Argument " << arguments.at(position) << " does not fit to boundaries: " << boundaries << std::endl;
+			}
+
+			return isInRange;
+
+		}
+		catch (...)
+		{
+			std::wcerr << "Argument " << arguments.at(position) << " is malformed and could not be interpreted" << std::endl;
+			return false;
+		}
+
+	}
+
 
 	template< typename T>
 	bool safeArgumentCast(std::vector<std::wstring>& arguments, int position, T* castedValue, int* minBound = nullptr, int* maxBound = nullptr, ArgumentType type = ArgumentType::DEFAULT)
@@ -65,7 +139,19 @@ protected:
 				return false;
 
 			if (std::is_same<T, unsigned short>::value)
-				*castedValue = (unsigned short)stoi(arguments.at(position));
+			{
+				// first "argument" is command
+				if (position > arguments.size() - 1)
+				{
+					delete castedValue;
+					castedValue = nullptr;
+					return true;
+				}
+				else
+				{
+					*castedValue = (unsigned short)stoi(arguments.at(position));
+				}
+			}
 			else if (std::is_same<T, double>::value)
 			{
 				*castedValue = stod(arguments.at(position));
