@@ -29,9 +29,10 @@ bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> argu
 	else if (command.compare(L"payin") == 0)
 	{
 		double amountMoney;
+		int amountMoneyLowerBound = 0;
 		return checkCallPrerequisites(USER_TYPE_OPERATOR)
 			&& checkCallArguments(arguments, 2, std::vector<size_t>()= { 2 })
-			&& safeArgumentCast<double>(arguments, 2, &amountMoney)
+			&& safeArgumentCast<double>(arguments, 1, &amountMoney, &amountMoneyLowerBound, NULL, ArgumentType::MONEY)
 			&& payin(arguments.at(1), amountMoney);
 	}
 	else if (command.compare(L"bet") == 0)
