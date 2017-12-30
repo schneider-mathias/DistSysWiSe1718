@@ -3,11 +3,14 @@
 #include "RpcException.h"
 #include <iostream>
 
+#include "RPCMyCasinoCommandLineInterface.h"
+#include "CmdInterpreter.h"
+
 
 static void Bind(void);
 static void UnBind(void);
 static void rpcCalls(void);
-void commands();
+void startCommandLineInterface();
 
 void main(void)
 {
@@ -47,7 +50,7 @@ void rpcCalls(void)
 {
 	RpcTryExcept
 	{
-		commands();
+		startCommandLineInterface();
 	}
 	RpcExcept(1)
 	{
@@ -110,22 +113,13 @@ void UnBind(void)
 	}
 }
 
-
-void commands()
+void startCommandLineInterface()
 {
-	long sessionID = 0;
-	unsigned short userType = 0;
-	error_status_t hr = login(&sessionID, (unsigned char*)std::string("Mathias").c_str(), (unsigned char*)std::string("Passwort").c_str(), &userType);
-	if (hr == RPC_S_OK)
-	{
-		std::cout << "Logged in as " << (userType ? "gamer" : "operator") << std::endl;
-	}
-	else if (hr == RPC_E_ACCESS_DENIED)
-		std::cerr << "Passwort oder Benutzername falsch!" << std::endl;
-	else if (hr == RPC_E_FAULT)
-		std::cerr << "Sie sind bereits eingeloggt" << std::endl;
+	std::cout << "--- MY CASINO ---" << std::endl;
 
-	hr = logout(sessionID);
-	if (hr == RPC_S_OK)
-		std::cout << "Logged out" << std::endl;
+	CmdInterpreter interpreter;
+	RPCMyCasinoCommandLineInterface myCasinoCLI;
+	dispatcherMemFunc p = &(ICommandLineInterface::ProcessCommand);
+	interpreter.registerCmdDispatcher(&myCasinoCLI, p);
+	interpreter.run();
 }
