@@ -32,6 +32,12 @@ inline std::string bstr_to_str(BSTR str)
 	return std::string(W2A(str));
 }
 
+inline BSTR str_to_bstr(std::string str) 
+{
+	USES_CONVERSION;
+	return CComBSTR(str.c_str()).Detach();
+}
+
 inline std::wstring bstr_to_wstr(BSTR str)
 {
 	USES_CONVERSION;
