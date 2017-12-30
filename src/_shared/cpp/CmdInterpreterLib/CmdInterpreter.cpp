@@ -123,7 +123,10 @@ void CmdInterpreter::cout()
 {
 	std::cout.rdbuf(m_previousBuffer);
 	std::cout << m_outBuffer.str();
-	m_outBuffer.clear();
-	std::cout.clear();
+
+	// clear the buffer:
+	// https://stackoverflow.com/questions/20731/how-do-you-clear-a-stringstream-variable
+	m_outBuffer.str("");
+
 	m_previousBuffer = std::cout.rdbuf(m_outBuffer.rdbuf());
 }
