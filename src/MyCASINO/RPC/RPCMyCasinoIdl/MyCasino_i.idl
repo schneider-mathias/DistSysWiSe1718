@@ -5,6 +5,67 @@
 ]
 interface MyCasino_i
 {
+	typedef struct
+	{
+		unsigned short size;
+		unsigned short len;
+		[size_is(size), length_is(len)] char *str;
+	}
+	String_t;
+
+	typedef struct
+	{
+		unsigned short firstNumber;
+		unsigned short secondNumber;
+		double reward;
+	}
+	MyCasinoBet_t;
+
+	typedef struct
+	{
+		long id;
+		double currentAmount;
+		double changeAmount;
+	}
+	MyCasinoTransaction_t;
+
 	error_status_t login([out]long* sessionId, [in, string] char *username, [in, string] char *password, [out] unsigned short* userType);
 	error_status_t logout([in]long sessionId);
+
+	error_status_t deposit([in] long sessionId, [in, string] char *name, [in] double amountMoney);
+
+	error_status_t bet([in] long sessionId, [in] double amountMoney, [in] unsigned short firstNumber, [in] unsigned short secondNumber);
+
+
+	error_status_t calculateProfit([in] long sessionId, [in] double amountMoney, [out] double* profitForOneMatch, [out] double* profitForTwoMatches);
+
+	//bet structure:
+	// [0] - name
+	// [1] - first
+	// [2] - second
+	// [3] - amount
+	error_status_t showbets([in] long sessionId, [out] MyCasinoBet_t* bets, [out] long* count);
+
+
+	// result numbers equal input
+	error_status_t drawTest([in] long sessionId, [in] unsigned short firstNumberTest, [in] unsigned short secondNumberTest);
+	error_status_t draw([in] long sessionId, [out] unsigned short* firstNumber, [out] unsigned short* secondNumber);
+
+	// transaction structure:
+	// [0] - id
+	// [1] - currentAmount (=previous + change)
+	// [2] - changeAmount
+
+	error_status_t getTransactions([in] long sessionId, [out] boolean* isFinished, [out] MyCasinoTransaction_t* transaction, [out] long* transactionType);
+
+	// informationTypes:
+	// - BetType
+	// - NoInformationType
+
+	// information e.g. =>bet structure:
+	// [0] - name
+	// [1] - first
+	// [2] - second
+	// [3] - amount
+	error_status_t getTransactionInformation([in] long sessionId, [in] long transactionId, [out] String_t* information, [out] long* informationType);
 }
