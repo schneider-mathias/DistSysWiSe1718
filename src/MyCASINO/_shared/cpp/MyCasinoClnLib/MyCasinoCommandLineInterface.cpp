@@ -44,13 +44,14 @@ bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> argu
 		unsigned short secondNumber;
 
 		int numberLowerBound = 1;
+		int firstNumberUpperBound = 4;
 		int numberUpperBound = 5;
 
 		return checkCallPrerequisites(USER_TYPE_ANY)
 			&& checkCallArguments(arguments, 3, std::vector<size_t>() = { 3 })
 			&& safeArgumentCast<double>(arguments, 1, &setMoney, &setMoneyLowerBound, NULL, ArgumentType::MONEY)
-			&& safeArgumentCast<unsigned short>(arguments, 2, &firstNumber, &numberLowerBound, &numberUpperBound)
-			&& safeArgumentCast<unsigned short>(arguments, 3, &secondNumber, &numberLowerBound, &numberUpperBound)
+			&& safeArgumentCast<unsigned short>(arguments, 2, &firstNumber, &numberLowerBound, &firstNumberUpperBound)
+			&& safeArgumentCast<unsigned short>(arguments, 3, &secondNumber, &(numberLowerBound = (firstNumber + 1)), &numberUpperBound)
 			&& bet(setMoney, firstNumber, secondNumber);
 	}
 	else if (command.compare(L"showbets") == 0)
@@ -67,12 +68,16 @@ bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> argu
 		unsigned short** secondNumberPtrHolder = &secondNumberPtr;
 
 		int numberLowerBound = 1;
+		int firstNumberUpperBound = 4;
 		int numberUpperBound = 5;
 
-		bool retVal=checkCallPrerequisites(USER_TYPE_OPERATOR)
+		// if first number pointer is set, it becomes the lower boundary, otherwise set it to 0 (will be ignored anyway)
+		bool retVal = checkCallPrerequisites(USER_TYPE_OPERATOR)
 			&& checkCallArguments(arguments, 0, std::vector<size_t>() = { 0, 2 })
-			&& safeArgumentCast<unsigned short>(arguments, 1, firstNumberPtrHolder, &numberLowerBound, &numberUpperBound)
-			&& safeArgumentCast<unsigned short>(arguments, 2, secondNumberPtrHolder, &numberLowerBound, &numberUpperBound)
+			&& safeArgumentCast<unsigned short>(arguments, 1, firstNumberPtrHolder, &numberLowerBound, &firstNumberUpperBound)
+			&& safeArgumentCast<unsigned short>(arguments, 2, secondNumberPtrHolder, 
+				&(numberLowerBound = (NULL != (*firstNumberPtrHolder))? ((int)(**firstNumberPtrHolder) + 1):0),
+				&numberUpperBound)
 			&& draw(*firstNumberPtrHolder, *secondNumberPtrHolder);
 
 		delete firstNumberPtr;
