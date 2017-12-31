@@ -115,7 +115,7 @@ protected:
 				}
 
 				if (!boundaries.empty())
-					std::wcerr << "Argument " << arguments.at(position) << " does not fit to boundaries: " << boundaries << std::endl;
+					std::wcerr << "Argument at position " << position << " with value " << arguments.at(position) << " does not fit to boundaries: " << boundaries << std::endl;
 			}
 
 			return isInRange;
