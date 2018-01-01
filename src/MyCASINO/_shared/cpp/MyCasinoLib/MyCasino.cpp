@@ -31,6 +31,11 @@ BOOL MyCasino::IsOpened()
 	return (NULL != m_pOperator);
 }
 
+BOOL MyCasino::IsOperator(MyCasinoUser& user)
+{
+	return IsOpened() && (*m_pOperator) == user;
+}
+
 BOOL MyCasino::LoadAccount(MyCasinoUser& user, MyCasinoAccount** account)
 {
 	// TODO
