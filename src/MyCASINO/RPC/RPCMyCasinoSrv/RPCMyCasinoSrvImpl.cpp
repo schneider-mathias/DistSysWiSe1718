@@ -15,20 +15,20 @@ error_status_t login(unsigned long*  sessionId, unsigned char *username, unsigne
 		return RPC_E_ACCESS_DENIED;
 	}
 
-	MyCasinoUser user;
+	MyCasinoUser* user = NULL;
 	if (!getAuthService()->isLoggedIn(*sessionId, &user))
 	{
 		return RPC_E_FAULT;
 	}
 
-	*userType = user.GetUserType();
+	*userType = user->GetUserType();
 
 	return RPC_S_OK;
 }
 
 error_status_t logout(unsigned long sessionId)
 {
-	MyCasinoUser user;
+	MyCasinoUser* user = NULL;
 	if (!getAuthService()->isLoggedIn(sessionId, &user))
 	{
 		return RPC_E_FAULT;

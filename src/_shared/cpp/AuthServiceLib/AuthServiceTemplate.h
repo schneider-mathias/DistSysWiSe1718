@@ -24,11 +24,11 @@ public:
 	~CAuthServiceTemplate();
 	BOOL readRegisteredUser(std::wstring filename);
 	BOOL login(std::wstring username, std::wstring password, ULONG* sessinId);
-	BOOL isLoggedIn(ULONG sessionId, TAuthServiceUser* user = nullptr);
+	BOOL isLoggedIn(ULONG sessionId, TAuthServiceUser** user = nullptr);
 	BOOL logout(ULONG sessionId);
 
 private:
-
+	
 	BOOL isLoggedIn(std::wstring username, ULONG* newSessionId);
 	BOOL isUsedSessionId(ULONG newSessionId);
 	ULONG generateSessionId();
@@ -212,7 +212,7 @@ BOOL CAuthServiceTemplate<TAuthServiceUser>::isUsedSessionId(ULONG newSessionId)
 }
 
 template <class TAuthServiceUser>
-BOOL CAuthServiceTemplate<TAuthServiceUser>::isLoggedIn(ULONG sessionId, TAuthServiceUser* user)
+BOOL CAuthServiceTemplate<TAuthServiceUser>::isLoggedIn(ULONG sessionId, TAuthServiceUser** user)
 {
 	BOOL isLoggedIn = FALSE;
 
@@ -222,10 +222,8 @@ BOOL CAuthServiceTemplate<TAuthServiceUser>::isLoggedIn(ULONG sessionId, TAuthSe
 		if (it->first == sessionId)
 		{
 			isLoggedIn = TRUE;
-			if (NULL != user)
-			{
-				*user = (*it->second);
-			}
+			if(NULL != user)
+				*user = &(*it->second);
 			break;
 		}
 	}

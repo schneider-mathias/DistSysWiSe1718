@@ -12,12 +12,12 @@ MyCasino::~MyCasino()
 {
 }
 
-BOOL MyCasino::Open(MyCasinoUser& user)
+BOOL MyCasino::Open(MyCasinoUser* user)
 {
 	if (IsOpened())
 		return ERROR_MY_CASINO_HAS_ALREADY_OPERATOR;
 
-	m_pOperator = &user;
+	m_pOperator = user;
 	MyCasinoAccount* account = NULL;
 	if (!LoadAccount(*m_pOperator, &account))
 		return ERROR_MY_CASINO_CANNOT_LOAD_ACCOUNT;
@@ -268,7 +268,7 @@ BOOL MyCasino::Close()
 	if (!IsOpened())
 		return ERROR_MY_CASINO_NO_OPERATOR;
 
-	delete m_pOperator;
+	// operator will be deleted by AuthService
 	m_pOperator = NULL;
 	delete m_pOperatorAccount;
 	m_pOperatorAccount = NULL;

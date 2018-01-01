@@ -11,7 +11,7 @@ public:
 	MyCasino();
 	~MyCasino();
 
-	BOOL Open(MyCasinoUser& user);
+	BOOL MyCasino::Open(MyCasinoUser* user);
 	BOOL IsOpened();
 	BOOL IsOperator(MyCasinoUser& user);
 	BOOL Bet(MyCasinoUser& user, SHORT firstNumber, SHORT secondNumber, DOUBLE setAmount);
