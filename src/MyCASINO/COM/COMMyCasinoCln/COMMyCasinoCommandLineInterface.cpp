@@ -73,6 +73,7 @@ bool COMMyCasinoCommandLineInterface::bet(double setAmount, unsigned short first
 	if (FAILED(hr))
 	{
 		std::cout << "Failure: bet - " << std::hex << hr << std::endl;
+		std::cout << "Message: " << bstr_to_str(errMsg) << std::endl;
 		return false;
 	}
 	
@@ -91,6 +92,7 @@ bool COMMyCasinoCommandLineInterface::showbets()
 	if (FAILED(hr))
 	{
 		std::cout << "Failure: showbets - " << std::hex << hr << std::endl;
+		std::cout << "Message: " << bstr_to_str(errMsg) << std::endl;
 		return false;
 	}
 	
@@ -154,6 +156,7 @@ bool COMMyCasinoCommandLineInterface::draw(unsigned short* firstNumberTest, unsi
 		if (FAILED(hr))
 		{
 			std::cout << "Failure: drawTest - " << std::hex << hr << std::endl;
+			std::cout << "Message: " << bstr_to_str(errMsg) << std::endl;
 		}
 		else
 		{
@@ -170,6 +173,7 @@ bool COMMyCasinoCommandLineInterface::draw(unsigned short* firstNumberTest, unsi
 		if (FAILED(hr))
 		{
 			std::cout << "Failure: draw - " << std::hex << hr << std::endl;
+			std::cout << "Message: " << bstr_to_str(errMsg) << std::endl;
 		}
 		else
 		{
@@ -184,6 +188,8 @@ bool COMMyCasinoCommandLineInterface::draw(unsigned short* firstNumberTest, unsi
 	{
 		return false;
 	}
+
+	return true;
 }
 
 bool COMMyCasinoCommandLineInterface::showstatus()
@@ -203,6 +209,7 @@ bool COMMyCasinoCommandLineInterface::showstatus()
 		if (FAILED(hr))
 		{
 			std::cout << "Failure: getTransactions - " << std::hex << hr << std::endl;
+			std::cout << "Message: " << bstr_to_str(errMsg) << std::endl;
 		}
 		else
 		{
@@ -229,6 +236,7 @@ bool COMMyCasinoCommandLineInterface::showstatus()
 				if (FAILED(hr))
 				{
 					std::cout << "Failure: getTransactionInformation - " << std::hex << hr << std::endl;
+					std::cout << "Message: " << bstr_to_str(errMsg) << std::endl;
 				}
 				else
 				{
