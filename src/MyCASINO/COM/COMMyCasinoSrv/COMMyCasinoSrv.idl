@@ -25,7 +25,7 @@ interface ICOMMyCasino : IDispatch{
 	[id(4)] HRESULT bet([in] ULONG sessionId, [in] DOUBLE amountMoney, [in] SHORT firstNumber, [in] SHORT secondNumber, [out] BSTR* errMsg);
 	
 
-	[id(5)] HRESULT calculateProfit([in] ULONG sessionId, [in] DOUBLE amountMoney, [out] DOUBLE* profitForOneMatch, [out] DOUBLE* profitForTwoMatches, [out] BSTR* errMsg);
+	[id(5)] HRESULT calculateProfit([in] ULONG sessionId, [in] DOUBLE amountMoney, [in] SHORT firstNumber, [in] SHORT secondNumber, [out] DOUBLE* profitForOneMatch, [out] DOUBLE* profitForTwoMatches, [out] BSTR* errMsg);
 	
 	// would also be possible to have only one SAFEARRAY_VARIANT
 	//[id(6)] HRESULT showbets([in] ULONG sessionId, [out] SAFEARRAY(VARIANT)* names, [out] SAFEARRAY(VARIANT)* firstNumbers, [out] SAFEARRAY(VARIANT)* secondNumbers, [out] SAFEARRAY(VARIANT)* amountsOfMoney, [out] ULONG* count, [out] BSTR* errMsg);

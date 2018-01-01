@@ -37,7 +37,7 @@ interface MyCasino_i
 	error_status_t bet([in] unsigned long sessionId, [in] double amountMoney, [in] short firstNumber, [in] short secondNumber);
 
 
-	error_status_t calculateProfit([in] unsigned long sessionId, [in] double amountMoney, [out] double* profitForOneMatch, [out] double* profitForTwoMatches);
+	error_status_t calculateProfit([in] unsigned long sessionId, [in] double amountMoney, [in] short firstNumber, [in] short secondNumber, [out] double* profitForOneMatch, [out] double* profitForTwoMatches);
 
 	//bet structure:
 	// [0] - name

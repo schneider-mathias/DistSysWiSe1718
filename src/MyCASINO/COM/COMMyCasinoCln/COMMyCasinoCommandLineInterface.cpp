@@ -118,7 +118,7 @@ bool COMMyCasinoCommandLineInterface::showbets()
 		{
 			DOUBLE profitForOne;
 			DOUBLE profitForTwo;
-			hr = m_pICOMMyCasinoSrv->calculateProfit(*m_pSessionId, 50.0, &profitForOne, &profitForTwo, &errMsg);
+			hr = m_pICOMMyCasinoSrv->calculateProfit(*m_pSessionId, 50.0, *currentFirstNumber, *currentSecondNumber, &profitForOne, &profitForTwo, &errMsg);
 			if (FAILED(hr))
 			{
 				std::cout << "Failure: calculateProfit - " << std::hex << hr << std::endl;

@@ -55,7 +55,7 @@ error_status_t bet(unsigned long sessionId, double amountMoney, short firstNumbe
 }
 
 
-error_status_t calculateProfit(unsigned long sessionId, double amountMoney, double* profitForOneMatch, double* profitForTwoMatches)
+error_status_t calculateProfit(unsigned long sessionId, double amountMoney, short firstNumber, short secondNumber, double* profitForOneMatch, double* profitForTwoMatches)
 {
 	return RPC_E_FAULT;
 }

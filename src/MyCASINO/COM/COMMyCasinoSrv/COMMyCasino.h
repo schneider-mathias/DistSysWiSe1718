@@ -58,7 +58,7 @@ public:
 	STDMETHOD(logout)(ULONG sessionId, BSTR* errMsg);
 	STDMETHOD(deposit)(ULONG sessionId, BSTR name, DOUBLE amountMoney, BSTR* errMsg);
 	STDMETHOD(bet)(ULONG sessionId, DOUBLE amountMoney, SHORT firstNumber, SHORT secondNumber, BSTR* errMsg);
-	STDMETHOD(calculateProfit)(ULONG sessionId, DOUBLE amountMoney, DOUBLE* profitForOneMatch, DOUBLE* profitForTwoMatches, BSTR* errMsg);
+	STDMETHOD(calculateProfit)(ULONG sessionId, DOUBLE amountMoney, SHORT firstNumber, SHORT secondNumber, DOUBLE* profitForOneMatch, DOUBLE* profitForTwoMatches, BSTR* errMsg);
 	STDMETHOD(showbets)(ULONG sessionId, SAFEARR_VAR* bets, ULONG* count, BSTR* errMsg);
 	STDMETHOD(drawTest)(ULONG sessionId, SHORT firstNumberTest, SHORT secondNumberTest, BSTR* errMsg);
 	STDMETHOD(draw)(ULONG sessionId, SHORT* firstNumber, SHORT* secondNumber, BSTR* errMsg);

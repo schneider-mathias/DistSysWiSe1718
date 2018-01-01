@@ -143,7 +143,7 @@ STDMETHODIMP CCOMMyCasino::bet(ULONG sessionId, DOUBLE amountMoney, SHORT firstN
 	return S_OK;
 }
 
-STDMETHODIMP CCOMMyCasino::calculateProfit(ULONG sessionId, DOUBLE amountMoney, DOUBLE* profitForOneMatch, DOUBLE* profitForTwoMatches, BSTR* errMsg)
+STDMETHODIMP CCOMMyCasino::calculateProfit(ULONG sessionId, DOUBLE amountMoney, SHORT firstNumber, SHORT secondNumber, DOUBLE* profitForOneMatch, DOUBLE* profitForTwoMatches, BSTR* errMsg)
 {
 	std::wstring errCode;
 
@@ -153,6 +153,10 @@ STDMETHODIMP CCOMMyCasino::calculateProfit(ULONG sessionId, DOUBLE amountMoney, 
 		*errMsg = wstr_to_bstr(TRANSLATE_MYCASINO_ERRORCODE(errCode, ERROR_MY_CASINO_USER_NOT_LOGGED_IN));
 		return E_FAIL;
 	}
+
+	// create a dummy bet object in order to calculate profits
+	MyCasinoBet dummyBet(1, firstNumber, secondNumber, amountMoney);
+	m_casino.CalculateProfit(dummyBet, profitForOneMatch, profitForTwoMatches);
 
 	// stub method:
 #ifdef STUB_METHODS
