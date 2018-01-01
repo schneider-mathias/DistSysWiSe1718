@@ -2,6 +2,7 @@
 
 #include "stdafx.h"
 #include <atlsafe.h>
+#include <vector>
 
 #include "COMMyCasino.h"
 #include "BstrStringConverter.h"
@@ -199,25 +200,24 @@ STDMETHODIMP CCOMMyCasino::showbets(ULONG sessionId, SAFEARR_VAR* bets, ULONG* c
 		return E_ACCESSDENIED;
 	}
 
-	// stub method:
+
+	std::vector<MyCasinoBet*> betsSnapshot = m_casino.GetBets();
+	CComSafeArray<VARIANT> betsSafeArray(betsSnapshot.size() * BET_DETAILS_PROPTERY_COUNT);
+
+	int safeArrayIterator = 0;
+	for (int betIterator = 0; betIterator < betsSnapshot.size(); betIterator++)
+	{
+		betsSafeArray[safeArrayIterator++] = betsSnapshot.at(betIterator)->GetFirstNumber();
+		betsSafeArray[safeArrayIterator++] = betsSnapshot.at(betIterator)->GetSecondNumber();
+		betsSafeArray[safeArrayIterator++] = betsSnapshot.at(betIterator)->GetSetAmount();
+	}
+
 #ifdef STUB_METHODS
-	const int STUB_DATA_COUNT = 2;
-	MyCasinoBet betsStub[STUB_DATA_COUNT] = { MyCasinoBet(1, 1, 1, 10.0), MyCasinoBet(2, 2, 2, 20.0) };
-	CComSafeArray<VARIANT> betsSafeArray(STUB_DATA_COUNT * BET_DETAILS_PROPTERY_COUNT);
-	int dataCount = STUB_DATA_COUNT;
 	*errMsg = wstr_to_bstr(L"STUB_METHOD - showbets");
 #endif
 
-	int safeArrayIterator = 0;
-	for (int betIterator = 0; betIterator < dataCount; betIterator++)
-	{
-		betsSafeArray[safeArrayIterator++] = betsStub[betIterator].GetFirstNumber();
-		betsSafeArray[safeArrayIterator++] = betsStub[betIterator].GetSecondNumber();
-		betsSafeArray[safeArrayIterator++] = betsStub[betIterator].GetSetAmount();
-	}
-
 	betsSafeArray.CopyTo(bets);
-	*count = dataCount;
+	*count = betsSnapshot.size();
 
 	return S_OK;
 }

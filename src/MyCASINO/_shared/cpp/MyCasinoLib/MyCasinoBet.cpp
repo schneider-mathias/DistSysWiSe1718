@@ -75,3 +75,8 @@ bool MyCasinoBet::operator==(const MyCasinoBet& ref)
 	// return ref.m_firstNumber == m_firstNumber && ref.m_secondNumber == m_secondNumber;
 	return ref.m_id == m_id;
 }
+
+bool MyCasinoBet::operator<(const MyCasinoBet& ref)
+{
+	return ref.m_id < m_id;
+}

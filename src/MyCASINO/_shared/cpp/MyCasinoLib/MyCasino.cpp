@@ -14,6 +14,10 @@ MyCasino::~MyCasino()
 
 BOOL MyCasino::Open(MyCasinoUser* user)
 {
+	// already opened with specified user as operator
+	if (IsOperator(*user))
+		return TRUE;
+
 	if (IsOpened())
 		return ERROR_MY_CASINO_HAS_ALREADY_OPERATOR;
 
@@ -96,6 +100,9 @@ BOOL MyCasino::Bet(MyCasinoUser& user, SHORT firstNumber, SHORT secondNumber, DO
 			resVal = (account)->CreateTransaction(bet.GetSetAmount(), MyCasinoTransactionsTypes::PRELIMINARY_WITHDRAWAL, &bet, &transactionId);
 			if (FAILED(resVal))
 				return resVal;
+
+			// add to current bets
+			m_currentBets.insert(std::pair<MyCasinoUser, MyCasinoBet>(user, bet));
 			
 			return TRUE;
 
@@ -200,6 +207,8 @@ BOOL MyCasino::GetAccount(MyCasinoUser& user, MyCasinoAccount** account)
 		if(!LoadAccount(user, &loadedAccount))
 			return FALSE;
 		*account = loadedAccount;
+
+		m_userAccounts.insert(std::pair<MyCasinoUser, MyCasinoAccount>(user, **account));
 	}
 		
 	return TRUE;
@@ -273,10 +282,17 @@ BOOL MyCasino::Draw()
 	return E_NOTIMPL;
 }
 
-std::multimap<MyCasinoUser, MyCasinoBet> MyCasino::CreateSnapshot()
+std::vector<MyCasinoBet*> MyCasino::GetBets()
 {
-	std::list<MyCasinoBet> betsSnapshot;
-	return m_currentBets;
+	std::vector<MyCasinoBet*> betsSnapshot;
+
+	//TODO: locks
+	for (auto it = m_currentBets.begin(); it != m_currentBets.end(); it++)
+	{
+		betsSnapshot.push_back(&(it->second));
+	}
+
+	return betsSnapshot;
 }
 
 BOOL MyCasino::Close()

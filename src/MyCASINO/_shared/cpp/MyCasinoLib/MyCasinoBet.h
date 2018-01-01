@@ -23,6 +23,7 @@ public:
 	SHORT GetInformationCount();
 	BOOL ResultIsDrawn();
 	bool operator==(const MyCasinoBet&);
+	bool operator<(const MyCasinoBet&);
 
 private:
 	ULONG m_id;

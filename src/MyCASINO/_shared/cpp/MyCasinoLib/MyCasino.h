@@ -19,7 +19,7 @@ public:
 	BOOL Deposit(MyCasinoUser& user, DOUBLE amount);
 	BOOL LoadAccount(MyCasinoUser& user, MyCasinoAccount** account);
 	BOOL Withdraw(MyCasinoUser& user, DOUBLE amount);
-	std::multimap<MyCasinoUser, MyCasinoBet> CreateSnapshot();
+	std::vector<MyCasinoBet*> GetBets();
 	BOOL Close();
 	BOOL Draw();
 

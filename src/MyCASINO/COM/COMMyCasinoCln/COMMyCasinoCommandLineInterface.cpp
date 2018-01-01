@@ -102,41 +102,44 @@ bool COMMyCasinoCommandLineInterface::showbets()
 	std::cout << "Bets: " << betCount << std::endl;
 	CComSafeArray<VARIANT> betsResult(bets);
 	
-	SHORT* currentFirstNumber = NULL;
-	SHORT* currentSecondNumber = NULL;
+	SHORT currentFirstNumber = 0;
+	SHORT currentSecondNumber = 0;
+	DOUBLE currentAmount = 0.0;
+	bool readBetDone = false;
 	for (int i = 0; i < betCount*BET_DETAILS_PROPTERY_COUNT; i++)
 	{
 		
 		if (i % BET_DETAILS_PROPTERY_COUNT == 0)
-			*currentFirstNumber = betsResult[i].intVal;
+		{
+			currentFirstNumber = betsResult[i].intVal;
+			readBetDone = false;
+		}
 		else if (i % BET_DETAILS_PROPTERY_COUNT == 1)
-			*currentSecondNumber = betsResult[i].intVal;
+			currentSecondNumber = betsResult[i].intVal;
 		else if (i % BET_DETAILS_PROPTERY_COUNT == 2)
+		{
 			std::cout << betsResult[i].dblVal << std::endl;
-	
-	
-		if (currentFirstNumber && currentSecondNumber)
+			readBetDone = true;
+		}
+		
+		if (readBetDone)
 		{
 			DOUBLE profitForOne;
 			DOUBLE profitForTwo;
-			hr = m_pICOMMyCasinoSrv->calculateProfit(*m_pSessionId, 50.0, *currentFirstNumber, *currentSecondNumber, &profitForOne, &profitForTwo, &errMsg);
+			hr = m_pICOMMyCasinoSrv->calculateProfit(*m_pSessionId, currentAmount, currentFirstNumber, currentSecondNumber, &profitForOne, &profitForTwo, &errMsg);
 			if (FAILED(hr))
 			{
 				std::cout << "Failure: calculateProfit - " << std::hex << hr << std::endl;
-				currentFirstNumber = NULL;
-				currentSecondNumber = NULL;
+				readBetDone = false;
 				continue;
 			}
 			
 			std::cout << "Success: calculateProfit" << std::endl;
 			std::cout << "Message: " << bstr_to_str(errMsg) << std::endl;
-			std::cout << "First number: " << *currentFirstNumber << std::endl;
-			std::cout << "Second number: " << *currentSecondNumber << std::endl;
+			std::cout << "First number: " << currentFirstNumber << std::endl;
+			std::cout << "Second number: " << currentSecondNumber << std::endl;
 			std::cout << "Profit for one: " << profitForOne << std::endl;
 			std::cout << "Profit for two: " << profitForTwo << std::endl;
-			
-			currentFirstNumber = NULL;
-			currentSecondNumber = NULL;
 		}
 	}
 
