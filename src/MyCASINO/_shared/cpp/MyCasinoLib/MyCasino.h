@@ -28,7 +28,7 @@ private:
 	BOOL CheckOperatorAccount(MyCasinoBet& bet);
 	BOOL GetBet(SHORT firstNumber, SHORT secondNumber, MyCasinoBet* existingBet);
 	BOOL DeleteBet(SHORT firstNumber, SHORT secondNumber);
-	BOOL GetUserAccount(MyCasinoUser& user, MyCasinoAccount* account);
+	BOOL GetAccount(MyCasinoUser& user, MyCasinoAccount** account);
 	BOOL CheckBet(MyCasinoUser& user, MyCasinoBet& bet);
 	BOOL IsValidBetNumber(SHORT firstNumber);
 

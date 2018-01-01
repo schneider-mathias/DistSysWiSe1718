@@ -58,6 +58,7 @@ bool COMMyCasinoCommandLineInterface::payin(std::wstring user, double amount)
 	if (FAILED(hr))
 	{
 		std::cout << "Failure: deposit - " << std::hex << hr << std::endl;
+		std::cout << "Message: " << bstr_to_str(errMsg) << std::endl;
 		return false;
 	}
 

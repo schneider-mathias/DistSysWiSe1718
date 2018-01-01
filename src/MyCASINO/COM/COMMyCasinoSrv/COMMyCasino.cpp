@@ -95,13 +95,36 @@ STDMETHODIMP CCOMMyCasino::deposit(ULONG sessionId, BSTR name, DOUBLE amountMone
 {
 	std::wstring errCode;
 
-	MyCasinoUser* user = NULL;;
+	MyCasinoUser* user = NULL;
 	if (!m_AuthService.isLoggedIn(sessionId, &user))
 	{
 		*errMsg = wstr_to_bstr(TRANSLATE_MYCASINO_ERRORCODE(errCode, ERROR_MY_CASINO_USER_NOT_LOGGED_IN));
 		return E_ACCESSDENIED;
 	}
 
+	if (!m_casino.IsOperator(*user))
+	{
+		*errMsg = wstr_to_bstr(TRANSLATE_MYCASINO_ERRORCODE(errCode, ERROR_MY_CASINO_USER_PERMISSION_DENIED));
+		return E_ACCESSDENIED;
+	}
+
+	ULONG sessionIdForDeposit = 0;
+	m_AuthService.isLoggedIn(name, &sessionIdForDeposit);
+
+	// get user for deposit
+	MyCasinoUser* userForDeposit = NULL;
+	if (!m_AuthService.isLoggedIn(sessionIdForDeposit, &userForDeposit))
+	{
+		*errMsg = wstr_to_bstr(TRANSLATE_MYCASINO_ERRORCODE(errCode, ERROR_MY_CASINO_USER_FOR_DEPOSIT_NOT_LOGGED_IN));
+		return E_FAIL;
+	}
+
+
+	if (!m_casino.Deposit(*userForDeposit, amountMoney))
+	{
+		*errMsg = wstr_to_bstr(TRANSLATE_MYCASINO_ERRORCODE(errCode, ERROR_MY_CASINO_ACCOUNT_DEPOSIT_FAILED));
+		return E_FAIL;
+	}
 
 #ifdef STUB_METHODS
 	*errMsg = wstr_to_bstr(L"STUB_METHOD - deposit");
@@ -134,7 +157,6 @@ STDMETHODIMP CCOMMyCasino::bet(ULONG sessionId, DOUBLE amountMoney, SHORT firstN
 		*errMsg = wstr_to_bstr(TRANSLATE_MYCASINO_ERRORCODE(errCode, retVal));
 		return E_FAIL;
 	}
-
 
 #ifdef STUB_METHODS
 	*errMsg = wstr_to_bstr(L"STUB_METHOD - bet");

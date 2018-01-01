@@ -89,7 +89,7 @@ BOOL MyCasino::Bet(MyCasinoUser& user, SHORT firstNumber, SHORT secondNumber, DO
 				return resVal;
 
 			// book transaction on gamer account
-			if (!GetUserAccount(user, account))
+			if (!GetAccount(user, &account))
 				return ERROR_MY_CASINO_CANNOT_LOAD_ACCOUNT;
 
 			ULONG transactionId;
@@ -171,25 +171,35 @@ BOOL MyCasino::GetBet(SHORT firstNumber, SHORT secondNumber, MyCasinoBet* bet)
 	return (NULL != bet);
 }
 
-BOOL MyCasino::GetUserAccount(MyCasinoUser& user, MyCasinoAccount* account)
+BOOL MyCasino::GetAccount(MyCasinoUser& user, MyCasinoAccount** account)
 {
-	account = NULL;
+	*account = NULL;
+
+	// operator account is not stored in user list
+	if (user == *m_pOperator)
+	{
+		if (NULL == m_pOperatorAccount)
+			return ERROR_MY_CASINO_CANNOT_LOAD_ACCOUNT;
+
+		*account = m_pOperatorAccount;
+		return TRUE;
+	}
 
 	for (std::map<MyCasinoUser, MyCasinoAccount>::iterator it = m_userAccounts.begin(); it != m_userAccounts.end(); it++)
 	{
 		if (user == (*it).first)
 		{
-			account = &((*it).second);
+			*account = &((*it).second);
 			return TRUE;
 		}
 	}
 
-	if (NULL == account)
+	if (NULL == *account)
 	{
 		MyCasinoAccount* loadedAccount = NULL;
 		if(!LoadAccount(user, &loadedAccount))
 			return FALSE;
-		account = loadedAccount;
+		*account = loadedAccount;
 	}
 		
 	return TRUE;
@@ -244,7 +254,13 @@ BOOL MyCasino::CheckBet(MyCasinoUser& user, MyCasinoBet& bet)
 
 BOOL MyCasino::Deposit(MyCasinoUser& user, DOUBLE amount)
 {
-	return E_NOTIMPL;
+	MyCasinoAccount* account = NULL;
+
+	if (!GetAccount(user, &account))
+		return ERROR_MY_CASINO_CANNOT_LOAD_ACCOUNT;
+
+	ULONG transactionId;
+	return (account)->CreateTransaction(amount, MyCasinoTransactionsTypes::DEPOSIT, NULL, &transactionId);
 }
 
 BOOL MyCasino::Withdraw(MyCasinoUser& user, DOUBLE amount)

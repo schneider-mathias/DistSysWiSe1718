@@ -6,6 +6,8 @@
 typedef unsigned long MY_CASINO_RES;
 
 #define ERROR_MY_CASINO_USER_NOT_LOGGED_IN 0x80110001L
+#define ERROR_MY_CASINO_USER_PERMISSION_DENIED 0x80110002L
+#define ERROR_MY_CASINO_USER_FOR_DEPOSIT_NOT_LOGGED_IN 0x80110003L
 
 #define ERROR_MY_CASINO_HAS_ALREADY_OPERATOR 0x80010001L
 #define ERROR_MY_CASINO_NO_OPERATOR 0x80010002L
@@ -15,6 +17,7 @@ typedef unsigned long MY_CASINO_RES;
 #define ERROR_MY_CASINO_USER_ACCOUNT_BALANCE_NOT_SUFFICIENT 0x80020002L
 #define ERROR_MY_CASINO_OPERATOR_ACCOUNT_BALANCE_NOT_SUFFICIENT 0x80020003L
 #define ERROR_MY_CASINO_INVALID_TRANSACTION_TYPE 0x80020004L
+#define ERROR_MY_CASINO_ACCOUNT_DEPOSIT_FAILED 0x80020005L
 
 #define ERROR_MY_CASINO_BET_INVALID_NUMBER 0x80030004L
 #define ERROR_MY_CASINO_BET_ALREADY_TAKEN 0x80030005L
@@ -27,7 +30,11 @@ inline std::wstring translate_error_message(unsigned long errorcode)
 	switch (errorcode)
 	{
 	case ERROR_MY_CASINO_USER_NOT_LOGGED_IN:
-		return std::wstring(L"No user is logged in.");
+		return std::wstring(L"User is not logged in.");
+	case ERROR_MY_CASINO_USER_PERMISSION_DENIED:
+		return std::wstring(L"User permissions not sufficient.");
+	case ERROR_MY_CASINO_USER_FOR_DEPOSIT_NOT_LOGGED_IN:
+		return std::wstring(L"User for deposit is not logged in.");
 	case ERROR_MY_CASINO_HAS_ALREADY_OPERATOR:
 		return std::wstring(L"Current casino server already has an logged in operator.");
 	case ERROR_MY_CASINO_NO_OPERATOR:
@@ -40,6 +47,10 @@ inline std::wstring translate_error_message(unsigned long errorcode)
 		return std::wstring(L"Gamer account balance is not sufficient for this bet.");
 	case ERROR_MY_CASINO_OPERATOR_ACCOUNT_BALANCE_NOT_SUFFICIENT:
 		return std::wstring(L"Operator account balance is not sufficient for this bet.");
+	case ERROR_MY_CASINO_INVALID_TRANSACTION_TYPE:
+		return std::wstring(L"Invalid transaction type for this operation.");
+	case ERROR_MY_CASINO_ACCOUNT_DEPOSIT_FAILED:
+		return std::wstring(L"Deposit transaction failed.");
 	case ERROR_MY_CASINO_BET_INVALID_NUMBER:
 		return std::wstring(L"Given numbers for bet are not valid.");
 	case ERROR_MY_CASINO_BET_ALREADY_TAKEN:
