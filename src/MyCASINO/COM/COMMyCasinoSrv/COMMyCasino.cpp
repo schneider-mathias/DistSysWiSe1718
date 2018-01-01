@@ -55,11 +55,13 @@ STDMETHODIMP CCOMMyCasino::login(BSTR username, BSTR password, ULONG* sessionId,
 
 STDMETHODIMP CCOMMyCasino::logout(ULONG sessionId, BSTR* errMsg)
 {
+	std::wstring errCode;
+
 	MyCasinoUser user;
 	if (!m_AuthService.isLoggedIn(sessionId, &user))
 	{
-		*errMsg = wstr_to_bstr(L"Invalid session id.");
-		return E_FAIL;
+		*errMsg = wstr_to_bstr(TRANSLATE_MYCASINO_ERRORCODE(errCode, ERROR_MY_CASINO_USER_NOT_LOGGED_IN));
+		return E_ACCESSDENIED;
 	}
 
 	// TODO: Add your implementation code here
@@ -79,11 +81,15 @@ STDMETHODIMP CCOMMyCasino::logout(ULONG sessionId, BSTR* errMsg)
 
 STDMETHODIMP CCOMMyCasino::deposit(ULONG sessionId, BSTR name, DOUBLE amountMoney, BSTR* errMsg)
 {
+	std::wstring errCode;
+
 	MyCasinoUser user;
 	if (!m_AuthService.isLoggedIn(sessionId, &user))
 	{
-		return E_FAIL;
+		*errMsg = wstr_to_bstr(TRANSLATE_MYCASINO_ERRORCODE(errCode, ERROR_MY_CASINO_USER_NOT_LOGGED_IN));
+		return E_ACCESSDENIED;
 	}
+
 
 #ifdef STUB_METHODS
 	*errMsg = wstr_to_bstr(L"STUB_METHOD - deposit");
@@ -100,7 +106,7 @@ STDMETHODIMP CCOMMyCasino::bet(ULONG sessionId, DOUBLE amountMoney, SHORT firstN
 	if (!m_AuthService.isLoggedIn(sessionId, &user))
 	{
 		*errMsg = wstr_to_bstr(TRANSLATE_MYCASINO_ERRORCODE(errCode, ERROR_MY_CASINO_USER_NOT_LOGGED_IN));
-		return E_FAIL;
+		return E_ACCESSDENIED;
 	}
 
 	if (!m_casino.IsOpened())
@@ -148,10 +154,13 @@ STDMETHODIMP CCOMMyCasino::calculateProfit(ULONG sessionId, DOUBLE amountMoney, 
 
 STDMETHODIMP CCOMMyCasino::showbets(ULONG sessionId, SAFEARR_VAR* bets, ULONG* count, BSTR* errMsg)
 {
+	std::wstring errCode;
+
 	MyCasinoUser user;
 	if (!m_AuthService.isLoggedIn(sessionId, &user))
 	{
-		return E_FAIL;
+		*errMsg = wstr_to_bstr(TRANSLATE_MYCASINO_ERRORCODE(errCode, ERROR_MY_CASINO_USER_NOT_LOGGED_IN));
+		return E_ACCESSDENIED;
 	}
 
 	// stub method:
@@ -179,10 +188,13 @@ STDMETHODIMP CCOMMyCasino::showbets(ULONG sessionId, SAFEARR_VAR* bets, ULONG* c
 
 STDMETHODIMP CCOMMyCasino::drawTest(ULONG sessionId, SHORT firstNumberTest, SHORT secondNumberTest, BSTR* errMsg)
 {
+	std::wstring errCode;
+
 	MyCasinoUser user;
 	if (!m_AuthService.isLoggedIn(sessionId, &user))
 	{
-		return E_FAIL;
+		*errMsg = wstr_to_bstr(TRANSLATE_MYCASINO_ERRORCODE(errCode, ERROR_MY_CASINO_USER_NOT_LOGGED_IN));
+		return E_ACCESSDENIED;
 	}
 
 #ifdef STUB_METHODS
@@ -194,10 +206,13 @@ STDMETHODIMP CCOMMyCasino::drawTest(ULONG sessionId, SHORT firstNumberTest, SHOR
 
 STDMETHODIMP CCOMMyCasino::draw(ULONG sessionId, SHORT* firstNumber, SHORT* secondNumber, BSTR* errMsg)
 {
+	std::wstring errCode;
+
 	MyCasinoUser user;
 	if (!m_AuthService.isLoggedIn(sessionId, &user))
 	{
-		return E_FAIL;
+		*errMsg = wstr_to_bstr(TRANSLATE_MYCASINO_ERRORCODE(errCode, ERROR_MY_CASINO_USER_NOT_LOGGED_IN));
+		return E_ACCESSDENIED;
 	}
 
 #ifdef STUB_METHODS
@@ -211,10 +226,13 @@ STDMETHODIMP CCOMMyCasino::draw(ULONG sessionId, SHORT* firstNumber, SHORT* seco
 
 STDMETHODIMP CCOMMyCasino::getTransactions(ULONG sessionId, BOOL* isFinished, SAFEARR_VAR* transaction, ULONG* transactionType, BSTR* errMsg)
 {
+	std::wstring errCode;
+
 	MyCasinoUser user;
 	if (!m_AuthService.isLoggedIn(sessionId, &user))
 	{
-		return E_FAIL;
+		*errMsg = wstr_to_bstr(TRANSLATE_MYCASINO_ERRORCODE(errCode, ERROR_MY_CASINO_USER_NOT_LOGGED_IN));
+		return E_ACCESSDENIED;
 	}
 
 #ifdef STUB_METHODS
@@ -242,10 +260,13 @@ STDMETHODIMP CCOMMyCasino::getTransactions(ULONG sessionId, BOOL* isFinished, SA
 
 STDMETHODIMP CCOMMyCasino::getTransactionInformation(ULONG sessionId, ULONG transactionId, SAFEARR_VAR* information, ULONG* informationType, BSTR* errMsg)
 {
+	std::wstring errCode;
+
 	MyCasinoUser user;
 	if (!m_AuthService.isLoggedIn(sessionId, &user))
 	{
-		return E_FAIL;
+		*errMsg = wstr_to_bstr(TRANSLATE_MYCASINO_ERRORCODE(errCode, ERROR_MY_CASINO_USER_NOT_LOGGED_IN));
+		return E_ACCESSDENIED;
 	}
 
 #ifdef STUB_METHODS
