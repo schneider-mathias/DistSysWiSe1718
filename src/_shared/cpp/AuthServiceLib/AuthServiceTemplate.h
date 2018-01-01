@@ -25,11 +25,10 @@ public:
 	BOOL readRegisteredUser(std::wstring filename);
 	BOOL login(std::wstring username, std::wstring password, ULONG* sessinId);
 	BOOL isLoggedIn(ULONG sessionId, TAuthServiceUser** user = nullptr);
+	BOOL isLoggedIn(std::wstring username, ULONG* newSessionId);
 	BOOL logout(ULONG sessionId);
 
 private:
-	
-	BOOL isLoggedIn(std::wstring username, ULONG* newSessionId);
 	BOOL isUsedSessionId(ULONG newSessionId);
 	ULONG generateSessionId();
 
