@@ -15,7 +15,7 @@ public:
 	BOOL IsOpened();
 	BOOL IsOperator(MyCasinoUser& user);
 	BOOL Bet(MyCasinoUser& user, SHORT firstNumber, SHORT secondNumber, DOUBLE setAmount);
-	BOOL CalculateRewards(MyCasinoBet& bet, DOUBLE* priceForOne, DOUBLE* priceForTwo);
+	BOOL CalculateProfit(MyCasinoBet& bet, DOUBLE* priceForOne, DOUBLE* priceForTwo);
 	BOOL Deposit(MyCasinoUser& user, DOUBLE amount);
 	BOOL LoadAccount(MyCasinoUser& user, MyCasinoAccount** account);
 	BOOL Withdraw(MyCasinoUser& user, DOUBLE amount);

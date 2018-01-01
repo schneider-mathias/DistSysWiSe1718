@@ -48,7 +48,7 @@ BOOL MyCasino::LoadAccount(MyCasinoUser& user, MyCasinoAccount** account)
 	return TRUE;
 }
 
-BOOL MyCasino::CalculateRewards(MyCasinoBet& bet, DOUBLE* rewardForOne, DOUBLE* rewardForTwo)
+BOOL MyCasino::CalculateProfit(MyCasinoBet& bet, DOUBLE* rewardForOne, DOUBLE* rewardForTwo)
 {
 	// check if first and second number are valid for this game
 	if (!IsValidBetNumber(bet.GetFirstNumber()) || !IsValidBetNumber(bet.GetSecondNumber()))
@@ -199,7 +199,7 @@ BOOL MyCasino::CheckOperatorAccount(MyCasinoBet& bet)
 {
 	double rewardForOne = 0.0;
 	double rewardForTwo = 0.0;
-	BOOL resVal = CalculateRewards(bet, &rewardForOne, &rewardForTwo);
+	BOOL resVal = CalculateProfit(bet, &rewardForOne, &rewardForTwo);
 	if (FAILED(resVal))
 		return resVal;
 

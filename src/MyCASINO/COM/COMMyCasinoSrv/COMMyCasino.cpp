@@ -156,8 +156,6 @@ STDMETHODIMP CCOMMyCasino::calculateProfit(ULONG sessionId, DOUBLE amountMoney, 
 
 	// stub method:
 #ifdef STUB_METHODS
-	*profitForOneMatch = amountMoney * 2;
-	*profitForTwoMatches = amountMoney * 10;
 	*errMsg = wstr_to_bstr(L"STUB_METHOD - calculateProfit");
 #endif
 
