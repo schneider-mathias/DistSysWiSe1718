@@ -18,22 +18,30 @@ CCOMMyCasino::CCOMMyCasino()
 
 STDMETHODIMP CCOMMyCasino::login(BSTR username, BSTR password, ULONG* sessionId, SHORT* userType, BSTR* errMsg)
 {
-	
+	std::wstring errCode;
+
 	if (!m_AuthService.login(bstr_to_wstr(username), bstr_to_wstr(password), sessionId))
 	{
+		*errMsg = wstr_to_bstr(L"Invalid user name or password.");
 		return E_ACCESSDENIED;
 	}
 	
 	MyCasinoUser user;
 	if (!m_AuthService.isLoggedIn(*sessionId, &user))
 	{
+		*errMsg = wstr_to_bstr(L"Internal server error in AuthService.");
 		return E_FAIL;
 	}
 
 	*userType = user.GetUserType();
 	if (*userType == MyCasinoUserTypes::Operator)
 	{
-		m_casino.Open(user);
+		BOOL retVal = m_casino.Open(user);
+		if (FAILED(retVal))
+		{
+			*errMsg = wstr_to_bstr(TRANSLATE_MYCASINO_ERRORCODE(errCode, retVal));
+			return E_FAIL;
+		}
 	}
 	
 
@@ -50,12 +58,14 @@ STDMETHODIMP CCOMMyCasino::logout(ULONG sessionId, BSTR* errMsg)
 	MyCasinoUser user;
 	if (!m_AuthService.isLoggedIn(sessionId, &user))
 	{
+		*errMsg = wstr_to_bstr(L"Invalid session id.");
 		return E_FAIL;
 	}
 
 	// TODO: Add your implementation code here
 	if (!m_AuthService.logout(sessionId))
 	{
+		*errMsg = wstr_to_bstr(L"Internal server error during logout.");
 		return E_FAIL;
 	}
 
@@ -84,11 +94,29 @@ STDMETHODIMP CCOMMyCasino::deposit(ULONG sessionId, BSTR name, DOUBLE amountMone
 
 STDMETHODIMP CCOMMyCasino::bet(ULONG sessionId, DOUBLE amountMoney, SHORT firstNumber, SHORT secondNumber, BSTR* errMsg)
 {
+	std::wstring errCode;
+
 	MyCasinoUser user;
 	if (!m_AuthService.isLoggedIn(sessionId, &user))
 	{
+		*errMsg = wstr_to_bstr(TRANSLATE_MYCASINO_ERRORCODE(errCode, ERROR_MY_CASINO_USER_NOT_LOGGED_IN));
 		return E_FAIL;
 	}
+
+	if (!m_casino.IsOpened())
+	{
+		*errMsg = wstr_to_bstr(TRANSLATE_MYCASINO_ERRORCODE(errCode, ERROR_MY_CASINO_NO_OPERATOR));
+		return E_FAIL;
+	}
+
+	// create the bet
+	BOOL retVal = m_casino.Bet(user, firstNumber, secondNumber, amountMoney);
+	if (FAILED(retVal))
+	{
+		*errMsg = wstr_to_bstr(TRANSLATE_MYCASINO_ERRORCODE(errCode, retVal));
+		return E_FAIL;
+	}
+
 
 #ifdef STUB_METHODS
 	*errMsg = wstr_to_bstr(L"STUB_METHOD - bet");
@@ -99,9 +127,12 @@ STDMETHODIMP CCOMMyCasino::bet(ULONG sessionId, DOUBLE amountMoney, SHORT firstN
 
 STDMETHODIMP CCOMMyCasino::calculateProfit(ULONG sessionId, DOUBLE amountMoney, DOUBLE* profitForOneMatch, DOUBLE* profitForTwoMatches, BSTR* errMsg)
 {
+	std::wstring errCode;
+
 	MyCasinoUser user;
 	if (!m_AuthService.isLoggedIn(sessionId, &user))
 	{
+		*errMsg = wstr_to_bstr(TRANSLATE_MYCASINO_ERRORCODE(errCode, ERROR_MY_CASINO_USER_NOT_LOGGED_IN));
 		return E_FAIL;
 	}
 
@@ -126,7 +157,7 @@ STDMETHODIMP CCOMMyCasino::showbets(ULONG sessionId, SAFEARR_VAR* bets, ULONG* c
 	// stub method:
 #ifdef STUB_METHODS
 	const int STUB_DATA_COUNT = 2;
-	MyCasinoBet betsStub[STUB_DATA_COUNT] = { MyCasinoBet(1, 1, 10.0), MyCasinoBet(2, 2, 20.0) };
+	MyCasinoBet betsStub[STUB_DATA_COUNT] = { MyCasinoBet(1, 1, 1, 10.0), MyCasinoBet(2, 2, 2, 20.0) };
 	CComSafeArray<VARIANT> betsSafeArray(STUB_DATA_COUNT * BET_DETAILS_PROPTERY_COUNT);
 	int dataCount = STUB_DATA_COUNT;
 	*errMsg = wstr_to_bstr(L"STUB_METHOD - showbets");
@@ -190,7 +221,7 @@ STDMETHODIMP CCOMMyCasino::getTransactions(ULONG sessionId, BOOL* isFinished, SA
 	*isFinished = TRUE;
 
 	MyCasinoTransaction currentTransaction(1, 50.0, 100.0);
-	MyCasinoBet betStub(1, 1, 50.0);
+	MyCasinoBet betStub(1, 1, 1, 50.0);
 	currentTransaction.SetTransactionType(MyCasinoTransactionsTypes::BET, &betStub);
 
 	CComSafeArray<VARIANT> transactionSafeArray(TRANSACTION_PROPTERY_COUNT);
@@ -219,7 +250,7 @@ STDMETHODIMP CCOMMyCasino::getTransactionInformation(ULONG sessionId, ULONG tran
 
 #ifdef STUB_METHODS
 	MyCasinoTransaction currentTransaction(1, 50.0, 100.0);
-	MyCasinoBet currentDetails(1, 1, 50.0);
+	MyCasinoBet currentDetails(1, 1, 1, 50.0);
 	currentDetails.SetBetResult(2, 2, 20.5);
 	currentTransaction.SetTransactionType(MyCasinoTransactionsTypes::BET, &currentDetails);
 

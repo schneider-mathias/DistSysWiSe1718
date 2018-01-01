@@ -13,18 +13,28 @@ public:
 
 	BOOL Open(MyCasinoUser& user);
 	BOOL IsOpened();
-	BOOL Bet(MyCasinoUser& user, MyCasinoBet& bet);
+	BOOL Bet(MyCasinoUser& user, SHORT firstNumber, SHORT secondNumber, DOUBLE setAmount);
+	BOOL CalculateRewards(MyCasinoBet& bet, DOUBLE* priceForOne, DOUBLE* priceForTwo);
 	BOOL Deposit(MyCasinoUser& user, DOUBLE amount);
-	BOOL LoadAccount(MyCasinoUser& user, MyCasinoAccount* account);
+	BOOL LoadAccount(MyCasinoUser& user, MyCasinoAccount** account);
 	BOOL Withdraw(MyCasinoUser& user, DOUBLE amount);
-	std::list<MyCasinoBet> CreateSnapshot();
+	std::multimap<MyCasinoUser, MyCasinoBet> CreateSnapshot();
 	BOOL Close();
 	BOOL Draw();
 
 private:
+
+	BOOL CheckOperatorAccount(MyCasinoBet& bet);
+	BOOL GetBet(SHORT firstNumber, SHORT secondNumber, MyCasinoBet* existingBet);
+	BOOL DeleteBet(SHORT firstNumber, SHORT secondNumber);
+	BOOL GetUserAccount(MyCasinoUser& user, MyCasinoAccount* account);
+	BOOL CheckBet(MyCasinoUser& user, MyCasinoBet& bet);
+	BOOL IsValidBetNumber(SHORT firstNumber);
+
 	std::map<MyCasinoUser, MyCasinoAccount> m_userAccounts;
 	MyCasinoUser* m_pOperator;
 	MyCasinoAccount* m_pOperatorAccount;
-	std::list<MyCasinoBet> m_currentBets;
+	std::multimap<MyCasinoUser, MyCasinoBet> m_currentBets;
+	ULONG m_currentBetId;
 
 };

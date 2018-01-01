@@ -1,7 +1,10 @@
 #include "MyCasino.h"
 #include <utility>
 
-MyCasino::MyCasino()
+MyCasino::MyCasino():
+	m_currentBetId(0),
+	m_pOperator(NULL),
+	m_pOperatorAccount(NULL)
 {
 }
 
@@ -15,8 +18,10 @@ BOOL MyCasino::Open(MyCasinoUser& user)
 		return ERROR_MY_CASINO_HAS_ALREADY_OPERATOR;
 
 	m_pOperator = &user;
-	if (!LoadAccount(*m_pOperator, m_pOperatorAccount))
+	MyCasinoAccount* account = NULL;
+	if (!LoadAccount(*m_pOperator, &account))
 		return ERROR_MY_CASINO_CANNOT_LOAD_ACCOUNT;
+	m_pOperatorAccount = account;
 
 	return TRUE;
 }
@@ -26,42 +31,211 @@ BOOL MyCasino::IsOpened()
 	return (NULL != m_pOperator);
 }
 
-BOOL MyCasino::LoadAccount(MyCasinoUser& user, MyCasinoAccount* account)
+BOOL MyCasino::LoadAccount(MyCasinoUser& user, MyCasinoAccount** account)
 {
-	account = NULL;
-
-	if (!IsOpened())
-		return ERROR_MY_CASINO_NO_OPERATOR;
-
 	// TODO
+	(*account) = new MyCasinoAccount();
+
+	//if (!IsOpened())
+	//	return ERROR_MY_CASINO_NO_OPERATOR;
 
 
 	return TRUE;
 }
 
-BOOL MyCasino::Bet(MyCasinoUser& user, MyCasinoBet& bet)
+BOOL MyCasino::CalculateRewards(MyCasinoBet& bet, DOUBLE* rewardForOne, DOUBLE* rewardForTwo)
 {
+	// check if first and second number are valid for this game
+	if (!IsValidBetNumber(bet.GetFirstNumber()) || !IsValidBetNumber(bet.GetSecondNumber()))
+		return ERROR_MY_CASINO_BET_INVALID_NUMBER;
+	
+	*rewardForOne = bet.GetSetAmount() * MY_CASINO_BET_REWARD_FACTOR_FOR_ONE;
+	*rewardForTwo = bet.GetSetAmount();
+
+	for (std::map<MyCasinoUser, MyCasinoBet>::iterator it = m_currentBets.begin(); it != m_currentBets.end(); it++)
+	{
+		// skip value with same number (can happen if amount for this bet should be overwritten)
+		if (bet.GetFirstNumber() != (*it).second.GetFirstNumber()
+			&& bet.GetSecondNumber() != (*it).second.GetSecondNumber())
+		{
+			(*rewardForTwo) += (*it).second.GetSetAmount();
+		}
+	}
+		
+
+	return TRUE;
+}
+
+BOOL MyCasino::Bet(MyCasinoUser& user, SHORT firstNumber, SHORT secondNumber, DOUBLE setAmount)
+{
+	MyCasinoBet bet(m_currentBetId++,firstNumber,secondNumber,setAmount);
+	BOOL resVal = FALSE;
 	MyCasinoAccount* account = NULL;
+	MyCasinoBet* existingBet = NULL;
+
+	switch (CheckBet(user, bet))
+	{
+		case TRUE:
+			// new bet, everything fine continue
+			
+			// check if operator account balance is sufficient for this bet
+			resVal = CheckOperatorAccount(bet);
+			if (FAILED(resVal))
+				return resVal;
+
+			// book transaction on gamer account
+			if (!GetUserAccount(user, account))
+				return ERROR_MY_CASINO_CANNOT_LOAD_ACCOUNT;
+
+			ULONG transactionId;
+			resVal = (account)->CreateTransaction(bet.GetSetAmount(), MyCasinoTransactionsTypes::PRELIMINARY_WITHDRAWAL, &bet, &transactionId);
+			if (FAILED(resVal))
+				return resVal;
+			
+			return TRUE;
+
+		case INFORMATION_MY_CASINO_USER_HAS_NUMBERS:
+			// user has already bet on this numbers, apply new values on bet and account
+			
+			// first check if new amount is 0, in this case delete the bet
+			if (bet.GetSetAmount() < 0.001)
+			{
+				if (!DeleteBet(bet.GetFirstNumber(), bet.GetSecondNumber()))
+					return ERROR_MY_CASINO_BET_CANNOT_DELETE;
+
+
+				return TRUE;
+			}
+
+			// check if operator account balance is sufficient for this bet
+			resVal = CheckOperatorAccount(bet);
+			if (FAILED(resVal))
+				return resVal;
+
+			// check if gamer account balance is sufficient
+
+
+			// overwrite amount in bet object
+			existingBet = NULL;
+			if (!GetBet(bet.GetFirstNumber(), bet.GetSecondNumber(), existingBet))
+				return FALSE; // should never happen
+
+			// overwrite amount in bet object
+
+			return TRUE;
+		case ERROR_MY_CASINO_BET_INVALID_NUMBER:
+			return ERROR_MY_CASINO_BET_INVALID_NUMBER;
+		case ERROR_MY_CASINO_BET_ALREADY_TAKEN:
+			// same bet by different users is not allowed
+			return ERROR_MY_CASINO_BET_ALREADY_TAKEN;
+	}
+
+	return FALSE;
+}
+
+BOOL MyCasino::DeleteBet(SHORT firstNumber, SHORT secondNumber)
+{
+	BOOL deleteSuccess = FALSE;
+	for (std::map<MyCasinoUser, MyCasinoBet>::iterator it = m_currentBets.begin(); it != m_currentBets.end(); it++)
+	{
+		if (firstNumber == (*it).second.GetFirstNumber()
+			&& secondNumber == (*it).second.GetSecondNumber()
+			)
+		{
+			m_currentBets.erase(it);
+			deleteSuccess = TRUE;
+		}
+	}
+
+	return deleteSuccess;
+}
+
+BOOL MyCasino::GetBet(SHORT firstNumber, SHORT secondNumber, MyCasinoBet* bet)
+{
+	bet = NULL;
+	for (std::map<MyCasinoUser, MyCasinoBet>::iterator it = m_currentBets.begin(); it != m_currentBets.end(); it++)
+	{
+		if (firstNumber == (*it).second.GetFirstNumber()
+			&& secondNumber == (*it).second.GetSecondNumber()
+			)
+		{
+			bet = &((*it).second);
+		}
+	}
+
+	return (NULL != bet);
+}
+
+BOOL MyCasino::GetUserAccount(MyCasinoUser& user, MyCasinoAccount* account)
+{
+	account = NULL;
 
 	for (std::map<MyCasinoUser, MyCasinoAccount>::iterator it = m_userAccounts.begin(); it != m_userAccounts.end(); it++)
 	{
 		if (user == (*it).first)
 		{
 			account = &((*it).second);
-			break;
+			return TRUE;
 		}
 	}
 
 	if (NULL == account)
 	{
-		if (!LoadAccount(user, account))
-			return ERROR_MY_CASINO_CANNOT_LOAD_ACCOUNT;
+		MyCasinoAccount* loadedAccount = NULL;
+		if(!LoadAccount(user, &loadedAccount))
+			return FALSE;
+		account = loadedAccount;
 	}
-	
-	account->CreateTransaction(bet.GetSetAmount());
-
-	return E_NOTIMPL;
+		
+	return TRUE;
 }
+
+BOOL MyCasino::CheckOperatorAccount(MyCasinoBet& bet)
+{
+	double rewardForOne = 0.0;
+	double rewardForTwo = 0.0;
+	BOOL resVal = CalculateRewards(bet, &rewardForOne, &rewardForTwo);
+	if (FAILED(resVal))
+		return resVal;
+
+	if (rewardForOne > m_pOperatorAccount->GetCurrentBalance() ||
+		rewardForTwo > m_pOperatorAccount->GetCurrentBalance())
+		return ERROR_MY_CASINO_OPERATOR_ACCOUNT_BALANCE_NOT_SUFFICIENT;
+
+	return TRUE;
+}
+
+
+BOOL MyCasino::IsValidBetNumber(SHORT firstNumber)
+{
+	return (firstNumber >= MY_CASINO_BET_MIN_NUMBER && firstNumber <= MY_CASINO_BET_MAX_NUMBER);
+}
+
+
+BOOL MyCasino::CheckBet(MyCasinoUser& user, MyCasinoBet& bet)
+{
+	BOOL resVal = TRUE;
+
+	// check if first and second number are valid for this game
+	if (!IsValidBetNumber(bet.GetFirstNumber()) || !IsValidBetNumber(bet.GetSecondNumber()))
+		return ERROR_MY_CASINO_BET_INVALID_NUMBER;
+
+	for (std::map<MyCasinoUser, MyCasinoBet>::iterator it = m_currentBets.begin(); it != m_currentBets.end(); it++)
+	{
+		if (bet.GetFirstNumber() == (*it).second.GetFirstNumber()
+			&& bet.GetSecondNumber() == (*it).second.GetSecondNumber()
+			)
+		{
+			if (user == (*it).first)
+				resVal = INFORMATION_MY_CASINO_USER_HAS_NUMBERS;
+			else
+				resVal = ERROR_MY_CASINO_BET_ALREADY_TAKEN;
+			break;
+		}
+	}
+	return resVal;
+}
+
 
 BOOL MyCasino::Deposit(MyCasinoUser& user, DOUBLE amount)
 {
@@ -78,10 +252,10 @@ BOOL MyCasino::Draw()
 	return E_NOTIMPL;
 }
 
-std::list<MyCasinoBet> MyCasino::CreateSnapshot()
+std::multimap<MyCasinoUser, MyCasinoBet> MyCasino::CreateSnapshot()
 {
 	std::list<MyCasinoBet> betsSnapshot;
-	return betsSnapshot;
+	return m_currentBets;
 }
 
 BOOL MyCasino::Close()

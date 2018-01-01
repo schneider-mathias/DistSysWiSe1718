@@ -12,7 +12,7 @@ MyCasinoTransaction::~MyCasinoTransaction()
 	m_pTransactionDetails = NULL;
 }
 
-DOUBLE MyCasinoTransaction::GetId()
+ULONG MyCasinoTransaction::GetId()
 {
 	return m_id;
 }

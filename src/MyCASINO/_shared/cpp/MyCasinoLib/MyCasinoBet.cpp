@@ -1,7 +1,8 @@
 #include "MyCasinoBet.h"
 
-MyCasinoBet::MyCasinoBet(SHORT firstNumber, SHORT secondNumber, DOUBLE amount)
-	: m_firstNumber(firstNumber),
+MyCasinoBet::MyCasinoBet(ULONG id,SHORT firstNumber, SHORT secondNumber, DOUBLE amount)
+	: IMyCasinoTransactionInformation(id, MyCasinoTransactionsInformationTypes::Bet),
+	m_firstNumber(firstNumber),
 	m_secondNumber(secondNumber),
 	m_setAmount(amount),
 	m_drawnFirstNumber(0),
@@ -67,4 +68,10 @@ std::vector<TaggedUnion> MyCasinoBet::GetInformation()
 SHORT MyCasinoBet::GetInformationCount()
 {
 	return m_isDrawn? 7:4;
+}
+
+bool MyCasinoBet::operator==(const MyCasinoBet& ref)
+{
+	// return ref.m_firstNumber == m_firstNumber && ref.m_secondNumber == m_secondNumber;
+	return ref.m_id == m_id;
 }
