@@ -28,12 +28,14 @@ public:
 	~CmdInterpreter();
 
 	bool registerCmdDispatcher(ICommandLineInterface* m_dispatcherObj, dispatcherMemFunc func);
+	void init();
 	void run();
+	bool execute(std::wstring command);
+	void cout();
 	void stop();
 
 private:
 	bool splitInArgs(std::vector<std::wstring>& qargs, std::wstring command);
-	void cout();
 	std::atomic<CmdModes> m_mode;
 	std::stringstream m_outBuffer;
 	std::streambuf* m_previousBuffer;

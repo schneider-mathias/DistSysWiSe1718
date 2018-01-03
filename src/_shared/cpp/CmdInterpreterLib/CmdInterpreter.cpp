@@ -66,6 +66,11 @@ bool CmdInterpreter::splitInArgs(std::vector<std::wstring>& qargs, std::wstring 
 	return true;
 }
 
+void CmdInterpreter::init()
+{
+	m_previousBuffer = std::cout.rdbuf(m_outBuffer.rdbuf());
+}
+
 void CmdInterpreter::run()
 {
 	m_previousBuffer = std::cout.rdbuf(m_outBuffer.rdbuf());
@@ -81,29 +86,37 @@ void CmdInterpreter::run()
 		{
 			std::wstring scommand;
 			std::getline(std::wcin, scommand);
-			if (!scommand.empty())
-			{
-				std::vector<std::wstring> commandArguments;
-				if (!splitInArgs(commandArguments, scommand))
-				{
-					std::cerr << "Command ends with opened quotes" << std::endl;
-				}
+			execute(scommand);
 
-				if (commandArguments.size() > 0)
-				{
-					if (NULL != m_dispatcherFunc && !CALL_MEMBER_FN(*m_dispatcherObj,m_dispatcherFunc)(commandArguments))
-					{
-						std::wcerr << "Error while running command " << commandArguments.at(0) << std::endl;
-					}
-				}
-
-				
-			}
 			m_mode = CmdModes::Writing;
 
 		}
 	}
 }
+
+bool CmdInterpreter::execute(std::wstring command)
+{
+	if (!command.empty())
+	{
+		std::vector<std::wstring> commandArguments;
+		if (!splitInArgs(commandArguments, command))
+		{
+			std::cerr << "Command ends with opened quotes" << std::endl;
+		}
+
+		if (commandArguments.size() > 0)
+		{
+			if (NULL != m_dispatcherFunc && !CALL_MEMBER_FN(*m_dispatcherObj, m_dispatcherFunc)(commandArguments))
+			{
+				std::wcerr << "Error while running command " << commandArguments.at(0) << std::endl;
+				return false;
+			}
+		}
+		return true;
+	}
+	return false;
+}
+
 void CmdInterpreter::stop()
 {
 	//empty buffer
