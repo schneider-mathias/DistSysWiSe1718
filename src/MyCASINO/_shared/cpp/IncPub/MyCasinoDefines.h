@@ -23,6 +23,10 @@ typedef unsigned long MY_CASINO_RES;
 #define ERROR_MY_CASINO_BET_ALREADY_TAKEN 0x80030005L
 #define ERROR_MY_CASINO_BET_CANNOT_DELETE 0x80030006L
 
+#define ERROR_MY_CASINO_TRANSACTION_INFOMRATION_NOT_AVAILABLE 0x80040001L
+#define ERROR_MY_CASINO_UNKNOWN_TRANSACTION_ID 0x80040002L
+
+
 #define INFORMATION_MY_CASINO_USER_HAS_NUMBERS 0x00021001
 
 inline std::wstring translate_error_message(unsigned long errorcode)
@@ -55,6 +59,10 @@ inline std::wstring translate_error_message(unsigned long errorcode)
 		return std::wstring(L"Given numbers for bet are not valid.");
 	case ERROR_MY_CASINO_BET_ALREADY_TAKEN:
 		return std::wstring(L"Number pair is already taken by another user.");
+	case ERROR_MY_CASINO_TRANSACTION_INFOMRATION_NOT_AVAILABLE:
+		return std::wstring(L"No transaction details available.");
+	case ERROR_MY_CASINO_UNKNOWN_TRANSACTION_ID:
+		return std::wstring(L"Transaction id cannot be resolved.");
 	default:
 		return std::wstring(L"Unknow error: ").append(std::to_wstring(errorcode));
 	}
@@ -79,9 +87,59 @@ enum MyCasinoTransactionsTypes
 	DEPOSIT = 0,
 	WITHDRAWAL,
 	CANCELED,
-	PRELIMINARY_WITHDRAWAL,
-	BET
+	BET_WAGER,
+	BET_WIN,
+	BET_LOSS
 };
+
+inline std::wstring resolve_transaction_type(MyCasinoTransactionsTypes type)
+{
+	switch (type)
+	{
+	case MyCasinoTransactionsTypes::DEPOSIT:
+		return std::wstring(L"Deposit");
+	case MyCasinoTransactionsTypes::WITHDRAWAL:
+		return std::wstring(L"Withdrawal");
+	case MyCasinoTransactionsTypes::CANCELED:
+		return std::wstring(L"Canceled");
+	case MyCasinoTransactionsTypes::BET_WAGER:
+		return std::wstring(L"Wager");
+	case MyCasinoTransactionsTypes::BET_WIN:
+		return std::wstring(L"Bet won");
+	case MyCasinoTransactionsTypes::BET_LOSS:
+		return std::wstring(L"Bet loss");
+	default:
+		return std::wstring(L"Unknown transaction type");
+	}
+}
+
+inline std::wstring resolve_transaction_sign(MyCasinoTransactionsTypes type)
+{
+	std::wstring sign(L"+");
+
+	switch (type)
+	{
+	case MyCasinoTransactionsTypes::DEPOSIT:
+		break;
+	case MyCasinoTransactionsTypes::WITHDRAWAL:
+		sign = L"-";
+		break;
+	case MyCasinoTransactionsTypes::CANCELED:
+		sign = L"";
+		break;
+	case MyCasinoTransactionsTypes::BET_WAGER:
+		sign = L"-";
+		break;
+	case MyCasinoTransactionsTypes::BET_WIN:
+		sign = L"+";
+		break;
+	case MyCasinoTransactionsTypes::BET_LOSS:
+		sign = L"-";
+		break;
+	}
+
+	return sign;
+}
 
 enum MyCasinoUserTypes {
 	Operator = 0,

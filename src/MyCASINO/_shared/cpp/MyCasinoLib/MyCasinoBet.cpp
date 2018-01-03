@@ -2,6 +2,7 @@
 
 MyCasinoBet::MyCasinoBet(ULONG id,SHORT firstNumber, SHORT secondNumber, DOUBLE amount)
 	: IMyCasinoTransactionInformation(id, MyCasinoTransactionsInformationTypes::Bet),
+	m_id(id),
 	m_firstNumber(firstNumber),
 	m_secondNumber(secondNumber),
 	m_setAmount(amount),

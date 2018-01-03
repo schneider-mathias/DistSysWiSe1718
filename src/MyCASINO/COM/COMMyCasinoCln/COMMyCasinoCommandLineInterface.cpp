@@ -104,7 +104,7 @@ bool COMMyCasinoCommandLineInterface::showbets()
 	
 	SHORT currentFirstNumber = 0;
 	SHORT currentSecondNumber = 0;
-	DOUBLE currentAmount = 0.0;
+	DOUBLE currentWager = 0.0;
 	bool readBetDone = false;
 	for (int i = 0; i < betCount*BET_DETAILS_PROPTERY_COUNT; i++)
 	{
@@ -118,7 +118,7 @@ bool COMMyCasinoCommandLineInterface::showbets()
 			currentSecondNumber = betsResult[i].intVal;
 		else if (i % BET_DETAILS_PROPTERY_COUNT == 2)
 		{
-			std::cout << betsResult[i].dblVal << std::endl;
+			currentWager = betsResult[i].dblVal;
 			readBetDone = true;
 		}
 		
@@ -126,7 +126,7 @@ bool COMMyCasinoCommandLineInterface::showbets()
 		{
 			DOUBLE profitForOne;
 			DOUBLE profitForTwo;
-			hr = m_pICOMMyCasinoSrv->calculateProfit(*m_pSessionId, currentAmount, currentFirstNumber, currentSecondNumber, &profitForOne, &profitForTwo, &errMsg);
+			hr = m_pICOMMyCasinoSrv->calculateProfit(*m_pSessionId, currentWager, currentFirstNumber, currentSecondNumber, &profitForOne, &profitForTwo, &errMsg);
 			if (FAILED(hr))
 			{
 				std::cout << "Failure: calculateProfit - " << std::hex << hr << std::endl;
@@ -138,6 +138,7 @@ bool COMMyCasinoCommandLineInterface::showbets()
 			std::cout << "Message: " << bstr_to_str(errMsg) << std::endl;
 			std::cout << "First number: " << currentFirstNumber << std::endl;
 			std::cout << "Second number: " << currentSecondNumber << std::endl;
+			std::cout << "Wager: " << currentWager << std::endl;
 			std::cout << "Profit for one: " << profitForOne << std::endl;
 			std::cout << "Profit for two: " << profitForTwo << std::endl;
 		}
@@ -204,6 +205,8 @@ bool COMMyCasinoCommandLineInterface::showstatus()
 	ULONG informationType;
 	ULONG transactionType;
 	ULONG currentTransactionId;
+	ULONG resultBalance;
+	ULONG changeAmount;
 	BSTR errMsg;
 
 	while (!isFinished)
@@ -229,12 +232,21 @@ bool COMMyCasinoCommandLineInterface::showstatus()
 					currentTransactionId = transactionResult[i].intVal;
 					std::cout << currentTransactionId << std::endl;
 				}
-				else if (i % TRANSACTION_PROPTERY_COUNT == 1 || i % TRANSACTION_PROPTERY_COUNT == 2)
-					std::cout << transactionResult[i].dblVal << std::endl;
+				else if (i % TRANSACTION_PROPTERY_COUNT == 1)
+					resultBalance = transactionResult[i].dblVal;
+				else if (i % TRANSACTION_PROPTERY_COUNT == 2)
+					changeAmount = transactionResult[i].dblVal;
 			}
 
-
-			if (transactionType == 2) // bet
+			if (transactionType == MyCasinoTransactionsTypes::DEPOSIT
+				|| transactionType == MyCasinoTransactionsTypes::WITHDRAWAL)
+			{
+				std::wcout << resolve_transaction_type((MyCasinoTransactionsTypes)transactionType) << L": " << resolve_transaction_sign((MyCasinoTransactionsTypes)transactionType) << changeAmount << "|" << resultBalance << std::endl;
+			}
+			else if (transactionType == MyCasinoTransactionsTypes::BET_WIN
+				|| transactionType == MyCasinoTransactionsTypes::BET_LOSS
+				|| transactionType == MyCasinoTransactionsTypes::BET_WAGER
+				) // bet
 			{
 				hr = m_pICOMMyCasinoSrv->getTransactionInformation(*m_pSessionId, currentTransactionId, &transactionInformation, &informationType, &errMsg);
 				if (FAILED(hr))
@@ -249,7 +261,8 @@ bool COMMyCasinoCommandLineInterface::showstatus()
 
 					CComSafeArray<VARIANT> transactionInformationResult(transactionInformation);
 
-					if (informationType == 2) // = bet
+					std::wstring betInformation(L"");
+					if (informationType == MyCasinoTransactionsInformationTypes::Bet)
 					{
 
 						for (int i = 0; i < BET_FULL_DETAILS_PROPTERY_COUNT; i++)
@@ -271,6 +284,9 @@ bool COMMyCasinoCommandLineInterface::showstatus()
 							}
 						}
 					}
+
+
+					std::wcout << resolve_transaction_type((MyCasinoTransactionsTypes)transactionType) << L": " << resolve_transaction_sign((MyCasinoTransactionsTypes)transactionType) << changeAmount << "|" << resultBalance << std::endl;
 				}
 			}
 		}

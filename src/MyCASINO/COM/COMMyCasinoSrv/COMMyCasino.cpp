@@ -233,6 +233,19 @@ STDMETHODIMP CCOMMyCasino::drawTest(ULONG sessionId, SHORT firstNumberTest, SHOR
 		return E_ACCESSDENIED;
 	}
 
+	if (!m_casino.IsOperator(*user))
+	{
+		*errMsg = wstr_to_bstr(TRANSLATE_MYCASINO_ERRORCODE(errCode, ERROR_MY_CASINO_USER_PERMISSION_DENIED));
+		return E_ACCESSDENIED;
+	}
+
+	BOOL hr = m_casino.Draw(&firstNumberTest, &secondNumberTest);
+	if (FAILED(hr))
+	{
+		*errMsg = wstr_to_bstr(TRANSLATE_MYCASINO_ERRORCODE(errCode, hr));
+		return E_FAIL;
+	}
+
 #ifdef STUB_METHODS
 	*errMsg = wstr_to_bstr(L"STUB_METHOD - drawTest");
 #endif
@@ -251,9 +264,20 @@ STDMETHODIMP CCOMMyCasino::draw(ULONG sessionId, SHORT* firstNumber, SHORT* seco
 		return E_ACCESSDENIED;
 	}
 
+	if (!m_casino.IsOperator(*user))
+	{
+		*errMsg = wstr_to_bstr(TRANSLATE_MYCASINO_ERRORCODE(errCode, ERROR_MY_CASINO_USER_PERMISSION_DENIED));
+		return E_ACCESSDENIED;
+	}
+
+	BOOL hr = m_casino.Draw(firstNumber, secondNumber);
+	if (FAILED(hr))
+	{
+		*errMsg = wstr_to_bstr(TRANSLATE_MYCASINO_ERRORCODE(errCode, hr));
+		return E_FAIL;
+	}
+
 #ifdef STUB_METHODS
-	*firstNumber = 1;
-	*secondNumber = 1;
 	*errMsg = wstr_to_bstr(L"STUB_METHOD - draw");
 #endif
 
@@ -271,25 +295,25 @@ STDMETHODIMP CCOMMyCasino::getTransactions(ULONG sessionId, BOOL* isFinished, SA
 		return E_ACCESSDENIED;
 	}
 
-#ifdef STUB_METHODS
-	*isFinished = TRUE;
-
-	MyCasinoTransaction currentTransaction(1, 50.0, 100.0);
-	MyCasinoBet betStub(1, 1, 1, 50.0);
-	currentTransaction.SetTransactionType(MyCasinoTransactionsTypes::BET, &betStub);
-
+	MyCasinoTransaction* nextTransaction = NULL;
+	*isFinished = m_casino.GetNextTransaction(*user, &nextTransaction);
+	
 	CComSafeArray<VARIANT> transactionSafeArray(TRANSACTION_PROPTERY_COUNT);
-	*errMsg = wstr_to_bstr(L"STUB_METHOD - getTransactions");
-#endif
+	if (NULL != nextTransaction)
+	{
+		int safeArrayIterator = 0;
+		transactionSafeArray[safeArrayIterator++] = nextTransaction->GetId();
+		transactionSafeArray[safeArrayIterator++] = nextTransaction->GetResultBalance();
+		transactionSafeArray[safeArrayIterator++] = nextTransaction->GetChangeAmount();
 
-	int safeArrayIterator = 0;
-	transactionSafeArray[safeArrayIterator++] = currentTransaction.GetId();
-	transactionSafeArray[safeArrayIterator++] = currentTransaction.GetStartAmount();
-	transactionSafeArray[safeArrayIterator++] = currentTransaction.GetChangeAmount();
-
-	*transactionType = currentTransaction.GetTransactionType();
+		*transactionType = nextTransaction->GetTransactionType();
+	}
 
 	transactionSafeArray.CopyTo(transaction);
+
+#ifdef STUB_METHODS
+	*errMsg = wstr_to_bstr(L"STUB_METHOD - getTransactions");
+#endif
 
 	return S_OK;
 }
@@ -305,22 +329,21 @@ STDMETHODIMP CCOMMyCasino::getTransactionInformation(ULONG sessionId, ULONG tran
 		return E_ACCESSDENIED;
 	}
 
-#ifdef STUB_METHODS
-	MyCasinoTransaction currentTransaction(1, 50.0, 100.0);
-	MyCasinoBet currentDetails(1, 1, 1, 50.0);
-	currentDetails.SetBetResult(2, 2, 20.5);
-	currentTransaction.SetTransactionType(MyCasinoTransactionsTypes::BET, &currentDetails);
+	IMyCasinoTransactionInformation *currentDetails = NULL;
+	MyCasinoTransactionsInformationTypes detailType;
+	if(!m_casino.GetTransactionInfomation(*user, transactionId, &currentDetails,&detailType))
+	{
+		*errMsg = wstr_to_bstr(TRANSLATE_MYCASINO_ERRORCODE(errCode, ERROR_MY_CASINO_TRANSACTION_INFOMRATION_NOT_AVAILABLE));
+		return E_FAIL;
+	}
 
-	int safearraySize = currentDetails.GetInformationCount();
+	int safearraySize = (*currentDetails).GetInformationCount();
 	CComSafeArray<VARIANT> transactionInformationSafeArray(safearraySize);
-	*errMsg = wstr_to_bstr(L"STUB_METHOD - getTransactions");
-#endif
 
 	int safeArrayIterator = 0;
-	
 
 	// ugly... need to refactor this TaggedArray stuff...
-	std::vector<TaggedUnion>currentInformation = currentDetails.GetInformation();
+	std::vector<TaggedUnion>currentInformation = (*currentDetails).GetInformation();
 	for (std::vector<TaggedUnion>::iterator it = currentInformation.begin(); it != currentInformation.end(); ++it) 
 	{	
 		switch ((*it).getType())
@@ -343,8 +366,12 @@ STDMETHODIMP CCOMMyCasino::getTransactionInformation(ULONG sessionId, ULONG tran
 		}
 		
 	}
+
+#ifdef STUB_METHODS
+	*errMsg = wstr_to_bstr(L"STUB_METHOD - getTransactions");
+#endif
 	
-	*informationType = currentTransaction.GetTransactionType();
+	*informationType = detailType;
 
 	transactionInformationSafeArray.CopyTo(information);
 	

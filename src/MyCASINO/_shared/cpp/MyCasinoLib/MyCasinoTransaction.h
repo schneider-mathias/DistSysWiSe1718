@@ -26,20 +26,23 @@ private:
 class MyCasinoTransaction
 {
 public:
-	MyCasinoTransaction(ULONG id, DOUBLE startAmount, DOUBLE changeAmount);
+	MyCasinoTransaction(ULONG id, DOUBLE m_resultBalance, DOUBLE changeAmount);
 	~MyCasinoTransaction();
 
 	ULONG GetId();
-	DOUBLE GetStartAmount();
+	DOUBLE GetResultBalance();
 	DOUBLE GetChangeAmount();
 	IMyCasinoTransactionInformation* GetTransactionInformation();
+	MyCasinoTransactionsInformationTypes* GetTransactionInformationType();
 	MyCasinoTransactionsTypes GetTransactionType();
-	BOOL SetTransactionType(MyCasinoTransactionsTypes type, IMyCasinoTransactionInformation* transactionDetails);
+	BOOL SetTransactionType(MyCasinoTransactionsTypes type, IMyCasinoTransactionInformation* transactionDetails, MyCasinoTransactionsInformationTypes* infoType);
+
 
 private:
 	ULONG m_id;
-	DOUBLE m_startAmount;
+	DOUBLE m_resultBalance;
 	DOUBLE m_changeAmount;
 	MyCasinoTransactionsTypes m_transactionType;
 	IMyCasinoTransactionInformation* m_pTransactionDetails;
+	MyCasinoTransactionsInformationTypes* m_pTransactionInformationType;
 };
