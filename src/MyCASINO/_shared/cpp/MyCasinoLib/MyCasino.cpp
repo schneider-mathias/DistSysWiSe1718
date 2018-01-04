@@ -94,6 +94,9 @@ BOOL MyCasino::CalculateProfit(MyCasinoBet& bet, DOUBLE* rewardForOne, DOUBLE* r
 
 BOOL MyCasino::Bet(MyCasinoUser& user, SHORT firstNumber, SHORT secondNumber, DOUBLE setAmount)
 {
+	if (!IsOpened())
+		return ERROR_MY_CASINO_NO_OPERATOR;
+
 	MyCasinoBet* bet = NULL;
 	// if bet does not exists yet create a new bet
 	if (!GetBet(firstNumber, secondNumber, &bet))
@@ -144,27 +147,15 @@ BOOL MyCasino::Bet(MyCasinoUser& user, SHORT firstNumber, SHORT secondNumber, DO
 				return ERROR_MY_CASINO_CANNOT_LOAD_ACCOUNT;
 
 
-			// first check if new amount is 0, in this case delete the bet
+			// first check if new amount is 0, in this case close the bet
 			if (setAmount < 0.001)
 			{
+				// remove entry from map
 				if (!DeleteBet(bet->GetFirstNumber(), bet->GetSecondNumber()))
 					return ERROR_MY_CASINO_BET_CANNOT_DELETE;
 
-
-				// cancel gamer transaction 
-				ULONG currentTransactionId = -1;
-				if (!(account)->GetTransaction(bet, &currentTransactionId))
-					return ERROR_MY_CASINO_UNKNOWN_TRANSACTION_ID;
-
-				resVal = (account)->CancelTransaction(currentTransactionId);
-				if (FAILED(resVal))
-					return resVal;
-
-				// cancel operator transaction 
-				if (!(m_pOperatorAccount)->GetTransaction(bet, &currentTransactionId))
-					return ERROR_MY_CASINO_UNKNOWN_TRANSACTION_ID;
-
-				resVal = (m_pOperatorAccount)->CancelTransaction(currentTransactionId);
+				// cancel transactions
+				resVal = CloseBet(user, *bet);
 				if (FAILED(resVal))
 					return resVal;
 
@@ -195,8 +186,6 @@ BOOL MyCasino::Bet(MyCasinoUser& user, SHORT firstNumber, SHORT secondNumber, DO
 			if (!(account)->GetTransaction(bet, &currentTransactionId))
 				return ERROR_MY_CASINO_UNKNOWN_TRANSACTION_ID;
 
-			// TODO!
-
 			resVal = (account)->ChangeTransaction(currentTransactionId, -setAmount, MyCasinoTransactionsTypes::BET_WAGER, bet, &infoType);
 			if (FAILED(resVal))
 				return resVal;
@@ -225,6 +214,9 @@ BOOL MyCasino::Bet(MyCasinoUser& user, SHORT firstNumber, SHORT secondNumber, DO
 
 BOOL MyCasino::DeleteBet(SHORT firstNumber, SHORT secondNumber)
 {
+	if (!IsOpened())
+		return ERROR_MY_CASINO_NO_OPERATOR;
+
 	BOOL deleteSuccess = FALSE;
 	for (std::multimap<MyCasinoUser, MyCasinoBet*>::iterator it = m_currentBets.begin(); it != m_currentBets.end();)
 	{
@@ -242,8 +234,38 @@ BOOL MyCasino::DeleteBet(SHORT firstNumber, SHORT secondNumber)
 	return deleteSuccess;
 }
 
+BOOL MyCasino::CloseBet(const MyCasinoUser& user, MyCasinoBet& bet)
+{
+	MyCasinoAccount* account = NULL;
+
+	if (!GetAccount(user, &account))
+		return ERROR_MY_CASINO_CANNOT_LOAD_ACCOUNT;
+
+	ULONG currentTransactionId = -1;
+	// cancel gamer transaction 
+	if (!(account)->GetTransaction(&bet, &currentTransactionId))
+		return ERROR_MY_CASINO_UNKNOWN_TRANSACTION_ID;
+
+	BOOL resVal = (account)->CancelTransaction(currentTransactionId);
+	if (FAILED(resVal))
+		return resVal;
+
+	// cancel operator transaction 
+	if (!(m_pOperatorAccount)->GetTransaction(&bet, &currentTransactionId))
+		return ERROR_MY_CASINO_UNKNOWN_TRANSACTION_ID;
+
+	resVal = (m_pOperatorAccount)->CancelTransaction(currentTransactionId);
+	if (FAILED(resVal))
+		return resVal;
+
+	return TRUE;
+}
+
 BOOL MyCasino::GetBet(SHORT firstNumber, SHORT secondNumber, MyCasinoBet** bet)
 {
+	if (!IsOpened())
+		return ERROR_MY_CASINO_NO_OPERATOR;
+
 	*bet = NULL;
 	for (std::multimap<MyCasinoUser, MyCasinoBet*>::iterator it = m_currentBets.begin(); it != m_currentBets.end(); it++)
 	{
@@ -264,7 +286,7 @@ BOOL MyCasino::GetAccount(const MyCasinoUser& user, MyCasinoAccount** account)
 	*account = NULL;
 
 	// operator account is not stored in user list
-	if (user == *m_pOperator)
+	if (NULL != m_pOperator && user == *m_pOperator)
 	{
 		if (NULL == m_pOperatorAccount)
 			return ERROR_MY_CASINO_CANNOT_LOAD_ACCOUNT;
@@ -346,6 +368,9 @@ BOOL MyCasino::CheckBet(MyCasinoUser& user, MyCasinoBet& bet)
 
 BOOL MyCasino::Deposit(MyCasinoUser& user, DOUBLE amount)
 {
+	if (!IsOpened())
+		return ERROR_MY_CASINO_NO_OPERATOR;
+
 	MyCasinoAccount* account = NULL;
 
 	if (!GetAccount(user, &account))
@@ -357,11 +382,17 @@ BOOL MyCasino::Deposit(MyCasinoUser& user, DOUBLE amount)
 
 BOOL MyCasino::Withdraw(MyCasinoUser& user, DOUBLE amount)
 {
+	if (!IsOpened())
+		return ERROR_MY_CASINO_NO_OPERATOR;
+
 	return E_NOTIMPL;
 }
 
 BOOL MyCasino::Draw(SHORT* firstNumber, SHORT* secondNumber)
 {
+	if (!IsOpened())
+		return ERROR_MY_CASINO_NO_OPERATOR;
+
 	if (NULL == firstNumber)
 		*firstNumber = GenerateDrawNumber();
 	if (NULL == firstNumber)
@@ -476,6 +507,24 @@ BOOL MyCasino::Close()
 {
 	if (!IsOpened())
 		return ERROR_MY_CASINO_NO_OPERATOR;
+
+
+	// close all current bets
+	ULONG currentTransactionId = -1;
+	BOOL resVal = TRUE;
+	for (std::multimap<MyCasinoUser, MyCasinoBet*>::iterator it = m_currentBets.begin(); it != m_currentBets.end();)
+	{
+		// close transactions
+		resVal = CloseBet((*it).first, *(*it).second);
+		if (!resVal)
+			return resVal;
+
+		// save bets in order to delete them later
+		m_formerBets.push_back((*it).second);
+
+		// delete bet entry
+		it = m_currentBets.erase(it);
+	}
 
 	// operator will be deleted by AuthService
 	m_pOperator = NULL;

@@ -29,6 +29,7 @@ private:
 	SHORT GenerateDrawNumber();
 	BOOL CheckOperatorAccount(MyCasinoBet& bet);
 	BOOL GetBet(SHORT firstNumber, SHORT secondNumber, MyCasinoBet** bet);
+	BOOL CloseBet(const MyCasinoUser& user, MyCasinoBet& bet);
 	BOOL DeleteBet(SHORT firstNumber, SHORT secondNumber);
 	BOOL GetAccount(const MyCasinoUser& user, MyCasinoAccount** account);
 	BOOL CheckBet(MyCasinoUser& user, MyCasinoBet& bet);
