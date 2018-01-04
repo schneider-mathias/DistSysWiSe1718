@@ -17,7 +17,9 @@ typedef unsigned long MY_CASINO_RES;
 #define ERROR_MY_CASINO_USER_ACCOUNT_BALANCE_NOT_SUFFICIENT 0x80020002L
 #define ERROR_MY_CASINO_OPERATOR_ACCOUNT_BALANCE_NOT_SUFFICIENT 0x80020003L
 #define ERROR_MY_CASINO_INVALID_TRANSACTION_TYPE 0x80020004L
-#define ERROR_MY_CASINO_ACCOUNT_DEPOSIT_FAILED 0x80020005L
+#define ERROR_MY_CASINO_INVALID_TRANSACTION_TRANSITION 0x80020005L
+#define ERROR_MY_CASINO_ACCOUNT_DEPOSIT_FAILED 0x80020006L
+#define ERROR_MY_CASINO_INVALID_CHANGE_AMOUNT 0x80020007L
 
 #define ERROR_MY_CASINO_BET_INVALID_NUMBER 0x80030004L
 #define ERROR_MY_CASINO_BET_ALREADY_TAKEN 0x80030005L
@@ -53,6 +55,8 @@ inline std::wstring translate_error_message(unsigned long errorcode)
 		return std::wstring(L"Operator account balance is not sufficient for this bet.");
 	case ERROR_MY_CASINO_INVALID_TRANSACTION_TYPE:
 		return std::wstring(L"Invalid transaction type for this operation.");
+	case ERROR_MY_CASINO_INVALID_TRANSACTION_TRANSITION:
+		return std::wstring(L"Invalid transaction transition.");
 	case ERROR_MY_CASINO_ACCOUNT_DEPOSIT_FAILED:
 		return std::wstring(L"Deposit transaction failed.");
 	case ERROR_MY_CASINO_BET_INVALID_NUMBER:
@@ -103,7 +107,7 @@ inline std::wstring resolve_transaction_type(MyCasinoTransactionsTypes type)
 	case MyCasinoTransactionsTypes::CANCELED:
 		return std::wstring(L"Canceled");
 	case MyCasinoTransactionsTypes::BET_WAGER:
-		return std::wstring(L"Wager");
+		return std::wstring(L"Bet wager");
 	case MyCasinoTransactionsTypes::BET_WIN:
 		return std::wstring(L"Bet won");
 	case MyCasinoTransactionsTypes::BET_LOSS:

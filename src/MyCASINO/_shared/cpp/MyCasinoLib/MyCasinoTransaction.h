@@ -32,6 +32,7 @@ public:
 	ULONG GetId();
 	DOUBLE GetResultBalance();
 	DOUBLE GetChangeAmount();
+	void SetChangeAmount(DOUBLE changeAmount, DOUBLE resultBalance);
 	IMyCasinoTransactionInformation* GetTransactionInformation();
 	MyCasinoTransactionsInformationTypes* GetTransactionInformationType();
 	MyCasinoTransactionsTypes GetTransactionType();

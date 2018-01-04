@@ -95,14 +95,16 @@ BOOL MyCasino::CalculateProfit(MyCasinoBet& bet, DOUBLE* rewardForOne, DOUBLE* r
 BOOL MyCasino::Bet(MyCasinoUser& user, SHORT firstNumber, SHORT secondNumber, DOUBLE setAmount)
 {
 	MyCasinoBet* bet = NULL;
-	MyCasinoBet* existingBet = NULL;
 	// if bet does not exists yet create a new bet
-	if (!GetBet(firstNumber, secondNumber, existingBet))
+	if (!GetBet(firstNumber, secondNumber, &bet))
 		bet = new MyCasinoBet(m_currentBetId++, firstNumber, secondNumber, setAmount);
 
 	BOOL resVal = FALSE;
 	MyCasinoAccount* account = NULL;
-	
+	DOUBLE setAmountDifference = 0.0;
+	DOUBLE previousWager = 0.0;
+	ULONG currentTransactionId = 0;
+
 	MyCasinoTransactionsInformationTypes infoType = MyCasinoTransactionsInformationTypes::Bet;
 	switch (CheckBet(user, *bet))
 	{
@@ -110,7 +112,6 @@ BOOL MyCasino::Bet(MyCasinoUser& user, SHORT firstNumber, SHORT secondNumber, DO
 			// new bet, everything fine continue
 			
 			// check if operator account balance is sufficient for this bet
-			// ToDo: do we have to use 
 			resVal = CheckOperatorAccount(*bet);
 			if (FAILED(resVal))
 				return resVal;
@@ -120,12 +121,12 @@ BOOL MyCasino::Bet(MyCasinoUser& user, SHORT firstNumber, SHORT secondNumber, DO
 				return ERROR_MY_CASINO_CANNOT_LOAD_ACCOUNT;
 
 			ULONG transactionId;
-			resVal = (account)->CreateTransaction(bet->GetSetAmount(), MyCasinoTransactionsTypes::BET_WAGER, bet, &infoType, &transactionId);
+			resVal = (account)->CreateTransaction(-(bet->GetSetAmount()), MyCasinoTransactionsTypes::BET_WAGER, bet, &infoType, &transactionId);
 			if (FAILED(resVal))
 				return resVal;
 
 			// book wager income for operator
-			resVal = (m_pOperatorAccount)->CreateTransaction(bet->GetSetAmount(), MyCasinoTransactionsTypes::DEPOSIT, bet, &infoType, &transactionId);
+			resVal = (m_pOperatorAccount)->CreateTransaction(bet->GetSetAmount(), MyCasinoTransactionsTypes::BET_WAGER, bet, &infoType, &transactionId);
 			if (FAILED(resVal))
 				return resVal;
 
@@ -138,30 +139,78 @@ BOOL MyCasino::Bet(MyCasinoUser& user, SHORT firstNumber, SHORT secondNumber, DO
 		case INFORMATION_MY_CASINO_USER_HAS_NUMBERS:
 			// user has already bet on this numbers, apply new values on bet and account
 			
+
+			if (!GetAccount(user, &account))
+				return ERROR_MY_CASINO_CANNOT_LOAD_ACCOUNT;
+
+
 			// first check if new amount is 0, in this case delete the bet
-			if (bet->GetSetAmount() < 0.001)
+			if (setAmount < 0.001)
 			{
 				if (!DeleteBet(bet->GetFirstNumber(), bet->GetSecondNumber()))
 					return ERROR_MY_CASINO_BET_CANNOT_DELETE;
 
 
+				// cancel gamer transaction 
+				ULONG currentTransactionId = -1;
+				if (!(account)->GetTransaction(bet, &currentTransactionId))
+					return ERROR_MY_CASINO_UNKNOWN_TRANSACTION_ID;
+
+				resVal = (account)->CancelTransaction(currentTransactionId);
+				if (FAILED(resVal))
+					return resVal;
+
+				// cancel operator transaction 
+				if (!(m_pOperatorAccount)->GetTransaction(bet, &currentTransactionId))
+					return ERROR_MY_CASINO_UNKNOWN_TRANSACTION_ID;
+
+				resVal = (m_pOperatorAccount)->CancelTransaction(currentTransactionId);
+				if (FAILED(resVal))
+					return resVal;
+
 				return TRUE;
 			}
 
-			// check if operator account balance is sufficient for this bet
+			previousWager = bet->GetSetAmount();
+			bet->SetWager(setAmount);
+
+			// check if operator account balance is sufficient for this bet,
+			// therefore apply new wager temporarily
 			resVal = CheckOperatorAccount(*bet);
+			if (FAILED(resVal))
+			{
+				bet->SetWager(previousWager);
+				return resVal;
+			}
+
+			// undo wager change until transaction was changed sucessfully
+			bet->SetWager(previousWager);
+				
+			// check if gamer account balance is sufficient
+			setAmountDifference = setAmount - previousWager;
+			if ((account)->GetCurrentBalance() - setAmountDifference < 0)
+				return ERROR_MY_CASINO_USER_ACCOUNT_BALANCE_NOT_SUFFICIENT;
+			
+			// adjust transaction object
+			if (!(account)->GetTransaction(bet, &currentTransactionId))
+				return ERROR_MY_CASINO_UNKNOWN_TRANSACTION_ID;
+
+			// TODO!
+
+			resVal = (account)->ChangeTransaction(currentTransactionId, -setAmount, MyCasinoTransactionsTypes::BET_WAGER, bet, &infoType);
 			if (FAILED(resVal))
 				return resVal;
 
-			// check if gamer account balance is sufficient
+			// adjust operators transaction object
+			if (!(m_pOperatorAccount)->GetTransaction(bet, &currentTransactionId))
+				return ERROR_MY_CASINO_UNKNOWN_TRANSACTION_ID;
 
+			resVal = (m_pOperatorAccount)->ChangeTransaction(currentTransactionId, setAmount, MyCasinoTransactionsTypes::BET_WAGER, bet, &infoType);
+			if (FAILED(resVal))
+				return resVal;
 
-			// overwrite amount in bet object
-			existingBet = NULL;
-			if (!GetBet(bet->GetFirstNumber(), bet->GetSecondNumber(), existingBet))
-				return FALSE; // should never happen
-
-			// overwrite amount in bet object
+			// finally overwrite amount in bet object
+			bet->SetWager(setAmount);
 
 			return TRUE;
 		case ERROR_MY_CASINO_BET_INVALID_NUMBER:
@@ -177,35 +226,37 @@ BOOL MyCasino::Bet(MyCasinoUser& user, SHORT firstNumber, SHORT secondNumber, DO
 BOOL MyCasino::DeleteBet(SHORT firstNumber, SHORT secondNumber)
 {
 	BOOL deleteSuccess = FALSE;
-	for (std::multimap<MyCasinoUser, MyCasinoBet*>::iterator it = m_currentBets.begin(); it != m_currentBets.end(); it++)
+	for (std::multimap<MyCasinoUser, MyCasinoBet*>::iterator it = m_currentBets.begin(); it != m_currentBets.end();)
 	{
 		if (firstNumber == (*it).second->GetFirstNumber()
 			&& secondNumber == (*it).second->GetSecondNumber()
 			)
 		{
 			m_formerBets.push_back((*it).second);
-			m_currentBets.erase(it);
+			it = m_currentBets.erase(it);
 			deleteSuccess = TRUE;
+			break;
 		}
 	}
 
 	return deleteSuccess;
 }
 
-BOOL MyCasino::GetBet(SHORT firstNumber, SHORT secondNumber, MyCasinoBet* bet)
+BOOL MyCasino::GetBet(SHORT firstNumber, SHORT secondNumber, MyCasinoBet** bet)
 {
-	bet = NULL;
+	*bet = NULL;
 	for (std::multimap<MyCasinoUser, MyCasinoBet*>::iterator it = m_currentBets.begin(); it != m_currentBets.end(); it++)
 	{
 		if (firstNumber == (*it).second->GetFirstNumber()
 			&& secondNumber == (*it).second->GetSecondNumber()
 			)
 		{
-			bet = ((*it).second);
+			*bet = ((*it).second);
+			break;
 		}
 	}
 
-	return (NULL != bet);
+	return (NULL != *bet);
 }
 
 BOOL MyCasino::GetAccount(const MyCasinoUser& user, MyCasinoAccount** account)
@@ -322,6 +373,7 @@ BOOL MyCasino::Draw(SHORT* firstNumber, SHORT* secondNumber)
 	DOUBLE totalReward = 0.0;
 	MyCasinoAccount* account;
 	ULONG currentTransactionId = 0;
+	ULONG currentOperatorTransactionId = 0;
 	for (std::multimap<MyCasinoUser, MyCasinoBet*>::iterator it = m_currentBets.begin(); it != m_currentBets.end();)
 	{
 		totalReward = 0.0;
@@ -343,22 +395,27 @@ BOOL MyCasino::Draw(SHORT* firstNumber, SHORT* secondNumber)
 		if (!(account)->GetTransaction((*it).second, &currentTransactionId))
 			return ERROR_MY_CASINO_UNKNOWN_TRANSACTION_ID;
 
+		if (!(m_pOperatorAccount)->GetTransaction((*it).second, &currentOperatorTransactionId))
+			return ERROR_MY_CASINO_UNKNOWN_TRANSACTION_ID;
+
 		MyCasinoTransactionsInformationTypes infoType = MyCasinoTransactionsInformationTypes::Bet;
-		// if user has won something create transaction on account
-		if (totalReward > 0.01)
+		if (totalReward > 0.001)
 		{
-			ULONG transactionId;
-			resVal = (account)->CreateTransaction(totalReward, MyCasinoTransactionsTypes::BET_WIN, (*it).second, &infoType, &transactionId);
+			resVal = (account)->ChangeTransaction(currentTransactionId, totalReward, MyCasinoTransactionsTypes::BET_WIN, (*it).second, &infoType);
 			if (FAILED(resVal))
 				return resVal;
 
-			resVal = (m_pOperatorAccount)->CreateTransaction(totalReward, MyCasinoTransactionsTypes::WITHDRAWAL, (*it).second, &infoType, &transactionId);
+			resVal = (m_pOperatorAccount)->ChangeTransaction(currentOperatorTransactionId, -(*it).second->GetSetAmount(), MyCasinoTransactionsTypes::BET_LOSS, (*it).second, &infoType);
 			if (FAILED(resVal))
 				return resVal;
 		}
-		else 
+		else
 		{
-			resVal = (account)->ChangeTransaction(currentTransactionId, MyCasinoTransactionsTypes::BET_LOSS, (*it).second, &infoType);
+			resVal = (account)->ChangeTransaction(currentTransactionId, -(*it).second->GetSetAmount(), MyCasinoTransactionsTypes::BET_LOSS, (*it).second, &infoType);
+			if (FAILED(resVal))
+				return resVal;
+
+			resVal = (m_pOperatorAccount)->ChangeTransaction(currentOperatorTransactionId, (*it).second->GetSetAmount(), MyCasinoTransactionsTypes::BET_WIN, (*it).second, &infoType);
 			if (FAILED(resVal))
 				return resVal;
 		}

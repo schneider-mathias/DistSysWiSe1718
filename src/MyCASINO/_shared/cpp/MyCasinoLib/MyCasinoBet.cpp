@@ -44,6 +44,12 @@ DOUBLE MyCasinoBet::GetSetAmount()
 	return m_setAmount;
 }
 
+void MyCasinoBet::SetWager(DOUBLE wager)
+{
+	if(wager > 0.0)
+		m_setAmount = wager;
+}
+
 BOOL MyCasinoBet::ResultIsDrawn()
 {
 	return m_isDrawn;
@@ -73,7 +79,6 @@ SHORT MyCasinoBet::GetInformationCount()
 
 bool MyCasinoBet::operator==(const MyCasinoBet& ref)
 {
-	// return ref.m_firstNumber == m_firstNumber && ref.m_secondNumber == m_secondNumber;
 	return ref.m_id == m_id;
 }
 

@@ -24,6 +24,7 @@ public:
 	BOOL ResultIsDrawn();
 	bool operator==(const MyCasinoBet&);
 	bool operator<(const MyCasinoBet&);
+	void SetWager(DOUBLE wager);
 
 private:
 	ULONG m_id;

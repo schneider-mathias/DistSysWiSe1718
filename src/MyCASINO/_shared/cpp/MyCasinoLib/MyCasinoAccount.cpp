@@ -3,6 +3,7 @@
 
 MyCasinoAccount::MyCasinoAccount()
 	: m_currentBalance(0),
+	m_preliminaryBalance(0),
 	m_transactionIdCounter(0),
 	m_currentTransactionIterator(0)
 {
@@ -25,17 +26,25 @@ BOOL MyCasinoAccount::CreateTransaction(DOUBLE changeAmount, MyCasinoTransaction
 	switch (type)
 	{
 	case MyCasinoTransactionsTypes::DEPOSIT:
-	case MyCasinoTransactionsTypes::BET_WIN:
-
+		// deposit has to be positive
+		if(changeAmount < 0.0)
+			return ERROR_MY_CASINO_INVALID_CHANGE_AMOUNT;
 		m_currentBalance += changeAmount;
 		break;
-	case MyCasinoTransactionsTypes::BET_LOSS:
-	case MyCasinoTransactionsTypes::BET_WAGER:
 	case MyCasinoTransactionsTypes::WITHDRAWAL:
 		if (changeAmount > GetCurrentBalance())
 			return ERROR_MY_CASINO_ACCOUNT_BALANCE_NOT_SUFFICIENT;
 
-		m_currentBalance -= changeAmount;
+		// withdrawal has to be negativ
+		if (changeAmount > 0.0)
+			return ERROR_MY_CASINO_INVALID_CHANGE_AMOUNT;
+		m_currentBalance += changeAmount;
+		break;
+	case MyCasinoTransactionsTypes::BET_WAGER:
+		if (changeAmount > GetCurrentBalance())
+			return ERROR_MY_CASINO_ACCOUNT_BALANCE_NOT_SUFFICIENT;
+
+		m_preliminaryBalance += changeAmount;
 		break;
 	default:
 		return ERROR_MY_CASINO_INVALID_TRANSACTION_TYPE;
@@ -59,15 +68,14 @@ BOOL MyCasinoAccount::CancelTransaction(ULONG transactionId)
 	if (!GetTransaction(transactionId, &transaction))
 		return FALSE;
 
-	// apply transaction
 	switch (transaction->GetTransactionType())
 	{
 	case MyCasinoTransactionsTypes::DEPOSIT:
+	case MyCasinoTransactionsTypes::WITHDRAWAL:
 		m_currentBalance -= transaction->GetChangeAmount();
 		break;
-	case MyCasinoTransactionsTypes::WITHDRAWAL:
 	case MyCasinoTransactionsTypes::BET_WAGER:
-		m_currentBalance += transaction->GetChangeAmount();
+		m_preliminaryBalance -= transaction->GetChangeAmount();;
 		break;
 	default:
 		return ERROR_MY_CASINO_INVALID_TRANSACTION_TYPE;
@@ -79,16 +87,15 @@ BOOL MyCasinoAccount::CancelTransaction(ULONG transactionId)
 
 BOOL MyCasinoAccount::GetTransactionInformation(ULONG transactionId, IMyCasinoTransactionInformation** information, MyCasinoTransactionsInformationTypes* infotype)
 {
-	MyCasinoTransaction* info = NULL;
-	if (!GetTransaction(transactionId, &info))
-		return false;
+	MyCasinoTransaction* transaction = NULL;
+	if (!GetTransaction(transactionId, &transaction))
+		return FALSE;
 
-	*information = (*info).GetTransactionInformation();
-	*infotype = *((*info).GetTransactionInformationType());
+	*information = (*transaction).GetTransactionInformation();
+	*infotype = *((*transaction).GetTransactionInformationType());
 
 	return (NULL != *information);
 }
-
 
 BOOL MyCasinoAccount::GetTransaction(ULONG transactionId, MyCasinoTransaction** transaction)
 {
@@ -127,7 +134,7 @@ BOOL MyCasinoAccount::GetTransaction(IMyCasinoTransactionInformation* transactio
 
 DOUBLE MyCasinoAccount::GetCurrentBalance()
 {
-	return m_currentBalance;
+	return m_currentBalance + m_preliminaryBalance;
 }
 
 const std::vector<MyCasinoTransaction*>& MyCasinoAccount::GetTransactions()
@@ -142,16 +149,55 @@ BOOL MyCasinoAccount::ChangeTransaction(ULONG transactionId, DOUBLE changeAmount
 	if (!GetTransaction(transactionId, &transaction))
 		return FALSE;
 
-	return transaction->SetTransactionType(type, information, infoType);
-}
+	// only BET_WAGER transaction type is allowed to have a transation
+	if(transaction->GetTransactionType() != MyCasinoTransactionsTypes::BET_WAGER)
+		return ERROR_MY_CASINO_INVALID_TRANSACTION_TRANSITION;
 
-BOOL MyCasinoAccount::ChangeTransaction(ULONG transactionId, MyCasinoTransactionsTypes type, IMyCasinoTransactionInformation* information, MyCasinoTransactionsInformationTypes* infoType)
-{
-	MyCasinoTransaction* transaction = NULL;
-	if (!GetTransaction(transactionId, &transaction))
-		return FALSE;
+	
+	transaction->SetTransactionType(type, information, infoType);	
 
-	return transaction->SetTransactionType(type, information, infoType);
+	double additionalWageDifference = 0.0;
+	double previousAmount = transaction->GetChangeAmount();
+	
+	// same type simply amount changed
+	if (type == MyCasinoTransactionsTypes::BET_WAGER)
+	{
+		additionalWageDifference = -(previousAmount - changeAmount);
+
+		if (GetCurrentBalance() - additionalWageDifference < 0)
+			return ERROR_MY_CASINO_ACCOUNT_BALANCE_NOT_SUFFICIENT;
+		m_preliminaryBalance += additionalWageDifference;
+
+		additionalWageDifference = changeAmount;
+	}
+	else if (type == MyCasinoTransactionsTypes::BET_LOSS)
+	{
+		additionalWageDifference = changeAmount;
+		// remove amount from preliminary and add to actual balance
+		m_preliminaryBalance -= changeAmount;
+
+		m_currentBalance += changeAmount;
+	}
+	else if (type == MyCasinoTransactionsTypes::BET_WIN)
+	{
+		if (previousAmount < 0.0 && changeAmount > 0.0)
+			additionalWageDifference = changeAmount + previousAmount;
+		else
+			additionalWageDifference = changeAmount;
+
+
+		// remove amount from preliminary and add to actual balance
+		m_preliminaryBalance -= additionalWageDifference;
+
+		m_currentBalance += additionalWageDifference;
+	}
+	else
+	{
+		return ERROR_MY_CASINO_INVALID_TRANSACTION_TRANSITION;
+	}
+
+	transaction->SetChangeAmount(additionalWageDifference,m_currentBalance);
+	return TRUE;
 }
 
 BOOL MyCasinoAccount::GetNextTransaction(MyCasinoTransaction** nextTransaction)

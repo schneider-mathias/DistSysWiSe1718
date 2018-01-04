@@ -37,6 +37,12 @@ DOUBLE MyCasinoTransaction::GetChangeAmount()
 	return m_changeAmount;
 }
 
+void MyCasinoTransaction::SetChangeAmount(DOUBLE changeAmount, DOUBLE resultBalance)
+{
+	m_changeAmount = changeAmount;
+	m_resultBalance = resultBalance;
+}
+
 MyCasinoTransactionsTypes MyCasinoTransaction::GetTransactionType()
 {
 	return m_transactionType;
