@@ -152,6 +152,8 @@ BOOL testcase_delete_bet(CmdInterpreter& interpreter)
 
 	if (!runCommand(interpreter, L"showbets"))
 		return E_FAIL;
+
+	return S_OK;
 }
 
 BOOL testcase_change_bet_more_wager(CmdInterpreter& interpreter)
@@ -191,6 +193,8 @@ BOOL testcase_change_bet_more_wager(CmdInterpreter& interpreter)
 
 	if (!runCommand(interpreter, L"showstatus"))
 		return E_FAIL;
+
+	return S_OK;
 }
 
 
@@ -231,6 +235,8 @@ BOOL testcase_change_bet_less_wager(CmdInterpreter& interpreter)
 
 	if (!runCommand(interpreter, L"showstatus"))
 		return E_FAIL;
+
+	return S_OK;
 }
 
 
@@ -269,6 +275,7 @@ BOOL testcase_close_casino(CmdInterpreter& interpreter)
 	if (!runCommand(interpreter, L"showstatus"))
 		return E_FAIL;
 
+	return S_OK;
 }
 
 int main(int argc, char**argv)
@@ -311,7 +318,7 @@ int main(int argc, char**argv)
 	std::cout << "--- MY CASINO ---" << std::endl;
 
 	CmdInterpreter interpreter;
-	COMMyCasinoCommandLineInterface myCasinoCLI(p_ICOMMyCasinoSrv);
+	COMMyCasinoCommandLineInterface myCasinoCLI(&interpreter, p_ICOMMyCasinoSrv);
 	dispatcherMemFunc p = &(ICommandLineInterface::ProcessCommand);
 	interpreter.registerCmdDispatcher(&myCasinoCLI, p);
 	interpreter.init();

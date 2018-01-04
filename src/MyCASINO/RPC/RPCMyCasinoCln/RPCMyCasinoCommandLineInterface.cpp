@@ -2,7 +2,8 @@
 #include "MyCasino_i.h"
 #include "CharStringConverter.h"
 
-RPCMyCasinoCommandLineInterface::RPCMyCasinoCommandLineInterface()
+RPCMyCasinoCommandLineInterface::RPCMyCasinoCommandLineInterface(CmdInterpreter* interpreter)
+	:MyCasinoCommandLineInterface(interpreter)
 {
 	m_pSessionId = NULL;
 	m_pUserType = NULL;

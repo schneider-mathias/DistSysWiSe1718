@@ -118,7 +118,7 @@ void startCommandLineInterface()
 	std::cout << "--- MY CASINO ---" << std::endl;
 
 	CmdInterpreter interpreter;
-	RPCMyCasinoCommandLineInterface myCasinoCLI;
+	RPCMyCasinoCommandLineInterface myCasinoCLI(&interpreter);
 	dispatcherMemFunc p = &(ICommandLineInterface::ProcessCommand);
 	interpreter.registerCmdDispatcher(&myCasinoCLI, p);
 	interpreter.run();

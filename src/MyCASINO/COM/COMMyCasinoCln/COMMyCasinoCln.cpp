@@ -55,7 +55,7 @@ int main(int argc, char**argv)
 	std::cout << "--- MY CASINO ---" << std::endl;
 
 	CmdInterpreter interpreter;
-	COMMyCasinoCommandLineInterface myCasinoCLI(p_ICOMMyCasinoSrv);
+	COMMyCasinoCommandLineInterface myCasinoCLI(&interpreter, p_ICOMMyCasinoSrv);
 	dispatcherMemFunc p = &(ICommandLineInterface::ProcessCommand);
 	interpreter.registerCmdDispatcher(&myCasinoCLI, p);
 	interpreter.run();

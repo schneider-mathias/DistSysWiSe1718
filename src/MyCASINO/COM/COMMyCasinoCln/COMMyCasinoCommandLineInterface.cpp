@@ -5,13 +5,16 @@
 #include "BstrStringConverter.h"
 #include "MyCasinoDefines.h"
 
-COMMyCasinoCommandLineInterface::COMMyCasinoCommandLineInterface(ICOMMyCasino* pICOMMyCasinoSrv)
+
+COMMyCasinoCommandLineInterface::COMMyCasinoCommandLineInterface(CmdInterpreter* interpreter, ICOMMyCasino* pICOMMyCasinoSrv)
+	: MyCasinoCommandLineInterface(interpreter)
 {
 	m_pICOMMyCasinoSrv = pICOMMyCasinoSrv;
 }
 
 COMMyCasinoCommandLineInterface::~COMMyCasinoCommandLineInterface()
 {
+	m_pICOMMyCasinoSrv = NULL;
 }
 
 bool COMMyCasinoCommandLineInterface::user(std::wstring user, std::wstring password)

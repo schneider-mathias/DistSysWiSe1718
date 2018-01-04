@@ -1,13 +1,14 @@
 #pragma once
 #include <type_traits>
 
+#include "CmdInterpreter.h"
 #include "ICommandLineInterface.h"
 
 
 class MyCasinoCommandLineInterface : public ICommandLineInterface
 {
 public:
-	MyCasinoCommandLineInterface();
+	MyCasinoCommandLineInterface(CmdInterpreter* interpreter);
 	~MyCasinoCommandLineInterface();
 
 	bool ProcessCommand(std::vector<std::wstring>);
@@ -28,5 +29,6 @@ private:
 protected:
 	unsigned long* m_pSessionId;
 	short* m_pUserType;
+	CmdInterpreter* m_pInterpreter;
 };
 

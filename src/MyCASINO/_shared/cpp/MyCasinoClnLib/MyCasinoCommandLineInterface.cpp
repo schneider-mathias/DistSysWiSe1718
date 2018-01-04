@@ -2,10 +2,11 @@
 #include "MyCasinoDefines.h"
 #include <iostream>
 
-MyCasinoCommandLineInterface::MyCasinoCommandLineInterface()
+MyCasinoCommandLineInterface::MyCasinoCommandLineInterface(CmdInterpreter* interpreter)
+	:m_pSessionId(NULL),
+	m_pUserType(NULL),
+	m_pInterpreter(interpreter)
 {
-	m_pSessionId = NULL;
-	m_pUserType = NULL;
 }
 
 MyCasinoCommandLineInterface::~MyCasinoCommandLineInterface()
@@ -14,6 +15,8 @@ MyCasinoCommandLineInterface::~MyCasinoCommandLineInterface()
 		delete m_pSessionId;
 	if (NULL != m_pUserType)
 		delete m_pUserType;
+
+	m_pInterpreter = NULL;
 }
 
 bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> arguments)
@@ -100,7 +103,11 @@ bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> argu
 			return false;
 		}
 
-		bool retVal = checkCallPrerequisites(MyCasinoUserTypes::Any) && bye();
+		bool retVal = true;
+		
+		// if a user is logged in log out on server
+		if (NULL != m_pSessionId)
+			retVal &= bye();
 
 		if (retVal)
 		{
@@ -117,6 +124,9 @@ bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> argu
 			}
 		}
 
+		// shutdown interpreter
+		m_pInterpreter->stop();
+
 		return retVal;
 	}
 	else if (command.compare(L"help") == 0)
@@ -125,12 +135,13 @@ bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> argu
 		std::cout << "Commands:" << std::endl;
 		std::cout << "user <name> <passwort>" << std::endl;
 		if(NULL == m_pUserType || MyCasinoUserTypes::Operator == *m_pUserType)
-			std::cout << "payin <name> <amount>" << std::endl;
+			std::cout << "payin* <name> <amount>" << std::endl;
 		std::cout << "bet <amount> <first number> <second number>" << std::endl;
 		std::cout << "showbets" << std::endl;
 		if (NULL == m_pUserType || MyCasinoUserTypes::Operator == *m_pUserType)
-			std::cout << "draw [<first number> <second number>]" << std::endl;
+			std::cout << "draw* [<first number> <second number>]" << std::endl;
 		std::cout << "showstatus" << std::endl;
+		std::cout << "help" << std::endl;
 		std::cout << "bye" << std::endl;
 		std::cout << "--------------------------------------------------------" << std::endl;
 

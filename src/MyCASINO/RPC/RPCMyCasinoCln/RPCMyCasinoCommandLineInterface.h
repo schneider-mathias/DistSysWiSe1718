@@ -6,7 +6,7 @@
 class RPCMyCasinoCommandLineInterface : public MyCasinoCommandLineInterface
 {
 public:
-	RPCMyCasinoCommandLineInterface();
+	RPCMyCasinoCommandLineInterface(CmdInterpreter* interpreter);
 	~RPCMyCasinoCommandLineInterface();
 
 	bool user(std::wstring user, std::wstring password);

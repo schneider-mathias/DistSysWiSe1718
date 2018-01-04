@@ -1,13 +1,14 @@
 #pragma once
 #include <string>
 #include "MyCasinoCommandLineInterface.h"
+#include "CmdInterpreter.h"
 
 #include "../COMMyCasinoSrv/COMMyCasinoSrv_i.h"
 
 class COMMyCasinoCommandLineInterface : public MyCasinoCommandLineInterface
 {
 public:
-	COMMyCasinoCommandLineInterface(ICOMMyCasino* pICOMMyCasinoSrv);
+	COMMyCasinoCommandLineInterface(CmdInterpreter* interpreter, ICOMMyCasino* pICOMMyCasinoSrv);
 	~COMMyCasinoCommandLineInterface();
 
 	bool user(std::wstring user, std::wstring password);

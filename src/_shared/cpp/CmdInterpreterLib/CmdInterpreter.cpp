@@ -3,10 +3,10 @@
 
 
 CmdInterpreter::CmdInterpreter()
+	: m_previousBuffer(NULL),
+	m_dispatcherFunc(NULL),
+	m_mode(CmdModes::Reading)
 {
-	m_previousBuffer = NULL;
-	m_dispatcherFunc = NULL;
-	m_mode = CmdModes::Reading;
 }
 
 CmdInterpreter::~CmdInterpreter()
@@ -87,9 +87,10 @@ void CmdInterpreter::run()
 			std::wstring scommand;
 			std::getline(std::wcin, scommand);
 			execute(scommand);
+			if (m_mode == CmdModes::Stopped)
+				break;
 
 			m_mode = CmdModes::Writing;
-
 		}
 	}
 }
