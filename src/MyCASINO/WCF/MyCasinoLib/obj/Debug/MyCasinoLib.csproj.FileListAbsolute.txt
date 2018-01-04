@@ -1,4 +1,0 @@
-D:\StdArbVS\trunk\src\MyCASINO\WCF\MyCasinoLib\bin\Debug\MyCasinoLib.dll
-D:\StdArbVS\trunk\src\MyCASINO\WCF\MyCasinoLib\bin\Debug\MyCasinoLib.pdb
-D:\StdArbVS\trunk\src\MyCASINO\WCF\MyCasinoLib\obj\Debug\MyCasinoLib.dll
-D:\StdArbVS\trunk\src\MyCASINO\WCF\MyCasinoLib\obj\Debug\MyCasinoLib.pdb

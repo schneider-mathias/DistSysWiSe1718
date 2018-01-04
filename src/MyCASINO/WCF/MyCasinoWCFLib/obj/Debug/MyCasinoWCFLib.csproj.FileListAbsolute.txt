@@ -1,7 +1,0 @@
-D:\StdArbVS\trunk\src\MyCASINO\WCF\MyCasinoWCFLib\bin\Debug\MyCasinoWCFLib.dll
-D:\StdArbVS\trunk\src\MyCASINO\WCF\MyCasinoWCFLib\bin\Debug\MyCasinoWCFLib.pdb
-D:\StdArbVS\trunk\src\MyCASINO\WCF\MyCasinoWCFLib\bin\Debug\MyCasinoLib.dll
-D:\StdArbVS\trunk\src\MyCASINO\WCF\MyCasinoWCFLib\bin\Debug\MyCasinoLib.pdb
-D:\StdArbVS\trunk\src\MyCASINO\WCF\MyCasinoWCFLib\obj\Debug\MyCasinoWCFLib.csprojResolveAssemblyReference.cache
-D:\StdArbVS\trunk\src\MyCASINO\WCF\MyCasinoWCFLib\obj\Debug\MyCasinoWCFLib.dll
-D:\StdArbVS\trunk\src\MyCASINO\WCF\MyCasinoWCFLib\obj\Debug\MyCasinoWCFLib.pdb
