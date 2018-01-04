@@ -30,6 +30,207 @@ bool runCommand(CmdInterpreter& interpreter, std::wstring command)
 	return true;
 }
 
+BOOL testcase_payin_different_accounts(CmdInterpreter& interpreter)
+{
+	// TEST CASE: payin for different accounts
+	if (!runCommand(interpreter, L"user Gamer Passwort"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"user Gamer_2 Passwort"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"user Casino Passwort"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"payin Casino 5000"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"payin Gamer 5000"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"payin Gamer_2 5000"))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+
+BOOL testcase_lose_bets(CmdInterpreter& interpreter)
+{
+	// TEST CASE: payin for different accounts
+	if (!runCommand(interpreter, L"user Gamer Passwort"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"bet 50 1 2"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"bet 100 1 3"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"bet 200 2 3"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"user Casino Passwort"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"showbets"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"draw 4 5"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"showbets"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"showstatus"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"user Gamer Passwort"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"showstatus"))
+		return E_FAIL;
+	return S_OK;
+}
+
+BOOL testcase_win_lose_bets(CmdInterpreter& interpreter)
+{
+	if (!runCommand(interpreter, L"user Gamer Passwort"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"showstatus"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"bet 50 1 2"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"bet 100 1 3"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"bet 200 2 3"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"user Casino Passwort"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"showbets"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"showstatus"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"draw 1 5"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"showstatus"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"user Gamer Passwort"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"showstatus"))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+BOOL testcase_delete_bet(CmdInterpreter& interpreter)
+{
+	if (!runCommand(interpreter, L"user Gamer Passwort"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"showstatus"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"bet 200 2 3"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"bet 0 2 3"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"showbets"))
+		return E_FAIL;
+}
+
+BOOL testcase_change_bet_more_wager(CmdInterpreter& interpreter)
+{
+	if (!runCommand(interpreter, L"user Gamer Passwort"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"bet 200 2 3"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"bet 1000 2 4"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"bet 500 2 3"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"showbets"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"user Casino Passwort"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"showbets"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"draw 1 5"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"user Gamer Passwort"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"showstatus"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"user Casino Passwort"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"showstatus"))
+		return E_FAIL;
+}
+
+
+BOOL testcase_change_bet_less_wager(CmdInterpreter& interpreter)
+{
+	if (!runCommand(interpreter, L"user Gamer Passwort"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"bet 500 2 3"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"bet 1000 2 4"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"bet 200 2 3"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"showbets"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"user Casino Passwort"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"showbets"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"draw 1 5"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"user Gamer Passwort"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"showstatus"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"user Casino Passwort"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"showstatus"))
+		return E_FAIL;
+}
+
 int main(int argc, char**argv)
 {
 	CoInitialize(NULL);
@@ -75,74 +276,23 @@ int main(int argc, char**argv)
 	interpreter.registerCmdDispatcher(&myCasinoCLI, p);
 	interpreter.init();
 
-	if (!runCommand(interpreter,L"user Gamer Passwort"))
-		return E_FAIL;
-	
-	if (!runCommand(interpreter, L"user Casino Passwort"))
-		return E_FAIL;
+	// TEST CASE: payin for different accounts
+	testcase_payin_different_accounts(interpreter);
 
-	if (!runCommand(interpreter, L"payin Casino 5000"))
-		return E_FAIL;
+	// TEST CASE: lose bets
+	testcase_lose_bets(interpreter);
 
-	if (!runCommand(interpreter, L"payin Gamer 5000"))
-		return E_FAIL;
+	// TEST CASE: win/lose bet
+	testcase_win_lose_bets(interpreter);
 
-	if (!runCommand(interpreter, L"user Gamer Passwort"))
-		return E_FAIL;
+	// TEST CASE: delete bet
+	testcase_delete_bet(interpreter);
 
-	if (!runCommand(interpreter, L"bet 50 1 2"))
-		return E_FAIL;
+	// TEST CASE: change wager (more afterwards)
+	testcase_change_bet_more_wager(interpreter);
 
-	if (!runCommand(interpreter, L"bet 100 1 3"))
-		return E_FAIL;
-
-	if (!runCommand(interpreter, L"bet 200 2 3"))
-		return E_FAIL;
-
-	if (!runCommand(interpreter, L"user Casino Passwort"))
-		return E_FAIL;
-
-	if (!runCommand(interpreter, L"showbets"))
-		return E_FAIL;
-
-	if (!runCommand(interpreter, L"draw 4 5"))
-		return E_FAIL;
-
-	if (!runCommand(interpreter, L"showbets"))
-		return E_FAIL;
-
-	if (!runCommand(interpreter, L"showstatus"))
-		return E_FAIL;
-
-	if (!runCommand(interpreter, L"user Gamer Passwort"))
-		return E_FAIL;
-
-	if (!runCommand(interpreter, L"showstatus"))
-		return E_FAIL;
-
-	if (!runCommand(interpreter, L"bet 50 1 2"))
-		return E_FAIL;
-
-	if (!runCommand(interpreter, L"bet 100 1 3"))
-		return E_FAIL;
-
-	if (!runCommand(interpreter, L"bet 200 2 3"))
-		return E_FAIL;
-
-	if (!runCommand(interpreter, L"user Casino Passwort"))
-		return E_FAIL;
-
-	if (!runCommand(interpreter, L"showbets"))
-		return E_FAIL;
-
-	if (!runCommand(interpreter, L"draw 1 5"))
-		return E_FAIL;
-
-	if (!runCommand(interpreter, L"user Gamer Passwort"))
-		return E_FAIL;
-
-	if (!runCommand(interpreter, L"showstatus"))
-		return E_FAIL;
+	// TEST CASE: change wager (lessafterwards)
+	testcase_change_bet_less_wager(interpreter);
 
 	std::cin.get();
 
