@@ -1,0 +1,3 @@
+Martin 1000
+Manuel 0
+Johannes 100

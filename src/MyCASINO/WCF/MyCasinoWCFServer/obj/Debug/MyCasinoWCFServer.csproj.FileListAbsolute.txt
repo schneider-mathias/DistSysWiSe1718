@@ -1,0 +1,10 @@
+D:\StdArbVS\trunk\src\MyCASINO\WCF\MyCasinoWCFServer\bin\Debug\MyCasinoWCFServer.exe.config
+D:\StdArbVS\trunk\src\MyCASINO\WCF\MyCasinoWCFServer\bin\Debug\MyCasinoWCFServer.exe
+D:\StdArbVS\trunk\src\MyCASINO\WCF\MyCasinoWCFServer\bin\Debug\MyCasinoWCFServer.pdb
+D:\StdArbVS\trunk\src\MyCASINO\WCF\MyCasinoWCFServer\bin\Debug\MyCasinoLib.dll
+D:\StdArbVS\trunk\src\MyCASINO\WCF\MyCasinoWCFServer\bin\Debug\MyCasinoWCFLib.dll
+D:\StdArbVS\trunk\src\MyCASINO\WCF\MyCasinoWCFServer\bin\Debug\MyCasinoLib.pdb
+D:\StdArbVS\trunk\src\MyCASINO\WCF\MyCasinoWCFServer\bin\Debug\MyCasinoWCFLib.pdb
+D:\StdArbVS\trunk\src\MyCASINO\WCF\MyCasinoWCFServer\obj\Debug\MyCasinoWCFServer.csprojResolveAssemblyReference.cache
+D:\StdArbVS\trunk\src\MyCASINO\WCF\MyCasinoWCFServer\obj\Debug\MyCasinoWCFServer.exe
+D:\StdArbVS\trunk\src\MyCASINO\WCF\MyCasinoWCFServer\obj\Debug\MyCasinoWCFServer.pdb
