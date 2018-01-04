@@ -120,8 +120,8 @@ STDMETHODIMP CCOMMyCasino::deposit(ULONG sessionId, BSTR name, DOUBLE amountMone
 		return E_FAIL;
 	}
 
-
-	if (!m_casino.Deposit(*userForDeposit, amountMoney))
+	BOOL resVal = m_casino.Deposit(*userForDeposit, amountMoney);
+	if(FAILED(resVal))
 	{
 		*errMsg = wstr_to_bstr(TRANSLATE_MYCASINO_ERRORCODE(errCode, ERROR_MY_CASINO_ACCOUNT_DEPOSIT_FAILED));
 		return E_FAIL;
