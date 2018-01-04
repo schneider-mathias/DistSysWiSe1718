@@ -30,6 +30,7 @@ typedef unsigned long MY_CASINO_RES;
 
 
 #define INFORMATION_MY_CASINO_USER_HAS_NUMBERS 0x00021001
+#define INFORMATION_MY_CASINO_NO_OPERATOR_LOGGED_IN 0x00021002
 
 inline std::wstring translate_error_message(unsigned long errorcode)
 {
@@ -147,7 +148,8 @@ inline std::wstring resolve_transaction_sign(MyCasinoTransactionsTypes type)
 
 enum MyCasinoUserTypes {
 	Operator = 0,
-	Gamer
+	Gamer, 
+	Any
 };
 
 

@@ -1,4 +1,5 @@
 #include "MyCasinoCommandLineInterface.h"
+#include "MyCasinoDefines.h"
 #include <iostream>
 
 MyCasinoCommandLineInterface::MyCasinoCommandLineInterface()
@@ -30,7 +31,7 @@ bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> argu
 	{
 		double amountMoney;
 		int amountMoneyLowerBound = 0;
-		return checkCallPrerequisites(USER_TYPE_OPERATOR)
+		return checkCallPrerequisites(MyCasinoUserTypes::Operator)
 			&& checkCallArguments(arguments, 2, std::vector<size_t>()= { 2 })
 			&& safeArgumentCast<double>(arguments, 2, &amountMoney, &amountMoneyLowerBound, NULL, ArgumentType::MONEY)
 			&& payin(arguments.at(1), amountMoney);
@@ -47,7 +48,7 @@ bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> argu
 		int firstNumberUpperBound = 4;
 		int numberUpperBound = 5;
 
-		return checkCallPrerequisites(USER_TYPE_ANY)
+		return checkCallPrerequisites(MyCasinoUserTypes::Any)
 			&& checkCallArguments(arguments, 3, std::vector<size_t>() = { 3 })
 			&& safeArgumentCast<double>(arguments, 1, &setMoney, &setMoneyLowerBound, NULL, ArgumentType::MONEY)
 			&& safeArgumentCast<unsigned short>(arguments, 2, &firstNumber, &numberLowerBound, &firstNumberUpperBound)
@@ -56,7 +57,7 @@ bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> argu
 	}
 	else if (command.compare(L"showbets") == 0)
 	{
-		return checkCallPrerequisites(USER_TYPE_ANY)
+		return checkCallPrerequisites(MyCasinoUserTypes::Any)
 			&& checkCallArguments(arguments, 0, std::vector<size_t>() = { 0 })
 			&& showbets();
 	}
@@ -72,7 +73,7 @@ bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> argu
 		int numberUpperBound = 5;
 
 		// if first number pointer is set, it becomes the lower boundary, otherwise set it to 0 (will be ignored anyway)
-		bool retVal = checkCallPrerequisites(USER_TYPE_OPERATOR)
+		bool retVal = checkCallPrerequisites(MyCasinoUserTypes::Operator)
 			&& checkCallArguments(arguments, 0, std::vector<size_t>() = { 0, 2 })
 			&& safeArgumentCast<unsigned short>(arguments, 1, firstNumberPtrHolder, &numberLowerBound, &firstNumberUpperBound)
 			&& safeArgumentCast<unsigned short>(arguments, 2, secondNumberPtrHolder, 
@@ -87,7 +88,7 @@ bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> argu
 	}
 	else if (command.compare(L"showstatus") == 0)
 	{
-		return checkCallPrerequisites(USER_TYPE_ANY)
+		return checkCallPrerequisites(MyCasinoUserTypes::Any)
 			&& checkCallArguments(arguments, 0, std::vector<size_t>() = { 0 })
 			&& showstatus();
 	}
@@ -99,7 +100,7 @@ bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> argu
 			return false;
 		}
 
-		bool retVal = checkCallPrerequisites(USER_TYPE_ANY) && bye();
+		bool retVal = checkCallPrerequisites(MyCasinoUserTypes::Any) && bye();
 
 		if (retVal)
 		{
@@ -117,6 +118,23 @@ bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> argu
 		}
 
 		return retVal;
+	}
+	else if (command.compare(L"help") == 0)
+	{
+		std::cout << "--------------------------------------------------------" << std::endl;
+		std::cout << "Commands:" << std::endl;
+		std::cout << "user <name> <passwort>" << std::endl;
+		if(NULL == m_pUserType || MyCasinoUserTypes::Operator == *m_pUserType)
+			std::cout << "payin <name> <amount>" << std::endl;
+		std::cout << "bet <amount> <first number> <second number>" << std::endl;
+		std::cout << "showbets" << std::endl;
+		if (NULL == m_pUserType || MyCasinoUserTypes::Operator == *m_pUserType)
+			std::cout << "draw [<first number> <second number>]" << std::endl;
+		std::cout << "showstatus" << std::endl;
+		std::cout << "bye" << std::endl;
+		std::cout << "--------------------------------------------------------" << std::endl;
+
+		return true;
 	}
 	else
 	{

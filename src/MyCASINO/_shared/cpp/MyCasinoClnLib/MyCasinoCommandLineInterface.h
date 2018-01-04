@@ -4,11 +4,6 @@
 #include "ICommandLineInterface.h"
 
 
-#define USER_TYPE_OPERATOR 0
-#define USER_TYPE_GAMER 1
-#define USER_TYPE_ANY 2
-
-
 class MyCasinoCommandLineInterface : public ICommandLineInterface
 {
 public:
