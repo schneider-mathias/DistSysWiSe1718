@@ -104,6 +104,8 @@ BOOL CAuthServiceTemplate<TAuthServiceUser>::readRegisteredUser(std::wstring fil
 		}
 	}
 
+	infile.close();
+
 	return TRUE;
 }
 

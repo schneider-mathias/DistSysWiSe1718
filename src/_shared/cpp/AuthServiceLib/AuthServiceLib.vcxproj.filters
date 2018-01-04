@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AuthService.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="IAuthServiceUser.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -29,9 +26,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AuthService.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="AuthServiceDefaultUser.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
