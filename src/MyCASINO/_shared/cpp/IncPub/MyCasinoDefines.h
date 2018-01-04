@@ -118,34 +118,6 @@ inline std::wstring resolve_transaction_type(MyCasinoTransactionsTypes type)
 	}
 }
 
-inline std::wstring resolve_transaction_sign(MyCasinoTransactionsTypes type)
-{
-	std::wstring sign(L"+");
-
-	switch (type)
-	{
-	case MyCasinoTransactionsTypes::DEPOSIT:
-		break;
-	case MyCasinoTransactionsTypes::WITHDRAWAL:
-		sign = L"-";
-		break;
-	case MyCasinoTransactionsTypes::CANCELED:
-		sign = L"";
-		break;
-	case MyCasinoTransactionsTypes::BET_WAGER:
-		sign = L"-";
-		break;
-	case MyCasinoTransactionsTypes::BET_WIN:
-		sign = L"+";
-		break;
-	case MyCasinoTransactionsTypes::BET_LOSS:
-		sign = L"-";
-		break;
-	}
-
-	return sign;
-}
-
 enum MyCasinoUserTypes {
 	Operator = 0,
 	Gamer, 

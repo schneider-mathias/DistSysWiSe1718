@@ -227,7 +227,7 @@ bool COMMyCasinoCommandLineInterface::showstatus()
 			if (transactionType == MyCasinoTransactionsTypes::DEPOSIT
 				|| transactionType == MyCasinoTransactionsTypes::WITHDRAWAL)
 			{ 
-				std::wcout << resolve_transaction_type((MyCasinoTransactionsTypes)transactionType) << " | " << resolve_transaction_sign((MyCasinoTransactionsTypes)transactionType) << changeAmount << " | " << resultBalance << std::endl;
+				std::wcout << resolve_transaction_type((MyCasinoTransactionsTypes)transactionType) << " | "  << changeAmount << " | " << resultBalance << std::endl;
 			}
 			else if (transactionType == MyCasinoTransactionsTypes::BET_WIN
 				|| transactionType == MyCasinoTransactionsTypes::BET_LOSS
