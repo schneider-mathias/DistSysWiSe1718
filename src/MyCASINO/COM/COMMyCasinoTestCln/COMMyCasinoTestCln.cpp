@@ -22,7 +22,6 @@ bool runCommand(CmdInterpreter& interpreter, std::wstring command)
 	{
 		interpreter.cout();
 		std::wcout << "Error running: " << command << std::endl;
-		std::cin.get();
 		return false;
 	}
 
@@ -58,6 +57,9 @@ BOOL testcase_payin_different_accounts(CmdInterpreter& interpreter)
 BOOL testcase_lose_bets(CmdInterpreter& interpreter)
 {
 	// TEST CASE: payin for different accounts
+	if (!runCommand(interpreter, L"user Casino Passwort"))
+		return E_FAIL;
+	
 	if (!runCommand(interpreter, L"user Gamer Passwort"))
 		return E_FAIL;
 
@@ -231,6 +233,44 @@ BOOL testcase_change_bet_less_wager(CmdInterpreter& interpreter)
 		return E_FAIL;
 }
 
+
+BOOL testcase_close_casino(CmdInterpreter& interpreter)
+{
+	if (!runCommand(interpreter, L"user Casino Passwort"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"user Gamer Passwort"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"bet 200 2 3"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"bet 1000 2 4"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"bet 500 2 3"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"showbets"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"user Casino Passwort"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"bye"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"user Gamer Passwort"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"showbets"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"showstatus"))
+		return E_FAIL;
+
+}
+
 int main(int argc, char**argv)
 {
 	CoInitialize(NULL);
@@ -276,6 +316,16 @@ int main(int argc, char**argv)
 	interpreter.registerCmdDispatcher(&myCasinoCLI, p);
 	interpreter.init();
 
+	
+	BOOL resVal = testcase_lose_bets(interpreter);
+	if (!FAILED(resVal))
+	{
+		std::cout << "Error running test - testcase_lose_bets" << std::endl;
+		return E_FAIL;
+	}
+		
+
+
 	// TEST CASE: payin for different accounts
 	testcase_payin_different_accounts(interpreter);
 
@@ -293,6 +343,9 @@ int main(int argc, char**argv)
 
 	// TEST CASE: change wager (lessafterwards)
 	testcase_change_bet_less_wager(interpreter);
+
+	// TEST CASE: close casino (logout operator)
+	testcase_close_casino(interpreter);
 
 	std::cin.get();
 
