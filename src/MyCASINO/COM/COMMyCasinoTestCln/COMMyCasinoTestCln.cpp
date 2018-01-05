@@ -326,12 +326,12 @@ int main(int argc, char**argv)
 	interpreter.init();
 
 	
-	//BOOL resVal = testcase_lose_bets(interpreter);
-	//if (!FAILED(resVal))
-	//{
-	//	std::cout << "Error running test - testcase_lose_bets" << std::endl;
-	//	return E_FAIL;
-	//}
+	BOOL resVal = testcase_lose_bets(interpreter);
+	if (!FAILED(resVal))
+	{
+		std::cout << "Error running test - testcase_lose_bets" << std::endl;
+		return E_FAIL;
+	}
 		
 
 
@@ -339,22 +339,22 @@ int main(int argc, char**argv)
 	testcase_payin_different_accounts(interpreter);
 
 	// TEST CASE: lose bets
-	//testcase_lose_bets(interpreter);
+	testcase_lose_bets(interpreter);
 
 	// TEST CASE: win/lose bet
-	//testcase_win_lose_bets(interpreter);
+	testcase_win_lose_bets(interpreter);
 
 	// TEST CASE: delete bet
-	//testcase_delete_bet(interpreter);
+	testcase_delete_bet(interpreter);
 
 	// TEST CASE: change wager (more afterwards)
-	//testcase_change_bet_more_wager(interpreter);
+	testcase_change_bet_more_wager(interpreter);
 
 	// TEST CASE: change wager (lessafterwards)
-	//testcase_change_bet_less_wager(interpreter);
+	testcase_change_bet_less_wager(interpreter);
 
 	// TEST CASE: close casino (logout operator)
-	//testcase_close_casino(interpreter);
+	testcase_close_casino(interpreter);
 
 	std::cin.get();
 
