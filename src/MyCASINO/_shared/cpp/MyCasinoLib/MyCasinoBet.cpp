@@ -1,7 +1,8 @@
 #include "MyCasinoBet.h"
 
-MyCasinoBet::MyCasinoBet(ULONG id,SHORT firstNumber, SHORT secondNumber, DOUBLE amount)
+MyCasinoBet::MyCasinoBet(std::wstring username, ULONG id,SHORT firstNumber, SHORT secondNumber, DOUBLE amount)
 	: IMyCasinoTransactionInformation(id, MyCasinoTransactionsInformationTypes::Bet),
+	m_username(username),
 	m_id(id),
 	m_firstNumber(firstNumber),
 	m_secondNumber(secondNumber),
@@ -27,6 +28,11 @@ BOOL MyCasinoBet::SetBetResult(SHORT drawnFirstNumber, SHORT drawnSecondNumber, 
 	m_resultAmount = resultAmount;
 	m_isDrawn = TRUE;
 	return TRUE;
+}
+
+std::wstring MyCasinoBet::GetUsername()
+{
+	return m_username;
 }
 
 SHORT MyCasinoBet::GetFirstNumber()
@@ -58,15 +64,15 @@ BOOL MyCasinoBet::ResultIsDrawn()
 std::vector<TaggedUnion> MyCasinoBet::GetInformation()
 {
 	std::vector<TaggedUnion> betInformation;
-	betInformation.push_back(TaggedUnion(m_firstNumber));
-	betInformation.push_back(TaggedUnion(m_secondNumber));
-	betInformation.push_back(TaggedUnion(m_setAmount));
-	betInformation.push_back(TaggedUnion(m_isDrawn));
+	betInformation.push_back(&m_username);
+	betInformation.push_back(m_firstNumber);
+	betInformation.push_back(m_secondNumber);
+	betInformation.push_back(m_setAmount);
 	if(m_isDrawn)
 	{
-		betInformation.push_back(TaggedUnion(m_drawnFirstNumber));
-		betInformation.push_back(TaggedUnion(m_drawnSecondNumber));
-		betInformation.push_back(TaggedUnion(m_resultAmount));
+		betInformation.push_back(m_drawnFirstNumber);
+		betInformation.push_back(m_drawnSecondNumber);
+		betInformation.push_back(m_resultAmount);
 	}
 
 	return betInformation;
@@ -74,7 +80,7 @@ std::vector<TaggedUnion> MyCasinoBet::GetInformation()
 
 SHORT MyCasinoBet::GetInformationCount()
 {
-	return m_isDrawn? 7:4;
+	return m_isDrawn? BET_FULL_DETAILS_PROPTERY_COUNT : BET_DETAILS_PROPTERY_COUNT;
 }
 
 bool MyCasinoBet::operator==(const MyCasinoBet& ref)

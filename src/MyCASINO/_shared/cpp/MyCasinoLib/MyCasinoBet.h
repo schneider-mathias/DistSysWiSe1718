@@ -12,10 +12,11 @@
 class MyCasinoBet : public IMyCasinoTransactionInformation
 {
 public:
-	MyCasinoBet(ULONG id, SHORT firstNumber, SHORT secondNumber, DOUBLE amount);
+	MyCasinoBet(std::wstring username, ULONG id, SHORT firstNumber, SHORT secondNumber, DOUBLE amount);
 	~MyCasinoBet();
 
 	BOOL SetBetResult(SHORT drawnFirstNumber, SHORT drawnSecondNumber, DOUBLE resultAmount);
+	std::wstring GetUsername();
 	SHORT GetFirstNumber();
 	SHORT GetSecondNumber();
 	DOUBLE GetSetAmount();
@@ -27,6 +28,7 @@ public:
 	void SetWager(DOUBLE wager);
 
 private:
+	std::wstring m_username;
 	ULONG m_id;
 	SHORT m_firstNumber;
 	SHORT m_secondNumber;

@@ -180,7 +180,7 @@ STDMETHODIMP CCOMMyCasino::calculateProfit(ULONG sessionId, DOUBLE amountMoney, 
 	}
 
 	// create a dummy bet object in order to calculate profits
-	MyCasinoBet dummyBet(1, firstNumber, secondNumber, amountMoney);
+	MyCasinoBet dummyBet(user->m_username,1, firstNumber, secondNumber, amountMoney);
 	m_casino.CalculateProfit(dummyBet, profitForOneMatch, profitForTwoMatches);
 
 	// stub method:
@@ -207,8 +207,10 @@ STDMETHODIMP CCOMMyCasino::showbets(ULONG sessionId, SAFEARR_VAR* bets, ULONG* c
 	CComSafeArray<VARIANT> betsSafeArray(betsSnapshot.size() * BET_DETAILS_PROPTERY_COUNT);
 
 	int safeArrayIterator = 0;
+
 	for (int betIterator = 0; betIterator < betsSnapshot.size(); betIterator++)
 	{
+		betsSafeArray[safeArrayIterator++] = wstr_to_bstr(betsSnapshot.at(betIterator)->GetUsername());
 		betsSafeArray[safeArrayIterator++] = betsSnapshot.at(betIterator)->GetFirstNumber();
 		betsSafeArray[safeArrayIterator++] = betsSnapshot.at(betIterator)->GetSecondNumber();
 		betsSafeArray[safeArrayIterator++] = betsSnapshot.at(betIterator)->GetSetAmount();
@@ -339,44 +341,54 @@ STDMETHODIMP CCOMMyCasino::getTransactionInformation(ULONG sessionId, ULONG tran
 		return E_FAIL;
 	}
 
-	int safearraySize = (*currentDetails).GetInformationCount();
-	CComSafeArray<VARIANT> transactionInformationSafeArray(safearraySize);
-
-	int safeArrayIterator = 0;
-
-	// ugly... need to refactor this TaggedArray stuff...
+	// get information details as TaggedUnion vector and convert it to a CComSafeArray
 	std::vector<TaggedUnion>currentInformation = (*currentDetails).GetInformation();
-	for (std::vector<TaggedUnion>::iterator it = currentInformation.begin(); it != currentInformation.end(); ++it) 
-	{	
-		switch ((*it).getType())
-		{
-			case TaggedUnion::Type::Boolean:
-				transactionInformationSafeArray[safeArrayIterator++] = (*it).getBoolean();
-				break;
-			case TaggedUnion::Type::Char:
-				transactionInformationSafeArray[safeArrayIterator++] = (*it).getChar();
-				break;
-			case TaggedUnion::Type::Double:
-				transactionInformationSafeArray[safeArrayIterator++] = (*it).getDouble();
-				break;
-			case TaggedUnion::Type::Int:
-				transactionInformationSafeArray[safeArrayIterator++] = (*it).getInt();
-				break;
-			default:
-				assert("Unknown TaggedUnion::Type");
-				break;
-		}
-		
+	CComSafeArray<VARIANT>* transactionInformationSafeArray = new CComSafeArray<VARIANT>(currentInformation.size());
+	if (!toCComSafeArray((*currentDetails).GetInformation(), &transactionInformationSafeArray))
+	{
+		*errMsg = wstr_to_bstr(TRANSLATE_MYCASINO_ERRORCODE(errCode, ERROR_MY_CASINO_TRANSACTION_INFOMRATION_NOT_AVAILABLE));
+		return E_FAIL;
 	}
-
+		
 #ifdef STUB_METHODS
 	*errMsg = wstr_to_bstr(L"STUB_METHOD - getTransactions");
 #endif
 	
 	*informationType = detailType;
 
-	transactionInformationSafeArray.CopyTo(information);
-	
+	transactionInformationSafeArray->CopyTo(information);
+	delete transactionInformationSafeArray;
 
 	return S_OK;
+}
+
+bool CCOMMyCasino::toCComSafeArray(std::vector<TaggedUnion>& currentInformation, CComSafeArray<VARIANT>** resArr)
+{
+	int safeArrayIterator = 0;
+
+	for (std::vector<TaggedUnion>::iterator it = currentInformation.begin(); it != currentInformation.end(); ++it)
+	{
+		switch ((*it).getType())
+		{
+		case TaggedUnion::Type::Boolean:
+			(**resArr)[safeArrayIterator++] = (*it).getBoolean();
+			break;
+		case TaggedUnion::Type::Char:
+			(**resArr)[safeArrayIterator++] = (*it).getChar();
+			break;
+		case TaggedUnion::Type::Double:
+			(**resArr)[safeArrayIterator++] = (*it).getDouble();
+			break;
+		case TaggedUnion::Type::Int:
+			(**resArr)[safeArrayIterator++] = (*it).getInt();
+			break;
+		case TaggedUnion::Type::WStringPtr:
+			(**resArr)[safeArrayIterator++] = wstr_to_bstr((*it).getWString());
+			break;
+		default:
+			return false;
+		}
+	}
+
+	return true;
 }

@@ -67,7 +67,8 @@ CAuthServiceTemplate<TAuthServiceUser>::~CAuthServiceTemplate()
 	EnterCriticalSection(&m_critSection);
 
 	for (std::map<ULONG, TAuthServiceUser*>::iterator it = m_loggedInUsers.begin(); it != m_loggedInUsers.end(); ++it) {
-		delete (it->second);
+		if(NULL != (it->second))
+			delete (it->second);
 	}
 
 	LeaveCriticalSection(&m_critSection);

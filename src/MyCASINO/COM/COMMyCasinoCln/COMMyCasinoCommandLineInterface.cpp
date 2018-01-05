@@ -91,27 +91,30 @@ bool COMMyCasinoCommandLineInterface::showbets()
 	}
 	
 	if(betCount > 0 )
-		std::cout << "First number | Second number | Wager | Price for one | Price for two" << std::endl;
+		std::cout << "User | First number | Second number | Wager | Price for one | Price for two" << std::endl;
 	else
 		std::cout << "No bets" << std::endl;
 
 	CComSafeArray<VARIANT> betsResult(bets);
 	
+	BSTR username;
 	SHORT currentFirstNumber = 0;
 	SHORT currentSecondNumber = 0;
 	DOUBLE currentWager = 0.0;
 	bool readBetDone = false;
 	for (int i = 0; i < betCount*BET_DETAILS_PROPTERY_COUNT; i++)
 	{
-		
+
 		if (i % BET_DETAILS_PROPTERY_COUNT == 0)
 		{
-			currentFirstNumber = betsResult[i].intVal;
+			username = betsResult[i].bstrVal;
 			readBetDone = false;
 		}
 		else if (i % BET_DETAILS_PROPTERY_COUNT == 1)
-			currentSecondNumber = betsResult[i].intVal;
+			currentFirstNumber = betsResult[i].intVal;
 		else if (i % BET_DETAILS_PROPTERY_COUNT == 2)
+			currentSecondNumber = betsResult[i].intVal;
+		else if (i % BET_DETAILS_PROPTERY_COUNT == 3)
 		{
 			currentWager = betsResult[i].dblVal;
 			readBetDone = true;
@@ -129,7 +132,7 @@ bool COMMyCasinoCommandLineInterface::showbets()
 				continue;
 			}
 			
-			std::cout << currentFirstNumber <<  " | " << currentSecondNumber << " | " << currentWager << " | " << profitForOne << " | " << profitForTwo << std::endl;
+			std::cout << bstr_to_str(username) << " | " << currentFirstNumber <<  " | " << currentSecondNumber << " | " << currentWager << " | " << profitForOne << " | " << profitForTwo << std::endl;
 		}
 	}
 
@@ -241,30 +244,23 @@ bool COMMyCasinoCommandLineInterface::showstatus()
 				{
 					CComSafeArray<VARIANT> transactionInformationResult(transactionInformation);
 
-					std::wstring betInformation(L"");
+					std::wstring transactionInformation(L"");
 					BOOL isDrawn = false;
 					if (informationType == MyCasinoTransactionsInformationTypes::Bet)
 					{
 
 						for (int i = 0; i < BET_FULL_DETAILS_PROPTERY_COUNT; i++)
 						{
-							if (i % BET_FULL_DETAILS_PROPTERY_COUNT == 0
-								|| i % BET_FULL_DETAILS_PROPTERY_COUNT == 1
+							if (i % BET_FULL_DETAILS_PROPTERY_COUNT == 1
+								|| i % BET_FULL_DETAILS_PROPTERY_COUNT == 2
 								|| i % BET_FULL_DETAILS_PROPTERY_COUNT == 4
 								|| i % BET_FULL_DETAILS_PROPTERY_COUNT == 5)
-								betInformation.append(L" ").append(std::to_wstring(transactionInformationResult[i].intVal));
-							else if (i % BET_FULL_DETAILS_PROPTERY_COUNT == 3)
-							{
-								isDrawn = transactionInformationResult[i].boolVal;
-								//std::cout << isDrawn << std::endl;
-								if (!isDrawn)
-									break;
-							}
+								transactionInformation.append(L" ").append(std::to_wstring(transactionInformationResult[i].intVal));
 						}
 					}
 
 					// only display wager of finished bets
-					std::wcout << resolve_transaction_type((MyCasinoTransactionsTypes)transactionType) << " | " << changeAmount << " | " << resultBalance << " | " << betInformation <<std::endl;
+					std::wcout << resolve_transaction_type((MyCasinoTransactionsTypes)transactionType) << " | " << changeAmount << " | " << resultBalance << " | " << transactionInformation <<std::endl;
 				}
 			}
 		}

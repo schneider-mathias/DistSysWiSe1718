@@ -172,7 +172,7 @@ BOOL MyCasino::Bet(MyCasinoUser& user, SHORT firstNumber, SHORT secondNumber, DO
 	MyCasinoBet* bet = NULL;
 	// if bet does not exists yet create a new bet
 	if (!GetBet(firstNumber, secondNumber, &bet))
-		bet = new MyCasinoBet(m_currentBetId++, firstNumber, secondNumber, setAmount);
+		bet = new MyCasinoBet(user.m_username,m_currentBetId++, firstNumber, secondNumber, setAmount);
 
 	BOOL resVal = FALSE;
 	MyCasinoAccount* account = NULL;

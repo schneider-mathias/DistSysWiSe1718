@@ -83,7 +83,7 @@ inline std::wstring translate_error_message(unsigned long errorcode)
 	x = (FAILED(retVal))? translate_error_message(retVal):L"Success"
 
 	
-#define BET_DETAILS_PROPTERY_COUNT 3
+#define BET_DETAILS_PROPTERY_COUNT 4
 #define BET_FULL_DETAILS_PROPTERY_COUNT  7
 
 #define TRANSACTION_PROPTERY_COUNT 3
