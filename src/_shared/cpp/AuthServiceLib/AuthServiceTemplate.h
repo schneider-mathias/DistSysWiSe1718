@@ -95,12 +95,14 @@ BOOL CAuthServiceTemplate<TAuthServiceUser>::readRegisteredUser(std::wstring fil
 	while (std::getline(infile, wLine))
 	{
 		TAuthServiceUser user;
-		if (user.Deserialize(wLine))
+		if (!user.Deserialize(wLine))
 		{
-			EnterCriticalSection(&m_critSection);
-			m_registeredUser.push_back(user);
-			LeaveCriticalSection(&m_critSection);
+			return FALSE;
 		}
+
+		EnterCriticalSection(&m_critSection);
+		m_registeredUser.push_back(user);
+		LeaveCriticalSection(&m_critSection);
 	}
 
 	infile.close();
