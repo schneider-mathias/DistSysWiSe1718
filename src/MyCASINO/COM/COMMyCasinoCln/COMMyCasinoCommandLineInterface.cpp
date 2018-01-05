@@ -190,6 +190,11 @@ bool COMMyCasinoCommandLineInterface::showstatus()
 	bool displayHeader = false;
 	while (!isFinished)
 	{
+		if (!displayHeader)
+		{
+			std::wcout << "Transaction type | Change amount | Resulting balance | <Additional Information>" << std::endl;
+			displayHeader = true;
+		}
 
 		hr = m_pICOMMyCasinoSrv->getTransactions(*m_pSessionId, &isFinished, &transaction, &transactionType, &errMsg);
 		if (FAILED(hr))
@@ -199,15 +204,7 @@ bool COMMyCasinoCommandLineInterface::showstatus()
 		}
 		else
 		{
-			if (!displayHeader)
-			{
-				std::cout << "Transaction type | Change amount | Resulting balance | <Additional Information>" << std::endl;
-				displayHeader = true;
-			}
-
 			CComSafeArray<VARIANT> transactionResult(transaction);
-
-
 			for (int i = 0; i < TRANSACTION_PROPTERY_COUNT; i++)
 			{
 				if (i % TRANSACTION_PROPTERY_COUNT == 0)
@@ -227,7 +224,7 @@ bool COMMyCasinoCommandLineInterface::showstatus()
 			}
 			else if (transactionType == MyCasinoTransactionsTypes::BET_WIN
 				|| transactionType == MyCasinoTransactionsTypes::BET_LOSS
-				) // bet
+				)
 			{
 				hr = m_pICOMMyCasinoSrv->getTransactionInformation(*m_pSessionId, currentTransactionId, &transactionInformation, &informationType, &errMsg);
 				if (FAILED(hr))
