@@ -613,7 +613,8 @@ BOOL MyCasino::Close()
 
 	// operator will be deleted by AuthService
 	m_pOperator = NULL;
-	delete m_pOperatorAccount;
+
+	// account will be deleted in destructor
 	m_pOperatorAccount = NULL;
 
 	return TRUE;
