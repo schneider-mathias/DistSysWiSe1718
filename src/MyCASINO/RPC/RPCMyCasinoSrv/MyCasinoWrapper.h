@@ -8,7 +8,7 @@ MyCasino* getCasino()
 	if (NULL == myCasino)
 	{
 		myCasino = new MyCasino(&std::wstring(L"USERDATA"));
-		myCasino->LoadAccounts(L"mycasino_user.txt");
+		myCasino->LoadAccounts(L"mycasino_account.txt");
 	}
 
 	return myCasino;
