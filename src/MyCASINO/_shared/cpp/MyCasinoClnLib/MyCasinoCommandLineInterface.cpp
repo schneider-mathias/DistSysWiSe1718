@@ -20,23 +20,27 @@ MyCasinoCommandLineInterface::~MyCasinoCommandLineInterface()
 	m_pInterpreter = NULL;
 }
 
-void MyCasinoCommandLineInterface::errorHandler(std::string additionalInformation, int errorCode, std::string& errMsg)
+void MyCasinoCommandLineInterface::resultHandler(std::string additionalInformation, int code, std::string& msg)
 {
-	if (errorCode == 0x800706BA) {
-		std::cerr << "Lost server connection. Stop client." << std::endl;
+	if (code > 0)
+	{
+		std::cout << "[INFO] " << msg << std::endl;
+	}
+	else if (code == 0x800706BA) {
+		std::cerr << "[ERROR] " << "Lost server connection. Stop client." << std::endl;
 		m_pInterpreter->stop();
 	}
-	else
+	else if(FAILED(code))
 	{
-		if (errMsg.empty())
+		if (msg.empty())
 		{
 			//https://msdn.microsoft.com/en-us/library/windows/desktop/dd542645(v=vs.85).aspx
-			_com_error err(errorCode);
+			_com_error err(code);
 			LPCTSTR comError = err.ErrorMessage();
-			std::cerr << additionalInformation << ": " << comError << std::endl;
+			std::cerr << "[ERROR] " << additionalInformation << ": " << comError << std::endl;
 		}
 		else
-			std::cerr << additionalInformation << ": " << errMsg  << std::endl;
+			std::cerr << "[ERROR] " << additionalInformation << ": " << msg  << std::endl;
 	}
 }
 

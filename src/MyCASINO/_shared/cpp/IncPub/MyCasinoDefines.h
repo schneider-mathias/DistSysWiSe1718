@@ -79,8 +79,23 @@ inline std::wstring translate_error_message(unsigned long errorcode)
 	}
 }
 
+inline std::wstring translate_info_message(unsigned long infocode)
+{
+	switch (infocode)
+	{
+	case INFORMATION_MY_CASINO_NO_OPERATOR_LOGGED_IN:
+		return std::wstring(L"No operator is logged in.");
+	default:
+		return std::wstring(L"");
+	}
+}
+
 #define TRANSLATE_MYCASINO_ERRORCODE(x, retVal) \
 	x = (FAILED(retVal))? translate_error_message(retVal):L"Success"
+
+
+#define TRANSLATE_MYCASINO_CODE(x, retVal) \
+	if (retVal > 0) { x = translate_info_message(retVal); } else if (retVal == 0) { x = L""; } else { TRANSLATE_MYCASINO_ERRORCODE(x, retVal); }
 
 	
 #define BET_DETAILS_PROPTERY_COUNT 4

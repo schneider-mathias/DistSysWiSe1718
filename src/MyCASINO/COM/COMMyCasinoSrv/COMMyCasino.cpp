@@ -23,6 +23,7 @@ STDMETHODIMP CCOMMyCasino::login(BSTR username, BSTR password, ULONG* sessionId,
 {
 	std::wstring errCode;
 
+	
 	if (!m_AuthService.login(bstr_to_wstr(username), bstr_to_wstr(password), sessionId))
 	{
 		*errMsg = wstr_to_bstr(L"Invalid user name or password.");
@@ -53,7 +54,16 @@ STDMETHODIMP CCOMMyCasino::login(BSTR username, BSTR password, ULONG* sessionId,
 	*errMsg = wstr_to_bstr(L"STUB_METHOD - login");
 #endif
 
-	return S_OK;
+
+	BOOL resVal = S_OK;
+	if (!m_casino.IsOpened())
+	{
+		TRANSLATE_MYCASINO_CODE(errCode, INFORMATION_MY_CASINO_NO_OPERATOR_LOGGED_IN)
+		*errMsg = wstr_to_bstr(errCode);
+		resVal = INFORMATION_MY_CASINO_NO_OPERATOR_LOGGED_IN;
+	}
+
+	return resVal;
 }
 
 STDMETHODIMP CCOMMyCasino::logout(ULONG sessionId, BSTR* errMsg)
@@ -90,7 +100,15 @@ STDMETHODIMP CCOMMyCasino::logout(ULONG sessionId, BSTR* errMsg)
 	*errMsg = wstr_to_bstr(L"STUB_METHOD - logout");
 #endif
 
-	return S_OK;
+	BOOL resVal = S_OK;
+	if (!m_casino.IsOpened())
+	{
+		TRANSLATE_MYCASINO_CODE(errCode, INFORMATION_MY_CASINO_NO_OPERATOR_LOGGED_IN)
+		*errMsg = wstr_to_bstr(errCode);
+		resVal = INFORMATION_MY_CASINO_NO_OPERATOR_LOGGED_IN;
+	}
+
+	return resVal;
 }
 
 
@@ -223,7 +241,17 @@ STDMETHODIMP CCOMMyCasino::showbets(ULONG sessionId, SAFEARR_VAR* bets, ULONG* c
 	betsSafeArray.CopyTo(bets);
 	*count = betsSnapshot.size();
 
-	return S_OK;
+
+	BOOL resVal = S_OK;
+	if (!m_casino.IsOpened())
+	{
+		TRANSLATE_MYCASINO_CODE(errCode, INFORMATION_MY_CASINO_NO_OPERATOR_LOGGED_IN)
+		*errMsg = wstr_to_bstr(errCode);
+		resVal = INFORMATION_MY_CASINO_NO_OPERATOR_LOGGED_IN;
+	}
+		
+
+	return resVal;
 }
 
 STDMETHODIMP CCOMMyCasino::drawTest(ULONG sessionId, SHORT firstNumberTest, SHORT secondNumberTest, BSTR* errMsg)
@@ -319,7 +347,15 @@ STDMETHODIMP CCOMMyCasino::getTransactions(ULONG sessionId, BOOL* isFinished, SA
 	*errMsg = wstr_to_bstr(L"STUB_METHOD - getTransactions");
 #endif
 
-	return S_OK;
+	BOOL resVal = S_OK;
+	if (!m_casino.IsOpened())
+	{
+		TRANSLATE_MYCASINO_CODE(errCode, INFORMATION_MY_CASINO_NO_OPERATOR_LOGGED_IN)
+			*errMsg = wstr_to_bstr(errCode);
+		resVal = INFORMATION_MY_CASINO_NO_OPERATOR_LOGGED_IN;
+	}
+
+	return resVal;
 }
 
 STDMETHODIMP CCOMMyCasino::getTransactionInformation(ULONG sessionId, ULONG transactionId, SAFEARR_VAR* information, ULONG* informationType, BSTR* errMsg)
@@ -359,7 +395,15 @@ STDMETHODIMP CCOMMyCasino::getTransactionInformation(ULONG sessionId, ULONG tran
 	transactionInformationSafeArray->CopyTo(information);
 	delete transactionInformationSafeArray;
 
-	return S_OK;
+	BOOL resVal = S_OK;
+	if (!m_casino.IsOpened())
+	{
+		TRANSLATE_MYCASINO_CODE(errCode, INFORMATION_MY_CASINO_NO_OPERATOR_LOGGED_IN)
+			*errMsg = wstr_to_bstr(errCode);
+		resVal = INFORMATION_MY_CASINO_NO_OPERATOR_LOGGED_IN;
+	}
+
+	return resVal;
 }
 
 bool CCOMMyCasino::toCComSafeArray(std::vector<TaggedUnion>& currentInformation, CComSafeArray<VARIANT>** resArr)
