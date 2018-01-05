@@ -190,7 +190,7 @@ STDMETHODIMP CCOMMyCasino::calculateProfit(ULONG sessionId, DOUBLE amountMoney, 
 {
 	std::wstring errCode;
 
-	MyCasinoUser* user = NULL;;
+	MyCasinoUser* user = NULL;
 	if (!m_AuthService.isLoggedIn(sessionId, &user))
 	{
 		*errMsg = wstr_to_bstr(TRANSLATE_MYCASINO_ERRORCODE(errCode, ERROR_MY_CASINO_USER_NOT_LOGGED_IN));
