@@ -7,11 +7,11 @@ using System.IO;
 
 namespace AuthenticationService
 {
-    public class AuthService
+    public static class AuthService
     {
         private static List<User> _allUsers = new List<User>();
 
-        public AuthService()
+        public static void initializeAuthService()
         {
             string tempPath = Path.GetTempPath();
             tempPath += "mybay_user.txt";
@@ -35,10 +35,8 @@ namespace AuthenticationService
             }
         }
 
-        public UInt32 Login(string username, string password)
+        public static String Login(string username, string password, out UInt32 sessionID)
         {
-            UInt32 foundUserSessionID = 0;
-
             foreach (User usr in _allUsers)
             {
                 if (username.CompareTo(usr.Name) == 0)
@@ -47,39 +45,40 @@ namespace AuthenticationService
                     {
                         Console.WriteLine("User ist bereits eingeloggt, eine neue Session ID wird vergeben\n");
                         usr.createSessionID();
-                        foundUserSessionID = usr.SessionID;
-                        break;
+                        sessionID = usr.SessionID;
+                        return "OK";
                     }
 
                     if (usr.PasswordCheck(password))
                     {
                         usr.createSessionID();
-                        foundUserSessionID = usr.SessionID;
-                        break;
+                        sessionID = usr.SessionID;
+                        return "OK";
                     }
                     else {
-                        Console.WriteLine("Ein falsches Passwort wurde eingegeben\n");
+                        sessionID = 0;
+                        return "Ein falsches Passwort wurde eingegeben";
                     }
                 }
             }
-
-            return foundUserSessionID;
+            sessionID = 0;
+            return "Benutzername wurde nicht in der Datenbank gefunden";
         }
 
-        public bool Logout(UInt32 sessionID)
+        public static String Logout(UInt32 sessionID)
         {
             foreach (User usr in _allUsers)
             {
                 if (usr.SessionID == sessionID)
                 {
                     usr.logout();
-                    if (usr.SessionID == 0) return true;
+                    if (usr.SessionID == 0) return "OK";
                 }
             }
-            return false;
+            return "Logout ist fehlgeschlagen";
         }
 
-        public UInt32 getIndexBySessionID(UInt32 sessionID)
+        public static UInt32 getIndexBySessionID(UInt32 sessionID)
         {
             foreach (User usr in _allUsers)
             {
@@ -91,7 +90,7 @@ namespace AuthenticationService
             return 0;
         }
 
-        public String getNameByIndex(UInt32 index)
+        public static String getNameByIndex(UInt32 index)
         {
             foreach (User usr in _allUsers)
             {
@@ -101,6 +100,18 @@ namespace AuthenticationService
                 }
             }
             return String.Empty;
+        }
+
+        public static Boolean isLoggedIn(UInt32 sessionID)
+        {
+            foreach (User usr in _allUsers)
+            {
+                if (usr.SessionID == sessionID)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 

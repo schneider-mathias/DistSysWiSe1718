@@ -15,7 +15,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ServiceModel;
-
+using AuthenticationService;
 
 namespace MyBayWCFSrv
 {
@@ -45,12 +45,10 @@ namespace MyBayWCFSrv
 
             svh.AddServiceEndpoint(typeof(INETMyInvent), new WSHttpBinding(), "http://192.168.52.210:3333/MyBayWCF");
 #endif
-
             // MyBay Server-Objekt veröffentlichen
             serviceh.Open();
 
-            // MyInvent Server-Objekt ist jetzt nach Außen verfügbar
-            // Verfügbarkeit solange gewünscht ...
+            // MyBay Server-Objekt ist jetzt nach Außen verfügbar
             Console.ReadLine();
 
             // Veröffentlichung des MyBay Server-Objekt rückgängig machen
