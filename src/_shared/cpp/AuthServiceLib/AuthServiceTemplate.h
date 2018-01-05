@@ -79,7 +79,7 @@ template <class TAuthServiceUser>
 BOOL CAuthServiceTemplate<TAuthServiceUser>::readRegisteredUser(std::wstring filename)
 {
 	// open file
-	std::ifstream infile;
+	std::wifstream infile;
 
 	std::wstring filePath(m_userDataDirRoot);
 	filePath.append(filename);
@@ -90,11 +90,9 @@ BOOL CAuthServiceTemplate<TAuthServiceUser>::readRegisteredUser(std::wstring fil
 		return FALSE;
 	}
 
-
-	std::string line;
-	while (std::getline(infile, line))
+	std::wstring wLine;
+	while (std::getline(infile, wLine))
 	{
-		std::wstring wLine(line.begin(), line.end());
 		TAuthServiceUser user;
 		if (user.Deserialize(wLine))
 		{
