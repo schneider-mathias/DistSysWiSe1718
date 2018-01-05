@@ -55,6 +55,10 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\_shared\dotNet\AuthenticationService\AuthenticationService.csproj">
+      <Project>{7aa7fd80-de51-4b1f-bbda-20139fc29e5b}</Project>
+      <Name>AuthenticationService</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\_shared\dotNet\MyBayLib\MyBayLib.csproj">
       <Project>{1a7a39a3-2694-48ef-9df6-924ffe3fc8b9}</Project>
       <Name>MyBayLib</Name>
