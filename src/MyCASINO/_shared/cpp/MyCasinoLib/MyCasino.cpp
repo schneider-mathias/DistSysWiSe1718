@@ -2,12 +2,26 @@
 #include <utility>
 #include <cstdlib>
 #include <time.h>
+#include <fstream>
 
-MyCasino::MyCasino():
+MyCasino::MyCasino(std::wstring* userDataDirRootEnv) :
 	m_currentBetId(0),
 	m_pOperator(NULL),
 	m_pOperatorAccount(NULL)
 {
+	// set root directory for user data using environment variable
+	m_userDataDirRoot = L"";
+	if (NULL != userDataDirRootEnv)
+	{
+		wchar_t *buf = nullptr;
+		size_t sz = 0;
+		if (_wdupenv_s(&buf, &sz, (*userDataDirRootEnv).c_str()) == 0 && buf != nullptr)
+		{
+			m_userDataDirRoot = std::wstring(buf);
+			free(buf);
+		}
+	}
+
 	srand((ULONG)time(NULL));
 
 	InitializeCriticalSection(&m_critSection);
@@ -19,6 +33,12 @@ MyCasino::~MyCasino()
 
 	// finally delete all bet objects
 	for (auto it = m_formerBets.begin(); it != m_formerBets.end(); it++)
+	{
+		delete (*it);
+	}
+
+	// delete all account objects
+	for (auto it = m_userAccounts.begin(); it != m_userAccounts.end(); it++)
 	{
 		delete (*it);
 	}
@@ -52,18 +72,70 @@ BOOL MyCasino::IsOperator(MyCasinoUser& user)
 	return IsOpened() && (*m_pOperator) == user;
 }
 
-BOOL MyCasino::LoadAccount(const MyCasinoUser& user, MyCasinoAccount** account)
+BOOL MyCasino::LoadAccounts(std::wstring filename)
 {
-	// TODO
-	(*account) = new MyCasinoAccount();
+	std::wifstream m_accountDataFileStream;
 
-	//if (!IsOpened())
-	//	return ERROR_MY_CASINO_NO_OPERATOR;
+	m_accountDataFilename = m_userDataDirRoot.append(filename);
+	m_accountDataFileStream.open(m_accountDataFilename);
+	if (m_accountDataFileStream.fail())
+	{
+		return FALSE;
+	}
 
+	std::wstring wLine;
+	while (std::getline(m_accountDataFileStream, wLine))
+	{
+		MyCasinoAccount* loadedAccount = new MyCasinoAccount();
+		BOOL resVal = loadedAccount->Deserialize(wLine);
+		if(FAILED(resVal))
+		{
+			delete loadedAccount;
+			return ERROR_MY_CASINO_CANNOT_LOAD_ACCOUNT;
+		}
+
+		m_userAccounts.push_back(loadedAccount);
+	}
+
+	m_accountDataFileStream.close();
 
 	return TRUE;
 }
 
+
+BOOL MyCasino::LoadAccount(const MyCasinoUser& user, MyCasinoAccount** account)
+{
+	for (auto it = m_userAccounts.begin(); it != m_userAccounts.end(); it++)
+	{
+		if (user.m_username.compare((*it)->GetUsername()) == 0)
+		{
+			(*account) = (*it);
+			return TRUE;
+		}
+	}
+
+	return FALSE;
+}
+
+BOOL MyCasino::SaveAccounts()
+{
+	std::wofstream m_accountDataFileStream;
+
+	m_accountDataFileStream.open(m_accountDataFilename);
+	if (m_accountDataFileStream.fail())
+	{
+		return FALSE;
+	}
+
+	for (auto it = m_userAccounts.begin(); it != m_userAccounts.end(); it++)
+	{
+		m_accountDataFileStream << (*it)->Serialize() << std::endl;
+	}
+
+	m_accountDataFileStream.close();
+
+	return TRUE;
+}
 
 // calculate profit for given bet
 BOOL MyCasino::CalculateProfit(MyCasinoBet& bet, DOUBLE* rewardForOne, DOUBLE* rewardForTwo)
@@ -295,7 +367,7 @@ BOOL MyCasino::GetAccount(const MyCasinoUser& user, MyCasinoAccount** account)
 		return TRUE;
 	}
 
-	for (std::map<MyCasinoUser, MyCasinoAccount*>::iterator it = m_userAccounts.begin(); it != m_userAccounts.end(); it++)
+	for (std::map<MyCasinoUser, MyCasinoAccount*>::iterator it = m_loadedUserAccounts.begin(); it != m_loadedUserAccounts.end(); it++)
 	{
 		if (user == (*it).first)
 		{
@@ -311,7 +383,7 @@ BOOL MyCasino::GetAccount(const MyCasinoUser& user, MyCasinoAccount** account)
 			return FALSE;
 		*account = loadedAccount;
 
-		m_userAccounts.insert(std::pair<MyCasinoUser, MyCasinoAccount*>(user, *account));
+		m_loadedUserAccounts.insert(std::pair<MyCasinoUser, MyCasinoAccount*>(user, *account));
 	}
 		
 	return TRUE;
@@ -377,7 +449,14 @@ BOOL MyCasino::Deposit(MyCasinoUser& user, DOUBLE amount)
 		return ERROR_MY_CASINO_CANNOT_LOAD_ACCOUNT;
 
 	ULONG transactionId;
-	return (account)->CreateTransaction(amount, MyCasinoTransactionsTypes::DEPOSIT, NULL, NULL, &transactionId);
+	BOOL retVal = (account)->CreateTransaction(amount, MyCasinoTransactionsTypes::DEPOSIT, NULL, NULL, &transactionId);
+	if (FAILED(retVal))
+		return retVal;
+
+	if (!SaveAccounts())
+		return ERROR_MY_CASINO_CANNOT_SAVE_ACCOUNTS;
+
+	return TRUE;
 }
 
 BOOL MyCasino::Withdraw(MyCasinoUser& user, DOUBLE amount)
@@ -461,6 +540,10 @@ BOOL MyCasino::Draw(SHORT* firstNumber, SHORT* secondNumber)
 		it = m_currentBets.erase(it);
 	}
 
+	// save user accounts
+	if (!SaveAccounts())
+		return ERROR_MY_CASINO_CANNOT_SAVE_ACCOUNTS;
+
 	return TRUE;
 }
 
@@ -508,6 +591,8 @@ BOOL MyCasino::Close()
 	if (!IsOpened())
 		return ERROR_MY_CASINO_NO_OPERATOR;
 
+	if (!SaveAccounts())
+		return ERROR_MY_CASINO_CANNOT_SAVE_ACCOUNTS;
 
 	// close all current bets
 	ULONG currentTransactionId = -1;

@@ -12,6 +12,8 @@ typedef unsigned long MY_CASINO_RES;
 #define ERROR_MY_CASINO_HAS_ALREADY_OPERATOR 0x80010001L
 #define ERROR_MY_CASINO_NO_OPERATOR 0x80010002L
 #define ERROR_MY_CASINO_CANNOT_LOAD_ACCOUNT 0x80010003L
+#define ERROR_MY_CASINO_CANNOT_LOAD_ACCOUNTS 0x80010004L
+#define ERROR_MY_CASINO_CANNOT_SAVE_ACCOUNTS 0x80010005L
 
 #define ERROR_MY_CASINO_ACCOUNT_BALANCE_NOT_SUFFICIENT 0x80020001L
 #define ERROR_MY_CASINO_USER_ACCOUNT_BALANCE_NOT_SUFFICIENT 0x80020002L
@@ -48,6 +50,10 @@ inline std::wstring translate_error_message(unsigned long errorcode)
 		return std::wstring(L"Current casino server has no logged in operator.");
 	case ERROR_MY_CASINO_CANNOT_LOAD_ACCOUNT:
 		return std::wstring(L"Account could not be loaded for this user.");
+	case ERROR_MY_CASINO_CANNOT_LOAD_ACCOUNTS:
+		return std::wstring(L"Accounts could not be loaded from database.");
+	case ERROR_MY_CASINO_CANNOT_SAVE_ACCOUNTS:
+		return std::wstring(L"Accounts could not be saved to database.");
 	case ERROR_MY_CASINO_ACCOUNT_BALANCE_NOT_SUFFICIENT:
 		return std::wstring(L"Account balance is not sufficient for this bet.");
 	case ERROR_MY_CASINO_USER_ACCOUNT_BALANCE_NOT_SUFFICIENT:

@@ -4,12 +4,20 @@
 
 #include "MyCasinoTransaction.h"
 
+#define MY_CASINO_ACCOUNT_SERIALIZED_PROPERTY_COUNT 2
+#define MY_CASINO_ACCOUNT_SERIALIZER_SEPARATOR_WSTRING L" "
+#define MY_CASINO_ACCOUNT_SERIALIZER_SEPARATOR_CHAR L' '
+
 
 class MyCasinoAccount
 {
 public:
-	MyCasinoAccount();
+	MyCasinoAccount(DOUBLE balance = 0.0);
 	~MyCasinoAccount();
+	std::wstring Serialize();
+	BOOL Deserialize(std::wstring in);
+
+	std::wstring GetUsername();
 
 	BOOL CreateTransaction(DOUBLE changeAmount, MyCasinoTransactionsTypes type, IMyCasinoTransactionInformation* information, MyCasinoTransactionsInformationTypes* infoType, ULONG* transactionId);
 	DOUBLE GetCurrentBalance();
@@ -25,6 +33,7 @@ public:
 
 private:
 	BOOL GetTransaction(ULONG transactionId, MyCasinoTransaction** transaction);
+	std::wstring m_username;
 	DOUBLE m_currentBalance;
 	DOUBLE m_preliminaryBalance;
 	ULONG m_transactionIdCounter;

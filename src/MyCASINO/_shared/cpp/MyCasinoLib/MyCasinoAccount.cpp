@@ -1,8 +1,12 @@
+#include <sstream>
+
 #include "MyCasinoAccount.h"
 #include "MyCasinoTransaction.h"
 
-MyCasinoAccount::MyCasinoAccount()
-	: m_currentBalance(0),
+
+MyCasinoAccount::MyCasinoAccount(DOUBLE balance)
+	: m_username(L""),
+	m_currentBalance(balance),
 	m_preliminaryBalance(0),
 	m_transactionIdCounter(0),
 	m_currentTransactionIterator(0)
@@ -18,6 +22,45 @@ MyCasinoAccount::~MyCasinoAccount()
 	{
 		delete (*it);
 	}
+}
+
+
+std::wstring MyCasinoAccount::Serialize()
+{
+	std::wstring serialized;
+	serialized.append(m_username);
+	serialized.append(MY_CASINO_ACCOUNT_SERIALIZER_SEPARATOR_WSTRING);
+	serialized.append(std::to_wstring(m_currentBalance));
+	return serialized;
+}
+BOOL MyCasinoAccount::Deserialize(std::wstring in)
+{
+	std::wstring temp;
+	std::vector<std::wstring> parts;
+	std::wstringstream wss(in);
+	while (std::getline(wss, temp, MY_CASINO_ACCOUNT_SERIALIZER_SEPARATOR_CHAR))
+		parts.push_back(temp);
+
+	if (parts.size() != MY_CASINO_ACCOUNT_SERIALIZED_PROPERTY_COUNT)
+		return FALSE;
+
+	try
+	{
+		m_currentBalance = stod(parts.at(1));
+	}
+	catch (...)
+	{
+		return FALSE;
+	}
+	
+	m_username = parts.at(0);
+
+	return TRUE;
+}
+
+std::wstring MyCasinoAccount::GetUsername()
+{
+	return m_username;
 }
 
 BOOL MyCasinoAccount::CreateTransaction(DOUBLE changeAmount, MyCasinoTransactionsTypes type, IMyCasinoTransactionInformation* information, MyCasinoTransactionsInformationTypes* infoType, ULONG* transactionId)
