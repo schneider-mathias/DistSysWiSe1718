@@ -75,7 +75,7 @@ bool RPCMyCasinoCommandLineInterface::bet(double setAmount, unsigned short first
 
 bool RPCMyCasinoCommandLineInterface::showbets()
 {
-	MyCasinoBet_t bets;
+	MyCasinoBet_t* bets;
 	unsigned long count;
 
 	error_status_t hr = ::showbets(*m_pSessionId, &bets, &count);

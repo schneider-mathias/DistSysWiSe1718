@@ -15,6 +15,7 @@ interface MyCasino_i
 
 	typedef struct
 	{
+		String_t name;
 		unsigned short firstNumber;
 		unsigned short secondNumber;
 		double reward;
@@ -44,7 +45,7 @@ interface MyCasino_i
 	// [1] - first
 	// [2] - second
 	// [3] - amount
-	error_status_t showbets([in] unsigned long sessionId, [out] MyCasinoBet_t* bets, [out] unsigned long* count);
+	error_status_t showbets([in] unsigned long sessionId, [out, size_is(, *count)] MyCasinoBet_t** bets, [out] unsigned long* count);
 
 
 	// result numbers equal input

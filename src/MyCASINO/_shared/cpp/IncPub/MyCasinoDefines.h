@@ -8,6 +8,7 @@ typedef unsigned long MY_CASINO_RES;
 #define ERROR_MY_CASINO_USER_NOT_LOGGED_IN 0x80110001L
 #define ERROR_MY_CASINO_USER_PERMISSION_DENIED 0x80110002L
 #define ERROR_MY_CASINO_USER_FOR_DEPOSIT_NOT_LOGGED_IN 0x80110003L
+#define ERROR_MY_CASINO_USER_LOGOUT_FAILED 0x80110004L
 
 #define ERROR_MY_CASINO_HAS_ALREADY_OPERATOR 0x80010001L
 #define ERROR_MY_CASINO_NO_OPERATOR 0x80010002L
@@ -44,6 +45,8 @@ inline std::wstring translate_error_message(unsigned long errorcode)
 		return std::wstring(L"User permissions not sufficient.");
 	case ERROR_MY_CASINO_USER_FOR_DEPOSIT_NOT_LOGGED_IN:
 		return std::wstring(L"User for deposit is not logged in.");
+	case ERROR_MY_CASINO_USER_LOGOUT_FAILED:
+		return std::wstring(L"Error during logout.");
 	case ERROR_MY_CASINO_HAS_ALREADY_OPERATOR:
 		return std::wstring(L"Current casino server already has an logged in operator.");
 	case ERROR_MY_CASINO_NO_OPERATOR:
