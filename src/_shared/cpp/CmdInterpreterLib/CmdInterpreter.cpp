@@ -109,7 +109,6 @@ bool CmdInterpreter::execute(std::wstring command)
 		{
 			if (NULL != m_dispatcherFunc && !CALL_MEMBER_FN(*m_dispatcherObj, m_dispatcherFunc)(commandArguments))
 			{
-				std::wcerr << "Error while running command " << commandArguments.at(0) << std::endl;
 				return false;
 			}
 		}
