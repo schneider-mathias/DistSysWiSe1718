@@ -1,4 +1,14 @@
-﻿using System;
+﻿/*************************************************************************/
+/*                                                                       */
+/*    Inhalt:    Bids des MyBay WCF-Servers                              */
+/*                                                                       */
+/*    Autor(en): Manuel Schlemelch                                       */
+/*    Stand:     03.01.2018                                              */
+/*                                                                       */
+/*************************************************************************/
+
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

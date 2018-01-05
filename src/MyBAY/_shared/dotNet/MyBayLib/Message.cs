@@ -1,4 +1,14 @@
-﻿using System;
+﻿/*************************************************************************/
+/*                                                                       */
+/*    Inhalt:    Messages des MyBay WCF-Servers                          */
+/*                                                                       */
+/*    Autor(en): Manuel Schlemelch                                       */
+/*    Stand:     03.01.2018                                              */
+/*                                                                       */
+/*************************************************************************/
+
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -43,7 +53,7 @@ namespace MyBayLib
 
     public class MessageTransfer
     {
-        public MessageType Type { get; set; }
+        public UInt32 Type { get; set; }
 
         // Depending on MessageType, Client will interprete
         public String MessageText { get; set; }

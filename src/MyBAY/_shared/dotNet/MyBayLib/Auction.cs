@@ -1,4 +1,14 @@
-﻿using System;
+﻿/*************************************************************************/
+/*                                                                       */
+/*    Inhalt:    Autkionen des MyBay WCF-Servers                         */
+/*                                                                       */
+/*    Autor(en): Manuel Schlemelch                                       */
+/*    Stand:     03.01.2018                                              */
+/*                                                                       */
+/*************************************************************************/
+
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,8 +24,7 @@ namespace MyBayLib
 
         // Will increase for each new auction
         private static UInt32 auctionNumberCount = 0;
-        private List<Bid> bidList;
-        private List<UInt32> bidderInterested;
+        private List<Bid> bidList;       
         private UInt16 auctionEndCounter = 1;
 
         private System.Timers.Timer auctionEndTimer;
@@ -27,6 +36,16 @@ namespace MyBayLib
         {
             get {
                 return this._auctionNumber;
+            }
+        }
+
+        private List<UInt32> _bidderInterested;
+
+        public List<UInt32> BidderInterested
+        {
+            get
+            {
+                return this._bidderInterested;
             }
         }
 
@@ -82,7 +101,10 @@ namespace MyBayLib
             this._auctionState = 0; // AuctionState 0 -> Auction is running and open
 
             this.bidList = new List<Bid>();
-            this.bidderInterested = new List<uint>();
+            this._bidderInterested = new List<uint>();
+
+            // Auctioneer automatically interested in auction
+            this._bidderInterested.Add(auctioneer);
 
             auctionEndTimer = new System.Timers.Timer();
             auctionEndTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
@@ -118,9 +140,9 @@ namespace MyBayLib
 
         public bool addToInterested(UInt32 bidderIndex)
         {
-            lock (this.bidderInterested)
+            lock (this._bidderInterested)
             {
-                this.bidderInterested.Add(bidderIndex);
+                this._bidderInterested.Add(bidderIndex);
             }
             return true;
         }
@@ -134,15 +156,18 @@ namespace MyBayLib
         {
             List<UInt32> biddersInterested;
             
-            lock (this.bidderInterested)
+            lock (this._bidderInterested)
             {
-                biddersInterested = new List<uint>(this.bidderInterested);
+                biddersInterested = new List<uint>(this._bidderInterested);
             }
 
             lock (Auction.messageBucket)
             {
                 foreach (UInt32 bidder in biddersInterested)
                 {
+                    // Different message for auctioneer
+                    if (bidder == this._auctioneer) continue;
+
                     Message newMessage = new Message(MessageType.NewBid, bidder, this.ArtName, bidValue, 0);
                     Auction.messageBucket.Add(newMessage);
                 }
@@ -167,9 +192,9 @@ namespace MyBayLib
         {
             List<UInt32> biddersInterested;
 
-            lock (this.bidderInterested)
+            lock (this._bidderInterested)
             {
-                biddersInterested = new List<uint>(this.bidderInterested);
+                biddersInterested = new List<uint>(this._bidderInterested);
             }
 
             if (auctionEndCounter == 4)
@@ -197,6 +222,9 @@ namespace MyBayLib
             {
                 foreach (UInt32 bidder in biddersInterested)
                 {
+                    // Different message for auctioneer
+                    if (bidder == this._auctioneer) continue;
+
                     Message newMessage = new Message(MessageType.AuctionEndStart, bidder, "", 0.0, auctionEndCounter);
                     Auction.messageBucket.Add(newMessage);
                 }
