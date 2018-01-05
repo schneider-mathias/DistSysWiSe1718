@@ -1,6 +1,7 @@
 #include "MyCasinoCommandLineInterface.h"
 #include "MyCasinoDefines.h"
 #include <iostream>
+#include "comdef.h"
 
 MyCasinoCommandLineInterface::MyCasinoCommandLineInterface(CmdInterpreter* interpreter)
 	:m_pSessionId(NULL),
@@ -17,6 +18,26 @@ MyCasinoCommandLineInterface::~MyCasinoCommandLineInterface()
 		delete m_pUserType;
 
 	m_pInterpreter = NULL;
+}
+
+void MyCasinoCommandLineInterface::errorHandler(std::string additionalInformation, int errorCode, std::string& errMsg)
+{
+	if (errorCode == 0x800706BA) {
+		std::cerr << "Lost server connection. Stop client." << std::endl;
+		m_pInterpreter->stop();
+	}
+	else
+	{
+		if (errMsg.empty())
+		{
+			//https://msdn.microsoft.com/en-us/library/windows/desktop/dd542645(v=vs.85).aspx
+			_com_error err(errorCode);
+			LPCTSTR comError = err.ErrorMessage();
+			std::cerr << additionalInformation << ": " << comError << std::endl;
+		}
+		else
+			std::cerr << additionalInformation << ": " << errMsg  << std::endl;
+	}
 }
 
 bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> arguments)

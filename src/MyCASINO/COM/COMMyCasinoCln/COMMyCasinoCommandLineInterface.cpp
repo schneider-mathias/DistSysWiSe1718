@@ -41,7 +41,7 @@ bool COMMyCasinoCommandLineInterface::user(std::wstring user, std::wstring passw
 		delete m_pUserType;
 		m_pUserType = NULL;
 
-		std::cout << "Failure: Could not log in to server - " << std::hex << hr << std::endl;
+		errorHandler("[Error] Could not log in to server", hr, bstr_to_str(errMsg));
 		return false;
 	}
 
@@ -57,8 +57,7 @@ bool COMMyCasinoCommandLineInterface::payin(std::wstring user, double amount)
 	HRESULT hr = m_pICOMMyCasinoSrv->deposit(*m_pSessionId, wstr_to_bstr(user), amount, &errMsg);
 	if (FAILED(hr))
 	{
-		std::cout << "Failure: deposit - " << std::hex << hr << std::endl;
-		std::cout << "Message: " << bstr_to_str(errMsg) << std::endl;
+		errorHandler("[Error] deposit", hr, bstr_to_str(errMsg));
 		return false;
 	}
 
@@ -71,8 +70,7 @@ bool COMMyCasinoCommandLineInterface::bet(double setAmount, unsigned short first
 	HRESULT hr = m_pICOMMyCasinoSrv->bet(*m_pSessionId, setAmount, firstNumber, secondNumber, &errMsg);
 	if (FAILED(hr))
 	{
-		std::cout << "Failure: bet - " << std::hex << hr << std::endl;
-		std::cout << "Message: " << bstr_to_str(errMsg) << std::endl;
+		errorHandler("[Error] bet", hr, bstr_to_str(errMsg));
 		return false;
 	}
 	
@@ -88,8 +86,7 @@ bool COMMyCasinoCommandLineInterface::showbets()
 	HRESULT hr = m_pICOMMyCasinoSrv->showbets(*m_pSessionId, &bets, &betCount, &errMsg);
 	if (FAILED(hr))
 	{
-		std::cout << "Failure: showbets - " << std::hex << hr << std::endl;
-		std::cout << "Message: " << bstr_to_str(errMsg) << std::endl;
+		errorHandler("[Error] showbets", hr, bstr_to_str(errMsg));
 		return false;
 	}
 	
@@ -127,7 +124,7 @@ bool COMMyCasinoCommandLineInterface::showbets()
 			hr = m_pICOMMyCasinoSrv->calculateProfit(*m_pSessionId, currentWager, currentFirstNumber, currentSecondNumber, &profitForOne, &profitForTwo, &errMsg);
 			if (FAILED(hr))
 			{
-				std::cout << "Failure: calculateProfit - " << std::hex << hr << std::endl;
+				errorHandler("[Error] calculateProfit", hr, bstr_to_str(errMsg));
 				readBetDone = false;
 				continue;
 			}
@@ -152,8 +149,8 @@ bool COMMyCasinoCommandLineInterface::draw(unsigned short* firstNumberTest, unsi
 		HRESULT hr = m_pICOMMyCasinoSrv->drawTest(*m_pSessionId, *firstNumberTest, *secondNumberTest, &errMsg);
 		if (FAILED(hr))
 		{
-			std::cout << "Failure: drawTest - " << std::hex << hr << std::endl;
-			std::cout << "Message: " << bstr_to_str(errMsg) << std::endl;
+			errorHandler("[Error] drawTest", hr, bstr_to_str(errMsg));
+			return false;
 		}
 
 	}
@@ -164,15 +161,14 @@ bool COMMyCasinoCommandLineInterface::draw(unsigned short* firstNumberTest, unsi
 		hr = m_pICOMMyCasinoSrv->draw(*m_pSessionId, &firstNumber, &secondNumber, &errMsg);
 		if (FAILED(hr))
 		{
-			std::cout << "Failure: draw - " << std::hex << hr << std::endl;
-			std::cout << "Message: " << bstr_to_str(errMsg) << std::endl;
+			errorHandler("[Error] draw", hr, bstr_to_str(errMsg));
+			return false;
 		}
 		else
 		{
 			std::cout << "First number: " << firstNumber << std::endl;
 			std::cout << "Second number: " << secondNumber << std::endl;
 		}
-
 	}
 	else 
 	{
@@ -201,8 +197,7 @@ bool COMMyCasinoCommandLineInterface::showstatus()
 		HRESULT hr = m_pICOMMyCasinoSrv->getTransactions(*m_pSessionId, &isFinished, &transaction, &transactionType, &errMsg);
 		if (FAILED(hr))
 		{
-			std::cout << "Failure: getTransactions - " << std::hex << hr << std::endl;
-			std::cout << "Message: " << bstr_to_str(errMsg) << std::endl;
+			errorHandler("[Error] getTransactions", hr, bstr_to_str(errMsg));
 		}
 		else
 		{
@@ -239,8 +234,8 @@ bool COMMyCasinoCommandLineInterface::showstatus()
 				hr = m_pICOMMyCasinoSrv->getTransactionInformation(*m_pSessionId, currentTransactionId, &transactionInformation, &informationType, &errMsg);
 				if (FAILED(hr))
 				{
-					std::cout << "Failure: getTransactionInformation - " << std::hex << hr << std::endl;
-					std::cout << "Message: " << bstr_to_str(errMsg) << std::endl;
+					errorHandler("[Error] getTransactionInformation", hr, bstr_to_str(errMsg));
+					return false;
 				}
 				else
 				{
@@ -258,9 +253,6 @@ bool COMMyCasinoCommandLineInterface::showstatus()
 								|| i % BET_FULL_DETAILS_PROPTERY_COUNT == 4
 								|| i % BET_FULL_DETAILS_PROPTERY_COUNT == 5)
 								betInformation.append(L" ").append(std::to_wstring(transactionInformationResult[i].intVal));
-							//else if (i % BET_FULL_DETAILS_PROPTERY_COUNT == 2
-							//	|| i % BET_FULL_DETAILS_PROPTERY_COUNT == 6)
-							//		betInformation.append(L" ").append(std::to_wstring(transactionInformationResult[i].dblVal));
 							else if (i % BET_FULL_DETAILS_PROPTERY_COUNT == 3)
 							{
 								isDrawn = transactionInformationResult[i].boolVal;
@@ -287,10 +279,10 @@ bool COMMyCasinoCommandLineInterface::bye()
 	HRESULT hr = m_pICOMMyCasinoSrv->logout(*m_pSessionId, &errMsg);
 	if (FAILED(hr))
 	{
-		std::cout << "Failure: Could not log out to server - " << std::hex << hr << std::endl;
+		errorHandler("[Error] Could not log out to server", hr, bstr_to_str(errMsg));
 		return false;
 	}
 
-	std::cout << "Success: Could log out from server" << std::endl;
+	std::cout << "Logged out from server" << std::endl;
 	return true;
 }

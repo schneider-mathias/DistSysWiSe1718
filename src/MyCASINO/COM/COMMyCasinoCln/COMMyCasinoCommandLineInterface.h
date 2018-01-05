@@ -20,5 +20,4 @@ public:
 	bool bye();
 private:
 	ICOMMyCasino* m_pICOMMyCasinoSrv = NULL;
-
 };

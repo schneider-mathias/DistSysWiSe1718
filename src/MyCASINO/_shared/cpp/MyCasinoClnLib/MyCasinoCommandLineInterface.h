@@ -27,6 +27,7 @@ private:
 	bool checkCallPrerequisites(short minRequiredUserType);
 
 protected:
+	void errorHandler(std::string additionalInformation, int errorCode, std::string& errMsg);
 	unsigned long* m_pSessionId;
 	short* m_pUserType;
 	CmdInterpreter* m_pInterpreter;
