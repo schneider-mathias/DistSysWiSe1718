@@ -174,7 +174,7 @@ BOOL MyCasinoAccount::GetTransaction(IMyCasinoTransactionInformation* transactio
 	{
 		// ToDo compare informations
 		if (NULL != (*it)->GetTransactionInformation() 
-			&& *((*it)->GetTransactionInformation()) == *(transactionInformation)
+			&& *((*it)->GetTransactionInformation()) == *(transactionInformation))
 		{
 			*transactionId = ((*it)->GetId());
 			return TRUE;
