@@ -14,11 +14,11 @@ std::wstring MyCasinoUser::Serialize()
 {
 	std::wstring serialized;
 	serialized.append(std::to_wstring(m_id));
-	serialized.append(MY_CASINO_SERIALIZER_SEPARATOR_WSTRING);
+	serialized.append(MY_CASINO_USER_SERIALIZER_SEPARATOR_WSTRING);
 	serialized.append(m_username);
-	serialized.append(MY_CASINO_SERIALIZER_SEPARATOR_WSTRING);
+	serialized.append(MY_CASINO_USER_SERIALIZER_SEPARATOR_WSTRING);
 	serialized.append(m_password);
-	serialized.append(MY_CASINO_SERIALIZER_SEPARATOR_WSTRING);
+	serialized.append(MY_CASINO_USER_SERIALIZER_SEPARATOR_WSTRING);
 	serialized.append(std::to_wstring(m_userType));
 	return serialized;
 }
@@ -28,10 +28,10 @@ BOOL MyCasinoUser::Deserialize(std::wstring in)
 	std::wstring temp;
 	std::vector<std::wstring> parts;
 	std::wstringstream wss(in);
-	while (std::getline(wss, temp, MY_CASINO_SERIALIZER_SEPARATOR_CHAR))
+	while (std::getline(wss, temp, MY_CASINO_USER_SERIALIZER_SEPARATOR_CHAR))
 		parts.push_back(temp);
 
-	if (parts.size() != MY_CASINO_SERIALIZED_PROPERTY_COUNT)
+	if (parts.size() != MY_CASINO_USER_SERIALIZED_PROPERTY_COUNT)
 		return FALSE;
 	
 	// MyCasino user structure:
