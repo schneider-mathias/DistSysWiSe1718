@@ -43,17 +43,25 @@ BOOL MyCasinoAccount::Deserialize(std::wstring in)
 
 	if (parts.size() != MY_CASINO_ACCOUNT_SERIALIZED_PROPERTY_COUNT)
 		return FALSE;
-
+	DOUBLE initialBalance = 0.0;
 	try
 	{
-		m_currentBalance = stod(parts.at(1));
+		initialBalance = stod(parts.at(1));
 	}
 	catch (...)
 	{
 		return FALSE;
 	}
-	
+
+	// deposit inital value on account
+	if (initialBalance > 0.001)
+	{
+		ULONG transactionId = 0;
+		CreateTransaction(initialBalance, MyCasinoTransactionsTypes::DEPOSIT, NULL, NULL, &transactionId);
+	}
+
 	m_username = parts.at(0);
+
 
 	return TRUE;
 }
@@ -118,7 +126,7 @@ BOOL MyCasinoAccount::CancelTransaction(ULONG transactionId)
 		m_currentBalance -= transaction->GetChangeAmount();
 		break;
 	case MyCasinoTransactionsTypes::BET_WAGER:
-		m_preliminaryBalance -= transaction->GetChangeAmount();;
+		m_preliminaryBalance -= transaction->GetChangeAmount();
 		break;
 	default:
 		return ERROR_MY_CASINO_INVALID_TRANSACTION_TYPE;
@@ -165,7 +173,8 @@ BOOL MyCasinoAccount::GetTransaction(IMyCasinoTransactionInformation* transactio
 	for (auto it = m_transactions.begin(); it < m_transactions.end(); it++)
 	{
 		// ToDo compare informations
-		if (NULL != (*it)->GetTransactionInformation() && *((*it)->GetTransactionInformation()) == *(transactionInformation))
+		if (NULL != (*it)->GetTransactionInformation() 
+			&& *((*it)->GetTransactionInformation()) == *(transactionInformation)
 		{
 			*transactionId = ((*it)->GetId());
 			return TRUE;
