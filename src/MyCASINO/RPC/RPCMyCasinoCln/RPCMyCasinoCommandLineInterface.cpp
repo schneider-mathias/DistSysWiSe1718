@@ -75,14 +75,22 @@ bool RPCMyCasinoCommandLineInterface::bet(double setAmount, unsigned short first
 
 bool RPCMyCasinoCommandLineInterface::showbets()
 {
-	MyCasinoBet_t* bets;
+	MyCasinoBet_t* bets = NULL;
 	unsigned long count;
 
 	error_status_t hr = ::showbets(*m_pSessionId, &bets, &count);
-	if (hr == RPC_S_OK)
+	if (FAILED(hr))
 	{
-		std::cout << "Success: showbets" << std::endl;
+		return false;
 	}
+
+	std::cout << "Success: showbets" << std::endl;
+	for (int i = 0; i < count; i++)
+	{
+		std::cout << bets[i].name.str << " " <<  bets[i].firstNumber << " " << bets[i].secondNumber << " " << bets[i].wager << std::endl;
+	}
+
+	MIDL_user_free(bets);
 
 	return hr ? false : true;
 }

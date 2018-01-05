@@ -15,13 +15,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="RPCMyCasinoSrv.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="RPCMyCasinoSrvImpl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RPCMyCasinoSrvStub.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RPCMyCasinoSrv.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

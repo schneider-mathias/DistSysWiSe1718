@@ -91,7 +91,7 @@ BOOL MyCasino::LoadAccounts(std::wstring filename)
 		if(FAILED(resVal))
 		{
 			delete loadedAccount;
-			return ERROR_MY_CASINO_CANNOT_LOAD_ACCOUNT;
+			return ERROR_MY_CASINO_CANNOT_LOAD_ACCOUNTS;
 		}
 
 		m_userAccounts.push_back(loadedAccount);

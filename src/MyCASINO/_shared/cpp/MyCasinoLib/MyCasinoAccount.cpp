@@ -42,7 +42,8 @@ BOOL MyCasinoAccount::Deserialize(std::wstring in)
 		parts.push_back(temp);
 
 	if (parts.size() != MY_CASINO_ACCOUNT_SERIALIZED_PROPERTY_COUNT)
-		return FALSE;
+		return ERROR_MY_CASINO_MALFORMED_DATABASE_FILE;
+
 	DOUBLE initialBalance = 0.0;
 	try
 	{
@@ -50,7 +51,7 @@ BOOL MyCasinoAccount::Deserialize(std::wstring in)
 	}
 	catch (...)
 	{
-		return FALSE;
+		return ERROR_MY_CASINO_MALFORMED_DATABASE_FILE;
 	}
 
 	// deposit inital value on account
