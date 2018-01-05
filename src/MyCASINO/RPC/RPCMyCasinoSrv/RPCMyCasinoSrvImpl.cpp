@@ -152,12 +152,36 @@ error_status_t showbets(unsigned long sessionId, MyCasinoBet_t** bets, unsigned 
 // result numbers equal input
 error_status_t drawTest(unsigned long sessionId, short firstNumberTest, short secondNumberTest)
 {
-	return RPC_E_FAULT;
+	MyCasinoUser* user = NULL;
+	if (!getAuthService()->isLoggedIn(sessionId, &user))
+		return ERROR_MY_CASINO_USER_NOT_LOGGED_IN;
+
+	if (!getCasino()->IsOperator(*user))
+		return ERROR_MY_CASINO_USER_PERMISSION_DENIED;
+
+	BOOL hr = getCasino()->Draw(&firstNumberTest, &secondNumberTest);
+	if (FAILED(hr))
+		return hr;
+
+	return RPC_S_OK;
 }
 
 error_status_t draw(unsigned long sessionId, short* firstNumber, short* secondNumber)
 {
-	return RPC_E_FAULT;
+	std::wstring errCode;
+
+	MyCasinoUser* user = NULL;
+	if (!getAuthService()->isLoggedIn(sessionId, &user))
+		return ERROR_MY_CASINO_USER_NOT_LOGGED_IN;
+
+	if (!getCasino()->IsOperator(*user))
+		return ERROR_MY_CASINO_USER_PERMISSION_DENIED;
+
+	BOOL hr = getCasino()->Draw(firstNumber, secondNumber);
+	if (FAILED(hr))
+		return hr;
+
+	return RPC_S_OK;
 }
 
 error_status_t getTransactions(unsigned long sessionId, boolean* isFinished, MyCasinoTransaction_t* transaction, unsigned long* transactionType)
