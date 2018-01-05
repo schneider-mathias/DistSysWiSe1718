@@ -28,7 +28,8 @@
 inline std::string bstr_to_str(BSTR str)
 {
 	USES_CONVERSION;
-	assert(str != nullptr);
+	if (NULL == str)
+		return std::string("");
 	return std::string(W2A(str));
 }
 
@@ -41,14 +42,14 @@ inline BSTR str_to_bstr(std::string str)
 inline std::wstring bstr_to_wstr(BSTR str)
 {
 	USES_CONVERSION;
-	assert(str != nullptr);
+	if (NULL == str)
+		return std::wstring(L"");
 	return std::wstring(str);
 }
 
 inline BSTR wstr_to_bstr(std::wstring str)
 {
 	USES_CONVERSION;
-	assert(!str.empty());
 	return CComBSTR(str.c_str()).Detach();
 }
 
