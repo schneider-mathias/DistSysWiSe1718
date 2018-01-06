@@ -90,6 +90,9 @@ bool RPCMyCasinoCommandLineInterface::showbets()
 		std::cout << bets[i].name.str << " " <<  bets[i].firstNumber << " " << bets[i].secondNumber << " " << bets[i].wager << std::endl;
 	}
 
+	// free memory
+	for (int i = 0; i < count; i++)
+		MIDL_user_free(bets[i].name.str);
 	MIDL_user_free(bets);
 
 	return hr ? false : true;

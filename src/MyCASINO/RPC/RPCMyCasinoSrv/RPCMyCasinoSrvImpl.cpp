@@ -132,28 +132,28 @@ error_status_t showbets(unsigned long sessionId, MyCasinoBet_t** bets, unsigned 
 	if (!getAuthService()->isLoggedIn(sessionId, &user))
 		return ERROR_MY_CASINO_USER_NOT_LOGGED_IN;
 
-
 	std::vector<MyCasinoBet*> betsSnapshot = getCasino()->GetBets();
 	*count = betsSnapshot.size();
 
-	// ToDo create MyCasinoBet_t array
+	// midl allocate MyCasinoBet_t array (has to be freed by client)
 	(*bets) = (MyCasinoBet_t*)midl_user_allocate((*count) * sizeof(MyCasinoBet_t));
+
+	// fill array
 	for (int i = 0; i<(*count); i++)
 	{
-		//(bets)[i] = (MyCasinoBet_t*)midl_user_allocate(sizeof(MyCasinoBet_t));
-
 		(*bets)[i].firstNumber = betsSnapshot.at(i)->GetFirstNumber();
 		(*bets)[i].secondNumber = betsSnapshot.at(i)->GetSecondNumber();
 		(*bets)[i].wager = betsSnapshot.at(i)->GetSetAmount();
 
+		// allocate memory for String_t which is contained in MyCasinoBet_t
 		unsigned short stringSize = strlen((char*)wstring_to_char(betsSnapshot.at(i)->GetUsername())) + 1;
+
+		// copy value
 		(*bets)[i].name.str = (unsigned char*)midl_user_allocate(stringSize);
 		(*bets)[i].name.size = stringSize;
 		(*bets)[i].name.len = stringSize;
 		strcpy((char*)(*bets)[i].name.str, (char*)wstring_to_char(betsSnapshot.at(i)->GetUsername()));
 	}
-	
-
 
 	BOOL resVal = S_OK;
 	if (!getCasino()->IsOpened())
