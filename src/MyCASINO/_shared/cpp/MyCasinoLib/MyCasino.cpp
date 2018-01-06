@@ -467,15 +467,15 @@ BOOL MyCasino::Withdraw(MyCasinoUser& user, DOUBLE amount)
 	return E_NOTIMPL;
 }
 
-BOOL MyCasino::Draw(SHORT* firstNumber, SHORT* secondNumber)
+BOOL MyCasino::Draw(SHORT** firstNumber, SHORT** secondNumber)
 {
 	if (!IsOpened())
 		return ERROR_MY_CASINO_NO_OPERATOR;
 
-	if (NULL == firstNumber)
-		*firstNumber = GenerateDrawNumber();
-	if (NULL == firstNumber)
-		*secondNumber = GenerateDrawNumber();
+	if (NULL == *firstNumber)
+		*firstNumber = new short(GenerateDrawNumber(NULL));
+	if (NULL == *secondNumber)
+		*secondNumber = new short(GenerateDrawNumber(*firstNumber));
 
 	BOOL resVal = TRUE;
 	DOUBLE rewardForOne = 0.0;
@@ -494,9 +494,9 @@ BOOL MyCasino::Draw(SHORT* firstNumber, SHORT* secondNumber)
 		if (FAILED(resVal)) 
 			return resVal; // should never happen
 
-		if (*firstNumber == (*it).second->GetFirstNumber() && *secondNumber == (*it).second->GetSecondNumber())
+		if (**firstNumber == (*it).second->GetFirstNumber() && **secondNumber == (*it).second->GetSecondNumber())
 			totalReward = rewardForTwo;
-		else if (*firstNumber == (*it).second->GetFirstNumber() || *secondNumber == (*it).second->GetFirstNumber())
+		else if (**firstNumber == (*it).second->GetFirstNumber() || **secondNumber == (*it).second->GetFirstNumber())
 			totalReward = rewardForOne;
 
 		// book transaction on gamer account
@@ -531,7 +531,7 @@ BOOL MyCasino::Draw(SHORT* firstNumber, SHORT* secondNumber)
 		}
 
 		// save result
-		(*it).second->SetBetResult(*firstNumber, *secondNumber, totalReward);
+		(*it).second->SetBetResult(**firstNumber, **secondNumber, totalReward);
 
 		// save bets in order to delete them later
 		m_formerBets.push_back((*it).second);
@@ -548,9 +548,12 @@ BOOL MyCasino::Draw(SHORT* firstNumber, SHORT* secondNumber)
 }
 
 
-SHORT MyCasino::GenerateDrawNumber()
+SHORT MyCasino::GenerateDrawNumber(SHORT* firstNumber)
 {
-	return rand() % 5 + 1;
+	// ToDo: check whether it is these number have to fullfill 
+	// the same restrictions as bet sets (first number < second number)
+	//return (NULL==firstNumber)? (rand() % 4 + 1) : (rand() % (5 - *firstNumber) + *firstNumber + 1);
+	return (rand() % 5 + 1);
 }
 
 std::vector<MyCasinoBet*> MyCasino::GetBets()

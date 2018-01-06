@@ -23,10 +23,10 @@ public:
 	BOOL Withdraw(MyCasinoUser& user, DOUBLE amount);
 	std::vector<MyCasinoBet*> GetBets();
 	BOOL Close();
-	BOOL Draw(SHORT* firstNumber=nullptr, SHORT* secondNumber=nullptr);
+	BOOL Draw(SHORT** firstNumber=NULL, SHORT** secondNumber=NULL);
 
 private:
-	SHORT GenerateDrawNumber();
+	SHORT GenerateDrawNumber(SHORT* firstNumber);
 	BOOL CheckOperatorAccount(MyCasinoBet& bet);
 	BOOL GetBet(SHORT firstNumber, SHORT secondNumber, MyCasinoBet** bet);
 	BOOL CloseBet(const MyCasinoUser& user, MyCasinoBet& bet);

@@ -271,12 +271,18 @@ STDMETHODIMP CCOMMyCasino::drawTest(ULONG sessionId, SHORT firstNumberTest, SHOR
 		return E_ACCESSDENIED;
 	}
 
-	BOOL hr = m_casino.Draw(&firstNumberTest, &secondNumberTest);
+	short *drawnFirstNumber = new short(firstNumberTest);
+	short *drawnSecondNumber = new short(secondNumberTest);
+
+	BOOL hr = m_casino.Draw(&drawnFirstNumber, &drawnSecondNumber);
 	if (FAILED(hr))
 	{
 		*errMsg = wstr_to_bstr(TRANSLATE_MYCASINO_ERRORCODE(errCode, hr));
 		return E_FAIL;
 	}
+
+	delete drawnFirstNumber;
+	delete drawnSecondNumber;
 
 #ifdef STUB_METHODS
 	*errMsg = wstr_to_bstr(L"STUB_METHOD - drawTest");
@@ -302,12 +308,22 @@ STDMETHODIMP CCOMMyCasino::draw(ULONG sessionId, SHORT* firstNumber, SHORT* seco
 		return E_ACCESSDENIED;
 	}
 
-	BOOL hr = m_casino.Draw(firstNumber, secondNumber);
+
+	short *drawnFirstNumber = NULL;
+	short *drawnSecondNumber = NULL;
+
+	BOOL hr = m_casino.Draw(&drawnFirstNumber, &drawnSecondNumber);
 	if (FAILED(hr))
 	{
 		*errMsg = wstr_to_bstr(TRANSLATE_MYCASINO_ERRORCODE(errCode, hr));
 		return E_FAIL;
 	}
+
+	*firstNumber = *drawnFirstNumber;
+	*secondNumber = *drawnSecondNumber;
+
+	delete drawnFirstNumber;
+	delete drawnSecondNumber;
 
 #ifdef STUB_METHODS
 	*errMsg = wstr_to_bstr(L"STUB_METHOD - draw");

@@ -112,8 +112,8 @@ bool RPCMyCasinoCommandLineInterface::draw(unsigned short* firstNumberTest, unsi
 	}
 	else if (NULL == firstNumberTest && NULL == secondNumberTest)
 	{
-		short firstNumber;
-		short secondNumber;
+		short firstNumber = 0;
+		short secondNumber = 0;
 		hr = ::draw(*m_pSessionId, &firstNumber, &secondNumber);
 		if (hr == RPC_S_OK)
 		{

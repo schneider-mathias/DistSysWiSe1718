@@ -173,9 +173,16 @@ error_status_t drawTest(unsigned long sessionId, short firstNumberTest, short se
 	if (!getCasino()->IsOperator(*user))
 		return ERROR_MY_CASINO_USER_PERMISSION_DENIED;
 
-	BOOL hr = getCasino()->Draw(&firstNumberTest, &secondNumberTest);
+	short *drawnFirstNumber = new short(firstNumberTest);
+	short *drawnSecondNumber = new short(secondNumberTest);
+
+	BOOL hr = getCasino()->Draw(&drawnFirstNumber, &drawnSecondNumber);
 	if (FAILED(hr))
 		return hr;
+
+	delete drawnFirstNumber;
+	delete drawnSecondNumber;
+
 
 	return RPC_S_OK;
 }
@@ -191,9 +198,18 @@ error_status_t draw(unsigned long sessionId, short* firstNumber, short* secondNu
 	if (!getCasino()->IsOperator(*user))
 		return ERROR_MY_CASINO_USER_PERMISSION_DENIED;
 
-	BOOL hr = getCasino()->Draw(firstNumber, secondNumber);
+	short *drawnFirstNumber = NULL;
+	short *drawnSecondNumber = NULL;
+
+	BOOL hr = getCasino()->Draw(&drawnFirstNumber, &drawnSecondNumber);
 	if (FAILED(hr))
 		return hr;
+
+	*firstNumber = *drawnFirstNumber;
+	*secondNumber = *drawnSecondNumber;
+
+	delete drawnFirstNumber;
+	delete drawnSecondNumber;
 
 	return RPC_S_OK;
 }
