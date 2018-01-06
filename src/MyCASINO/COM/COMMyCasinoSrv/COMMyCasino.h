@@ -48,9 +48,6 @@ END_COM_MAP()
 	}
 
 private:
-	CAuthServiceTemplate<MyCasinoUser> m_AuthService;
-	MyCasino m_casino;
-
 	bool toCComSafeArray(std::vector<TaggedUnion>& currentInformation, CComSafeArray<VARIANT>** resArr);
 public:
 	STDMETHOD(login)(BSTR username, BSTR password, ULONG* sessionId, SHORT* userType, BSTR* errMsg);
