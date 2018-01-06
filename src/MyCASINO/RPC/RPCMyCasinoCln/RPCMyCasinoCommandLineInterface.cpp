@@ -1,6 +1,7 @@
 #include "RPCMyCasinoCommandLineInterface.h"
 #include "MyCasino_i.h"
 #include "CharStringConverter.h"
+#include "MyCasinoDefines.h"
 
 RPCMyCasinoCommandLineInterface::RPCMyCasinoCommandLineInterface(CmdInterpreter* interpreter)
 	:MyCasinoCommandLineInterface(interpreter)
@@ -140,18 +141,66 @@ bool RPCMyCasinoCommandLineInterface::showstatus()
 	unsigned long informationType;
 	unsigned long transactionType;
 	unsigned long currentTransactionId;
+	HRESULT hr;
 
+	bool displayHeader = false;
 	while (!isFinished)
 	{
-		HRESULT hr = ::getTransactions(*m_pSessionId, &isFinished, &transaction, &transactionType);
-		if (hr == RPC_S_OK)
+		if (!displayHeader)
 		{
-			std::cout << "Success: getTransactions" << std::endl;
+			std::wcout << "Transaction type | Change amount | Resulting balance | <Additional Information>" << std::endl;
+			displayHeader = true;
 		}
-		return hr ? false : true;
+
+		hr = ::getTransactions(*m_pSessionId, &isFinished, &transaction, &transactionType);
+		if (FAILED(hr))
+		{
+			return false;
+		}
+
+		if (transactionType == MyCasinoTransactionsTypes::DEPOSIT
+			|| transactionType == MyCasinoTransactionsTypes::WITHDRAWAL)
+		{
+			std::wcout << resolve_transaction_type((MyCasinoTransactionsTypes)transactionType) << " | " << transaction.changeAmount << " | " << transaction.resultAmount << std::endl;
+		}
+		else if (transactionType == MyCasinoTransactionsTypes::BET_WIN
+			|| transactionType == MyCasinoTransactionsTypes::BET_LOSS
+			)
+		{
+			/*
+			hr = m_pICOMMyCasinoSrv->getTransactionInformation(*m_pSessionId, currentTransactionId, &transactionInformation, &informationType, &errMsg);
+			if (FAILED(hr))
+			{
+				resultHandler("getTransactionInformation", hr, bstr_to_str(errMsg));
+				return false;
+			}
+			else
+			{
+				CComSafeArray<VARIANT> transactionInformationResult(transactionInformation);
+
+				std::wstring transactionInformation(L"");
+				BOOL isDrawn = false;
+				if (informationType == MyCasinoTransactionsInformationTypes::Bet)
+				{
+
+					for (int i = 0; i < BET_FULL_DETAILS_PROPTERY_COUNT; i++)
+					{
+						if (i % BET_FULL_DETAILS_PROPTERY_COUNT == 1
+							|| i % BET_FULL_DETAILS_PROPTERY_COUNT == 2
+							|| i % BET_FULL_DETAILS_PROPTERY_COUNT == 4
+							|| i % BET_FULL_DETAILS_PROPTERY_COUNT == 5)
+							transactionInformation.append(L" ").append(std::to_wstring(transactionInformationResult[i].intVal));
+					}
+				}
+
+				// only display wager of finished bets
+				std::wcout << resolve_transaction_type((MyCasinoTransactionsTypes)transactionType) << " | " << changeAmount << " | " << resultBalance << " | " << transactionInformation << std::endl;
+			}
+			*/
+		}
 	}
 
-	return false;
+	return true;
 }
 
 bool RPCMyCasinoCommandLineInterface::bye()

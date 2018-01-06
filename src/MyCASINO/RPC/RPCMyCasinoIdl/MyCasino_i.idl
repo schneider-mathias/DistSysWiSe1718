@@ -25,7 +25,7 @@ interface MyCasino_i
 	typedef struct
 	{
 		long id;
-		double currentAmount;
+		double resultAmount;
 		double changeAmount;
 	}
 	MyCasinoTransaction_t;
@@ -54,7 +54,7 @@ interface MyCasino_i
 
 	// transaction structure:
 	// [0] - id
-	// [1] - currentAmount (=previous + change)
+	// [1] - resultAmount (=previous + change)
 	// [2] - changeAmount
 
 	error_status_t getTransactions([in] unsigned long sessionId, [out] boolean* isFinished, [out] MyCasinoTransaction_t* transaction, [out] unsigned long* transactionType);

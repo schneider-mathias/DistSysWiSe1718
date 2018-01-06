@@ -216,7 +216,26 @@ error_status_t draw(unsigned long sessionId, short* firstNumber, short* secondNu
 
 error_status_t getTransactions(unsigned long sessionId, boolean* isFinished, MyCasinoTransaction_t* transaction, unsigned long* transactionType)
 {
-	return RPC_E_FAULT;
+
+	MyCasinoUser* user = NULL;
+	if (!getAuthService()->isLoggedIn(sessionId, &user))
+		return ERROR_MY_CASINO_USER_NOT_LOGGED_IN;
+
+	MyCasinoTransaction* nextTransaction = NULL;
+	*isFinished = getCasino()->GetNextTransaction(*user, &nextTransaction);
+
+	if (NULL != nextTransaction)
+	{
+		transaction->id = nextTransaction->GetId();
+		transaction->resultAmount = nextTransaction->GetResultBalance();
+		transaction->changeAmount = nextTransaction->GetChangeAmount();
+	}
+
+	BOOL resVal = RPC_S_OK;
+	if (!getCasino()->IsOpened())
+		resVal = INFORMATION_MY_CASINO_NO_OPERATOR_LOGGED_IN;
+
+	return resVal;
 }
 
 error_status_t getTransactionInformation(unsigned long sessionId, unsigned long transactionId, String_t* information, unsigned long* informationType)
