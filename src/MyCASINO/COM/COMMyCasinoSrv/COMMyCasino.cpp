@@ -52,13 +52,6 @@ STDMETHODIMP CCOMMyCasino::login(BSTR username, BSTR password, ULONG* sessionId,
 		}
 	}
 	
-
-
-#ifdef STUB_METHODS
-	*errMsg = wstr_to_bstr(L"STUB_METHOD - login");
-#endif
-
-
 	BOOL resVal = S_OK;
 	if (!casino.IsOpened())
 	{
@@ -99,10 +92,6 @@ STDMETHODIMP CCOMMyCasino::logout(ULONG sessionId, BSTR* errMsg)
 		*errMsg = wstr_to_bstr(L"Internal server error during logout.");
 		return E_FAIL;
 	}
-
-#ifdef STUB_METHODS
-	*errMsg = wstr_to_bstr(L"STUB_METHOD - logout");
-#endif
 
 	BOOL resVal = S_OK;
 	if (!casino.IsOpened())
@@ -151,10 +140,6 @@ STDMETHODIMP CCOMMyCasino::deposit(ULONG sessionId, BSTR name, DOUBLE amountMone
 		return E_FAIL;
 	}
 
-#ifdef STUB_METHODS
-	*errMsg = wstr_to_bstr(L"STUB_METHOD - deposit");
-#endif
-
 	return S_OK;
 }
 
@@ -189,10 +174,6 @@ STDMETHODIMP CCOMMyCasino::bet(ULONG sessionId, DOUBLE amountMoney, SHORT firstN
 		return E_FAIL;
 	}
 
-#ifdef STUB_METHODS
-	*errMsg = wstr_to_bstr(L"STUB_METHOD - bet");
-#endif
-
 	return S_OK;
 }
 
@@ -210,11 +191,6 @@ STDMETHODIMP CCOMMyCasino::calculateProfit(ULONG sessionId, DOUBLE amountMoney, 
 	// create a dummy bet object in order to calculate profits
 	MyCasinoBet dummyBet(user->m_username,1, firstNumber, secondNumber, amountMoney);
 	casino.CalculateProfit(dummyBet, profitForOneMatch, profitForTwoMatches);
-
-	// stub method:
-#ifdef STUB_METHODS
-	*errMsg = wstr_to_bstr(L"STUB_METHOD - calculateProfit");
-#endif
 
 	return S_OK;
 }
@@ -243,10 +219,6 @@ STDMETHODIMP CCOMMyCasino::showbets(ULONG sessionId, SAFEARR_VAR* bets, ULONG* c
 		betsSafeArray[safeArrayIterator++] = betsSnapshot.at(betIterator)->GetSecondNumber();
 		betsSafeArray[safeArrayIterator++] = betsSnapshot.at(betIterator)->GetSetAmount();
 	}
-
-#ifdef STUB_METHODS
-	*errMsg = wstr_to_bstr(L"STUB_METHOD - showbets");
-#endif
 
 	betsSafeArray.CopyTo(bets);
 	*count = betsSnapshot.size();
@@ -294,10 +266,6 @@ STDMETHODIMP CCOMMyCasino::drawTest(ULONG sessionId, SHORT firstNumberTest, SHOR
 	delete drawnFirstNumber;
 	delete drawnSecondNumber;
 
-#ifdef STUB_METHODS
-	*errMsg = wstr_to_bstr(L"STUB_METHOD - drawTest");
-#endif
-
 	return S_OK;
 }
 
@@ -335,10 +303,6 @@ STDMETHODIMP CCOMMyCasino::draw(ULONG sessionId, SHORT* firstNumber, SHORT* seco
 	delete drawnFirstNumber;
 	delete drawnSecondNumber;
 
-#ifdef STUB_METHODS
-	*errMsg = wstr_to_bstr(L"STUB_METHOD - draw");
-#endif
-
 	return S_OK;
 }
 
@@ -368,10 +332,6 @@ STDMETHODIMP CCOMMyCasino::getTransactions(ULONG sessionId, BOOL* isFinished, SA
 	}
 
 	transactionSafeArray.CopyTo(transaction);
-
-#ifdef STUB_METHODS
-	*errMsg = wstr_to_bstr(L"STUB_METHOD - getTransactions");
-#endif
 
 	BOOL resVal = S_OK;
 	if (!casino.IsOpened())
@@ -411,10 +371,6 @@ STDMETHODIMP CCOMMyCasino::getTransactionInformation(ULONG sessionId, ULONG tran
 		*errMsg = wstr_to_bstr(TRANSLATE_MYCASINO_ERRORCODE(errCode, ERROR_MY_CASINO_TRANSACTION_INFOMRATION_NOT_AVAILABLE));
 		return E_FAIL;
 	}
-		
-#ifdef STUB_METHODS
-	*errMsg = wstr_to_bstr(L"STUB_METHOD - getTransactions");
-#endif
 	
 	*informationType = detailType;
 
