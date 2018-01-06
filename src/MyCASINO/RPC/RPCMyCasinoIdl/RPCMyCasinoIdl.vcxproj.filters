@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="MyCasino_i.acf" />
-  </ItemGroup>
-  <ItemGroup>
     <CustomBuild Include="MyCasino_i.idl">
       <Filter>Source Files</Filter>
     </CustomBuild>

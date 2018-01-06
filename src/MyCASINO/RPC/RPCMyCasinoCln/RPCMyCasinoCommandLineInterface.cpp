@@ -3,6 +3,8 @@
 #include "CharStringConverter.h"
 #include "MyCasinoDefines.h"
 
+#include "json\reader.h"
+
 RPCMyCasinoCommandLineInterface::RPCMyCasinoCommandLineInterface(CmdInterpreter* interpreter)
 	:MyCasinoCommandLineInterface(interpreter)
 {
@@ -170,6 +172,8 @@ bool RPCMyCasinoCommandLineInterface::showstatus()
 			return false;
 		}
 
+		currentTransactionId = transaction.id;
+
 		if (transactionType == MyCasinoTransactionsTypes::DEPOSIT
 			|| transactionType == MyCasinoTransactionsTypes::WITHDRAWAL)
 		{
@@ -179,36 +183,46 @@ bool RPCMyCasinoCommandLineInterface::showstatus()
 			|| transactionType == MyCasinoTransactionsTypes::BET_LOSS
 			)
 		{
-			/*
-			hr = m_pICOMMyCasinoSrv->getTransactionInformation(*m_pSessionId, currentTransactionId, &transactionInformation, &informationType, &errMsg);
+			String_t transactionInformation = {0,0,NULL};
+			
+			hr = ::getTransactionInformation(*m_pSessionId, currentTransactionId, &transactionInformation, &informationType);
 			if (FAILED(hr))
-			{
-				resultHandler("getTransactionInformation", hr, bstr_to_str(errMsg));
 				return false;
+
+			if (informationType == MyCasinoTransactionsInformationTypes::Bet)
+			{
+				
+				// parse json response
+				std::string parsedTransactionInformation;
+				Json::Value informationJson;
+				Json::CharReaderBuilder rbuilder;
+				Json::CharReader* const reader(rbuilder.newCharReader());
+				std::string errMsg;
+				
+				bool parsingSuccessful = reader->parse((char*)transactionInformation.str, 
+					(char*)(transactionInformation.str) + transactionInformation.len,
+					&informationJson, &errMsg);
+				if (!parsingSuccessful)
+				{
+					std::cerr << "[Error] Parsing of transaction information failed: " << errMsg << std::endl;
+					return false;
+				}
+
+				// finalize output message with parsed json
+				Json::Value defaultValue("<Not found>");
+				parsedTransactionInformation.append(informationJson[1].get("value", defaultValue).asString()).append(" ");
+				parsedTransactionInformation.append(informationJson[2].get("value", defaultValue).asString()).append(" ");
+				parsedTransactionInformation.append(informationJson[4].get("value", defaultValue).asString()).append(" ");
+				parsedTransactionInformation.append(informationJson[5].get("value", defaultValue).asString()).append(" ");
+
+				std::wcout << resolve_transaction_type((MyCasinoTransactionsTypes)transactionType) << " | " << transaction.changeAmount << " | " << transaction.resultAmount << " | " << parsedTransactionInformation.c_str() << std::endl;
 			}
 			else
 			{
-				CComSafeArray<VARIANT> transactionInformationResult(transactionInformation);
-
-				std::wstring transactionInformation(L"");
-				BOOL isDrawn = false;
-				if (informationType == MyCasinoTransactionsInformationTypes::Bet)
-				{
-
-					for (int i = 0; i < BET_FULL_DETAILS_PROPTERY_COUNT; i++)
-					{
-						if (i % BET_FULL_DETAILS_PROPTERY_COUNT == 1
-							|| i % BET_FULL_DETAILS_PROPTERY_COUNT == 2
-							|| i % BET_FULL_DETAILS_PROPTERY_COUNT == 4
-							|| i % BET_FULL_DETAILS_PROPTERY_COUNT == 5)
-							transactionInformation.append(L" ").append(std::to_wstring(transactionInformationResult[i].intVal));
-					}
-				}
-
-				// only display wager of finished bets
-				std::wcout << resolve_transaction_type((MyCasinoTransactionsTypes)transactionType) << " | " << changeAmount << " | " << resultBalance << " | " << transactionInformation << std::endl;
+				std::cerr << "Unknown information type" << std::endl;
+				return false;
 			}
-			*/
+			
 		}
 	}
 

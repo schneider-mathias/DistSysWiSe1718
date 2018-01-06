@@ -9,6 +9,50 @@
 
 #include "MyCasinoDefines.h"
 
+// include jsoncpp writer (installed using nuget)
+#include "json/writer.h"
+
+bool toJson(std::vector<TaggedUnion>& currentInformation, Json::Value** resJson)
+{
+	*resJson = new Json::Value("information");
+	(**resJson) = Json::arrayValue;
+	
+
+	int jsonArrValue = 0;
+	for (std::vector<TaggedUnion>::iterator it = currentInformation.begin(); it != currentInformation.end(); ++it)
+	{
+		//const char *arrayPos = std::to_string(jsonArrValue).c_str();
+
+		switch ((*it).getType())
+		{
+		case TaggedUnion::Type::Boolean:
+			(**resJson)[jsonArrValue]["type"] = "bool";
+			(**resJson)[jsonArrValue]["value"] = (*it).getBoolean();
+			break;
+		case TaggedUnion::Type::Char:
+			(**resJson)[jsonArrValue]["type"] = "char";
+			(**resJson)[jsonArrValue]["value"] = (*it).getChar();
+			break;
+		case TaggedUnion::Type::Double:
+			(**resJson)[jsonArrValue]["type"] = "double";
+			(**resJson)[jsonArrValue]["value"] = (*it).getDouble();
+			break;
+		case TaggedUnion::Type::Int:
+			(**resJson)[jsonArrValue]["type"] = "int";
+			(**resJson)[jsonArrValue]["value"] = (*it).getInt();
+			break;
+		case TaggedUnion::Type::WStringPtr:
+			(**resJson)[jsonArrValue]["type"] = "wstring";
+			(**resJson)[jsonArrValue]["value"] = std::string(wstring_to_char((*it).getWString()));
+			break;
+		default:
+			return false;
+		}
+
+		jsonArrValue++;
+	}
+	return true;
+}
 
 error_status_t login(unsigned long*  sessionId, unsigned char *username, unsigned char *password, short* userType)
 {
@@ -229,6 +273,8 @@ error_status_t getTransactions(unsigned long sessionId, boolean* isFinished, MyC
 		transaction->id = nextTransaction->GetId();
 		transaction->resultAmount = nextTransaction->GetResultBalance();
 		transaction->changeAmount = nextTransaction->GetChangeAmount();
+
+		*transactionType = nextTransaction->GetTransactionType();
 	}
 
 	BOOL resVal = RPC_S_OK;
@@ -240,6 +286,46 @@ error_status_t getTransactions(unsigned long sessionId, boolean* isFinished, MyC
 
 error_status_t getTransactionInformation(unsigned long sessionId, unsigned long transactionId, String_t* information, unsigned long* informationType)
 {
+	std::wstring errCode;
+
+	MyCasinoUser* user = NULL;
+	if (!getAuthService()->isLoggedIn(sessionId, &user))
+		return ERROR_MY_CASINO_USER_NOT_LOGGED_IN;
+
+	IMyCasinoTransactionInformation *currentDetails = NULL;
+	MyCasinoTransactionsInformationTypes detailType;
+	if (!getCasino()->GetTransactionInfomation(*user, transactionId, &currentDetails, &detailType))
+		return ERROR_MY_CASINO_TRANSACTION_INFOMRATION_NOT_AVAILABLE;
+
+	// get information details as TaggedUnion vector and convert it to a CComSafeArray
+	std::vector<TaggedUnion>currentInformation = (*currentDetails).GetInformation();
+
+	Json::StreamWriterBuilder wbuilder;
+	wbuilder["indentation"] = "\t";
+	Json::Value* transactionInformationAsJson = NULL;
+	if (!::toJson((*currentDetails).GetInformation(), &transactionInformationAsJson))
+		return ERROR_MY_CASINO_TRANSACTION_INFOMRATION_NOT_AVAILABLE;
+	
+	std::string document = Json::writeString(wbuilder, *transactionInformationAsJson);
+
+	// allocate memory for String_t which is contained in MyCasinoBet_t
+	unsigned short stringSize = strlen((char*)document.c_str()) + 1;
+
+	// copy value
+	information->str = (unsigned char*)midl_user_allocate(stringSize);
+	information->size = stringSize;
+	information->len = stringSize;
+	strcpy((char*)information->str, (char*)document.c_str());
+
+	*informationType = detailType;
+
+	BOOL resVal = S_OK;
+	if (!getCasino()->IsOpened())
+		resVal = INFORMATION_MY_CASINO_NO_OPERATOR_LOGGED_IN;
+
+	return resVal;
+
+
+
 	return RPC_E_FAULT;
 }
-
