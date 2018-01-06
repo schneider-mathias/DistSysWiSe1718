@@ -31,19 +31,19 @@
 
             <!--Username-->
             <TextBlock Text="Username:" Grid.Row="1" Grid.Column="1" Margin="25 10 25 0" MinWidth="80" FontSize="28"/>
-            <TextBox Text="" Grid.Row="2" Grid.Column="1" Margin="25 5 25 0" MinWidth="80" FontSize="28"/>
+            <ComboBox x:Name="cbxPayInUsername" SelectionChanged="cbxPayInUsername_SelectionChanged" Text="" Grid.Row="2" Grid.Column="1" Margin="25 5 25 0" MinWidth="80" FontSize="28"/>
 
             <!--Money to pay in-->
             <TextBlock Text="Geldbetrag:" Grid.Row="1" Grid.Column="2" Margin="25 10 25 0" MinWidth="80" FontSize="28"/>
-            <TextBox Text="" Grid.Row="2" Grid.Column="2" Margin="25 5 25 0" MinWidth="80" FontSize="28"/>
+            <TextBox x:Name="tbxPayInAmount" KeyDown="tbxPayInAmount_KeyDown" PreviewKeyDown="tbxPayInAmount_PreviewKeyDown" Text="" Grid.Row="2" Grid.Column="2" Margin="25 5 25 0" MinWidth="80" FontSize="28"/>
 
             <!--Casinobalance-->
             <TextBlock Text="Casino Guthaben" Grid.Row="1" Grid.Column="3" Margin="25 10 25 0" MinWidth="80" FontSize="28"/>
             <TextBox Text="$$$$" Grid.Row="2" Grid.Column="3" IsHitTestVisible="False" Margin="25 5 25 0" MinWidth="80" FontSize="28"/>
 
             <!--Submit button-->
-            <Button Content="Einzahlen" Grid.Row="1" Grid.Column="4" Margin="25 10 25 0" MinWidth="80" FontSize="28"/>
-            <TextBlock Text="Einzahlung Erfolgreich" Grid.Row="2" Grid.Column="4" Margin="25 5 25 0" MinWidth="80" FontSize="28"/>
+            <Button x:Name="btnPayIn" IsEnabled="False" Content="Einzahlen" Click="btnPayIn_Click" Grid.Row="1" Grid.Column="4" Margin="25 10 25 0" MinWidth="80" FontSize="28"/>
+            <TextBlock x:Name="tblPayInSuccessful" Visibility="Hidden" Text="Einzahlung Erfolgreich" Grid.Row="2" Grid.Column="4" Margin="25 5 25 0" MinWidth="80" FontSize="28"/>
 
         </Grid>
     </Border>

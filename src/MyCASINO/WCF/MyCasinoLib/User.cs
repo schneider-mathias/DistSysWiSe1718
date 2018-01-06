@@ -71,7 +71,7 @@ namespace MyCasinoLib
         /// <summary>
         /// Single instanced list for all users 
         /// </summary>
-        private static List<User> userList = new List<User>();
+        public static List<User> userList = new List<User>();
         private bool m_operator;
         /// <summary>
         /// Constructor: Read all users from the userfile
@@ -109,7 +109,7 @@ namespace MyCasinoLib
         }
 
         //TODO: change string errMsg to out string & return errorvalues
-        public string Login(string username, string pw, out int sessionId, out MyCasinoUserTypes type)
+        public string Login(string username, string pw, out int sessionId, out MyCasinoUserTypes type, out User currUser)
         {
             foreach (User user in userList)
             {
@@ -121,6 +121,7 @@ namespace MyCasinoLib
                         user.SessionId = unchecked(Convert.ToInt32(GenerateId()));
                         sessionId = user.SessionId;
                         type = user.UserType;
+                        currUser = user;
                         return "OPERATOR_ALREADY_LOGGED_IN";
                     }
 
@@ -135,6 +136,7 @@ namespace MyCasinoLib
                     user.SessionId = Math.Abs(unchecked(GenerateId()));
                     sessionId = user.SessionId;
                     type = user.UserType;
+                    currUser = user;
                     return "S_OK";
                 }
 
@@ -146,9 +148,11 @@ namespace MyCasinoLib
             {
                 if (username == user.username && pw == user.Password && 0 != user.SessionId)
                 {
+                    currUser = null;
                     return "ALREADY_LOGGED_IN";
                 }
             }
+            currUser = null;
             return "WRONG_USERNAME_OR_PASSWORD";
         }
 

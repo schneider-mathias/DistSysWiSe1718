@@ -32,10 +32,81 @@ namespace MyCasinoWCFClient.Pages
             set { _remSrvMyCasino = value; }
         }
 
-        public PayInPage(INETMyCasino _RemSrvMyCasinoMain)
+        private int sessionId;
+
+        public int SessionId
+        {
+            get { return sessionId; }
+            set { sessionId = value; }
+        }
+
+
+        public PayInPage(INETMyCasino _RemSrvMyCasinoMain, string usernameTmp, int sessionIdTmp, MyCasinoUserTypes typeTmp)
         {
             _RemSrvMyCasino = _RemSrvMyCasinoMain;
+            SessionId = sessionIdTmp;
             InitializeComponent();
+            //fill combobox (static)
+            //cbxPayInUsername.Items.Add("Martin");
+            cbxPayInUsername.Items.Add("Manuel");
+            cbxPayInUsername.Items.Add("Johannes");
+            //cbxPayInUsername.Items.Add("Mathias");
+            
+        }
+
+        private void btnPayIn_Click(object sender, RoutedEventArgs e)
+        {
+            string errMsg;
+            double amount;
+            double.TryParse(tbxPayInAmount.Text, out amount);
+            _RemSrvMyCasino.deposit(SessionId, cbxPayInUsername.Text, amount, out errMsg);
+            if (errMsg == "User nicht eingeloggt")
+            {
+                MessageBox.Show(errMsg);
+            }
+                tblPayInSuccessful.Visibility = Visibility.Visible;
+                btnPayIn.IsEnabled = false;
+        }
+
+        private void tbxPayInAmount_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            e.Handled = !(e.Key >= Key.D0 && e.Key <= Key.D9 ||
+               e.Key >= Key.NumPad0 && e.Key <= Key.NumPad9 ||
+               e.Key == Key.Back || e.Key == Key.OemPeriod
+               );
+        }
+
+        private void tbxPayInAmount_KeyDown(object sender, KeyEventArgs e)
+        {
+            tblPayInSuccessful.Visibility = Visibility.Hidden;
+            btnPayIn.IsEnabled = true;
+            //Only one period is allowed
+            if (e.Key == Key.OemPeriod)
+            {
+                if (((TextBox)sender).Text.ToString().Contains('.'))
+                {
+                    e.Handled = true;
+                    return;
+                }
+            }
+
+            //Set money format
+            if (((TextBox)sender).Text.ToString().Contains('.'))
+            {
+                string[] tmp = ((TextBox)sender).Text.ToString().Split('.');
+                if (tmp[1].Length >= 2)
+                {
+                    e.Handled = true;
+                    return;
+                }
+
+            }
+        }
+
+        private void cbxPayInUsername_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            tblPayInSuccessful.Visibility = Visibility.Hidden;
+            btnPayIn.IsEnabled = true;
         }
     }
 }

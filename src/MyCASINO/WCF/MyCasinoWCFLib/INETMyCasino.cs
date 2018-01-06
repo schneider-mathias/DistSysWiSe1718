@@ -69,7 +69,8 @@ namespace MyCasinoWCFLib
 
         //TODO:see list bets
         [OperationContract]
-        bool showbets(int sessionId, out List<string> bets, out int count, out string errMsg);
+        //bool showbets(int sessionId, out List<Bet> bets, out int count, out string errMsg);
+        bool showbets(int sessionId, out List<string> names, out List<int> firstNumbers, out List<int> secondNumbers, out List<double> amount , out int count, out string errMsg);
 
         /// <summary>
         /// A method to test drawing

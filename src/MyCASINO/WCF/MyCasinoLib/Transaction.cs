@@ -26,14 +26,33 @@ namespace MyCasinoLib
             set { m_id = value; }
         }
 
-        private int m_type;
+        private double currentAmount;
 
-        public int M_type
+        public double CurrentAmount
         {
-            get { return m_type; }
-            set { m_type = value; }
+            get { return currentAmount; }
+            set { currentAmount = value; }
         }
 
+        private double changeAmount;
+
+        public double ChangeAmount
+        {
+            get { return changeAmount; }
+            set { changeAmount = value; }
+        }
+
+        public Transaction()
+        {
+
+        }
+
+        public Transaction(int m_idTmp, double currentAmountTmp, double changeAmounttmp)
+        {
+            M_id = m_idTmp;
+            CurrentAmount = currentAmountTmp;
+            ChangeAmount = changeAmounttmp;
+        }
 
     }
 }

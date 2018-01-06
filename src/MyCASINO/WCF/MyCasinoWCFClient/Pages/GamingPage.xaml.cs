@@ -60,18 +60,32 @@ namespace MyCasinoWCFClient.Pages
         public GamingPage(INETMyCasino _RemSrvMyCasinoMain, string usernameTmp, int sessionIdTmp, MyCasinoUserTypes typeTmp)
         {
             InitializeComponent();
+            //save information for different pages
             Username = usernameTmp;
             SessionId = sessionIdTmp;
             UserType = typeTmp;
             _RemSrvMyCasino = _RemSrvMyCasinoMain;
-            PlayHistoryPage.Content = new PlayPage(_RemSrvMyCasino);
-            tblUsername.Text = Username; 
-            
+            //start with playpage
+            PlayHistoryPage.Content = new PlayPage(_RemSrvMyCasino, Username, SessionId, UserType);
+            //set username in gamingpage
+            tblUsername.Text = Username;
+
+            //disable gamer-only content
+            if (UserType == MyCasinoUserTypes.Operator)
+            {
+
+            }
+            //disable operator-only content
+            if (UserType == MyCasinoUserTypes.Gamer)
+            {
+                BtnPayIn.Visibility = Visibility.Hidden;
+            }
+
         }
 
         private void BtnPlay_Click(object sender, RoutedEventArgs e)
         {
-            PlayHistoryPage.Content = new PlayPage(_RemSrvMyCasino);
+            PlayHistoryPage.Content = new PlayPage(_RemSrvMyCasino, Username, SessionId, UserType);
         }
 
         private void BtnHistory_Click(object sender, RoutedEventArgs e)
@@ -81,7 +95,7 @@ namespace MyCasinoWCFClient.Pages
 
         private void BtnPayIn_Click(object sender, RoutedEventArgs e)
         {
-            PlayHistoryPage.Content = new PayInPage(_RemSrvMyCasino);
+            PlayHistoryPage.Content = new PayInPage(_RemSrvMyCasino, Username, SessionId, UserType);
         }
 
         private void btnLogout_Click(object sender, RoutedEventArgs e)

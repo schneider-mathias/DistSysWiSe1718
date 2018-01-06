@@ -90,6 +90,8 @@ namespace MyCasinoWCFClient.Pages
     /// </summary>
     public partial class PlayPage : Page
     {
+        List<Bet> betlist = new List<Bet>();
+
         private INETMyCasino _remSrvMyCasino;
 
         public INETMyCasino _RemSrvMyCasino
@@ -98,17 +100,69 @@ namespace MyCasinoWCFClient.Pages
             set { _remSrvMyCasino = value; }
         }
 
-        public PlayPage(INETMyCasino _RemSrvMyCasinoMain)
+        private int sessionId;
+
+        public int SessionId
+        {
+            get { return sessionId; }
+            set { sessionId = value; }
+        }
+
+        private int numberOne;
+
+        public int NumberOne
+        {
+            get { return numberOne; }
+            set { numberOne = value; }
+        }
+
+        private int numberTwo;
+            
+        public int NumberTwo
+        {
+            get { return numberTwo; }
+            set { numberTwo = value; }
+        }
+
+
+        public PlayPage(INETMyCasino _RemSrvMyCasinoMain, string usernameTmp, int sessionIdTmp, MyCasinoUserTypes typeTmp)
         {
             _RemSrvMyCasino = _RemSrvMyCasinoMain;
             InitializeComponent();
             NameList nameList = new NameList();
-            lbNameList.ItemsSource = nameList;
-            lbAmountWinList.ItemsSource = nameList;
-            lbFirstNumberList.ItemsSource = nameList;
-            lbSecondNumberList.ItemsSource = nameList;
+            //lbNameList.ItemsSource = nameList;
+            //lbAmountWinList.ItemsSource = nameList;
+            //lbFirstNumberList.ItemsSource = nameList;
+            //lbSecondNumberList.ItemsSource = nameList;
             BetAmount betAmount = new BetAmount();
+            btnRowOneNumberFive.IsEnabled = false;
+            SessionId = sessionIdTmp;
 
+            //disable operator-only features
+            if (typeTmp == MyCasinoUserTypes.Gamer)
+            {
+                btnDraw.Visibility = Visibility.Hidden;
+            }
+            //disable  gamer only- features
+            if (typeTmp == MyCasinoUserTypes.Operator)
+            {
+                btnRowOneNumberOne.Visibility = Visibility.Hidden;
+                btnRowOneNumberTwo.Visibility = Visibility.Hidden;
+                btnRowOneNumberThree.Visibility = Visibility.Hidden;
+                btnRowOneNumberFour.Visibility = Visibility.Hidden;
+                btnRowOneNumberFive.Visibility = Visibility.Hidden;
+
+                btnRowTwoNumberOne.Visibility = Visibility.Hidden;
+                btnRowTwoNumberTwo.Visibility = Visibility.Hidden;
+                btnRowTwoNumberThree.Visibility = Visibility.Hidden;
+                btnRowTwoNumberFour.Visibility = Visibility.Hidden;
+                btnRowTwoNumberFive.Visibility = Visibility.Hidden;
+
+
+                tbxBetSum.Visibility = Visibility.Hidden;
+                btnBet.Visibility = Visibility.Hidden;
+                tblSetAmount.Visibility = Visibility.Hidden;
+            }
 
         }
 
@@ -152,6 +206,9 @@ namespace MyCasinoWCFClient.Pages
 
             }
 
+            //set property for bet
+            NumberOne = 1;
+
             //If no button is active, disable the betbutton
             if (!btnRowOneNumberOne.IsChecked.Value && !btnRowOneNumberTwo.IsChecked.Value && !btnRowOneNumberThree.IsChecked.Value
                 && !btnRowOneNumberFour.IsChecked.Value && !btnRowOneNumberFive.IsChecked.Value)
@@ -160,8 +217,8 @@ namespace MyCasinoWCFClient.Pages
             }
 
             //If one button is active and a betamout is entered, enable the bet button
-            if ((btnRowOneNumberOne.IsChecked.Value || btnRowOneNumberTwo.IsChecked.Value || btnRowOneNumberThree.IsChecked.Value
-                || btnRowOneNumberFour.IsChecked.Value || btnRowOneNumberFive.IsChecked.Value) && tbxBetSum.Text.ToString() != "")
+            if ((btnRowTwoNumberOne.IsChecked.Value || btnRowTwoNumberTwo.IsChecked.Value || btnRowTwoNumberThree.IsChecked.Value
+                || btnRowTwoNumberFour.IsChecked.Value || btnRowTwoNumberFive.IsChecked.Value) && tbxBetSum.Text.ToString() != "")
             {
                 btnBet.IsEnabled = true;
             }
@@ -189,6 +246,9 @@ namespace MyCasinoWCFClient.Pages
                 btnRowTwoNumberFive.IsEnabled = true;
             }
 
+            //set property for bet
+            NumberOne = 2;
+
             //If no button in row1 is active, disable all row2 buttons
             if (!btnRowOneNumberOne.IsChecked.Value && !btnRowOneNumberTwo.IsChecked.Value && !btnRowOneNumberThree.IsChecked.Value
                 && !btnRowOneNumberFour.IsChecked.Value && !btnRowOneNumberFive.IsChecked.Value)
@@ -215,8 +275,8 @@ namespace MyCasinoWCFClient.Pages
             }
 
             //If one button is active and a betamout is entered, enable the bet button
-            if ((btnRowOneNumberOne.IsChecked.Value || btnRowOneNumberTwo.IsChecked.Value || btnRowOneNumberThree.IsChecked.Value
-                || btnRowOneNumberFour.IsChecked.Value || btnRowOneNumberFive.IsChecked.Value) && tbxBetSum.Text.ToString() != "")
+            if ((btnRowTwoNumberOne.IsChecked.Value || btnRowTwoNumberTwo.IsChecked.Value || btnRowTwoNumberThree.IsChecked.Value
+                || btnRowTwoNumberFour.IsChecked.Value || btnRowTwoNumberFive.IsChecked.Value) && tbxBetSum.Text.ToString() != "")
             {
                 btnBet.IsEnabled = true;
             }
@@ -261,6 +321,9 @@ namespace MyCasinoWCFClient.Pages
 
             }
 
+            //set property for bet
+            NumberOne = 3;
+
             //If no button is active, disable the betbutton
             if (!btnRowOneNumberOne.IsChecked.Value && !btnRowOneNumberTwo.IsChecked.Value && !btnRowOneNumberThree.IsChecked.Value
                 && !btnRowOneNumberFour.IsChecked.Value && !btnRowOneNumberFive.IsChecked.Value)
@@ -269,8 +332,8 @@ namespace MyCasinoWCFClient.Pages
             }
 
             //If one button is active and a betamout is entered, enable the bet button
-            if ((btnRowOneNumberOne.IsChecked.Value || btnRowOneNumberTwo.IsChecked.Value || btnRowOneNumberThree.IsChecked.Value
-                || btnRowOneNumberFour.IsChecked.Value || btnRowOneNumberFive.IsChecked.Value) && tbxBetSum.Text.ToString() != "")
+            if ((btnRowTwoNumberOne.IsChecked.Value || btnRowTwoNumberTwo.IsChecked.Value || btnRowTwoNumberThree.IsChecked.Value
+                || btnRowTwoNumberFour.IsChecked.Value || btnRowTwoNumberFive.IsChecked.Value) && tbxBetSum.Text.ToString() != "")
             {
                 btnBet.IsEnabled = true;
             }
@@ -314,6 +377,8 @@ namespace MyCasinoWCFClient.Pages
                 btnRowTwoNumberFive.IsChecked = false;
 
             }
+            //set property for bet
+            NumberOne = 4;
 
             //If no button is active, disable the betbutton
             if (!btnRowOneNumberOne.IsChecked.Value && !btnRowOneNumberTwo.IsChecked.Value && !btnRowOneNumberThree.IsChecked.Value
@@ -323,8 +388,8 @@ namespace MyCasinoWCFClient.Pages
             }
 
             //If one button is active and a betamout is entered, enable the bet button
-            if ((btnRowOneNumberOne.IsChecked.Value || btnRowOneNumberTwo.IsChecked.Value || btnRowOneNumberThree.IsChecked.Value
-                || btnRowOneNumberFour.IsChecked.Value || btnRowOneNumberFive.IsChecked.Value) && tbxBetSum.Text.ToString() != "")
+            if ((btnRowTwoNumberOne.IsChecked.Value || btnRowTwoNumberTwo.IsChecked.Value || btnRowTwoNumberThree.IsChecked.Value
+                || btnRowTwoNumberFour.IsChecked.Value || btnRowTwoNumberFive.IsChecked.Value) && tbxBetSum.Text.ToString() != "")
             {
                 btnBet.IsEnabled = true;
             }
@@ -368,6 +433,10 @@ namespace MyCasinoWCFClient.Pages
                 btnRowTwoNumberFive.IsChecked = false;
 
             }
+
+            //set property for bet
+            NumberOne = 5;
+
             //If no button is active, disable the betbutton
             if (!btnRowOneNumberOne.IsChecked.Value && !btnRowOneNumberTwo.IsChecked.Value && !btnRowOneNumberThree.IsChecked.Value
                 && !btnRowOneNumberFour.IsChecked.Value && !btnRowOneNumberFive.IsChecked.Value)
@@ -376,8 +445,8 @@ namespace MyCasinoWCFClient.Pages
             }
 
             //If one button is active and a betamout is entered, enable the bet button
-            if ((btnRowOneNumberOne.IsChecked.Value || btnRowOneNumberTwo.IsChecked.Value || btnRowOneNumberThree.IsChecked.Value
-                || btnRowOneNumberFour.IsChecked.Value || btnRowOneNumberFive.IsChecked.Value) && tbxBetSum.Text.ToString() != "")
+            if ((btnRowTwoNumberOne.IsChecked.Value || btnRowTwoNumberTwo.IsChecked.Value || btnRowTwoNumberThree.IsChecked.Value
+                || btnRowTwoNumberFour.IsChecked.Value || btnRowTwoNumberFive.IsChecked.Value) && tbxBetSum.Text.ToString() != "")
             {
                 btnBet.IsEnabled = true;
             }
@@ -394,7 +463,22 @@ namespace MyCasinoWCFClient.Pages
                 btnRowTwoNumberFive.IsChecked = false;
             }
 
+            //set property for bet
+            NumberTwo = 1;
 
+            //If no button is active, disable the betbutton
+            if (!btnRowTwoNumberOne.IsChecked.Value && !btnRowTwoNumberTwo.IsChecked.Value && !btnRowTwoNumberThree.IsChecked.Value
+                && !btnRowTwoNumberFour.IsChecked.Value && !btnRowTwoNumberFive.IsChecked.Value)
+            {
+                btnBet.IsEnabled = false;
+            }
+
+            //If one button is active and a betamout is entered, enable the bet button
+            if ((btnRowTwoNumberOne.IsChecked.Value || btnRowTwoNumberTwo.IsChecked.Value || btnRowTwoNumberThree.IsChecked.Value
+                || btnRowTwoNumberFour.IsChecked.Value || btnRowTwoNumberFive.IsChecked.Value) && tbxBetSum.Text.ToString() != "")
+            {
+                btnBet.IsEnabled = true;
+            }
         }
 
         private void btnRowTwoNumberTwo_Click(object sender, RoutedEventArgs e)
@@ -406,6 +490,22 @@ namespace MyCasinoWCFClient.Pages
                 btnRowTwoNumberThree.IsChecked = false;
                 btnRowTwoNumberFour.IsChecked = false;
                 btnRowTwoNumberFive.IsChecked = false;
+            }
+            //set property for bet
+            NumberTwo = 2;
+
+            //If no button is active, disable the betbutton
+            if (!btnRowTwoNumberOne.IsChecked.Value && !btnRowTwoNumberTwo.IsChecked.Value && !btnRowTwoNumberThree.IsChecked.Value
+                && !btnRowTwoNumberFour.IsChecked.Value && !btnRowTwoNumberFive.IsChecked.Value)
+            {
+                btnBet.IsEnabled = false;
+            }
+
+            //If one button is active and a betamout is entered, enable the bet button
+            if ((btnRowTwoNumberOne.IsChecked.Value || btnRowTwoNumberTwo.IsChecked.Value || btnRowTwoNumberThree.IsChecked.Value
+                || btnRowTwoNumberFour.IsChecked.Value || btnRowTwoNumberFive.IsChecked.Value) && tbxBetSum.Text.ToString() != "")
+            {
+                btnBet.IsEnabled = true;
             }
         }
 
@@ -419,6 +519,22 @@ namespace MyCasinoWCFClient.Pages
                 btnRowTwoNumberFour.IsChecked = false;
                 btnRowTwoNumberFive.IsChecked = false;
             }
+            //set property for bet
+            NumberTwo = 3;
+
+            //If no button is active, disable the betbutton
+            if (!btnRowTwoNumberOne.IsChecked.Value && !btnRowTwoNumberTwo.IsChecked.Value && !btnRowTwoNumberThree.IsChecked.Value
+                && !btnRowTwoNumberFour.IsChecked.Value && !btnRowTwoNumberFive.IsChecked.Value)
+            {
+                btnBet.IsEnabled = false;
+            }
+
+            //If one button is active and a betamout is entered, enable the bet button
+            if ((btnRowTwoNumberOne.IsChecked.Value || btnRowTwoNumberTwo.IsChecked.Value || btnRowTwoNumberThree.IsChecked.Value
+                || btnRowTwoNumberFour.IsChecked.Value || btnRowTwoNumberFive.IsChecked.Value) && tbxBetSum.Text.ToString() != "")
+            {
+                btnBet.IsEnabled = true;
+            }
         }
 
         private void btnRowTwoNumberFour_Click(object sender, RoutedEventArgs e)
@@ -431,6 +547,22 @@ namespace MyCasinoWCFClient.Pages
                 btnRowTwoNumberThree.IsChecked = false;
                 btnRowTwoNumberFive.IsChecked = false;
             }
+            //set property for bet
+            NumberTwo = 4;
+
+            //If no button is active, disable the betbutton
+            if (!btnRowTwoNumberOne.IsChecked.Value && !btnRowTwoNumberTwo.IsChecked.Value && !btnRowTwoNumberThree.IsChecked.Value
+                && !btnRowTwoNumberFour.IsChecked.Value && !btnRowTwoNumberFive.IsChecked.Value)
+            {
+                btnBet.IsEnabled = false;
+            }
+
+            //If one button is active and a betamout is entered, enable the bet button
+            if ((btnRowTwoNumberOne.IsChecked.Value || btnRowTwoNumberTwo.IsChecked.Value || btnRowTwoNumberThree.IsChecked.Value
+                || btnRowTwoNumberFour.IsChecked.Value || btnRowTwoNumberFive.IsChecked.Value) && tbxBetSum.Text.ToString() != "")
+            {
+                btnBet.IsEnabled = true;
+            }
         }
 
         private void btnRowTwoNumberFive_Click(object sender, RoutedEventArgs e)
@@ -442,6 +574,22 @@ namespace MyCasinoWCFClient.Pages
                 btnRowTwoNumberTwo.IsChecked = false;
                 btnRowTwoNumberThree.IsChecked = false;
                 btnRowTwoNumberFour.IsChecked = false;
+            }
+            //set property for bet
+            NumberTwo = 5;
+
+            //If no button is active, disable the betbutton
+            if (!btnRowTwoNumberOne.IsChecked.Value && !btnRowTwoNumberTwo.IsChecked.Value && !btnRowTwoNumberThree.IsChecked.Value
+                && !btnRowTwoNumberFour.IsChecked.Value && !btnRowTwoNumberFive.IsChecked.Value)
+            {
+                btnBet.IsEnabled = false;
+            }
+
+            //If one button is active and a betamout is entered, enable the bet button
+            if ((btnRowTwoNumberOne.IsChecked.Value || btnRowTwoNumberTwo.IsChecked.Value || btnRowTwoNumberThree.IsChecked.Value
+                || btnRowTwoNumberFour.IsChecked.Value || btnRowTwoNumberFive.IsChecked.Value) && tbxBetSum.Text.ToString() != "")
+            {
+                btnBet.IsEnabled = true;
             }
         }
 
@@ -495,8 +643,10 @@ namespace MyCasinoWCFClient.Pages
 
         private void btnBet_Click(object sender, RoutedEventArgs e)
         {
-            //TODO: send bet to server, gets notified and updates table with bets?
-
+            string errMsg;
+            double amount;
+            double.TryParse(tbxBetSum.Text, out amount);
+            _RemSrvMyCasino.bet(SessionId, amount, NumberOne, NumberTwo, out errMsg);
 
             //Disable all row2 buttons
             btnRowTwoNumberOne.IsEnabled = false;
@@ -532,6 +682,47 @@ namespace MyCasinoWCFClient.Pages
             }
 
         }
+
         #endregion
+
+        private void btnRefresh_Click(object sender, RoutedEventArgs e)
+        {
+            int count;
+            string errMsg;
+
+            //List<Bet> betlist = new List<Bet>();
+            //_RemSrvMyCasino.showbets(SessionId, out betlist, out count, out errMsg);
+            
+            //init lists
+            List<string> names = new List<string>();
+            List<int> firstNumberBetList = new List<int>();
+            List<int> secondNumberBetList = new List<int>();
+            List<double> amountBetList = new List<double>();
+
+            _RemSrvMyCasino.showbets(SessionId, out names, out firstNumberBetList, out secondNumberBetList, out amountBetList,  out count, out errMsg);
+
+            //lbNameList.ItemsSource = names;
+            //lbNameList.Items.Add(names)
+
+            for (int i = 0; i < count; i++)
+            {
+                double profitForOneMatch = 0, profitForTwoMatches = 0;
+                //_RemSrvMyCasino.calculateProfit(SessionId, betlist.ElementAt(i).M_setAmount, out profitForOneMatch, out profitForTwoMatches, out errMsg);
+                //lbNameList.ItemsSource = betlist.ElementAt(i).M_name;
+                //lbFirstNumberList.ItemsSource = betlist.ElementAt(i).M_firstNumber.ToString();
+                //lbSecondNumberList.ItemsSource = betlist.ElementAt(i).M_secondNumber.ToString();
+                //lbAmountWinList.ItemsSource = betlist.ElementAt(i).;
+
+                //lbNameList.ItemsSource = names.ElementAt(i).ToString();
+                lbNameList.Items.Add(names.ElementAt(i));
+                //lbFirstNumberList.ItemsSource = firstNumberBetList.ElementAt(i).ToString();
+                //lbSecondNumberList.ItemsSource = secondNumberBetList.ElementAt(i).ToString();
+                //lbAmountWinList.ItemsSource = betlist.ElementAt(i).
+
+
+                //lbSecondNumberList.ItemsSource = betlist.ElementAt(i).ToString();
+            }
+
+        }
     }
 }

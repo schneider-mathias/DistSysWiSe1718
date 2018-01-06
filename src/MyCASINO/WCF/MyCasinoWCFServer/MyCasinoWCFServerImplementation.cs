@@ -11,14 +11,17 @@ namespace MyCasinoWCFServer
     class MyCasinoWCFServerImplementation : INETMyCasino
     {
         public static AuthService m_authService = new AuthService();
+        public static List<User> userListLoggedOn = new List<User>();
         public bool login(string username, string password, out int sessionId, out MyCasinoUserTypes userType, out string errMsg)
         {
+            User currUser;
             //TODO: wettenbutton aktivieren falls es operator war
-            errMsg = m_authService.Login(username, password, out sessionId, out userType);
+            errMsg = m_authService.Login(username, password, out sessionId, out userType, out currUser);
 
             //Login successful
             if (errMsg == "S_OK")
             {
+                if(currUser != null) userListLoggedOn.Add(currUser);
                 Console.WriteLine(username + ": angemeldet");
                 return true;
             }
@@ -38,8 +41,10 @@ namespace MyCasinoWCFServer
             }
 
             errMsg = m_authService.Logout(sessionId);
-
-            //TODO: wettenbutton deaktivieren falls es operator war
+            foreach (User user in userListLoggedOn)
+            {
+                if (user.SessionId == sessionId) userListLoggedOn.Remove(user);
+            }
             //Logout successful
             if (errMsg == "S_OK")
             {
@@ -61,9 +66,17 @@ namespace MyCasinoWCFServer
                 Console.WriteLine(errMsg);
                 return false;
             }
-
-
+            //select user
+            User user = userListLoggedOn.Find(item => item.username == name);
+            if (user == null)
+            {
+                errMsg = "User nicht eingeloggt";
+                Console.WriteLine(errMsg);
+                return false;
+            }
+            user.account.Deposit(amountMoney);
             errMsg = null;
+            Console.WriteLine(user.username + "'s Kontostand um " + amountMoney + " erhöht");
             return true;
         }
 
@@ -77,6 +90,9 @@ namespace MyCasinoWCFServer
                 return false;
             }
 
+            User user = userListLoggedOn.Find(item => item.SessionId == sessionId);
+            user.account.Bet(user.Username, amountMoney, firstNumber, secondNumber);
+            
 
             errMsg = null;
             return true;
@@ -100,20 +116,73 @@ namespace MyCasinoWCFServer
             return true;
         }
 
-        public bool showbets(int sessionId, out List<string> bets, out int count, out string errMsg)
+        //public bool showbets(int sessionId, out List<Bet> bets, out int count, out string errMsg)
+        //{
+        //    //Check for valid sessionId
+        //    if (!m_authService.SessionIdCheck(sessionId))
+        //    {
+        //        bets = null;
+        //        count = 0;
+        //        errMsg = "Ungueltige SessionId";
+        //        Console.WriteLine(errMsg);
+        //        return false;
+        //    }
+        //    //TODO:
+        //    //Initialization of out params
+        //    bets = null;
+        //    count = 0;
+        //    List<Bet> betsUser = new List<Bet>();
+        //    //fill userlist for showbets
+        //    bets = new List<Bet>();
+        //    foreach (User user in userListLoggedOn)
+        //    {
+        //        user.account.Showbets(out betsUser);
+        //        for (int i = 0; i < betsUser.Count; i++)
+        //        {
+        //            bets.Add(betsUser.ElementAt(i));
+        //            count++;
+        //        }
+        //    }
+
+        //    errMsg = null;
+        //    return true;
+        //}
+
+        public bool showbets(int sessionId, out List<string> names, out List<int> firstNumber, out List<int> secondNumber, out List<double> amount, out int count , out string errMsg)
         {
+            names = null;
+            firstNumber = null;
+            secondNumber = null;
+            amount = null;
+            count = 0;
             //Check for valid sessionId
             if (!m_authService.SessionIdCheck(sessionId))
             {
-                bets = null;
-                count = 0;
                 errMsg = "Ungueltige SessionId";
                 Console.WriteLine(errMsg);
                 return false;
             }
+            //Initialization of out params
+            
+            List<Bet> betsUser = new List<Bet>();
+            //fill userlist for showbets
+            names = new List<string>();
+            firstNumber = new List<int>();
+            secondNumber = new List<int>();
+            amount = new List<double>();
+            foreach (User user in userListLoggedOn)
+            {
+                user.account.Showbets(out betsUser);
+                for (int i = 0; i < betsUser.Count; i++)
+                {
+                    names.Add(betsUser.ElementAt(i).M_name.ToString());
+                    firstNumber.Add(betsUser.ElementAt(i).M_firstNumber);
+                    secondNumber.Add(betsUser.ElementAt(i).M_secondNumber);
+                    amount.Add(betsUser.ElementAt(i).M_setAmount);
+                    count++;
+                }
+            }
 
-            bets = null;
-            count = 0;
             errMsg = null;
             return true;
         }
