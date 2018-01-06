@@ -202,60 +202,59 @@ bool COMMyCasinoCommandLineInterface::showstatus()
 			resultHandler("getTransactions", hr, bstr_to_str(errMsg));
 			return false;
 		}
-		else
+
+		CComSafeArray<VARIANT> transactionResult(transaction);
+		for (int i = 0; i < TRANSACTION_PROPTERY_COUNT; i++)
 		{
-			CComSafeArray<VARIANT> transactionResult(transaction);
-			for (int i = 0; i < TRANSACTION_PROPTERY_COUNT; i++)
+			if (i % TRANSACTION_PROPTERY_COUNT == 0)
 			{
-				if (i % TRANSACTION_PROPTERY_COUNT == 0)
-				{
-					currentTransactionId = transactionResult[i].intVal;
-				}
-				else if (i % TRANSACTION_PROPTERY_COUNT == 1)
-					resultBalance = transactionResult[i].dblVal;
-				else if (i % TRANSACTION_PROPTERY_COUNT == 2)
-					changeAmount = transactionResult[i].dblVal;
+				currentTransactionId = transactionResult[i].intVal;
 			}
+			else if (i % TRANSACTION_PROPTERY_COUNT == 1)
+				resultBalance = transactionResult[i].dblVal;
+			else if (i % TRANSACTION_PROPTERY_COUNT == 2)
+				changeAmount = transactionResult[i].dblVal;
+		}
 
-			if (transactionType == MyCasinoTransactionsTypes::DEPOSIT
-				|| transactionType == MyCasinoTransactionsTypes::WITHDRAWAL)
-			{ 
-				std::wcout << resolve_transaction_type((MyCasinoTransactionsTypes)transactionType) << " | "  << changeAmount << " | " << resultBalance << std::endl;
-			}
-			else if (transactionType == MyCasinoTransactionsTypes::BET_WIN
-				|| transactionType == MyCasinoTransactionsTypes::BET_LOSS
-				)
+		if (transactionType == MyCasinoTransactionsTypes::DEPOSIT
+			|| transactionType == MyCasinoTransactionsTypes::WITHDRAWAL)
+		{ 
+			std::wcout << resolve_transaction_type((MyCasinoTransactionsTypes)transactionType) << " | "  << changeAmount << " | " << resultBalance << std::endl;
+		}
+		else if (transactionType == MyCasinoTransactionsTypes::BET_WIN
+			|| transactionType == MyCasinoTransactionsTypes::BET_LOSS
+			)
+		{
+			hr = m_pICOMMyCasinoSrv->getTransactionInformation(*m_pSessionId, currentTransactionId, &transactionInformation, &informationType, &errMsg);
+			if (FAILED(hr))
 			{
-				hr = m_pICOMMyCasinoSrv->getTransactionInformation(*m_pSessionId, currentTransactionId, &transactionInformation, &informationType, &errMsg);
-				if (FAILED(hr))
-				{
-					resultHandler("getTransactionInformation", hr, bstr_to_str(errMsg));
-					return false;
-				}
-				else
-				{
-					CComSafeArray<VARIANT> transactionInformationResult(transactionInformation);
+				resultHandler("getTransactionInformation", hr, bstr_to_str(errMsg));
+				return false;
+			}
+			else
+			{
+				CComSafeArray<VARIANT> transactionInformationResult(transactionInformation);
 
-					std::wstring transactionInformation(L"");
-					BOOL isDrawn = false;
-					if (informationType == MyCasinoTransactionsInformationTypes::Bet)
+				std::wstring transactionInformation(L"");
+				BOOL isDrawn = false;
+				if (informationType == MyCasinoTransactionsInformationTypes::Bet)
+				{
+
+					for (int i = 0; i < BET_FULL_DETAILS_PROPTERY_COUNT; i++)
 					{
-
-						for (int i = 0; i < BET_FULL_DETAILS_PROPTERY_COUNT; i++)
-						{
-							if (i % BET_FULL_DETAILS_PROPTERY_COUNT == 1
-								|| i % BET_FULL_DETAILS_PROPTERY_COUNT == 2
-								|| i % BET_FULL_DETAILS_PROPTERY_COUNT == 4
-								|| i % BET_FULL_DETAILS_PROPTERY_COUNT == 5)
-								transactionInformation.append(L" ").append(std::to_wstring(transactionInformationResult[i].intVal));
-						}
+						if (i % BET_FULL_DETAILS_PROPTERY_COUNT == 1
+							|| i % BET_FULL_DETAILS_PROPTERY_COUNT == 2
+							|| i % BET_FULL_DETAILS_PROPTERY_COUNT == 4
+							|| i % BET_FULL_DETAILS_PROPTERY_COUNT == 5)
+							transactionInformation.append(L" ").append(std::to_wstring(transactionInformationResult[i].intVal));
 					}
-
-					// only display wager of finished bets
-					std::wcout << resolve_transaction_type((MyCasinoTransactionsTypes)transactionType) << " | " << changeAmount << " | " << resultBalance << " | " << transactionInformation <<std::endl;
 				}
+
+				// only display wager of finished bets
+				std::wcout << resolve_transaction_type((MyCasinoTransactionsTypes)transactionType) << " | " << changeAmount << " | " << resultBalance << " | " << transactionInformation <<std::endl;
 			}
 		}
+		
 	}
 
 	// print once for displaying information messages
