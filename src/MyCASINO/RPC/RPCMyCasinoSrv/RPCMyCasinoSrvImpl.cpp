@@ -148,6 +148,9 @@ error_status_t bet(unsigned long sessionId, double amountMoney, short firstNumbe
 	if (!getCasino()->IsOpened())
 		return ERROR_MY_CASINO_NO_OPERATOR;
 
+	if (user->GetUserType() == MyCasinoUserTypes::Operator)
+		return ERROR_MY_CASINO_USER_PERMISSION_DENIED;
+
 	// create the bet
 	BOOL retVal = getCasino()->Bet(*user, firstNumber, secondNumber, amountMoney);
 	if (FAILED(retVal))

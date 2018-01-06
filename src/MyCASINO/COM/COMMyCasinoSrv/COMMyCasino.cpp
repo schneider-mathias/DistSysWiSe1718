@@ -171,6 +171,12 @@ STDMETHODIMP CCOMMyCasino::bet(ULONG sessionId, DOUBLE amountMoney, SHORT firstN
 		return E_FAIL;
 	}
 
+	if (user->GetUserType() == MyCasinoUserTypes::Operator)
+	{
+		*errMsg = wstr_to_bstr(TRANSLATE_MYCASINO_ERRORCODE(errCode, ERROR_MY_CASINO_USER_PERMISSION_DENIED));
+		return E_ACCESSDENIED;
+	}
+
 	// create the bet
 	BOOL retVal = m_casino.Bet(*user, firstNumber, secondNumber, amountMoney);
 	if (FAILED(retVal))
