@@ -33,7 +33,7 @@ void main(void)
 	{
 		if (e.GetStatus() == RPC_S_SERVER_UNAVAILABLE)
 		{
-			std::cerr << "Fehler: Der Server antwortet nicht!\nDer Client wird beendet..." << std::endl;
+			std::cerr << "[Error]: Server is not available. Stop client." << std::endl;
 		}
 		else
 		{
@@ -48,12 +48,21 @@ void main(void)
 
 void rpcCalls(void)
 {
+	// save current stream buffer in order to restore it 
+	// in case of an exception
+	auto defaultCoutBuffer = std::cout.rdbuf();
+
 	RpcTryExcept
 	{
 		startCommandLineInterface();
 	}
 	RpcExcept(1)
 	{
+		// Reset buffer because destructor of CmdInterpreter is not called 
+		// when execption is thrown. Because __try can't be used in function that 
+		// require object unwinding it is not possible to create CmdInterpreter object
+		// on stack before RpcTryExcept (in this case the destructor would clean up buffer)
+		std::cout.rdbuf(defaultCoutBuffer);
 		RpcException::Raise(RpcExceptionCode(), "RPC call failed", "Remote Procedure Call");
 	}
 	RpcEndExcept
