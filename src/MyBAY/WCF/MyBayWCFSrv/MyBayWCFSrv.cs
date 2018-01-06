@@ -14,12 +14,14 @@ using System.Text;
 using System.Threading.Tasks;
 using MyBayWCFSrv;
 using MyBayLib;
+using System.Collections.Concurrent;
 
 namespace MyBayWCFSrv
 {
     class MyBayWCFSrv : MyBayWCFLibrary.IMyBay
     {
         private List<Auction> listAuctions;
+        //private ConcurrentBag<Auction> bagtest;
 
         public MyBayWCFSrv()
         {
@@ -58,10 +60,7 @@ namespace MyBayWCFSrv
             Auction newAuction = new Auction(artName, startBid, auctioneerIndex);
             auctionNumber = newAuction.AuctionNumber;
 
-            lock (this.listAuctions)
-            {
-                this.listAuctions.Add(newAuction);
-            }
+            this.listAuctions.Add(newAuction);
 
             return "OK";
         }
@@ -91,6 +90,11 @@ namespace MyBayWCFSrv
             countAuctions = 0;
             auctions = new List<AuctionTransfer>();
             if (!AuthenticationService.AuthService.isLoggedIn(sessionID)) return "Die angegebene SessionID ist nicht registriert, loggen Sie sich erneut ein";
+            UInt32 userIndex = AuthenticationService.AuthService.getIndexBySessionID(sessionID);
+
+            List<Auction> personalizedAuctionList;
+            personalizedAuctionList = this.listAuctions.Where(m => m.BidderInterested.Contains(userIndex)).ToList<Auction>();           
+
 
             return "OK";
         }
@@ -99,9 +103,9 @@ namespace MyBayWCFSrv
         {
             if (!AuthenticationService.AuthService.isLoggedIn(sessionID)) return "Die angegebene SessionID ist nicht registriert, loggen Sie sich erneut ein";
 
+            Auction auctionTemp;
             lock (this.listAuctions)
             {
-                Auction auctionTemp;
                 try
                 {
                     auctionTemp = this.listAuctions.Find(x => x.AuctionNumber == auctionNumber);
@@ -110,15 +114,15 @@ namespace MyBayWCFSrv
                 {
                     return "Die angegebene Auktionsnummer konnte nicht gefunden werden";
                 }
+            }
 
-                if (auctionTemp.HighestBid.BidValue < bidVal)
-                {
-                    return auctionTemp.addBid(AuthenticationService.AuthService.getIndexBySessionID(sessionID), bidVal);
-                }
-                else
-                {
-                    return "Das Angegebene Gebot ist zu niedrig, bieten Sie mehr als: " + auctionTemp.HighestBid.ToString();
-                }
+            if (auctionTemp.HighestBid.BidValue < bidVal)
+            {
+                return auctionTemp.addBid(AuthenticationService.AuthService.getIndexBySessionID(sessionID), bidVal);
+            }
+            else
+            {
+                return "Das Angegebene Gebot ist zu niedrig, bieten Sie mehr als: " + auctionTemp.HighestBid.ToString();
             }
         }
 
@@ -127,8 +131,6 @@ namespace MyBayWCFSrv
             countBids = 0;
             allBids = new List<BidTransfer>();
             if (!AuthenticationService.AuthService.isLoggedIn(sessionID)) return "Die angegebene SessionID ist nicht registriert, loggen Sie sich erneut ein";
-
-            
 
             List<Bid> copyBids;
             lock (this.listAuctions)
@@ -168,7 +170,11 @@ namespace MyBayWCFSrv
                 Auction tempAuction;
                 try
                 {
-                    tempAuction = this.listAuctions.Find(x => x.AuctionNumber == auctionNumber);
+                    tempAuction = this.listAuctions.FirstOrDefault(x => x.AuctionNumber == auctionNumber);
+                    if (tempAuction == default(Auction))
+                    {
+                        return "Auktion mit der Auktionsnummer: " + auctionNumber + " wurde nicht gefunden";
+                    }
                     if (tempAuction.Auctioneer != AuthenticationService.AuthService.getIndexBySessionID(sessionID))
                     {
                         return "Nur der Ersteller der Auktion kann die Auktion beenden";
@@ -183,15 +189,64 @@ namespace MyBayWCFSrv
             return "OK";
         }
 
-
         public String getMessage(UInt32 sessionID, out Boolean messageAvailable, out UInt32 messageType, out MessageTransfer message)
         {
-            #region DummyData
             messageType = 0;
             messageAvailable = false;
-            message = new MessageTransfer();
-            return "";
-            #endregion
+            message = default(MessageTransfer);
+            if (!AuthenticationService.AuthService.isLoggedIn(sessionID)) return "Die angegebene SessionID ist nicht registriert, loggen Sie sich erneut ein";
+
+            Message tempMessage;
+
+            try
+            {
+                // Translate SessionID to UserIndex
+                UInt32 userIndex = AuthenticationService.AuthService.getIndexBySessionID(sessionID);
+
+                lock (Auction.messageBucket)
+                {
+                    tempMessage = Auction.messageBucket.FirstOrDefault(m => m.MessageIntValue == userIndex);
+                    if (!tempMessage.Equals(default(Message)))
+                    {
+                        Auction.messageBucket.Remove(tempMessage);
+                    }
+                    else
+                    {
+                        return "NoMessage";
+                    }
+
+                    Message tempMessage2 = Auction.messageBucket.FirstOrDefault(m => m.MessageIntValue == userIndex);
+                    if (!tempMessage2.Equals(default(Message)))
+                    {
+                        messageAvailable = true;
+                    }
+                }
+            }        
+            catch (Exception)
+            {
+                return "Fehler bei der Verarbeitung der Messages im Server";
+            }
+
+            message.MessageDoubleValue = tempMessage.MessageDoubleValue;
+            message.MessageIntValue = tempMessage.MessageIntValue;
+            message.MessageText = tempMessage.MessageText;
+
+            switch (tempMessage.Type)
+            {
+                case MessageType.NewBid:
+                    message.Type = 0;
+                    break;
+                case MessageType.AuctionEndStart:
+                    message.Type = 1;
+                    break;
+                case MessageType.EndOfAuction:
+                    message.Type = 2;
+                    break;
+                case MessageType.InfoMessage:
+                    message.Type = 3;
+                    break;
+            }         
+            return "OK";            
         }
     }
 }

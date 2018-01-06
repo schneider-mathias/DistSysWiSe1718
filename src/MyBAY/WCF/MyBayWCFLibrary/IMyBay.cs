@@ -33,14 +33,12 @@ namespace MyBayWCFLibrary
         [OperationContract]
         String interested(UInt32 sessionID, UInt32 auctionNumber);
 
-        // TODO define AUCTION, implement in lib for MyBay
         [OperationContract]
         String getAuctions(UInt32 sessionID, UInt32 flags, String artName, out UInt32 countAuctions, out List<AuctionTransfer> auctions);
 
         [OperationContract]
         String bid(UInt32 sessionID, UInt32 auctionNumber, Double bidVal);
 
-        // TODO define BID, implement in lib for MyBay
         [OperationContract]
         String details(UInt32 sessionID, UInt32 auctionNumber, out UInt32 countBids, out List<BidTransfer> allBids);
 
@@ -50,7 +48,6 @@ namespace MyBayWCFLibrary
         [OperationContract]
         String logout(UInt32 sessionID);
 
-        // TODO define Message, 0 Neues Gebot, 1 Auktionsende start, 2 Ende Auktion, 3 Infomessage
         [OperationContract]
         String getMessage(UInt32 sessionID, out Boolean messageAvailable, out UInt32 messageType, out MessageTransfer message);
 

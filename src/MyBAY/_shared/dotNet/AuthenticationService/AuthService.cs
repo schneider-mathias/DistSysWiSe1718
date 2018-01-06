@@ -150,7 +150,8 @@ namespace AuthenticationService
 
         public UInt32 createSessionID()
         {
-            this._sessionID = Convert.ToUInt32(DateTime.Now.Ticks);
+            Random rand = new Random();
+            this._sessionID = (uint)(rand.Next(1 << 30)) << 2 | (uint)(rand.Next(1 << 2)); 
             return this._sessionID;
         }
 
