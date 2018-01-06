@@ -78,6 +78,8 @@ bool RPCMyCasinoCommandLineInterface::showbets()
 {
 	MyCasinoBet_t* bets = NULL;
 	unsigned long count;
+	DOUBLE profitForOne;
+	DOUBLE profitForTwo;
 
 	error_status_t hr = ::showbets(*m_pSessionId, &bets, &count);
 	if (FAILED(hr))
@@ -85,10 +87,20 @@ bool RPCMyCasinoCommandLineInterface::showbets()
 		return false;
 	}
 
-	std::cout << "Success: showbets" << std::endl;
+	if (count > 0)
+		std::cout << "User | First number | Second number | Wager | Price for one | Price for two" << std::endl;
+	else
+		std::cout << "No bets" << std::endl;
+
 	for (int i = 0; i < count; i++)
 	{
-		std::cout << bets[i].name.str << " " <<  bets[i].firstNumber << " " << bets[i].secondNumber << " " << bets[i].wager << std::endl;
+		hr = ::calculateProfit(*m_pSessionId, bets[i].wager, bets[i].firstNumber, bets[i].secondNumber, &profitForOne, &profitForTwo);
+		if (FAILED(hr))
+		{
+			continue;
+		}
+
+		std::cout << bets[i].name.str << " | " <<  bets[i].firstNumber << " | " << bets[i].secondNumber << " | " << bets[i].wager << " | " << profitForOne << " | " << profitForTwo << std::endl;
 	}
 
 	// free memory
