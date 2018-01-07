@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace MyCasinoLib
 {
-    class Draw
+    public class Draw
     {
         private static List<Bet> drawBetList = new List<Bet>();
+        private static List<double> moneyWonList = new List<double>();
 
         private int m_drawnFirstNumber;
 
@@ -26,31 +27,18 @@ namespace MyCasinoLib
             set { m_drawnSecondNumber = value; }
         }
 
-        private double m_resultAmount;
-
-        public double M_resultAmount
+        public Draw(List<Bet> bet, int firstNumberDrawn, int secondNumberDrawn, List<double> amountWon)
         {
-            get { return m_resultAmount; }
-            set { m_resultAmount = value; }
+            for (int i = 0; i < bet.Count; i++)
+            {
+                drawBetList.Add(bet.ElementAt(i));
+                moneyWonList.Add(amountWon.ElementAt(i));
+            }
+
+            M_drawnFirstNumber = firstNumberDrawn;
+            M_drawnSecondNumber = secondNumberDrawn;
         }
 
-        private bool m_isDrawn;
-
-        public bool M_isDrawn
-        {
-            get { return m_isDrawn; }
-            set { m_isDrawn = value; }
-        }
-
-        public Draw()
-        {
-
-        }
-
-        public bool SetBetResult()
-        {
-            return true;
-        }
-
+       
     }
 }

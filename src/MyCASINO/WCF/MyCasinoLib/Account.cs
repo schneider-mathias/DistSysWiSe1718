@@ -9,8 +9,8 @@ namespace MyCasinoLib
 {
     public class Account
     {
-        List<Transaction> transactionList = new List<Transaction>();
-        List<Bet> betResultList = new List<Bet>();
+        //List<Transaction> transactionList = new List<Transaction>();
+        //List<Bet> betResultList = new List<Bet>();
         List<Bet> betList = new List<Bet>();
 
         public Account()
@@ -18,7 +18,13 @@ namespace MyCasinoLib
 
         }
 
-        public bool ReadUserTransaction(string username)
+        public void getBetList(out List<Bet> bets)
+        {
+            bets = new List<Bet>();
+            bets.AddRange(betList);
+        }
+
+        public bool ReadUserTransaction(string username, List<Transaction>transactionList)
         {
             try
             {
@@ -53,7 +59,7 @@ namespace MyCasinoLib
             return true;
         }
 
-        public bool Deposit(double amountMoney)
+        public bool Deposit(double amountMoney, List<Transaction> transactionList)
         {
             try
             {
@@ -73,7 +79,7 @@ namespace MyCasinoLib
             {
                 Bet tmpbet = new Bet(nameTmp, firstNumberTmp, secondNumberTmp, amountMoneyTmp);
                 //delete bet
-                Bet delbet= betList.Find(item => item.M_firstNumber == firstNumberTmp && item.M_secondNumber == secondNumberTmp && item.M_setAmount==amountMoneyTmp);
+                Bet delbet= betList.Find(item => item.M_firstNumber == firstNumberTmp && item.M_secondNumber == secondNumberTmp && 0==amountMoneyTmp);
                 if (delbet!=null)
                 {
                     betList.Remove(delbet);
@@ -114,6 +120,114 @@ namespace MyCasinoLib
             catch
             {
                 
+                return false;
+            }
+        }
+
+        public bool CalculateProfit(double amountMoney, out double profitForOneMatch, out double profitForTwoMatches)
+        {
+            //Init
+            profitForOneMatch = 0;
+            profitForTwoMatches = 0;
+
+            //Calculate profit for one and two matches of numbers
+            try
+            {
+                profitForOneMatch = amountMoney * 2;
+                profitForTwoMatches = profitForOneMatch; //TODO: Profit ???
+                for (int i = 0; i < betList.Count; i++)
+                {
+                    profitForTwoMatches += betList.ElementAt(i).M_setAmount;
+                }
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+
+        }
+
+        public bool Profit(int firstNumber, int secondNumber, out List<double> profit)
+        {
+            //init
+            double oneMatch = 0, twoMatches = 0;
+            profit = new List<double>();
+            try
+            {
+                foreach (Bet bet in betList)
+                {
+                    //One match profit save
+                    if (bet.M_firstNumber == firstNumber || bet.M_secondNumber == secondNumber || bet.M_firstNumber == secondNumber
+                        || bet.M_secondNumber == firstNumber)
+                    {
+                        CalculateProfit(bet.M_setAmount, out oneMatch, out twoMatches);
+                        profit.Add(oneMatch);
+                    }
+                    //Two matches profit save
+                    else if (bet.M_firstNumber == firstNumber && bet.M_secondNumber == secondNumber)
+                    {
+                        CalculateProfit(bet.M_setAmount, out oneMatch, out twoMatches);
+                        profit.Add(twoMatches);
+                    }
+                    else profit.Add(0);
+                }
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+
+        public bool Draw(out int firstNumber, out int secondNumber)
+        {
+            //init
+            firstNumber = 0;
+            secondNumber = 0;
+            try
+            {
+                do
+                {
+                    Random rnd = new Random();
+                    firstNumber = rnd.Next(1, 5);
+                    secondNumber = rnd.Next(1, 5);
+                } while (!(firstNumber < secondNumber));
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public bool DelBets()
+        {
+            try
+            {
+                betList.Clear();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public bool SaveBetsDrawings(out List<Bet> bets)
+        {
+            //Initialize
+            bets = null;
+            bets = new List<Bet>();
+            try
+            {
+                bets.AddRange(betList);
+                return true;
+            }
+            catch
+            {
+                bets = null;
                 return false;
             }
         }

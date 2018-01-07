@@ -124,6 +124,24 @@ namespace MyCasinoWCFClient.Pages
             set { numberTwo = value; }
         }
 
+        //First drawn number
+        private int firstNumber;
+
+        public int FirstNumber
+        {
+            get { return firstNumber; }
+            set { firstNumber = value; }
+        }
+
+        //Second drawn Number
+        private int secondNumber;
+
+        public int SecondNumber
+        {
+            get { return secondNumber; }
+            set { secondNumber = value; }
+        }
+
 
         public PlayPage(INETMyCasino _RemSrvMyCasinoMain, string usernameTmp, int sessionIdTmp, MyCasinoUserTypes typeTmp)
         {
@@ -648,6 +666,11 @@ namespace MyCasinoWCFClient.Pages
             double.TryParse(tbxBetSum.Text, out amount);
             _RemSrvMyCasino.bet(SessionId, amount, NumberOne, NumberTwo, out errMsg);
 
+            if ("BET_ALREADY_SET" == errMsg)
+            {
+                MessageBox.Show("Ein anderer Benutzer hat auf diese Zahlen schon gewettet");
+            }
+
             //Disable all row2 buttons
             btnRowTwoNumberOne.IsEnabled = false;
             btnRowTwoNumberTwo.IsEnabled = false;
@@ -671,6 +694,9 @@ namespace MyCasinoWCFClient.Pages
 
             //Disable own button
             btnBet.IsEnabled = false;
+
+            //Refresh showbets
+            btnRefresh_Click(new object(), new RoutedEventArgs());
         }
 
         private void tbxBetSum_KeyUp(object sender, KeyEventArgs e)
@@ -687,12 +713,15 @@ namespace MyCasinoWCFClient.Pages
 
         private void btnRefresh_Click(object sender, RoutedEventArgs e)
         {
+            //init
             int count;
             string errMsg;
+            //Clear showbets
+            lbNameList.Items.Clear();
+            lbFirstNumberList.Items.Clear();
+            lbSecondNumberList.Items.Clear();
+            lbAmountWinList.Items.Clear();
 
-            //List<Bet> betlist = new List<Bet>();
-            //_RemSrvMyCasino.showbets(SessionId, out betlist, out count, out errMsg);
-            
             //init lists
             List<string> names = new List<string>();
             List<int> firstNumberBetList = new List<int>();
@@ -701,28 +730,31 @@ namespace MyCasinoWCFClient.Pages
 
             _RemSrvMyCasino.showbets(SessionId, out names, out firstNumberBetList, out secondNumberBetList, out amountBetList,  out count, out errMsg);
 
-            //lbNameList.ItemsSource = names;
-            //lbNameList.Items.Add(names)
-
             for (int i = 0; i < count; i++)
             {
                 double profitForOneMatch = 0, profitForTwoMatches = 0;
-                //_RemSrvMyCasino.calculateProfit(SessionId, betlist.ElementAt(i).M_setAmount, out profitForOneMatch, out profitForTwoMatches, out errMsg);
-                //lbNameList.ItemsSource = betlist.ElementAt(i).M_name;
-                //lbFirstNumberList.ItemsSource = betlist.ElementAt(i).M_firstNumber.ToString();
-                //lbSecondNumberList.ItemsSource = betlist.ElementAt(i).M_secondNumber.ToString();
-                //lbAmountWinList.ItemsSource = betlist.ElementAt(i).;
-
-                //lbNameList.ItemsSource = names.ElementAt(i).ToString();
+                _RemSrvMyCasino.calculateProfit(SessionId, amountBetList.ElementAt(i),firstNumberBetList.ElementAt(i),secondNumberBetList.ElementAt(i), out profitForOneMatch, out profitForTwoMatches, out errMsg);
+                
                 lbNameList.Items.Add(names.ElementAt(i));
-                //lbFirstNumberList.ItemsSource = firstNumberBetList.ElementAt(i).ToString();
-                //lbSecondNumberList.ItemsSource = secondNumberBetList.ElementAt(i).ToString();
-                //lbAmountWinList.ItemsSource = betlist.ElementAt(i).
-
-
-                //lbSecondNumberList.ItemsSource = betlist.ElementAt(i).ToString();
+                lbFirstNumberList.Items.Add(firstNumberBetList.ElementAt(i).ToString());
+                lbSecondNumberList.Items.Add(secondNumberBetList.ElementAt(i).ToString());
+                lbAmountWinList.Items.Add("Eine richtige: "+ profitForOneMatch.ToString() + "   Zwei richtige: " + profitForTwoMatches.ToString());
             }
+            //set numbers that have been drawn
+            //TODO: get drawn numbers for clients
+        }
 
+        private void btnDraw_Click(object sender, RoutedEventArgs e)
+        {
+            //init
+            string errMsg = null;
+            _RemSrvMyCasino.draw(SessionId, out firstNumber, out secondNumber, out errMsg);
+            //set numbers that have been drawn
+            tblDrawnNumberOne.Text = firstNumber.ToString();
+            tblDrawnNumberTwo.Text = secondNumber.ToString();
+
+            //Refresh showbets
+            btnRefresh_Click(new object(), new RoutedEventArgs());
         }
     }
 }

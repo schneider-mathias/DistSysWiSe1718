@@ -16,7 +16,7 @@ namespace MyCasinoLib
         BET_LOSS
     }
 
-    class Transaction
+    public class Transaction
     {
         private int m_id;
 

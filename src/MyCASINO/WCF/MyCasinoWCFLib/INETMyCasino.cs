@@ -65,7 +65,7 @@ namespace MyCasinoWCFLib
         /// <param name="errMsg"></param>
         /// <returns></returns>
         [OperationContract]
-        bool calculateProfit(int sessionId, double amountMoney, out double profitForOneMatch, out double profitForTwoMatches, out string errMsg);
+        bool calculateProfit(int sessionId, double amountMoney, int firstNumber, int secondNumber, out double profitForOneMatch, out double profitForTwoMatches, out string errMsg);
 
         //TODO:see list bets
         [OperationContract]
