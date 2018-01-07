@@ -55,7 +55,7 @@ STDMETHODIMP CCOMMyCasino::login(BSTR username, BSTR password, ULONG* sessionId,
 	BOOL resVal = S_OK;
 	if (!casino.IsOpened())
 	{
-		TRANSLATE_MYCASINO_CODE(errCode, INFORMATION_MY_CASINO_NO_OPERATOR_LOGGED_IN)
+		TRANSLATE_MYCASINO_CODE(errCode, INFORMATION_MY_CASINO_NO_OPERATOR_LOGGED_IN);
 		*errMsg = wstr_to_bstr(errCode);
 		resVal = INFORMATION_MY_CASINO_NO_OPERATOR_LOGGED_IN;
 	}
@@ -96,7 +96,7 @@ STDMETHODIMP CCOMMyCasino::logout(ULONG sessionId, BSTR* errMsg)
 	BOOL resVal = S_OK;
 	if (!casino.IsOpened())
 	{
-		TRANSLATE_MYCASINO_CODE(errCode, INFORMATION_MY_CASINO_NO_OPERATOR_LOGGED_IN)
+		TRANSLATE_MYCASINO_CODE(errCode, INFORMATION_MY_CASINO_NO_OPERATOR_LOGGED_IN);
 		*errMsg = wstr_to_bstr(errCode);
 		resVal = INFORMATION_MY_CASINO_NO_OPERATOR_LOGGED_IN;
 	}
@@ -227,7 +227,7 @@ STDMETHODIMP CCOMMyCasino::showbets(ULONG sessionId, SAFEARR_VAR* bets, ULONG* c
 	BOOL resVal = S_OK;
 	if (!casino.IsOpened())
 	{
-		TRANSLATE_MYCASINO_CODE(errCode, INFORMATION_MY_CASINO_NO_OPERATOR_LOGGED_IN)
+		TRANSLATE_MYCASINO_CODE(errCode, INFORMATION_MY_CASINO_NO_OPERATOR_LOGGED_IN);
 		*errMsg = wstr_to_bstr(errCode);
 		resVal = INFORMATION_MY_CASINO_NO_OPERATOR_LOGGED_IN;
 	}
@@ -336,8 +336,8 @@ STDMETHODIMP CCOMMyCasino::getTransactions(ULONG sessionId, BOOL* isFinished, SA
 	BOOL resVal = S_OK;
 	if (!casino.IsOpened())
 	{
-		TRANSLATE_MYCASINO_CODE(errCode, INFORMATION_MY_CASINO_NO_OPERATOR_LOGGED_IN)
-			*errMsg = wstr_to_bstr(errCode);
+		TRANSLATE_MYCASINO_CODE(errCode, INFORMATION_MY_CASINO_NO_OPERATOR_LOGGED_IN);
+		*errMsg = wstr_to_bstr(errCode);
 		resVal = INFORMATION_MY_CASINO_NO_OPERATOR_LOGGED_IN;
 	}
 
@@ -380,8 +380,8 @@ STDMETHODIMP CCOMMyCasino::getTransactionInformation(ULONG sessionId, ULONG tran
 	BOOL resVal = S_OK;
 	if (!casino.IsOpened())
 	{
-		TRANSLATE_MYCASINO_CODE(errCode, INFORMATION_MY_CASINO_NO_OPERATOR_LOGGED_IN)
-			*errMsg = wstr_to_bstr(errCode);
+		TRANSLATE_MYCASINO_CODE(errCode, INFORMATION_MY_CASINO_NO_OPERATOR_LOGGED_IN);
+		*errMsg = wstr_to_bstr(errCode);
 		resVal = INFORMATION_MY_CASINO_NO_OPERATOR_LOGGED_IN;
 	}
 

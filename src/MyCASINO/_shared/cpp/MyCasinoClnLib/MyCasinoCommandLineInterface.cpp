@@ -26,7 +26,8 @@ void MyCasinoCommandLineInterface::resultHandler(std::string additionalInformati
 	{
 		std::cout << "[INFO] " << msg << std::endl;
 	}
-	else if (code == 0x800706BA) {
+	else if (code == 0x800706BA) // COM error 
+	{
 		std::cerr << "[ERROR] " << "Lost server connection. Stop client." << std::endl;
 		m_pInterpreter->stop();
 	}

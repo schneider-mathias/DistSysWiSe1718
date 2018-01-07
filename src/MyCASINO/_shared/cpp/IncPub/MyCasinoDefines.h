@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <windows.h>
 
 #define _MY_CASINO_TYPEDEF_(_sc) ((long)_sc)
 
@@ -98,8 +99,17 @@ inline std::wstring translate_info_message(unsigned long infocode)
 	x = (FAILED(retVal))? translate_error_message(retVal):L"Success"
 
 
+inline std::wstring resolve_mycasino_code(long infocode)
+{
+	std::wstring x;
+	if (infocode> 0) { x = translate_info_message(infocode); }
+	else if (infocode == 0) { x = L""; }
+	else { TRANSLATE_MYCASINO_ERRORCODE(x, infocode); }
+	return x;
+}
+
 #define TRANSLATE_MYCASINO_CODE(x, retVal) \
-	if (retVal > 0) { x = translate_info_message(retVal); } else if (retVal == 0) { x = L""; } else { TRANSLATE_MYCASINO_ERRORCODE(x, retVal); }
+	x = resolve_mycasino_code(retVal)
 
 	
 #define BET_DETAILS_PROPTERY_COUNT 4

@@ -57,7 +57,7 @@ bool COMMyCasinoCommandLineInterface::payin(std::wstring user, double amount)
 	HRESULT hr = m_pICOMMyCasinoSrv->deposit(*m_pSessionId, wstr_to_bstr(user), amount, &errMsg);
 	if (FAILED(hr))
 	{
-		resultHandler("[Error] deposit", hr, bstr_to_str(errMsg));
+		resultHandler("payin", hr, bstr_to_str(errMsg));
 		return false;
 	}
 
@@ -145,7 +145,7 @@ bool COMMyCasinoCommandLineInterface::draw(unsigned short* firstNumberTest, unsi
 		HRESULT hr = m_pICOMMyCasinoSrv->drawTest(*m_pSessionId, *firstNumberTest, *secondNumberTest, &errMsg);
 		if (FAILED(hr))
 		{
-			resultHandler("draw", hr, bstr_to_str(errMsg));
+			resultHandler("drawTest", hr, bstr_to_str(errMsg));
 			return false;
 		}
 
@@ -160,11 +160,9 @@ bool COMMyCasinoCommandLineInterface::draw(unsigned short* firstNumberTest, unsi
 			resultHandler("draw", hr, bstr_to_str(errMsg));
 			return false;
 		}
-		else
-		{
-			std::cout << "First number: " << firstNumber << std::endl;
-			std::cout << "Second number: " << secondNumber << std::endl;
-		}
+
+		std::cout << "First number: " << firstNumber << std::endl;
+		std::cout << "Second number: " << secondNumber << std::endl;
 	}
 	else 
 	{
