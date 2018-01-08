@@ -8,7 +8,7 @@ CAuthServiceTemplate<MyCasinoUser>* getAuthService()
 {
 	if (NULL == authService)
 	{
-		authService = new CAuthServiceTemplate<MyCasinoUser>(&std::wstring(L"USERPROFILE"));
+		authService = new CAuthServiceTemplate<MyCasinoUser>(&std::wstring(L"SystemDrive"));
 		authService->readRegisteredUser(L"\\_MyCasinoData\\mycasino_user.txt");
 	}
 

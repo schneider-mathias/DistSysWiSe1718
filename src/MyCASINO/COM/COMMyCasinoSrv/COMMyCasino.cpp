@@ -19,7 +19,7 @@ CAuthServiceTemplate<MyCasinoUser>& getAuthService()
 {
 	if (pAuthServiceInstance == NULL)
 	{
-		pAuthServiceInstance = new CAuthServiceTemplate<MyCasinoUser>(&std::wstring(L"USERPROFILE"));
+		pAuthServiceInstance = new CAuthServiceTemplate<MyCasinoUser>(&std::wstring(L"SystemDrive"));
 		pAuthServiceInstance->readRegisteredUser(L"\\_MyCasinoData\\mycasino_user.txt");
 	}
 
@@ -30,7 +30,7 @@ MyCasino& getCasino()
 {
 	if (pCasinoInstance == NULL)
 	{
-		pCasinoInstance = new MyCasino(&std::wstring(L"USERPROFILE"));
+		pCasinoInstance = new MyCasino(&std::wstring(L"SystemDrive"));
 		pCasinoInstance->LoadAccounts(L"\\_MyCasinoData\\mycasino_account.txt");
 	}
 

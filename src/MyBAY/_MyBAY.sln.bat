@@ -8,12 +8,7 @@ REM set solution name and remove leading underline
 set "solutionName=%~n0"
 set "solutionName=%solutionName:~1%
 
-set "USERDATA=%~dp0_data\"
-
-echo Set environmental variables:
-echo USERDATA %USERDATA%
-
-set "MYBAY_USERDATA=%USERPROFILE%\_MyBayData\"
+set "MYBAY_USERDATA=%SystemDrive%\_MyBayData\"
 echo MYBAY_USERDATA %MYBAY_USERDATA%
 
 if not exist %MYBAY_USERDATA% (
