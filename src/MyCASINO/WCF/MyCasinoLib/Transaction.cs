@@ -18,6 +18,23 @@ namespace MyCasinoLib
 
     public class Transaction
     {
+        private MyCasinoTransactionTypes transType;
+
+        public MyCasinoTransactionTypes TransType
+        {
+            get { return transType; }
+            set { transType = value; }
+        }
+
+
+        private string name;
+
+        public string Name
+        {
+            get { return name; }
+            set { name = value; }
+        }
+
         private int m_id;
 
         public int M_id
@@ -47,11 +64,13 @@ namespace MyCasinoLib
 
         }
 
-        public Transaction(int m_idTmp, double currentAmountTmp, double changeAmounttmp)
+        public Transaction(int m_idTmp, double currentAmountTmp, double changeAmountTmp, string nameTmp, MyCasinoTransactionTypes typeTmp)
         {
             M_id = m_idTmp;
             CurrentAmount = currentAmountTmp;
-            ChangeAmount = changeAmounttmp;
+            ChangeAmount = changeAmountTmp;
+            Name = nameTmp;
+            TransType = typeTmp;
         }
 
     }

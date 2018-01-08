@@ -47,10 +47,10 @@ namespace MyCasinoWCFClient.Pages
             SessionId = sessionIdTmp;
             InitializeComponent();
             //fill combobox (static)
-            //cbxPayInUsername.Items.Add("Martin");
+            cbxPayInUsername.Items.Add("Martin");
             cbxPayInUsername.Items.Add("Manuel");
             cbxPayInUsername.Items.Add("Johannes");
-            //cbxPayInUsername.Items.Add("Mathias");
+            cbxPayInUsername.Items.Add("Mathias");
             
         }
 

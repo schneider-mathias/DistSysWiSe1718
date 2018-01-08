@@ -109,7 +109,8 @@ namespace MyCasinoLib
         }
 
         //TODO: change string errMsg to out string & return errorvalues
-        public string Login(string username, string pw, out int sessionId, out MyCasinoUserTypes type, List<Transaction> transactionList, out User currUser)
+        //public string Login(string username, string pw, out int sessionId, out MyCasinoUserTypes type, List<Transaction> transactionList, out User currUser)
+        public string Login(string username, string pw, out int sessionId, out MyCasinoUserTypes type, Dictionary<Transaction, Draw> dictTransDraw, out User currUser)
         {
             foreach (User user in userList)
             {
@@ -130,7 +131,7 @@ namespace MyCasinoLib
                         m_operator = true;
                     }
                     //Read transaction information
-                    user.account.ReadUserTransaction(user.username, transactionList);
+                    user.account.ReadUserTransaction(user.username, dictTransDraw);
                    
                     //user.SessionId = unchecked(Convert.ToInt32(GenerateId()));
                     user.SessionId = Math.Abs(unchecked(GenerateId()));

@@ -13,7 +13,15 @@ namespace MyCasinoLib
         //List<Bet> betResultList = new List<Bet>();
         List<Bet> betList = new List<Bet>();
 
-        public Account()
+        private double moneyAmountLeft;
+
+        public double MoneyAmountLeft
+        {
+            get { return moneyAmountLeft; }
+            set { moneyAmountLeft = value; }
+        }
+
+                public Account()
         {
 
         }
@@ -24,7 +32,8 @@ namespace MyCasinoLib
             bets.AddRange(betList);
         }
 
-        public bool ReadUserTransaction(string username, List<Transaction>transactionList)
+        //public bool ReadUserTransaction(string username, List<Transaction>transactionList)
+        public bool ReadUserTransaction(string username, Dictionary<Transaction, Draw> dictTransDraw)
         {
             try
             {
@@ -45,8 +54,11 @@ namespace MyCasinoLib
                             Transaction readFileTransaction = new Transaction();
                             readFileTransaction.M_id = 1;
                             readFileTransaction.CurrentAmount = money;
+                            MoneyAmountLeft = money;
                             readFileTransaction.ChangeAmount = 0;
-                            transactionList.Add(readFileTransaction);
+                            readFileTransaction.Name=username;
+                            readFileTransaction.TransType = MyCasinoTransactionTypes.DEPOSIT;
+                            dictTransDraw.Add(readFileTransaction,null);
                         }
                         }
                  }
@@ -59,12 +71,13 @@ namespace MyCasinoLib
             return true;
         }
 
-        public bool Deposit(double amountMoney, List<Transaction> transactionList)
+        public bool Deposit(double amountMoney, Dictionary<Transaction, Draw> dictTransDraw, string name, MyCasinoTransactionTypes typeTmp)
         {
             try
             {
-                Transaction trans = new Transaction(transactionList.Last().M_id + 1, transactionList.Last().CurrentAmount + amountMoney, amountMoney);
-                transactionList.Add(trans);
+                Transaction trans = new Transaction(dictTransDraw.Last().Key.M_id + 1, dictTransDraw.Last().Key.CurrentAmount + amountMoney, amountMoney,name,typeTmp);
+                dictTransDraw.Add(trans,null);
+                moneyAmountLeft += amountMoney;
                 return true;
             }
             catch
