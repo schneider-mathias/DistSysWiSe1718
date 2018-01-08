@@ -12,7 +12,7 @@ namespace MyCasinoWCFServer
     {
         public static AuthService m_authService = new AuthService();
         public static List<User> userListLoggedOn = new List<User>();
-        public static List<Draw> drawList = new List<Draw>();
+        //public static List<Draw> drawList = new List<Draw>();
         //List<Transaction> transactionList = new List<Transaction>();
         Dictionary<Transaction, Draw> dictTransDraw = new Dictionary<Transaction, Draw>();
         public bool login(string username, string password, out int sessionId, out MyCasinoUserTypes userType, out string errMsg)
@@ -36,6 +36,8 @@ namespace MyCasinoWCFServer
 
         public bool logout(int sessionId, out string errMsg)
         {
+            //init
+            string name="";
             //Check for valid sessionId
             if (!m_authService.SessionIdCheck(sessionId))
             {
@@ -43,16 +45,22 @@ namespace MyCasinoWCFServer
                 Console.WriteLine(errMsg);
                 return false;
             }
-
+            //delete user in loggedlist
+                foreach (User user in userListLoggedOn)
+                {
+                    if (user.SessionId == sessionId)
+                    {
+                        name = user.Username;
+                        userListLoggedOn.Remove(user);
+                        break;
+                    }
+                }
+            //set sessionid in userlist to 0
             errMsg = m_authService.Logout(sessionId);
-            foreach (User user in userListLoggedOn)
-            {
-                if (user.SessionId == sessionId) userListLoggedOn.Remove(user);
-            }
             //Logout successful
             if (errMsg == "S_OK")
             {
-                Console.WriteLine("Ausloggen erfolgreich!");
+                Console.WriteLine(name+": Ausloggen erfolgreich!");
                 return true;
             }
             //Logout unsuccessful
@@ -93,12 +101,12 @@ namespace MyCasinoWCFServer
                 Console.WriteLine(errMsg);
                 return false;
             }
-            //TODO:Operator has to be online && has to have enough money
 
             User userOperatorCheck = userListLoggedOn.Find(item => item.UserType == MyCasinoUserTypes.Operator);
             if (userOperatorCheck != null)
             {
                 //init
+                MyCasinoTransactionTypes transType;
                 double profitForOneMatch = 0, profitForTwoMatches=0;
                 double profitForOneMatchTmp = 0, profitForTwoMatchesTmp=0;
                 double moneyAmountLeftChange = userOperatorCheck.account.MoneyAmountLeft;
@@ -119,9 +127,8 @@ namespace MyCasinoWCFServer
                     else { moneyAmountLeftChange -= profitForTwoMatches; }
                 }
                 //check if operator has enough money to support this bet
-                if (moneyAmountLeftChange > 0)
+                if (moneyAmountLeftChange+amountMoney > 0)
                 {
-                    
                     //check if numbers are already set
                     foreach (User userLogged in userListLoggedOn)
                     {
@@ -137,9 +144,27 @@ namespace MyCasinoWCFServer
                             }
                         }
                     }
+                    //add the additional bet funds to casino
+                    userOperatorCheck.account.MoneyAmountLeft += amountMoney;
                     //set bet
+                    bool overridden;
                     User user = userListLoggedOn.Find(item => item.SessionId == sessionId);
-                    user.account.Bet(user.Username, amountMoney, firstNumber, secondNumber);
+                    user.account.Bet(user.Username, amountMoney, firstNumber, secondNumber, out transType, out overridden);
+                    if(transType==MyCasinoTransactionTypes.CANCELED) userOperatorCheck.account.MoneyAmountLeft -= amountMoney;
+                    //check if bet was overriden
+                    if (overridden == false)
+                    {
+                        dictTransDraw.Add(new Transaction(dictTransDraw.Last().Key.M_id + 1,
+                                                         dictTransDraw.Last(item => item.Key.Name == user.Username).Key.CurrentAmount,
+                                                         dictTransDraw.Last(item => item.Key.Name == user.Username).Key.ChangeAmount,
+                                                         user.Username, transType)
+                                                         , new Draw(new Bet(user.Username, firstNumber, secondNumber, amountMoney), 0, 0, 0));
+                    }
+                    else
+                    {
+                        //TODO:remove bet!
+                        //dictTransDraw.Remove()
+                    }
 
                     errMsg = null;
                     return true;
@@ -167,7 +192,6 @@ namespace MyCasinoWCFServer
                 Console.WriteLine(errMsg);
                 return false;
             }
-            //TODO: new para name to get all showbetprofits correct
             foreach (User user in userListLoggedOn)
             {
                 List<Bet> bets = new List<Bet>();
@@ -252,26 +276,52 @@ namespace MyCasinoWCFServer
             //TODO:lock
             User user = userListLoggedOn.Find(item => item.SessionId == sessionId);
             user.account.Draw(out firstNumber, out secondNumber);
-
-
+            
+            //init
+            List<double> profit = null;
+            int count = 0;
             //save all bets with drawing numbers
-            List<Bet> bets;
             foreach (User userdrawingbets in userListLoggedOn)
             {
                 if (MyCasinoUserTypes.Gamer == userdrawingbets.UserType)
                 {
-                    //init
-                    List<double> profit = null;
                     //calculate money won
                     userdrawingbets.account.Profit(firstNumber, secondNumber, out profit);
-
-                    //save all bets with drawing numbers and amount won or lost
-                    userdrawingbets.account.SaveBetsDrawings(out bets);
-                    Draw item = new Draw(bets, firstNumber, secondNumber, profit);
-                    drawList.Add(item);
                 }
             }
-
+                    //save all bets with drawing numbers and amount won or lost
+                    for (int i = 0; i < dictTransDraw.Count; i++)
+                    {
+                            if (!(dictTransDraw.ElementAt(i).Value == null))
+                            {
+                                //if (dictTransDraw.ElementAt(i).Value.Equals(new Draw(bets.ElementAt(k), 0, 0, 0)))
+                                if (dictTransDraw.ElementAt(i).Key.TransType == MyCasinoTransactionTypes.BET_WAGER)
+                                {
+                                    dictTransDraw.ElementAt(i).Value.M_drawnFirstNumber = firstNumber;
+                                    dictTransDraw.ElementAt(i).Value.M_drawnSecondNumber = secondNumber;
+                                    if (profit.ElementAt(count) > 0)
+                                    {
+                                        dictTransDraw.ElementAt(i).Key.TransType = MyCasinoTransactionTypes.BET_WIN;
+                                        dictTransDraw.ElementAt(i).Value.MoneyWon = profit.ElementAt(count);
+                                        dictTransDraw.ElementAt(i).Key.ChangeAmount = profit.ElementAt(count);
+                                        dictTransDraw.ElementAt(i).Key.CurrentAmount += profit.ElementAt(count);
+                                        //set casino money
+                                        User userOperatorCheck = userListLoggedOn.Find(item => item.UserType == MyCasinoUserTypes.Operator);
+                                        userOperatorCheck.account.MoneyAmountLeft -= profit.ElementAt(count);
+                                    }
+                                    if (profit.ElementAt(count) == 0)
+                                    {
+                                        dictTransDraw.ElementAt(i).Key.TransType = MyCasinoTransactionTypes.BET_LOSS;
+                                        dictTransDraw.ElementAt(i).Value.MoneyWon = profit.ElementAt(count);
+                                        dictTransDraw.ElementAt(i).Key.ChangeAmount = profit.ElementAt(count);
+                                        dictTransDraw.ElementAt(i).Key.CurrentAmount -= dictTransDraw.ElementAt(i).Value.DrawBet.M_setAmount;
+                                    }
+                                     
+                                    count++;
+                               }
+                            }
+                            
+                        }
             //delete all current bets
             foreach (User userdelbets in userListLoggedOn)
             {
@@ -280,7 +330,6 @@ namespace MyCasinoWCFServer
                     userdelbets.account.DelBets();
                 }
             }
-
             errMsg = null;
             return true;
         }
