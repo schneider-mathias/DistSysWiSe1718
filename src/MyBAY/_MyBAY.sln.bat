@@ -13,6 +13,16 @@ set "USERDATA=%~dp0_data\"
 echo Set environmental variables:
 echo USERDATA %USERDATA%
 
+set "MYBAY_USERDATA=%USERPROFILE%\_MyBayData\"
+echo MYBAY_USERDATA %MYBAY_USERDATA%
+
+if not exist %MYBAY_USERDATA% (
+	mkdir %MYBAY_USERDATA%
+)
+
+echo Copy data to %MYBAY_USERDATA%
+copy "%USERDATA%" %MYBAY_USERDATAA%
+
 echo Start solution:
 echo "%VS140COMNTOOLS%\..\IDE\devenv.exe" "%~dp0%solutionName%"
 "%VS140COMNTOOLS%\..\IDE\devenv.exe" "%~dp0%solutionName%"

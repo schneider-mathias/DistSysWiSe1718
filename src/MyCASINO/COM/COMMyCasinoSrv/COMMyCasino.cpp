@@ -19,8 +19,8 @@ CAuthServiceTemplate<MyCasinoUser>& getAuthService()
 {
 	if (pAuthServiceInstance == NULL)
 	{
-		pAuthServiceInstance = new CAuthServiceTemplate<MyCasinoUser>(&std::wstring(L"USERDATA"));
-		pAuthServiceInstance->readRegisteredUser(L"mycasino_user.txt");
+		pAuthServiceInstance = new CAuthServiceTemplate<MyCasinoUser>(&std::wstring(L"USERPROFILE"));
+		pAuthServiceInstance->readRegisteredUser(L"\\_MyCasinoData\\mycasino_user.txt");
 	}
 
 	return *pAuthServiceInstance;
@@ -30,8 +30,8 @@ MyCasino& getCasino()
 {
 	if (pCasinoInstance == NULL)
 	{
-		pCasinoInstance = new MyCasino(&std::wstring(L"USERDATA"));
-		pCasinoInstance->LoadAccounts(L"mycasino_account.txt");
+		pCasinoInstance = new MyCasino(&std::wstring(L"USERPROFILE"));
+		pCasinoInstance->LoadAccounts(L"\\_MyCasinoData\\mycasino_account.txt");
 	}
 
 	return *pCasinoInstance;
