@@ -225,11 +225,16 @@ BOOL MyCasinoAccount::ChangeTransaction(ULONG transactionId, DOUBLE changeAmount
 	}
 	else if (type == MyCasinoTransactionsTypes::BET_LOSS)
 	{
-		additionalWageDifference = changeAmount;
-		// remove amount from preliminary and add to actual balance
-		m_preliminaryBalance -= changeAmount;
+		if (previousAmount > 0.0 && changeAmount < 0.0)
+			additionalWageDifference = changeAmount + previousAmount;
+		else
+			additionalWageDifference = changeAmount;
 
-		m_currentBalance += changeAmount;
+
+		// remove amount from preliminary and add to actual balance
+		m_preliminaryBalance -= additionalWageDifference;
+
+		m_currentBalance += additionalWageDifference;
 	}
 	else if (type == MyCasinoTransactionsTypes::BET_WIN)
 	{

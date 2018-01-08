@@ -55,6 +55,36 @@ BOOL testcase_payin_different_accounts(CmdInterpreter& interpreter)
 	return S_OK;
 }
 
+BOOL testcase_win_two_numbers_bets(CmdInterpreter& interpreter)
+{
+	if (!runCommand(interpreter, L"user Casino Passwort"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"user Gamer Passwort"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"bet 100 1 2"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"user Casino Passwort"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"showbets"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"draw 1 2"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"showstatus"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"user Gamer Passwort"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"showstatus"))
+		return E_FAIL;
+}
+
 
 BOOL testcase_lose_bets(CmdInterpreter& interpreter)
 {
@@ -332,9 +362,11 @@ int main(int argc, char**argv)
 		std::cout << "Error running test - testcase_lose_bets" << std::endl;
 		return E_FAIL;
 	}
+	
 		
-
-
+	// TEST CASE: win with both numbers
+	testcase_win_two_numbers_bets(interpreter);
+	
 	// TEST CASE: payin for different accounts
 	testcase_payin_different_accounts(interpreter);
 
@@ -343,7 +375,7 @@ int main(int argc, char**argv)
 
 	// TEST CASE: win/lose bet
 	testcase_win_lose_bets(interpreter);
-
+	
 	// TEST CASE: delete bet
 	testcase_delete_bet(interpreter);
 
@@ -355,7 +387,7 @@ int main(int argc, char**argv)
 
 	// TEST CASE: close casino (logout operator)
 	testcase_close_casino(interpreter);
-
+	
 	std::cin.get();
 
 	p_ICOMMyCasinoSrv->Release();

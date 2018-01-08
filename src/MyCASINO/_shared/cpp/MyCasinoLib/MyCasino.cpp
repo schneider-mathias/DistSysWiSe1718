@@ -500,10 +500,14 @@ BOOL MyCasino::Draw(SHORT** firstNumber, SHORT** secondNumber)
 		if (FAILED(resVal)) 
 			return resVal; // should never happen
 
+		// calculate total rewards
+		// both numbers are drawn
 		if (**firstNumber == (*it).second->GetFirstNumber() && **secondNumber == (*it).second->GetSecondNumber())
 			totalReward = rewardForTwo;
-		else if (**firstNumber == (*it).second->GetFirstNumber() || **secondNumber == (*it).second->GetFirstNumber())
+		// one number is drawn
+		else if (**firstNumber == (*it).second->GetFirstNumber() || **secondNumber == (*it).second->GetFirstNumber())		
 			totalReward = rewardForOne;
+
 
 		// book transaction on gamer account
 		GetAccount((*it).first, &account);
@@ -517,21 +521,39 @@ BOOL MyCasino::Draw(SHORT** firstNumber, SHORT** secondNumber)
 		MyCasinoTransactionsInformationTypes infoType = MyCasinoTransactionsInformationTypes::Bet;
 		if (totalReward > 0.001)
 		{
-			resVal = (account)->ChangeTransaction(currentTransactionId, totalReward, MyCasinoTransactionsTypes::BET_WIN, (*it).second, &infoType);
+			resVal = (account)->ChangeTransaction(currentTransactionId,
+				totalReward, 
+				MyCasinoTransactionsTypes::BET_WIN, 
+				(*it).second, &infoType);
+
 			if (FAILED(resVal))
 				return resVal;
 
-			resVal = (m_pOperatorAccount)->ChangeTransaction(currentOperatorTransactionId, -(*it).second->GetSetAmount(), MyCasinoTransactionsTypes::BET_LOSS, (*it).second, &infoType);
+			resVal = (m_pOperatorAccount)->ChangeTransaction(currentOperatorTransactionId,
+				-totalReward, 
+				MyCasinoTransactionsTypes::BET_LOSS, 
+				(*it).second, &infoType);
+
 			if (FAILED(resVal))
 				return resVal;
 		}
 		else
 		{
-			resVal = (account)->ChangeTransaction(currentTransactionId, -(*it).second->GetSetAmount(), MyCasinoTransactionsTypes::BET_LOSS, (*it).second, &infoType);
+			resVal = (account)->ChangeTransaction(currentTransactionId,
+				-(*it).second->GetSetAmount(),
+				MyCasinoTransactionsTypes::BET_LOSS,
+				(*it).second,
+				&infoType);
+
 			if (FAILED(resVal))
 				return resVal;
 
-			resVal = (m_pOperatorAccount)->ChangeTransaction(currentOperatorTransactionId, (*it).second->GetSetAmount(), MyCasinoTransactionsTypes::BET_WIN, (*it).second, &infoType);
+			resVal = (m_pOperatorAccount)->ChangeTransaction(currentOperatorTransactionId,
+				(*it).second->GetSetAmount(),
+				MyCasinoTransactionsTypes::BET_WIN,
+				(*it).second,
+				&infoType);
+
 			if (FAILED(resVal))
 				return resVal;
 		}
