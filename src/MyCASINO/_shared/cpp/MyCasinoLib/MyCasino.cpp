@@ -76,8 +76,11 @@ BOOL MyCasino::LoadAccounts(std::wstring filename)
 {
 	std::wifstream m_accountDataFileStream;
 
-	m_accountDataFilename = m_userDataDirRoot.append(filename);
-	m_accountDataFileStream.open(m_accountDataFilename);
+	m_accountDataFilename = filename;
+	std::wstring accountFile = m_userDataDirRoot;
+	accountFile.append(m_accountDataFilename);
+
+	m_accountDataFileStream.open(accountFile);
 	if (m_accountDataFileStream.fail())
 	{
 		return FALSE;
@@ -121,7 +124,10 @@ BOOL MyCasino::SaveAccounts()
 {
 	std::wofstream m_accountDataFileStream;
 
-	m_accountDataFileStream.open(m_accountDataFilename);
+	std::wstring accountFile = m_userDataDirRoot;
+	accountFile.append(m_accountDataFilename);
+
+	m_accountDataFileStream.open(accountFile);
 	if (m_accountDataFileStream.fail())
 	{
 		return FALSE;
