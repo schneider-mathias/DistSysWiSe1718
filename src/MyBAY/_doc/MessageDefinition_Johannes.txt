@@ -1,0 +1,65 @@
+Auktionsende Message: 
+	Nr. Warnung
+	Auktionsnummer
+	Artikelname
+	Höchstgebot
+	Höchstbietender
+
+nur Auktionator bekommt den Namen der Bieter mit angezeigt! 
+
+Details Message:
+	0 Gebotsnummer
+	1 Bietername
+	2 Gebot
+
+Meine Messages (RPC):
+	Neues Gebot (Messagetype = 0):
+	0 interessierte User (Empfänger)
+	1 MessageType
+	2 Name des Bieters (für Auktionator) ODER Platzhalter (wenn nicht Auktionator)
+	3 Artikelname
+	4 Gebot
+	5 Auktionsstatus
+
+	Auktion kurz vor Ende Warnung (Messagetype = 1):
+	0 interessierte User (Empfänger)
+	1 MessageType
+	2 Warnungsnummer
+	3 Artikelname
+	4 Auktionsnummer
+	5 Höchstgebot
+
+	Auktion beendet (Messagetype = 2):
+	0 interessierte User (Empfänger) 
+	1 MessageType
+	2 Höchstbietender (Käufername)
+	3 Artikelname
+	4 Höchstgebot	(Preis)
+	5 Auktionsstatus
+
+	Infomessage (Messagetype = 3):
+	0 Empfänger
+	1 MessageType
+	2 Message
+
+
+Meine NrWarnung bei kurz vor Ende einer Auktion:
+	1 "noch 15 Sek"
+	2 "noch 10 Sek"
+	3 "noch 5 Sek"
+	4 "Auktion beendet"
+
+serializeAuctions:
+	0 Auktionsnummer
+	1 Artikelname
+	2 Zahl der aktuellen Gebote
+	3 Höchstgebot
+
+
+
+COM: 
+	errMsg = "OK"		// wenn alles passt
+	errMsg = Fehlermeldung
+
+	return S_OK 		-> errMsg = "OK"  
+	return (irgendein)FAIL 	-> errMsg = entsprechende Fehlermeldung
