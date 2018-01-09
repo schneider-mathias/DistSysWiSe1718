@@ -232,7 +232,7 @@ BOOL MyCasinoAccount::ChangeTransaction(ULONG transactionId, DOUBLE changeAmount
 
 
 		// remove amount from preliminary and add to actual balance
-		m_preliminaryBalance -= additionalWageDifference;
+		m_preliminaryBalance -= (additionalWageDifference - changeAmount);
 
 		m_currentBalance += additionalWageDifference;
 	}
@@ -245,7 +245,7 @@ BOOL MyCasinoAccount::ChangeTransaction(ULONG transactionId, DOUBLE changeAmount
 
 
 		// remove amount from preliminary and add to actual balance
-		m_preliminaryBalance -= additionalWageDifference;
+		m_preliminaryBalance -= (additionalWageDifference - changeAmount);
 
 		m_currentBalance += additionalWageDifference;
 	}
