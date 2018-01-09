@@ -1,0 +1,48 @@
+// COMMyBaySrv.idl : IDL-Quelle für COMMyBaySrv
+//
+
+// Diese Datei wird mit dem MIDL-Tool bearbeitet,
+// um den Quellcode für die Typbibliothek (COMMyBaySrv.tlb) und den Marshallingcode zu erzeugen.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+
+
+typedef SAFEARRAY(VARIANT) SAVEARRAY_VAR;
+
+[
+	object,
+	uuid(148D7498-389E-476E-8A40-311800A25CE4),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface ICOMMyBay : IDispatch {
+	[id(1)] HRESULT login([in] BSTR username, [in] BSTR password, [out] ULONG* sessionId, [out] BSTR* errMsg);
+	[id(2)] HRESULT logout([in] ULONG sessionId, [out] BSTR* errMsg);
+	[id(3)] HRESULT offer([in] ULONG sessionId, [in] BSTR articleName, [in] DOUBLE startBid, [out] ULONG* auctionNumber, [out] BSTR* errMsg);
+	[id(4)] HRESULT interested([in] ULONG sessionId, [in] ULONG auctionNumber, [out] BSTR* errMsg);
+	[id(5)] HRESULT getAuctions([in] ULONG sessionId, [in] ULONG flags, [in] BSTR articleName, [out] ULONG* countAuctions, [out] SAVEARRAY_VAR* auctions, [out] BSTR* errMsg);
+	[id(6)] HRESULT bid([in] ULONG sessionId, [in] ULONG auctionNumber, [in] DOUBLE bidVal, [out] BSTR* errMsg);
+	[id(7)] HRESULT details([in] ULONG sessionId, [in] ULONG auctionNumber, [out] SAVEARRAY_VAR* allBids, [out] ULONG* countBids, [out] BSTR* errMsg);
+	[id(8)] HRESULT endauction([in] ULONG sessionId, [in] ULONG auctionNumber, [out] BSTR* errMsg);
+	[id(9)] HRESULT getMessage([in] ULONG sessionId, [out] BOOL*einBoolwasIchNichtWeiß, [out] ULONG* messageType, [out] SAVEARRAY_VAR* message, [out] BSTR* errMsg);
+};
+
+[
+	uuid(99060876-7DF0-4AE6-A52B-55279F3CBB35),
+	version(1.0),
+]
+library COMMyBaySrvLib
+{
+	importlib("stdole2.tlb");
+	[
+		uuid(BCD466A4-0DB3-468E-9C14-AF36AD44C119)
+	]
+	coclass COMMyBay
+	{
+		[default] interface ICOMMyBay;
+	};
+};
+
