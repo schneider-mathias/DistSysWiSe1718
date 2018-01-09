@@ -582,10 +582,8 @@ BOOL MyCasino::Draw(SHORT** firstNumber, SHORT** secondNumber)
 
 SHORT MyCasino::GenerateDrawNumber(SHORT* firstNumber)
 {
-	// ToDo: check whether it is these number have to fullfill 
 	// the same restrictions as bet sets (first number < second number)
-	//return (NULL==firstNumber)? (rand() % 4 + 1) : (rand() % (5 - *firstNumber) + *firstNumber + 1);
-	return (rand() % 5 + 1);
+	return (NULL==firstNumber)? (rand() % 4 + 1) : (rand() % (5 - *firstNumber) + *firstNumber + 1);
 }
 
 std::vector<MyCasinoBet*> MyCasino::GetBets()
