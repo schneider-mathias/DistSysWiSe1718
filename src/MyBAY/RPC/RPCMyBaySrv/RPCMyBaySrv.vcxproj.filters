@@ -24,21 +24,9 @@
     <ClCompile Include="RPCMyBaySrvStub.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="EndAuktionThread.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="HelperFunktions.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RPCMyBaySrvImpl.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="EndAuktionThread.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="HelperFunktions.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="CritSectionWrapper.h">

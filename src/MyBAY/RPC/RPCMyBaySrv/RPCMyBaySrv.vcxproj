@@ -150,16 +150,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="EndAuktionThread.cpp" />
-    <ClCompile Include="HelperFunktions.cpp" />
     <ClCompile Include="RPCMyBaySrv.c" />
     <ClCompile Include="RPCMyBaySrvImpl.cpp" />
     <ClCompile Include="RPCMyBaySrvStub.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CritSectionWrapper.h" />
-    <ClInclude Include="EndAuktionThread.h" />
-    <ClInclude Include="HelperFunktions.h" />
     <ClInclude Include="RPCMyBaySrvImpl.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
