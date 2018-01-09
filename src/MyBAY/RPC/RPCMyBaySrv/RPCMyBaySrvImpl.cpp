@@ -1,5 +1,4 @@
 #include "MyBay_i_h.h"
-#include "MyBayUser.h"
 #include <iostream>
 #include <algorithm>
 #include <fstream>
