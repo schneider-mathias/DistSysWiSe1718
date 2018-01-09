@@ -509,7 +509,10 @@ BOOL MyCasino::Draw(SHORT** firstNumber, SHORT** secondNumber)
 		if (**firstNumber == (*it).second->GetFirstNumber() && **secondNumber == (*it).second->GetSecondNumber())
 			totalReward = rewardForTwo;
 		// one number is drawn
-		else if (**firstNumber == (*it).second->GetFirstNumber() || **secondNumber == (*it).second->GetFirstNumber())		
+		else if (**firstNumber == (*it).second->GetFirstNumber() 
+			|| **firstNumber == (*it).second->GetSecondNumber()
+			|| **secondNumber == (*it).second->GetFirstNumber()	
+			|| **secondNumber == (*it).second->GetSecondNumber())
 			totalReward = rewardForOne;
 
 
