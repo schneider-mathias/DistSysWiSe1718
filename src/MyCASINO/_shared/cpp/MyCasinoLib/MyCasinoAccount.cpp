@@ -1,5 +1,6 @@
 #include <sstream>
 
+#include "ScopedLock.h"
 #include "MyCasinoAccount.h"
 #include "MyCasinoTransaction.h"
 
@@ -18,9 +19,13 @@ MyCasinoAccount::~MyCasinoAccount()
 {
 
 	// finally delete all transaction objects
-	for (auto it = m_transactions.begin(); it != m_transactions.end(); it++)
 	{
-		delete (*it);
+		SCOPED_LOCK(transactionsMutex);
+
+		for (auto it = m_transactions.begin(); it != m_transactions.end(); it++)
+		{
+			delete (*it);
+		}
 	}
 }
 
@@ -79,9 +84,13 @@ BOOL MyCasinoAccount::CreateTransaction(DOUBLE changeAmount, MyCasinoTransaction
 	{
 	case MyCasinoTransactionsTypes::DEPOSIT:
 		// deposit has to be positive
-		if(changeAmount < 0.0)
+		if (changeAmount < 0.0)
 			return ERROR_MY_CASINO_INVALID_CHANGE_AMOUNT;
-		m_currentBalance += changeAmount;
+
+		{
+			SCOPED_LOCK(balanceMutex);
+			m_currentBalance += changeAmount;
+		}
 		break;
 	case MyCasinoTransactionsTypes::WITHDRAWAL:
 		if (changeAmount > GetCurrentBalance())
@@ -90,24 +99,35 @@ BOOL MyCasinoAccount::CreateTransaction(DOUBLE changeAmount, MyCasinoTransaction
 		// withdrawal has to be negativ
 		if (changeAmount > 0.0)
 			return ERROR_MY_CASINO_INVALID_CHANGE_AMOUNT;
-		m_currentBalance += changeAmount;
+		
+		{
+			SCOPED_LOCK(balanceMutex);
+			m_currentBalance += changeAmount;
+		}
 		break;
 	case MyCasinoTransactionsTypes::BET_WAGER:
 		if (changeAmount > GetCurrentBalance())
 			return ERROR_MY_CASINO_ACCOUNT_BALANCE_NOT_SUFFICIENT;
 
-		m_preliminaryBalance += changeAmount;
+		{
+			SCOPED_LOCK(balanceMutex);
+			m_preliminaryBalance += changeAmount;
+		}
 		break;
 	default:
 		return ERROR_MY_CASINO_INVALID_TRANSACTION_TYPE;
 	}
-	
+
+
 	MyCasinoTransaction* transaction = new MyCasinoTransaction(m_transactionIdCounter++, m_currentBalance, changeAmount);
 	transaction->SetTransactionType(type, information, infoType);
 
+	{
+		SCOPED_LOCK(transactionsMutex);
 
-	// save to transaction list
-	m_transactions.push_back(transaction);
+		// save to transaction list
+		m_transactions.push_back(transaction);
+	}
 
 	*transactionId = transaction->GetId();
 
@@ -124,10 +144,16 @@ BOOL MyCasinoAccount::CancelTransaction(ULONG transactionId)
 	{
 	case MyCasinoTransactionsTypes::DEPOSIT:
 	case MyCasinoTransactionsTypes::WITHDRAWAL:
-		m_currentBalance -= transaction->GetChangeAmount();
+		{
+			SCOPED_LOCK(balanceMutex);
+			m_currentBalance -= transaction->GetChangeAmount();
+		}
 		break;
 	case MyCasinoTransactionsTypes::BET_WAGER:
-		m_preliminaryBalance -= transaction->GetChangeAmount();
+		{
+			SCOPED_LOCK(balanceMutex);
+			m_preliminaryBalance -= transaction->GetChangeAmount();
+		}
 		break;
 	default:
 		return ERROR_MY_CASINO_INVALID_TRANSACTION_TYPE;
@@ -152,7 +178,7 @@ BOOL MyCasinoAccount::GetTransactionInformation(ULONG transactionId, IMyCasinoTr
 BOOL MyCasinoAccount::GetTransaction(ULONG transactionId, MyCasinoTransaction** transaction)
 {
 	*transaction = NULL;
-
+	SCOPED_LOCK(transactionsMutex);
 	for (auto it = m_transactions.begin(); it < m_transactions.end(); it++)
 	{
 		if ((*it)->GetId() == transactionId)
@@ -171,6 +197,8 @@ BOOL MyCasinoAccount::GetTransaction(IMyCasinoTransactionInformation* transactio
 	if (NULL == transactionInformation)
 		return FALSE;
 
+	SCOPED_LOCK(transactionsMutex);
+
 	for (auto it = m_transactions.begin(); it < m_transactions.end(); it++)
 	{
 		// ToDo compare informations
@@ -187,12 +215,8 @@ BOOL MyCasinoAccount::GetTransaction(IMyCasinoTransactionInformation* transactio
 
 DOUBLE MyCasinoAccount::GetCurrentBalance()
 {
+	SCOPED_LOCK(balanceMutex);
 	return m_currentBalance + m_preliminaryBalance;
-}
-
-const std::vector<MyCasinoTransaction*>& MyCasinoAccount::GetTransactions()
-{
-	return m_transactions;
 }
 
 
@@ -219,7 +243,11 @@ BOOL MyCasinoAccount::ChangeTransaction(ULONG transactionId, DOUBLE changeAmount
 
 		if (GetCurrentBalance() - additionalWageDifference < 0)
 			return ERROR_MY_CASINO_ACCOUNT_BALANCE_NOT_SUFFICIENT;
-		m_preliminaryBalance += additionalWageDifference;
+
+		{
+			SCOPED_LOCK(balanceMutex);
+			m_preliminaryBalance += additionalWageDifference;
+		}
 
 		additionalWageDifference = changeAmount;
 	}
@@ -232,9 +260,19 @@ BOOL MyCasinoAccount::ChangeTransaction(ULONG transactionId, DOUBLE changeAmount
 
 
 		// remove amount from preliminary and add to actual balance
-		m_preliminaryBalance -= (additionalWageDifference - changeAmount);
+		{
+			SCOPED_LOCK(balanceMutex);
+			if(previousAmount > 0 && m_preliminaryBalance > 0)
+				m_preliminaryBalance -= previousAmount;
+			else if(previousAmount < 0 && m_preliminaryBalance > 0)
+				m_preliminaryBalance += previousAmount;
+			else if (previousAmount < 0 && m_preliminaryBalance < 0)
+				m_preliminaryBalance -= previousAmount;
+			else if (previousAmount > 0 && m_preliminaryBalance < 0)
+				m_preliminaryBalance += previousAmount;
 
-		m_currentBalance += additionalWageDifference;
+			m_currentBalance += additionalWageDifference;
+		}
 	}
 	else if (type == MyCasinoTransactionsTypes::BET_WIN)
 	{
@@ -245,9 +283,19 @@ BOOL MyCasinoAccount::ChangeTransaction(ULONG transactionId, DOUBLE changeAmount
 
 
 		// remove amount from preliminary and add to actual balance
-		m_preliminaryBalance -= (additionalWageDifference - changeAmount);
+		{
+			SCOPED_LOCK(balanceMutex);
+			if (previousAmount > 0 && m_preliminaryBalance > 0)
+				m_preliminaryBalance -= previousAmount;
+			else if (previousAmount < 0 && m_preliminaryBalance > 0)
+				m_preliminaryBalance += previousAmount;
+			else if (previousAmount < 0 && m_preliminaryBalance < 0)
+				m_preliminaryBalance -= previousAmount;
+			else if (previousAmount > 0 && m_preliminaryBalance < 0)
+				m_preliminaryBalance += previousAmount;
 
-		m_currentBalance += additionalWageDifference;
+			m_currentBalance += additionalWageDifference;
+		}
 	}
 	else
 	{
@@ -260,6 +308,8 @@ BOOL MyCasinoAccount::ChangeTransaction(ULONG transactionId, DOUBLE changeAmount
 
 BOOL MyCasinoAccount::GetNextTransaction(MyCasinoTransaction** nextTransaction)
 {
+	SCOPED_LOCK(transactionsMutex);
+
 	for (auto it = m_transactions.begin() + m_currentTransactionIterator; it < m_transactions.end();)
 	{
 		*nextTransaction = (*it);

@@ -1,6 +1,7 @@
 #pragma once
 #include <map>
 #include <list>
+#include <atomic>
 #include "MyCasinoUser.h"
 #include "MyCasinoAccount.h"
 #include "MyCasinoBet.h"
@@ -31,6 +32,7 @@ private:
 	BOOL GetBet(SHORT firstNumber, SHORT secondNumber, MyCasinoBet** bet);
 	BOOL CloseBet(const MyCasinoUser& user, MyCasinoBet& bet);
 	BOOL DeleteBet(SHORT firstNumber, SHORT secondNumber);
+	BOOL CalcProfit(MyCasinoBet& bet, DOUBLE* priceForOne, DOUBLE* priceForTwo);
 	BOOL LoadAccount(const MyCasinoUser& user, MyCasinoAccount** account);
 	BOOL SaveAccounts();
 	BOOL GetAccount(const MyCasinoUser& user, MyCasinoAccount** account);
@@ -45,7 +47,10 @@ private:
 	MyCasinoAccount* m_pOperatorAccount;
 	std::multimap<MyCasinoUser, MyCasinoBet*> m_currentBets;
 	std::vector<MyCasinoBet*> m_formerBets;
-	ULONG m_currentBetId;
-	CRITICAL_SECTION m_critSection;
+	std::atomic<ULONG> m_currentBetId;
 
+	std::mutex m_operatorMutex;
+	std::mutex m_betsMutex;
+	std::mutex m_formerBetsMutex;
+	std::mutex m_userAccountsMutex;
 };

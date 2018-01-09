@@ -1,6 +1,8 @@
 #pragma once
 #include <windows.h>
 #include <vector>
+#include <mutex>
+
 #include "TaggedUnion.h"
 #include "../IncPub/MyCasinoDefines.h"
 
@@ -43,6 +45,7 @@ private:
 	ULONG m_id;
 	DOUBLE m_resultBalance;
 	DOUBLE m_changeAmount;
+	std::mutex m_transactionMutex;
 	MyCasinoTransactionsTypes m_transactionType;
 	IMyCasinoTransactionInformation* m_pTransactionDetails;
 	MyCasinoTransactionsInformationTypes* m_pTransactionInformationType;

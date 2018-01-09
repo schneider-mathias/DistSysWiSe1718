@@ -1,4 +1,5 @@
 #include "MyCasino.h"
+#include "ScopedLock.h"
 #include <utility>
 #include <cstdlib>
 #include <time.h>
@@ -23,25 +24,41 @@ MyCasino::MyCasino(std::wstring* userDataDirRootEnv) :
 	}
 
 	srand((ULONG)time(NULL));
-
-	InitializeCriticalSection(&m_critSection);
 }
 
 MyCasino::~MyCasino()
 {
-	DeleteCriticalSection(&m_critSection);
+	// close Casino properly if not already done
+	Close();
 
 	// finally delete all bet objects
-	for (auto it = m_formerBets.begin(); it != m_formerBets.end(); it++)
 	{
-		delete (*it);
+		SCOPED_LOCK(m_formerBetsMutex);
+
+		for (auto it = m_formerBets.begin(); it != m_formerBets.end(); it++)
+		{
+			delete (*it);
+		}
+
+		m_formerBets.clear();
 	}
 
 	// delete all account objects
-	for (auto it = m_userAccounts.begin(); it != m_userAccounts.end(); it++)
 	{
-		delete (*it);
+		SCOPED_LOCK(m_userAccountsMutex);
+
+		for (auto it = m_userAccounts.begin(); it != m_userAccounts.end(); it++)
+		{
+			delete (*it);
+		}
+
+		m_userAccounts.clear();
+
+		// loaded users use same objects as 
+		// m_userAccounts thus no delete is necessary
+		m_loadedUserAccounts.clear();
 	}
+
 }
 
 BOOL MyCasino::Open(MyCasinoUser* user)
@@ -53,11 +70,20 @@ BOOL MyCasino::Open(MyCasinoUser* user)
 	if (IsOpened())
 		return ERROR_MY_CASINO_HAS_ALREADY_OPERATOR;
 
-	m_pOperator = user;
+	{
+		SCOPED_LOCK(m_operatorMutex);
+		m_pOperator = user;
+	}
+	
 	MyCasinoAccount* account = NULL;
 	if (!LoadAccount(*m_pOperator, &account))
 		return ERROR_MY_CASINO_CANNOT_LOAD_ACCOUNT;
-	m_pOperatorAccount = account;
+
+	{
+		SCOPED_LOCK(m_operatorMutex);
+		m_pOperatorAccount = account;
+	}
+	
 
 	return TRUE;
 }
@@ -69,6 +95,7 @@ BOOL MyCasino::IsOpened()
 
 BOOL MyCasino::IsOperator(MyCasinoUser& user)
 {
+	SCOPED_LOCK(m_operatorMutex);
 	return IsOpened() && (*m_pOperator) == user;
 }
 
@@ -97,7 +124,10 @@ BOOL MyCasino::LoadAccounts(std::wstring filename)
 			return ERROR_MY_CASINO_CANNOT_LOAD_ACCOUNTS;
 		}
 
-		m_userAccounts.push_back(loadedAccount);
+		{
+			SCOPED_LOCK(m_userAccountsMutex);
+			m_userAccounts.push_back(loadedAccount);
+		}
 	}
 
 	m_accountDataFileStream.close();
@@ -108,6 +138,7 @@ BOOL MyCasino::LoadAccounts(std::wstring filename)
 
 BOOL MyCasino::LoadAccount(const MyCasinoUser& user, MyCasinoAccount** account)
 {
+	SCOPED_LOCK(m_userAccountsMutex);
 	for (auto it = m_userAccounts.begin(); it != m_userAccounts.end(); it++)
 	{
 		if (user.m_username.compare((*it)->GetUsername()) == 0)
@@ -133,9 +164,12 @@ BOOL MyCasino::SaveAccounts()
 		return FALSE;
 	}
 
-	for (auto it = m_userAccounts.begin(); it != m_userAccounts.end(); it++)
 	{
-		m_accountDataFileStream << (*it)->Serialize() << std::endl;
+		SCOPED_LOCK(m_userAccountsMutex);
+		for (auto it = m_userAccounts.begin(); it != m_userAccounts.end(); it++)
+		{
+			m_accountDataFileStream << (*it)->Serialize() << std::endl;
+		}
 	}
 
 	m_accountDataFileStream.close();
@@ -143,8 +177,15 @@ BOOL MyCasino::SaveAccounts()
 	return TRUE;
 }
 
+BOOL MyCasino::CalculateProfit(MyCasinoBet& bet, DOUBLE* priceForOne, DOUBLE* priceForTwo)
+{
+	SCOPED_LOCK(m_betsMutex);
+	return CalcProfit(bet, priceForOne, priceForTwo);
+}
+
 // calculate profit for given bet
-BOOL MyCasino::CalculateProfit(MyCasinoBet& bet, DOUBLE* rewardForOne, DOUBLE* rewardForTwo)
+// has to be locked from outside SCOPED_LOCK(m_betsMutex);
+BOOL MyCasino::CalcProfit(MyCasinoBet& bet, DOUBLE* rewardForOne, DOUBLE* rewardForTwo)
 {
 	// check if first and second number are valid for this game
 	if (!IsValidBetNumber(bet.GetFirstNumber()) || !IsValidBetNumber(bet.GetSecondNumber()))
@@ -156,6 +197,7 @@ BOOL MyCasino::CalculateProfit(MyCasinoBet& bet, DOUBLE* rewardForOne, DOUBLE* r
 	// two number right gives additionally all wagers as reward
 	*rewardForTwo = *rewardForOne + bet.GetSetAmount();
 
+
 	for (std::multimap<MyCasinoUser, MyCasinoBet*>::iterator it = m_currentBets.begin(); it != m_currentBets.end(); it++)
 	{
 		// skip value with same number (can happen if amount for this bet should be overwritten)
@@ -165,7 +207,6 @@ BOOL MyCasino::CalculateProfit(MyCasinoBet& bet, DOUBLE* rewardForOne, DOUBLE* r
 			(*rewardForTwo) += (*it).second->GetSetAmount();
 		}
 	}
-		
 
 	return TRUE;
 }
@@ -213,7 +254,11 @@ BOOL MyCasino::Bet(MyCasinoUser& user, SHORT firstNumber, SHORT secondNumber, DO
 
 
 			// add to current bets
-			m_currentBets.insert(std::pair<MyCasinoUser, MyCasinoBet*>(user, bet));
+			{
+				SCOPED_LOCK(m_betsMutex);
+				m_currentBets.insert(std::pair<MyCasinoUser, MyCasinoBet*>(user, bet));
+			}
+			
 			
 			return TRUE;
 
@@ -296,20 +341,25 @@ BOOL MyCasino::DeleteBet(SHORT firstNumber, SHORT secondNumber)
 		return ERROR_MY_CASINO_NO_OPERATOR;
 
 	BOOL deleteSuccess = FALSE;
-	for (std::multimap<MyCasinoUser, MyCasinoBet*>::iterator it = m_currentBets.begin(); it != m_currentBets.end();)
+
 	{
-		if (firstNumber == (*it).second->GetFirstNumber()
-			&& secondNumber == (*it).second->GetSecondNumber()
-			)
+		SCOPED_LOCK(m_betsMutex);
+
+		for (std::multimap<MyCasinoUser, MyCasinoBet*>::iterator it = m_currentBets.begin(); it != m_currentBets.end();)
 		{
-			m_formerBets.push_back((*it).second);
-			it = m_currentBets.erase(it);
-			deleteSuccess = TRUE;
-			break;
-		}
-		else
-		{
-			it++;
+			if (firstNumber == (*it).second->GetFirstNumber()
+				&& secondNumber == (*it).second->GetSecondNumber()
+				)
+			{
+				m_formerBets.push_back((*it).second);
+				it = m_currentBets.erase(it);
+				deleteSuccess = TRUE;
+				break;
+			}
+			else
+			{
+				it++;
+			}
 		}
 	}
 
@@ -349,14 +399,18 @@ BOOL MyCasino::GetBet(SHORT firstNumber, SHORT secondNumber, MyCasinoBet** bet)
 		return ERROR_MY_CASINO_NO_OPERATOR;
 
 	*bet = NULL;
-	for (std::multimap<MyCasinoUser, MyCasinoBet*>::iterator it = m_currentBets.begin(); it != m_currentBets.end(); it++)
 	{
-		if (firstNumber == (*it).second->GetFirstNumber()
-			&& secondNumber == (*it).second->GetSecondNumber()
-			)
+		SCOPED_LOCK(m_betsMutex);
+
+		for (std::multimap<MyCasinoUser, MyCasinoBet*>::iterator it = m_currentBets.begin(); it != m_currentBets.end(); it++)
 		{
-			*bet = ((*it).second);
-			break;
+			if (firstNumber == (*it).second->GetFirstNumber()
+				&& secondNumber == (*it).second->GetSecondNumber()
+				)
+			{
+				*bet = ((*it).second);
+				break;
+			}
 		}
 	}
 
@@ -368,21 +422,28 @@ BOOL MyCasino::GetAccount(const MyCasinoUser& user, MyCasinoAccount** account)
 	*account = NULL;
 
 	// operator account is not stored in user list
-	if (NULL != m_pOperator && user == *m_pOperator)
 	{
-		if (NULL == m_pOperatorAccount)
-			return ERROR_MY_CASINO_CANNOT_LOAD_ACCOUNT;
+		SCOPED_LOCK(m_operatorMutex);
 
-		*account = m_pOperatorAccount;
-		return TRUE;
+		if (NULL != m_pOperator && user == *m_pOperator)
+		{
+			if (NULL == m_pOperatorAccount)
+				return ERROR_MY_CASINO_CANNOT_LOAD_ACCOUNT;
+
+			*account = m_pOperatorAccount;
+			return TRUE;
+		}
 	}
 
-	for (std::map<MyCasinoUser, MyCasinoAccount*>::iterator it = m_loadedUserAccounts.begin(); it != m_loadedUserAccounts.end(); it++)
 	{
-		if (user == (*it).first)
+		SCOPED_LOCK(m_userAccountsMutex);
+		for (std::map<MyCasinoUser, MyCasinoAccount*>::iterator it = m_loadedUserAccounts.begin(); it != m_loadedUserAccounts.end(); it++)
 		{
-			*account = ((*it).second);
-			return TRUE;
+			if (user == (*it).first)
+			{
+				*account = ((*it).second);
+				return TRUE;
+			}
 		}
 	}
 
@@ -403,16 +464,22 @@ BOOL MyCasino::CheckOperatorAccount(MyCasinoBet& bet)
 {
 	double rewardForOne = 0.0;
 	double rewardForTwo = 0.0;
-	BOOL resVal = CalculateProfit(bet, &rewardForOne, &rewardForTwo);
+	BOOL resVal = FALSE;
+	{
+		SCOPED_LOCK(m_betsMutex);
+		resVal = CalcProfit(bet, &rewardForOne, &rewardForTwo);
+	}
 	if (FAILED(resVal))
 		return resVal;
 
 	// wager ist not transferred to operators account yet, but in order to determine 
 	// whether balance is sufficient also take this additional amount to consideration
-	if (rewardForOne > m_pOperatorAccount->GetCurrentBalance() + bet.GetSetAmount() ||
-		rewardForTwo > m_pOperatorAccount->GetCurrentBalance() + bet.GetSetAmount())
-		return ERROR_MY_CASINO_OPERATOR_ACCOUNT_BALANCE_NOT_SUFFICIENT;
-
+	{
+		SCOPED_LOCK(m_operatorMutex);
+		if (rewardForOne > m_pOperatorAccount->GetCurrentBalance() + bet.GetSetAmount() ||
+			rewardForTwo > m_pOperatorAccount->GetCurrentBalance() + bet.GetSetAmount())
+			return ERROR_MY_CASINO_OPERATOR_ACCOUNT_BALANCE_NOT_SUFFICIENT;
+	}
 	return TRUE;
 }
 
@@ -431,17 +498,22 @@ BOOL MyCasino::CheckBet(MyCasinoUser& user, MyCasinoBet& bet)
 	if (!IsValidBetNumber(bet.GetFirstNumber()) || !IsValidBetNumber(bet.GetSecondNumber()))
 		return ERROR_MY_CASINO_BET_INVALID_NUMBER;
 
-	for (std::multimap<MyCasinoUser, MyCasinoBet*>::iterator it = m_currentBets.begin(); it != m_currentBets.end(); it++)
+	
 	{
-		if (bet.GetFirstNumber() == (*it).second->GetFirstNumber()
-			&& bet.GetSecondNumber() == (*it).second->GetSecondNumber()
-			)
+		SCOPED_LOCK(m_betsMutex);
+
+		for (std::multimap<MyCasinoUser, MyCasinoBet*>::iterator it = m_currentBets.begin(); it != m_currentBets.end(); it++)
 		{
-			if (user == (*it).first)
-				resVal = INFORMATION_MY_CASINO_USER_HAS_NUMBERS;
-			else
-				resVal = ERROR_MY_CASINO_BET_ALREADY_TAKEN;
-			break;
+			if (bet.GetFirstNumber() == (*it).second->GetFirstNumber()
+				&& bet.GetSecondNumber() == (*it).second->GetSecondNumber()
+				)
+			{
+				if (user == (*it).first)
+					resVal = INFORMATION_MY_CASINO_USER_HAS_NUMBERS;
+				else
+					resVal = ERROR_MY_CASINO_BET_ALREADY_TAKEN;
+				break;
+			}
 		}
 	}
 	return resVal;
@@ -454,7 +526,6 @@ BOOL MyCasino::Deposit(MyCasinoUser& user, DOUBLE amount)
 		return ERROR_MY_CASINO_NO_OPERATOR;
 
 	MyCasinoAccount* account = NULL;
-
 	if (!GetAccount(user, &account))
 		return ERROR_MY_CASINO_CANNOT_LOAD_ACCOUNT;
 
@@ -494,85 +565,93 @@ BOOL MyCasino::Draw(SHORT** firstNumber, SHORT** secondNumber)
 	MyCasinoAccount* account;
 	ULONG currentTransactionId = 0;
 	ULONG currentOperatorTransactionId = 0;
-	for (std::multimap<MyCasinoUser, MyCasinoBet*>::iterator it = m_currentBets.begin(); it != m_currentBets.end();)
+
 	{
-		totalReward = 0.0;
-		rewardForOne = 0.0;
-		rewardForTwo = 0.0;
+		SCOPED_LOCK(m_betsMutex);
 
-		resVal = CalculateProfit(*(*it).second, &rewardForOne, &rewardForTwo);
-		if (FAILED(resVal)) 
-			return resVal; // should never happen
-
-		// calculate total rewards
-		// both numbers are drawn
-		if (**firstNumber == (*it).second->GetFirstNumber() && **secondNumber == (*it).second->GetSecondNumber())
-			totalReward = rewardForTwo;
-		// one number is drawn
-		else if (**firstNumber == (*it).second->GetFirstNumber() 
-			|| **firstNumber == (*it).second->GetSecondNumber()
-			|| **secondNumber == (*it).second->GetFirstNumber()	
-			|| **secondNumber == (*it).second->GetSecondNumber())
-			totalReward = rewardForOne;
-
-
-		// book transaction on gamer account
-		GetAccount((*it).first, &account);
-
-		if (!(account)->GetTransaction((*it).second, &currentTransactionId))
-			return ERROR_MY_CASINO_UNKNOWN_TRANSACTION_ID;
-
-		if (!(m_pOperatorAccount)->GetTransaction((*it).second, &currentOperatorTransactionId))
-			return ERROR_MY_CASINO_UNKNOWN_TRANSACTION_ID;
-
-		MyCasinoTransactionsInformationTypes infoType = MyCasinoTransactionsInformationTypes::Bet;
-		if (totalReward > 0.001)
+		for (std::multimap<MyCasinoUser, MyCasinoBet*>::iterator it = m_currentBets.begin(); it != m_currentBets.end();)
 		{
-			resVal = (account)->ChangeTransaction(currentTransactionId,
-				totalReward, 
-				MyCasinoTransactionsTypes::BET_WIN, 
-				(*it).second, &infoType);
+			totalReward = 0.0;
+			rewardForOne = 0.0;
+			rewardForTwo = 0.0;
 
-			if (FAILED(resVal))
-				return resVal;
+			resVal = CalcProfit(*(*it).second, &rewardForOne, &rewardForTwo);
+			if (FAILED(resVal)) 
+				return resVal; // should never happen
 
-			resVal = (m_pOperatorAccount)->ChangeTransaction(currentOperatorTransactionId,
-				-totalReward, 
-				MyCasinoTransactionsTypes::BET_LOSS, 
-				(*it).second, &infoType);
+			// calculate total rewards
+			// both numbers are drawn
+			if (**firstNumber == (*it).second->GetFirstNumber() && **secondNumber == (*it).second->GetSecondNumber())
+				totalReward = rewardForTwo;
+			// one number is drawn
+			else if (**firstNumber == (*it).second->GetFirstNumber() 
+				|| **firstNumber == (*it).second->GetSecondNumber()
+				|| **secondNumber == (*it).second->GetFirstNumber()	
+				|| **secondNumber == (*it).second->GetSecondNumber())
+				totalReward = rewardForOne;
 
-			if (FAILED(resVal))
-				return resVal;
+
+			// book transaction on gamer account
+			GetAccount((*it).first, &account);
+
+			if (!(account)->GetTransaction((*it).second, &currentTransactionId))
+				return ERROR_MY_CASINO_UNKNOWN_TRANSACTION_ID;
+
+			if (!(m_pOperatorAccount)->GetTransaction((*it).second, &currentOperatorTransactionId))
+				return ERROR_MY_CASINO_UNKNOWN_TRANSACTION_ID;
+
+			MyCasinoTransactionsInformationTypes infoType = MyCasinoTransactionsInformationTypes::Bet;
+			if (totalReward > 0.001)
+			{
+				resVal = (account)->ChangeTransaction(currentTransactionId,
+					totalReward, 
+					MyCasinoTransactionsTypes::BET_WIN, 
+					(*it).second, &infoType);
+
+				if (FAILED(resVal))
+					return resVal;
+
+				resVal = (m_pOperatorAccount)->ChangeTransaction(currentOperatorTransactionId,
+					-totalReward, 
+					MyCasinoTransactionsTypes::BET_LOSS, 
+					(*it).second, &infoType);
+
+				if (FAILED(resVal))
+					return resVal;
+			}
+			else
+			{
+				resVal = (account)->ChangeTransaction(currentTransactionId,
+					-(*it).second->GetSetAmount(),
+					MyCasinoTransactionsTypes::BET_LOSS,
+					(*it).second,
+					&infoType);
+
+				if (FAILED(resVal))
+					return resVal;
+
+				resVal = (m_pOperatorAccount)->ChangeTransaction(currentOperatorTransactionId,
+					(*it).second->GetSetAmount(),
+					MyCasinoTransactionsTypes::BET_WIN,
+					(*it).second,
+					&infoType);
+
+				if (FAILED(resVal))
+					return resVal;
+			}
+
+			// save result
+			(*it).second->SetBetResult(**firstNumber, **secondNumber, totalReward);
+
+			// save bets in order to delete them later
+			{
+				SCOPED_LOCK(m_formerBetsMutex);
+				m_formerBets.push_back((*it).second);
+			}
+
+			// delete bet entry
+			it = m_currentBets.erase(it);
 		}
-		else
-		{
-			resVal = (account)->ChangeTransaction(currentTransactionId,
-				-(*it).second->GetSetAmount(),
-				MyCasinoTransactionsTypes::BET_LOSS,
-				(*it).second,
-				&infoType);
-
-			if (FAILED(resVal))
-				return resVal;
-
-			resVal = (m_pOperatorAccount)->ChangeTransaction(currentOperatorTransactionId,
-				(*it).second->GetSetAmount(),
-				MyCasinoTransactionsTypes::BET_WIN,
-				(*it).second,
-				&infoType);
-
-			if (FAILED(resVal))
-				return resVal;
-		}
-
-		// save result
-		(*it).second->SetBetResult(**firstNumber, **secondNumber, totalReward);
-
-		// save bets in order to delete them later
-		m_formerBets.push_back((*it).second);
-
-		// delete bet entry
-		it = m_currentBets.erase(it);
 	}
 
 	// save user accounts
@@ -593,10 +672,12 @@ std::vector<MyCasinoBet*> MyCasino::GetBets()
 {
 	std::vector<MyCasinoBet*> betsSnapshot;
 
-	//TODO: locks
-	for (auto it = m_currentBets.begin(); it != m_currentBets.end(); it++)
 	{
-		betsSnapshot.push_back((it->second));
+		SCOPED_LOCK(m_formerBetsMutex);
+		for (auto it = m_currentBets.begin(); it != m_currentBets.end(); it++)
+		{
+			betsSnapshot.push_back((it->second));
+		}
 	}
 
 	return betsSnapshot;
@@ -605,7 +686,6 @@ std::vector<MyCasinoBet*> MyCasino::GetBets()
 BOOL MyCasino::GetNextTransaction(MyCasinoUser& user, MyCasinoTransaction** const transaction)
 {
 	MyCasinoAccount* account = NULL;
-
 	if (!GetAccount(user, &account))
 		return ERROR_MY_CASINO_CANNOT_LOAD_ACCOUNT;
 
@@ -615,7 +695,6 @@ BOOL MyCasino::GetNextTransaction(MyCasinoUser& user, MyCasinoTransaction** cons
 BOOL MyCasino::GetTransactionInfomation(MyCasinoUser& user, ULONG transationId, IMyCasinoTransactionInformation** const transactionInformation, MyCasinoTransactionsInformationTypes* type)
 {
 	MyCasinoAccount* account = NULL;
-
 	if (!GetAccount(user, &account))
 		return ERROR_MY_CASINO_CANNOT_LOAD_ACCOUNT;
 
@@ -633,25 +712,38 @@ BOOL MyCasino::Close()
 	// close all current bets
 	ULONG currentTransactionId = -1;
 	BOOL resVal = TRUE;
-	for (std::multimap<MyCasinoUser, MyCasinoBet*>::iterator it = m_currentBets.begin(); it != m_currentBets.end();)
+
 	{
-		// close transactions
-		resVal = CloseBet((*it).first, *(*it).second);
-		if (!resVal)
-			return resVal;
+		SCOPED_LOCK(m_betsMutex);
 
-		// save bets in order to delete them later
-		m_formerBets.push_back((*it).second);
+		for (std::multimap<MyCasinoUser, MyCasinoBet*>::iterator it = m_currentBets.begin(); it != m_currentBets.end();)
+		{
+			// close transactions
+			resVal = CloseBet((*it).first, *(*it).second);
+			if (!resVal)
+				return resVal;
 
-		// delete bet entry
-		it = m_currentBets.erase(it);
+			// save bets in order to delete them later
+			{
+				SCOPED_LOCK(m_formerBetsMutex);
+				m_formerBets.push_back((*it).second);
+			}
+
+			// delete bet entry
+			it = m_currentBets.erase(it);
+		}
 	}
 
-	// operator will be deleted by AuthService
-	m_pOperator = NULL;
+	
+	{
+		SCOPED_LOCK(m_operatorMutex);
 
-	// account will be deleted in destructor
-	m_pOperatorAccount = NULL;
+		// operator will be deleted by AuthService
+		m_pOperator = NULL;
 
+		// account will be deleted in destructor
+		m_pOperatorAccount = NULL;
+	}
+	
 	return TRUE;
 }

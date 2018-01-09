@@ -83,6 +83,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IncPub", "IncPub", "{A265265C-0A78-4626-AA8F-A27D40671EE8}"
 	ProjectSection(SolutionItems) = preProject
 		_shared\cpp\IncPub\MyCasinoDefines.h = _shared\cpp\IncPub\MyCasinoDefines.h
+		_shared\cpp\IncPub\ScopedLock.h = _shared\cpp\IncPub\ScopedLock.h
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "COMMyCasinoTestCln", "COM\COMMyCasinoTestCln\COMMyCasinoTestCln.vcxproj", "{50402F92-5863-451F-B7FF-D2008866E59E}"

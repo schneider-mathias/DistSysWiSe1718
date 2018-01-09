@@ -1,6 +1,8 @@
 #pragma once
 #include <windows.h>
 #include <list>
+#include <mutex>
+#include <atomic>
 
 #include "MyCasinoTransaction.h"
 
@@ -21,7 +23,6 @@ public:
 
 	BOOL CreateTransaction(DOUBLE changeAmount, MyCasinoTransactionsTypes type, IMyCasinoTransactionInformation* information, MyCasinoTransactionsInformationTypes* infoType, ULONG* transactionId);
 	DOUBLE GetCurrentBalance();
-	const std::vector<MyCasinoTransaction*>& GetTransactions();
 	
 	BOOL GetTransaction(IMyCasinoTransactionInformation* transactionInformation, ULONG* transactionId);
 
@@ -36,8 +37,10 @@ private:
 	std::wstring m_username;
 	DOUBLE m_currentBalance;
 	DOUBLE m_preliminaryBalance;
-	ULONG m_transactionIdCounter;
+	std::atomic<ULONG> m_transactionIdCounter;
 	int m_currentTransactionIterator;
 	std::vector<MyCasinoTransaction*> m_transactions;
+	std::mutex transactionsMutex;
+	std::mutex balanceMutex;
 
 };

@@ -37,4 +37,5 @@ private:
 	SHORT m_drawnSecondNumber;
 	DOUBLE m_resultAmount;
 	BOOL m_isDrawn;
+	std::mutex m_betMutex;
 };

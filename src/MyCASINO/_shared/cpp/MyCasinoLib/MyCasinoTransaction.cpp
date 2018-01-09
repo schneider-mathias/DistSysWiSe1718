@@ -1,5 +1,5 @@
+#include "ScopedLock.h"
 #include "MyCasinoTransaction.h"
-
 
 MyCasinoTransaction::MyCasinoTransaction(ULONG id, DOUBLE resultBalance, DOUBLE changeAmount)
 	:m_id(id),
@@ -12,6 +12,8 @@ MyCasinoTransaction::MyCasinoTransaction(ULONG id, DOUBLE resultBalance, DOUBLE 
 
 MyCasinoTransaction::~MyCasinoTransaction()
 {
+	SCOPED_LOCK(m_transactionMutex);
+
 	if (NULL != m_pTransactionInformationType)
 	{
 		delete m_pTransactionInformationType;
@@ -29,16 +31,22 @@ ULONG MyCasinoTransaction::GetId()
 
 DOUBLE MyCasinoTransaction::GetResultBalance()
 {
+	SCOPED_LOCK(m_transactionMutex);
+
 	return m_resultBalance;
 }
 
 DOUBLE MyCasinoTransaction::GetChangeAmount()
 {
+	SCOPED_LOCK(m_transactionMutex);
+
 	return m_changeAmount;
 }
 
 void MyCasinoTransaction::SetChangeAmount(DOUBLE changeAmount, DOUBLE resultBalance)
 {
+	SCOPED_LOCK(m_transactionMutex);
+
 	m_changeAmount = changeAmount;
 	m_resultBalance = resultBalance;
 }
@@ -50,6 +58,8 @@ MyCasinoTransactionsTypes MyCasinoTransaction::GetTransactionType()
 
 BOOL MyCasinoTransaction::SetTransactionType(MyCasinoTransactionsTypes type, IMyCasinoTransactionInformation* transactionDetails, MyCasinoTransactionsInformationTypes* infoType)
 {
+	SCOPED_LOCK(m_transactionMutex);
+
 	m_transactionType = type;
 	
 	// clear information type
@@ -70,10 +80,14 @@ BOOL MyCasinoTransaction::SetTransactionType(MyCasinoTransactionsTypes type, IMy
 
 IMyCasinoTransactionInformation* MyCasinoTransaction::GetTransactionInformation()
 {
+	SCOPED_LOCK(m_transactionMutex);
+
 	return m_pTransactionDetails;
 }
 
 MyCasinoTransactionsInformationTypes* MyCasinoTransaction::GetTransactionInformationType()
 {
+	SCOPED_LOCK(m_transactionMutex);
+
 	return m_pTransactionInformationType;
 }

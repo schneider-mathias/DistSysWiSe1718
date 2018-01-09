@@ -142,6 +142,12 @@ bool COMMyCasinoCommandLineInterface::showbets()
 
 	tp.PrintFooter();
 
+	if (FAILED(SafeArrayDestroy(bets)))
+	{
+		std::cerr << "[Error] Clean up of SafeArray failed." << std::endl;
+		return false;
+	}
+	
 	return true;
 }
 
@@ -253,7 +259,7 @@ bool COMMyCasinoCommandLineInterface::showstatus()
 			{
 				CComSafeArray<VARIANT> transactionInformationResult(transactionInformation);
 
-				std::wstring transactionInformation(L"");
+				std::wstring transactionInformationDetails(L"");
 				BOOL isDrawn = false;
 				if (informationType == MyCasinoTransactionsInformationTypes::Bet)
 				{
@@ -264,13 +270,25 @@ bool COMMyCasinoCommandLineInterface::showstatus()
 							|| i % BET_FULL_DETAILS_PROPTERY_COUNT == 2
 							|| i % BET_FULL_DETAILS_PROPTERY_COUNT == 4
 							|| i % BET_FULL_DETAILS_PROPTERY_COUNT == 5)
-							transactionInformation.append(L" ").append(std::to_wstring(transactionInformationResult[i].intVal));
+							transactionInformationDetails.append(L" ").append(std::to_wstring(transactionInformationResult[i].intVal));
 					}
 				}
 
 				// only display wager of finished bets
-				tp << wstring_to_char(resolve_transaction_type((MyCasinoTransactionsTypes)transactionType)) << changeAmount << resultBalance << wstring_to_char(transactionInformation);
+				tp << wstring_to_char(resolve_transaction_type((MyCasinoTransactionsTypes)transactionType)) << changeAmount << resultBalance << wstring_to_char(transactionInformationDetails);
+
+				if (FAILED(SafeArrayDestroy(transactionInformation)))
+				{
+					std::cerr << "[Error] Clean up of SafeArray for transactions failed." << std::endl;
+					return false;
+				}
 			}
+		}
+
+		if (FAILED(SafeArrayDestroy(transaction)))
+		{
+			std::cerr << "[Error] Clean up of SafeArray for transactions failed." << std::endl;
+			return false;
 		}
 	}
 

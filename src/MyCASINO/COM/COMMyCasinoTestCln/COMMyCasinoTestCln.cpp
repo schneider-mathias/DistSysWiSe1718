@@ -232,6 +232,9 @@ BOOL testcase_change_bet_more_wager(CmdInterpreter& interpreter)
 
 BOOL testcase_change_bet_less_wager(CmdInterpreter& interpreter)
 {
+	if (!runCommand(interpreter, L"user Casino Passwort"))
+		return E_FAIL;
+
 	if (!runCommand(interpreter, L"user Gamer Passwort"))
 		return E_FAIL;
 
@@ -362,7 +365,6 @@ int main(int argc, char**argv)
 		std::cout << "Error running test - testcase_lose_bets" << std::endl;
 		return E_FAIL;
 	}
-	
 		
 	// TEST CASE: win with both numbers
 	testcase_win_two_numbers_bets(interpreter);
