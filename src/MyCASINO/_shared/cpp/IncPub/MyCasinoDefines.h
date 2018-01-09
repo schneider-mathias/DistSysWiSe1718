@@ -2,10 +2,6 @@
 #include <string>
 #include <windows.h>
 
-#define _MY_CASINO_TYPEDEF_(_sc) ((long)_sc)
-
-typedef unsigned long MY_CASINO_RES;
-
 #define ERROR_MY_CASINO_USER_NOT_LOGGED_IN 0x80110001L
 #define ERROR_MY_CASINO_USER_PERMISSION_DENIED 0x80110002L
 #define ERROR_MY_CASINO_USER_FOR_DEPOSIT_NOT_LOGGED_IN 0x80110003L
