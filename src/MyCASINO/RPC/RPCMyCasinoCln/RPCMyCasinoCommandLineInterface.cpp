@@ -4,6 +4,7 @@
 #include "MyCasinoDefines.h"
 
 #include "json\reader.h"
+#include "bprinter\table_printer.h"
 
 RPCMyCasinoCommandLineInterface::RPCMyCasinoCommandLineInterface(CmdInterpreter* interpreter)
 	:MyCasinoCommandLineInterface(interpreter)
@@ -94,8 +95,17 @@ bool RPCMyCasinoCommandLineInterface::showbets()
 	if (FAILED(hr))
 		return false;
 
+	bprinter::TablePrinter tp(&std::cout, "|", 2);
 	if (count > 0)
-		std::cout << "User | First number | Second number | Wager | Price for one | Price for two" << std::endl;
+	{
+		tp.AddColumn("User", 15);
+		tp.AddColumn("First number", 15);
+		tp.AddColumn("Second number", 15);
+		tp.AddColumn("Wager", 10);
+		tp.AddColumn("Price for one", 15);
+		tp.AddColumn("Price for two", 15);
+		tp.PrintHeader();
+	}
 	else
 		std::cout << "No bets" << std::endl;
 
@@ -109,8 +119,10 @@ bool RPCMyCasinoCommandLineInterface::showbets()
 			continue;
 		}
 
-		std::cout << bets[i].name.str << " | " <<  bets[i].firstNumber << " | " << bets[i].secondNumber << " | " << bets[i].wager << " | " << profitForOne << " | " << profitForTwo << std::endl;
+		tp << bets[i].name.str << bets[i].firstNumber << bets[i].secondNumber << bets[i].wager << profitForOne << profitForTwo;
 	}
+
+	tp.PrintFooter();
 
 	// free memory
 	for (int i = 0; i < count; i++)
@@ -170,13 +182,19 @@ bool RPCMyCasinoCommandLineInterface::showstatus()
 	HRESULT hr;
 	std::wstring errCode;
 
+	bprinter::TablePrinter tp(&std::cout, "|", 2);
 
 	bool displayHeader = false;
 	while (!isFinished)
 	{
 		if (!displayHeader)
 		{
-			std::wcout << "Transaction type | Change amount | Resulting balance | <Additional Information>" << std::endl;
+			tp.AddColumn("Transaction type", 20);
+			tp.AddColumn("Change amount", 20);
+			tp.AddColumn("Resulting balance", 25);
+			tp.AddColumn("<Additional Infomation>", 30);
+			tp.PrintHeader();
+
 			displayHeader = true;
 		}
 
@@ -193,7 +211,7 @@ bool RPCMyCasinoCommandLineInterface::showstatus()
 		if (transactionType == MyCasinoTransactionsTypes::DEPOSIT
 			|| transactionType == MyCasinoTransactionsTypes::WITHDRAWAL)
 		{
-			std::wcout << resolve_transaction_type((MyCasinoTransactionsTypes)transactionType) << " | " << transaction.changeAmount << " | " << transaction.resultAmount << std::endl;
+			tp << wstring_to_char(resolve_transaction_type((MyCasinoTransactionsTypes)transactionType)) << transaction.changeAmount << transaction.resultAmount << "";
 		}
 		else if (transactionType == MyCasinoTransactionsTypes::BET_WIN
 			|| transactionType == MyCasinoTransactionsTypes::BET_LOSS
@@ -236,7 +254,7 @@ bool RPCMyCasinoCommandLineInterface::showstatus()
 				parsedTransactionInformation.append(informationJson[4].get("value", defaultValue).asString()).append(" ");
 				parsedTransactionInformation.append(informationJson[5].get("value", defaultValue).asString()).append(" ");
 
-				std::wcout << resolve_transaction_type((MyCasinoTransactionsTypes)transactionType) << " | " << transaction.changeAmount << " | " << transaction.resultAmount << " | " << parsedTransactionInformation.c_str() << std::endl;
+				tp << wstring_to_char(resolve_transaction_type((MyCasinoTransactionsTypes)transactionType)) << transaction.changeAmount << transaction.resultAmount << parsedTransactionInformation;
 			}
 			else
 			{
@@ -246,6 +264,8 @@ bool RPCMyCasinoCommandLineInterface::showstatus()
 			
 		}
 	}
+
+	tp.PrintFooter();
 
 	// print once for displaying information messages
 	if (hr > 0)

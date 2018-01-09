@@ -3,8 +3,10 @@
 
 #include "COMMyCasinoCommandLineInterface.h"
 #include "BstrStringConverter.h"
+#include "CharStringConverter.h"
 #include "MyCasinoDefines.h"
 
+#include "bprinter\table_printer.h"
 
 COMMyCasinoCommandLineInterface::COMMyCasinoCommandLineInterface(CmdInterpreter* interpreter, ICOMMyCasino* pICOMMyCasinoSrv)
 	: MyCasinoCommandLineInterface(interpreter)
@@ -83,8 +85,17 @@ bool COMMyCasinoCommandLineInterface::showbets()
 	if (FAILED(hr))
 		return false;
 	
-	if(betCount > 0 )
-		std::cout << "User | First number | Second number | Wager | Price for one | Price for two" << std::endl;
+	bprinter::TablePrinter tp(&std::cout,"|",2);
+	if (betCount > 0)
+	{
+		tp.AddColumn("User", 15);
+		tp.AddColumn("First number", 15);
+		tp.AddColumn("Second number", 15);
+		tp.AddColumn("Wager", 10);
+		tp.AddColumn("Price for one", 15);
+		tp.AddColumn("Price for two", 15);
+		tp.PrintHeader();
+	}
 	else
 		std::cout << "No bets" << std::endl;
 
@@ -125,9 +136,11 @@ bool COMMyCasinoCommandLineInterface::showbets()
 				continue;
 			}
 			
-			std::cout << bstr_to_str(username) << " | " << currentFirstNumber <<  " | " << currentSecondNumber << " | " << currentWager << " | " << profitForOne << " | " << profitForTwo << std::endl;
+			tp << bstr_to_str(username) << currentFirstNumber << currentSecondNumber << currentWager << profitForOne << profitForTwo;
 		}
 	}
+
+	tp.PrintFooter();
 
 	return true;
 }
@@ -185,12 +198,19 @@ bool COMMyCasinoCommandLineInterface::showstatus()
 	BSTR errMsg;
 	HRESULT hr;
 
+	bprinter::TablePrinter tp(&std::cout, "|", 2);
+
 	bool displayHeader = false;
 	while (!isFinished)
 	{
 		if (!displayHeader)
 		{
-			std::wcout << "Transaction type | Change amount | Resulting balance | <Additional Information>" << std::endl;
+			tp.AddColumn("Transaction type", 20);
+			tp.AddColumn("Change amount", 20);
+			tp.AddColumn("Resulting balance", 25);
+			tp.AddColumn("<Additional Infomation>", 30);
+			tp.PrintHeader();
+
 			displayHeader = true;
 		}
 
@@ -217,7 +237,7 @@ bool COMMyCasinoCommandLineInterface::showstatus()
 		if (transactionType == MyCasinoTransactionsTypes::DEPOSIT
 			|| transactionType == MyCasinoTransactionsTypes::WITHDRAWAL)
 		{ 
-			std::wcout << resolve_transaction_type((MyCasinoTransactionsTypes)transactionType) << " | "  << changeAmount << " | " << resultBalance << std::endl;
+			tp << wstring_to_char(resolve_transaction_type((MyCasinoTransactionsTypes)transactionType)) << changeAmount << resultBalance << "";
 		}
 		else if (transactionType == MyCasinoTransactionsTypes::BET_WIN
 			|| transactionType == MyCasinoTransactionsTypes::BET_LOSS
@@ -249,11 +269,12 @@ bool COMMyCasinoCommandLineInterface::showstatus()
 				}
 
 				// only display wager of finished bets
-				std::wcout << resolve_transaction_type((MyCasinoTransactionsTypes)transactionType) << " | " << changeAmount << " | " << resultBalance << " | " << transactionInformation <<std::endl;
+				tp << wstring_to_char(resolve_transaction_type((MyCasinoTransactionsTypes)transactionType)) << changeAmount << resultBalance << wstring_to_char(transactionInformation);
 			}
 		}
-		
 	}
+
+	tp.PrintFooter();
 
 	// print once for displaying information messages
 	if(hr > 0)
