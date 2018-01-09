@@ -15,12 +15,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 using AuthenticationService;
+using System.Collections.Concurrent;
 
 namespace MyBayLib
 {
     public class Auction
     {
-        public static List<Message> messageBucket = new List<Message>();
+        public static Dictionary<UInt32, ConcurrentBag<Message>> messageBucket = new Dictionary<uint, ConcurrentBag<Message>>();
 
         // Will increase for each new auction
         private static UInt32 auctionNumberCount = 0;
@@ -161,21 +162,19 @@ namespace MyBayLib
                 biddersInterested = new List<uint>(this._bidderInterested);
             }
 
-            lock (Auction.messageBucket)
+
+            foreach (UInt32 bidder in biddersInterested)
             {
-                foreach (UInt32 bidder in biddersInterested)
-                {
-                    // Different message for auctioneer
-                    if (bidder == this._auctioneer) continue;
+                // Different message for auctioneer
+                if (bidder == this._auctioneer) continue;
 
-                    Message newMessage = new Message(MessageType.NewBid, bidder, this.ArtName, bidValue, 0);
-                    Auction.messageBucket.Add(newMessage);
-                }
-
-                // For the auctioneer with Biddername
-                String biddername = AuthenticationService.AuthService.getNameByIndex(bidderIndex);
-                Auction.messageBucket.Add(new Message(MessageType.NewBid, this.Auctioneer, this.ArtName + " " + biddername, bidValue, 0));
+                Message newMessage = new Message(MessageType.NewBid, this.ArtName, String.Empty, bidValue, 0, 0);
+                AddMessageToBucket(bidder, newMessage);
             }
+
+            // For the auctioneer with Biddername
+            String biddername = AuthenticationService.AuthService.getNameByIndex(bidderIndex);
+            AddMessageToBucket(this.Auctioneer, new Message(MessageType.NewBid, biddername, this.ArtName, bidValue, 0, 0));
             return true;
         }
 
@@ -203,36 +202,54 @@ namespace MyBayLib
 
                 // Auction finished, no more bids accepted
                 this._auctionState = 2;
-                lock (Auction.messageBucket)
-                {
-                    String buyer = AuthenticationService.AuthService.getNameByIndex(HighestBid.BidderIndex);
 
-                    foreach (UInt32 bidder in biddersInterested)
-                    {
-                        Message newMessage = new Message(MessageType.EndOfAuction, bidder, buyer, HighestBid.BidValue, 2);
-                        Auction.messageBucket.Add(newMessage);
-                    }
+                String buyer = AuthenticationService.AuthService.getNameByIndex(HighestBid.BidderIndex);
 
-                    // For the auctioneer
-                    Auction.messageBucket.Add(new Message(MessageType.EndOfAuction, this.Auctioneer, buyer, HighestBid.BidValue, 2));
-                }
-            }
-
-            lock (Auction.messageBucket)
-            {
                 foreach (UInt32 bidder in biddersInterested)
                 {
-                    // Different message for auctioneer
-                    if (bidder == this._auctioneer) continue;
-
-                    Message newMessage = new Message(MessageType.AuctionEndStart, bidder, "", 0.0, auctionEndCounter);
-                    Auction.messageBucket.Add(newMessage);
+                    Message newMessage = new Message(MessageType.EndOfAuction, buyer, this.ArtName, HighestBid.BidValue, 2, 0);
+                    AddMessageToBucket(bidder, newMessage);
                 }
 
                 // For the auctioneer
-                Auction.messageBucket.Add(new Message(MessageType.AuctionEndStart, this.Auctioneer, "", 0.0, auctionEndCounter));
-            }            
+                AddMessageToBucket(this.Auctioneer, new Message(MessageType.EndOfAuction, buyer, this.ArtName, HighestBid.BidValue, 2, 0));
+            }
+
+            foreach (UInt32 bidder in biddersInterested)
+            {
+                // Different message for auctioneer
+                if (bidder == this._auctioneer) continue;
+
+                Message newMessage = new Message(MessageType.AuctionEndStart, this.ArtName, String.Empty, 0.0, auctionEndCounter,this.AuctionNumber);
+                AddMessageToBucket(bidder, newMessage);
+
+            }
+
+            // For the auctioneer
+            AddMessageToBucket(this.Auctioneer, new Message(MessageType.AuctionEndStart, this.ArtName, String.Empty, 0.0, auctionEndCounter, this.AuctionNumber));
+
             auctionEndCounter++;
+        }
+
+        private bool AddMessageToBucket(UInt32 receipientIndex, Message message)
+        {
+            if (!messageBucket.ContainsKey(receipientIndex))
+            {
+                messageBucket.Add(receipientIndex, new ConcurrentBag<Message>());
+            }
+
+            try
+            {
+                ConcurrentBag<Message> tempBag;
+                messageBucket.TryGetValue(receipientIndex, out tempBag);
+                tempBag.Add(message);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+            return true;
         }
         #endregion
     }
@@ -246,5 +263,7 @@ namespace MyBayLib
         public Double HighestBid { get; set; }
 
         public UInt32 AuctionState { get; set; }
+
+        public UInt32 CountBids { get; set; }
     }
 }

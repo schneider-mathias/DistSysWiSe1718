@@ -3,7 +3,7 @@
 /*    Inhalt:   Implementierung der Funktionalität des MyBay WCF-Servers */
 /*                                                                       */
 /*    Autor(en): Manuel Schlemelch                                       */
-/*    Stand:     03.01.2018                                              */
+/*    Stand:     09.01.2018                                              */
 /*                                                                       */
 /*************************************************************************/
 
@@ -200,52 +200,49 @@ namespace MyBayWCFSrv
 
             try
             {
-                // Translate SessionID to UserIndex
-                UInt32 userIndex = AuthenticationService.AuthService.getIndexBySessionID(sessionID);
+            // Translate SessionID to UserIndex
+            UInt32 userIndex = AuthenticationService.AuthService.getIndexBySessionID(sessionID);
 
-                lock (Auction.messageBucket)
+                if (Auction.messageBucket.ContainsKey(userIndex))
                 {
-                    tempMessage = Auction.messageBucket.FirstOrDefault(m => m.MessageIntValue == userIndex);
+                    ConcurrentBag<Message> tempBag;
+                    Auction.messageBucket.TryGetValue(userIndex, out tempBag);
+
+                    tempBag.TryTake(out tempMessage);
                     if (!tempMessage.Equals(default(Message)))
                     {
-                        Auction.messageBucket.Remove(tempMessage);
+                        message.MessageDoubleValue = tempMessage.MessageDoubleValue;
+                        message.MessageIntValue = tempMessage.MessageIntValue;
+                        message.MessageIntValue2 = tempMessage.MessageIntValue2;
+                        message.MessageText = tempMessage.MessageText;
+                        message.MessageText2 = tempMessage.MessageText2;
+
+                        switch (tempMessage.Type)
+                        {
+                            case MessageType.NewBid:
+                                message.Type = 0;
+                                break;
+                            case MessageType.AuctionEndStart:
+                                message.Type = 1;
+                                break;
+                            case MessageType.EndOfAuction:
+                                message.Type = 2;
+                                break;
+                        }
                     }
                     else
                     {
                         return "NoMessage";
                     }
-
-                    Message tempMessage2 = Auction.messageBucket.FirstOrDefault(m => m.MessageIntValue == userIndex);
-                    if (!tempMessage2.Equals(default(Message)))
-                    {
-                        messageAvailable = true;
-                    }
+                    if(tempBag.Count > 0) messageAvailable = true;                   
                 }
-            }        
+                else return "NoMessage";
+               
+            }                
             catch (Exception)
             {
                 return "Fehler bei der Verarbeitung der Messages im Server";
-            }
-
-            message.MessageDoubleValue = tempMessage.MessageDoubleValue;
-            message.MessageIntValue = tempMessage.MessageIntValue;
-            message.MessageText = tempMessage.MessageText;
-
-            switch (tempMessage.Type)
-            {
-                case MessageType.NewBid:
-                    message.Type = 0;
-                    break;
-                case MessageType.AuctionEndStart:
-                    message.Type = 1;
-                    break;
-                case MessageType.EndOfAuction:
-                    message.Type = 2;
-                    break;
-                case MessageType.InfoMessage:
-                    message.Type = 3;
-                    break;
-            }         
+            }            
             return "OK";            
         }
     }
