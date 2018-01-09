@@ -74,10 +74,10 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>../COMMyCasinoCln;../../_shared/cpp/IncPub/;../../../_shared/cpp/CmdInterpreterLib;../../_shared/cpp/MyCasinoClnLib;../../../_shared/cpp/AuthServiceLib;../../$(Configuration);../../../_shared/cpp/HelperLib</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../COMMyCasinoCln;../../../_shared/cpp/bprinter-1.0.0/include;../../_shared/cpp/IncPub/;../../../_shared/cpp/CmdInterpreterLib;../../_shared/cpp/MyCasinoClnLib;../../../_shared/cpp/AuthServiceLib;../../$(Configuration);../../../_shared/cpp/HelperLib</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>MyCasinoClnLib.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>bprinter.lib;MyCasinoClnLib.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../../$(Configuration)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -95,12 +95,12 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>../COMMyCasinoCln;../../_shared/cpp/IncPub/;../../../_shared/cpp/CmdInterpreterLib;../../_shared/cpp/MyCasinoClnLib;../../../_shared/cpp/AuthServiceLib;../../$(Configuration);../../../_shared/cpp/HelperLib</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../COMMyCasinoCln;../../../_shared/cpp/bprinter-1.0.0/include;../../_shared/cpp/IncPub/;../../../_shared/cpp/CmdInterpreterLib;../../_shared/cpp/MyCasinoClnLib;../../../_shared/cpp/AuthServiceLib;../../$(Configuration);../../../_shared/cpp/HelperLib</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>MyCasinoClnLib.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>bprinter.lib;MyCasinoClnLib.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../../$(Configuration)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
