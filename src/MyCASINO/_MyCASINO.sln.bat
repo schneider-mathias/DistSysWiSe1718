@@ -8,6 +8,11 @@ REM set solution name and remove leading underline
 set "solutionName=%~n0"
 set "solutionName=%solutionName:~1%
 
+set "USERDATA=%~dp0_data\"
+
+echo Set environmental variables:
+echo USERDATA %USERDATA%
+
 set "MYCASINO_USERDATA=%SystemDrive%\_MyCasinoData\"
 echo MYCASINO_USERDATA %MYCASINO_USERDATA%
 
