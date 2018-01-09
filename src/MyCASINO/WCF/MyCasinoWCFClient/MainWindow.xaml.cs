@@ -1,4 +1,7 @@
-﻿using System;
+﻿//#define COM
+
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -35,9 +38,22 @@ namespace MyCasinoWCFClient
         public MainWindow()
         {
             InitializeComponent();
+#if COM
+            Type comType = Type.GetTypeFromCLSID(new Guid("C45F55FC-76D5-4D30-A7D0-2DF66C22ED0D"), "127.0.0.1", false); 
+            COMMyCasinoSrvLib.COMMyCasino _comSrv = (COMMyCasinoSrvLib.COMMyCasino)Activator.CreateInstance(comType);
+
+            //_comSrv.login("Casino", "Passwort", out sessionId, out userType, out errMsg);
+            //System.Array betsResult;
+            //_comSrv.showbets(sessionId, out betsResult, out count, out errMsg);
+            MainFrame.Navigate(new MyCasinoWCFClient.Pages.LoginPage(_comSrv));
+
+
+#else
             string srvAddress = "http://localhost:1200/MyCasinoWCF";
             _RemSrvMyCasino = _remSrvMyCasinoFactory.CreateChannel(new EndpointAddress(srvAddress));
             MainFrame.Navigate(new MyCasinoWCFClient.Pages.LoginPage(_RemSrvMyCasino));
+
+#endif
         }
     }
 }

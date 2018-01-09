@@ -18,6 +18,8 @@
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="5"/>
             </Grid.ColumnDefinitions>
@@ -31,27 +33,15 @@
             </Grid.RowDefinitions>
 
 
-
-            <!--Bet Number-->
+          
+            <!--Bet Amount-->
             <Border Grid.Row="1" Grid.RowSpan="5" Grid.Column="1" BorderThickness="2 2 1 2"
-                    BorderBrush="CornflowerBlue" Margin="50 100 0 0" VerticalAlignment="Top" MinHeight="380">
+                    BorderBrush="CornflowerBlue" Margin="0 100 0 0" VerticalAlignment="Top" MinHeight="380">
                 <StackPanel>
-                    <TextBox Text="Wettnumer" FontSize="30" MinWidth="150" BorderThickness="0 0 0 1" Margin="10 0 10 0"
+                    <TextBox Text="Wetteinsatz" FontSize="18" MinWidth="100" BorderThickness="0 0 0 1" Margin="10 0 10 0"
                              BorderBrush="CornflowerBlue" IsHitTestVisible="False" />
 
-                    <ListBox Name="lbBetNumberList" BorderThickness="0 0 0 0" HorizontalContentAlignment="Stretch" IsHitTestVisible="False">
-
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <Grid Margin="0,2">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="100" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{Binding Name}"/>
-                                </Grid>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
+                    <ListBox Name="lbBetAmountList" BorderThickness="0 0 0 0" HorizontalContentAlignment="Stretch" IsHitTestVisible="False">
                     </ListBox>
 
                 </StackPanel>
@@ -60,22 +50,10 @@
             <Border Grid.Row="1" Grid.RowSpan="5" Grid.Column="2" BorderThickness="1 2 1 2"
                     BorderBrush="CornflowerBlue" Margin="0 100 0 0" VerticalAlignment="Top" MinHeight="380">
                 <StackPanel>
-                    <TextBox Text="Erste Zahl" FontSize="30" MinWidth="150" BorderThickness="0 0 0 1" Margin="10 0 10 0"
+                    <TextBox Text="Erste Zahl" FontSize="18" MinWidth="100" BorderThickness="0 0 0 1" Margin="10 0 10 0"
                              BorderBrush="CornflowerBlue" IsHitTestVisible="False"/>
 
                     <ListBox Name="lbFirstNumberPerRollList" BorderThickness="0 0 0 0" HorizontalContentAlignment="Stretch" IsHitTestVisible="False">
-
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <Grid Margin="0,2">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="100" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{Binding Name}"/>
-                                </Grid>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
                     </ListBox>
 
                 </StackPanel>
@@ -84,95 +62,69 @@
             <Border Grid.Row="1" Grid.RowSpan="5" Grid.Column="3" BorderThickness="1 2 1 2"
                     BorderBrush="CornflowerBlue" Margin="0 100 0 0" VerticalAlignment="Top" MinHeight="380">
                 <StackPanel>
-                    <TextBox Text="Zweite Zahl" FontSize="30" MinWidth="150" BorderThickness="0 0 0 1" Margin="10 0 10 0"
+                    <TextBox Text="Zweite Zahl" FontSize="18" MinWidth="100" BorderThickness="0 0 0 1" Margin="10 0 10 0"
                              BorderBrush="CornflowerBlue" IsHitTestVisible="False"/>
 
                     <ListBox Name="lbSecondNumberPerRollList" BorderThickness="0 0 0 0" HorizontalContentAlignment="Stretch" IsHitTestVisible="False">
-
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <Grid Margin="0,2">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="100" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{Binding Name}"/>
-                                </Grid>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
                     </ListBox>
                 </StackPanel>
             </Border>
 
-            <!--Win or Loss-->
+            <!--First drawn Number-->
             <Border Grid.Row="1" Grid.RowSpan="5" Grid.Column="4" BorderThickness="1 2 1 2"
                     BorderBrush="CornflowerBlue" Margin="0 100 0 0" VerticalAlignment="Top" MinHeight="380">
                 <StackPanel>
-                    <TextBox Text="Gewinn/Verlust" FontSize="30" MinWidth="150" BorderThickness="0 0 0 1" Margin="10 0 10 0"
+                    <TextBox Text="1 gezogene Zahl" FontSize="18" MinWidth="100" BorderThickness="0 0 0 1" Margin="10 0 10 0"
+                             BorderBrush="CornflowerBlue" IsHitTestVisible="False"/>
+
+                    <ListBox Name="lbFirstNumberDrawn" BorderThickness="0 0 0 0" HorizontalContentAlignment="Stretch" IsHitTestVisible="False">
+                    </ListBox>
+                </StackPanel>
+            </Border>
+            <!--Second drawn Number-->
+            <Border Grid.Row="1" Grid.RowSpan="5" Grid.Column="5" BorderThickness="1 2 1 2"
+                    BorderBrush="CornflowerBlue" Margin="0 100 0 0" VerticalAlignment="Top" MinHeight="380">
+                <StackPanel>
+                    <TextBox Text="2 gezogene Zahl" FontSize="18" MinWidth="100" BorderThickness="0 0 0 1" Margin="10 0 10 0"
+                             BorderBrush="CornflowerBlue" IsHitTestVisible="False"/>
+
+                    <ListBox Name="lbSecondNumberDrawn" BorderThickness="0 0 0 0" HorizontalContentAlignment="Stretch" IsHitTestVisible="False">
+                    </ListBox>
+                </StackPanel>
+            </Border>
+            <!--Win or Loss-->
+            <Border Grid.Row="1" Grid.RowSpan="5" Grid.Column="6" BorderThickness="1 2 1 2"
+                    BorderBrush="CornflowerBlue" Margin="0 100 0 0" VerticalAlignment="Top" MinHeight="380">
+                <StackPanel>
+                    <TextBox Text="Gewinn/Verlust" FontSize="18" MinWidth="100" BorderThickness="0 0 0 1" Margin="10 0 10 0"
                              BorderBrush="CornflowerBlue" IsHitTestVisible="False"/>
 
                     <ListBox Name="lbWinLossList" BorderThickness="0 0 0 0" HorizontalContentAlignment="Stretch" IsHitTestVisible="False">
-
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <Grid Margin="0,2">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="100" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{Binding Name}"/>
-                                </Grid>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
                     </ListBox>
                 </StackPanel>
             </Border>
 
             <!--PayIn-->
-            <Border Grid.Row="1" Grid.RowSpan="5" Grid.Column="5" BorderThickness="1 2 1 2"
+            <Border Grid.Row="1" Grid.RowSpan="5" Grid.Column="7" BorderThickness="1 2 1 2"
                     BorderBrush="CornflowerBlue" Margin="0 100 0 0" VerticalAlignment="Top" MinHeight="380">
                 <StackPanel>
-                    <TextBox Text="Einzahlungen" FontSize="30" MinWidth="150" BorderThickness="0 0 0 1" Margin="10 0 10 0"
+                    <TextBox Text="Einzahlungen" FontSize="18" MinWidth="100" BorderThickness="0 0 0 1" Margin="10 0 10 0"
                              BorderBrush="CornflowerBlue" IsHitTestVisible="False"/>
 
                     <ListBox Name="lbPayInList" BorderThickness="0 0 0 0" HorizontalContentAlignment="Stretch" IsHitTestVisible="False">
-
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <Grid Margin="0,2">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="100" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{Binding Name}"/>
-                                </Grid>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
                     </ListBox>
                 </StackPanel>
             </Border>
 
             <!--Balance-->
-            <Border Grid.Row="1" Grid.RowSpan="5" Grid.Column="6" BorderThickness="1 2 2 2"
+            <Border Grid.Row="1" Grid.RowSpan="5" Grid.Column="8" BorderThickness="1 2 2 2"
                     BorderBrush="CornflowerBlue" Margin="0 100 0 0" VerticalAlignment="Top" MinHeight="380" 
-                    HorizontalAlignment="Left" MinWidth="270">
+                    HorizontalAlignment="Left" MinWidth="100">
                 <StackPanel>
-                    <TextBox Text="Aktuelles Guthaben" FontSize="30" MinWidth="150" BorderThickness="0 0 0 1" Margin="10 0 10 0"
+                    <TextBox Text="Guthaben" FontSize="18" MinWidth="100" BorderThickness="0 0 0 1" Margin="10 0 10 0"
                              BorderBrush="CornflowerBlue" IsHitTestVisible="False"/>
 
                     <ListBox Name="lbBalanceList" BorderThickness="0 0 0 0" HorizontalContentAlignment="Stretch" IsHitTestVisible="False">
-
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <Grid Margin="0,2">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="100" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{Binding Name}"/>
-                                </Grid>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
                     </ListBox>
                 </StackPanel>
             </Border>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿//#define COM
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,6 +25,37 @@ namespace MyCasinoWCFClient.Pages
     /// </summary>
     public partial class PayInPage : Page
     {
+#if COM
+        private COMMyCasinoSrvLib.COMMyCasino _comSrv;
+
+        public COMMyCasinoSrvLib.COMMyCasino _ComSrv
+        {
+            get { return _comSrv; }
+            set { _comSrv = value; }
+        }
+
+        private uint sessionId;
+
+        public uint SessionId
+        {
+            get { return sessionId; }
+            set { sessionId = value; }
+        }
+
+
+        public PayInPage(COMMyCasinoSrvLib.COMMyCasino _comSrvTmp, string usernameTmp, uint sessionIdTmp, short typeTmp)
+        {
+            _ComSrv = _comSrvTmp;
+            SessionId = sessionIdTmp;
+            InitializeComponent();
+            //fill combobox (static)
+            cbxPayInUsername.Items.Add("Casino");
+            cbxPayInUsername.Items.Add("Gamer");
+            //cbxPayInUsername.Items.Add("Johannes");
+            //cbxPayInUsername.Items.Add("Mathias");
+
+        }
+#else
         private INETMyCasino _remSrvMyCasino;
 
         public INETMyCasino _RemSrvMyCasino
@@ -53,17 +85,28 @@ namespace MyCasinoWCFClient.Pages
             cbxPayInUsername.Items.Add("Mathias");
             
         }
-
+#endif
         private void btnPayIn_Click(object sender, RoutedEventArgs e)
         {
-            string errMsg;
+            string errMsg=null;
             double amount;
             double.TryParse(tbxPayInAmount.Text, out amount);
+#if COM
+            try
+            {
+                _ComSrv.deposit(SessionId, cbxPayInUsername.Text, amount, out errMsg);
+            }
+            catch
+            {
+                MessageBox.Show(errMsg);
+            }
+#else
             _RemSrvMyCasino.deposit(SessionId, cbxPayInUsername.Text, amount, out errMsg);
             if (errMsg == "User nicht eingeloggt")
             {
                 MessageBox.Show(errMsg);
             }
+#endif
                 tblPayInSuccessful.Visibility = Visibility.Visible;
                 btnPayIn.IsEnabled = false;
         }

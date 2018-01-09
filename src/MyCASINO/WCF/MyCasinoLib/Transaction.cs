@@ -9,7 +9,7 @@ namespace MyCasinoLib
     public enum MyCasinoTransactionTypes
     {
         DEPOSIT = 0,
-        //WITHDRAWL,
+        WITHDRAWL,
         CANCELED,
         BET_WAGER,
         BET_WIN,
@@ -59,6 +59,15 @@ namespace MyCasinoLib
             set { changeAmount = value; }
         }
 
+        private bool isFinished;
+
+        public bool IsFinished
+        {
+            get { return isFinished; }
+            set { isFinished = value; }
+        }
+
+
         public Transaction()
         {
 
@@ -71,6 +80,7 @@ namespace MyCasinoLib
             ChangeAmount = changeAmountTmp;
             Name = nameTmp;
             TransType = typeTmp;
+            IsFinished = false;
         }
 
     }

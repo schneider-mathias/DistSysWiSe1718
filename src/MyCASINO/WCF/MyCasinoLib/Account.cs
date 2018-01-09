@@ -86,9 +86,10 @@ namespace MyCasinoLib
             }
         }
 
-        public bool Bet(string nameTmp ,double amountMoneyTmp, int firstNumberTmp, int secondNumberTmp, out  MyCasinoTransactionTypes typetmp, out bool overridden)
+        public bool Bet(string nameTmp ,double amountMoneyTmp, int firstNumberTmp, int secondNumberTmp, out  MyCasinoTransactionTypes typetmp, out bool overridden, out bool delOverriddenBet)
         {
-                overridden = false;
+                overridden = true;
+                delOverriddenBet = false;
             try
             {
                 Bet tmpbet = new Bet(nameTmp, firstNumberTmp, secondNumberTmp, amountMoneyTmp);
@@ -96,19 +97,26 @@ namespace MyCasinoLib
                 Bet delbet= betList.Find(item => item.M_firstNumber == firstNumberTmp && item.M_secondNumber == secondNumberTmp && 0==amountMoneyTmp);
                 if (delbet!=null)
                 {
+                    MoneyAmountLeft += delbet.M_setAmount;
                     typetmp = MyCasinoTransactionTypes.CANCELED;
                     betList.Remove(delbet);
                     return true;
                 }
-
+                if (amountMoneyTmp == 0)
+                {
+                    typetmp = MyCasinoTransactionTypes.CANCELED;
+                    return true;
+                }
                 Bet bet = betList.Find(item => item.M_firstNumber == firstNumberTmp && item.M_secondNumber == secondNumberTmp);
                 //delete bet to override it
                 if (bet!=null)
                 {
-                    overridden = true;
+                    MoneyAmountLeft += bet.M_setAmount;
+                    delOverriddenBet = true;
                     betList.Remove(bet);
                 }
                 //add bet
+                overridden = false;
                 typetmp = MyCasinoTransactionTypes.BET_WAGER;
                 betList.Add(tmpbet);
                 return true;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿//#define COM
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,6 +25,23 @@ namespace MyCasinoWCFClient.Pages
     /// </summary>
     public partial class HistoryPage : Page
     {
+#if COM
+        private COMMyCasinoSrvLib.COMMyCasino _comSrv;
+
+        public COMMyCasinoSrvLib.COMMyCasino _ComSrv
+        {
+            get { return _comSrv; }
+            set { _comSrv = value; }
+        }
+
+        private uint sessionId;
+
+        public uint SessionId
+        {
+            get { return sessionId; }
+            set { sessionId = value; }
+        }
+#else
         private INETMyCasino _remSrvMyCasino;
 
         public INETMyCasino _RemSrvMyCasino
@@ -32,10 +50,245 @@ namespace MyCasinoWCFClient.Pages
             set { _remSrvMyCasino = value; }
         }
 
-        public HistoryPage(INETMyCasino _RemSrvMyCasinoMain)
+        private int sessionId;
+
+        public int SessionId
+        {
+            get { return sessionId; }
+            set { sessionId = value; }
+        }
+#endif
+        //0 dep 1 with 2canc 3betwa 4win 5loss
+#if COM
+        public HistoryPage(COMMyCasinoSrvLib.COMMyCasino _comSrvTmp, string usernameTmp, uint sessionIdTmp, short typeTmp)
+        {
+            _ComSrv = _comSrvTmp;
+            InitializeComponent();
+            //Init
+            SessionId = sessionIdTmp;
+            string errMsg = null;
+            int isFinished;
+            System.Array transaction = null;
+            System.Array information = null;
+            uint informationType;
+            uint transactionType;
+            
+            try
+            {
+                do
+                {
+                    _ComSrv.getTransactions(SessionId, out isFinished, out transaction, out transactionType, out errMsg);
+                    //transaction is deposit
+                    if (transactionType == 0)
+                    {
+                        lbBetAmountList.Items.Add("");
+                        lbFirstNumberPerRollList.Items.Add("");
+                        lbSecondNumberPerRollList.Items.Add("");
+                        lbFirstNumberDrawn.Items.Add("");
+                        lbSecondNumberDrawn.Items.Add("");
+                        lbWinLossList.Items.Add("");
+                        lbPayInList.Items.Add(transaction.GetValue(2));
+                        lbBalanceList.Items.Add(transaction.GetValue(1));
+                        
+                    }
+                    //transaction is win
+                    else if (transactionType == 4)
+                    {
+                        try
+                        {
+                            _ComSrv.getTransactionInformation(SessionId,(uint)transaction.GetValue(0), out information, out informationType,out errMsg);
+                        }
+                        catch
+                        {
+                            MessageBox.Show(errMsg);
+                        }
+                        if (typeTmp == 1)
+                        {
+                            lbBetAmountList.Items.Add(information.GetValue(3));
+                            lbFirstNumberPerRollList.Items.Add(information.GetValue(1));
+                            lbSecondNumberPerRollList.Items.Add(information.GetValue(2));
+                            lbFirstNumberDrawn.Items.Add(information.GetValue(4));
+                            lbSecondNumberDrawn.Items.Add(information.GetValue(5));
+                            lbWinLossList.Items.Add(information.GetValue(6));
+                            lbPayInList.Items.Add("");
+                            lbBalanceList.Items.Add(transaction.GetValue(1));
+                        }
+                        else if (typeTmp == 0)
+                        {
+                            lbBetAmountList.Items.Add(information.GetValue(3));
+                            lbFirstNumberPerRollList.Items.Add(information.GetValue(1));
+                            lbSecondNumberPerRollList.Items.Add(information.GetValue(2));
+                            lbFirstNumberDrawn.Items.Add(information.GetValue(4));
+                            lbSecondNumberDrawn.Items.Add(information.GetValue(5));
+                            lbWinLossList.Items.Add(((double)information.GetValue(3)).ToString());
+                            lbPayInList.Items.Add("");
+                            lbBalanceList.Items.Add(transaction.GetValue(1));
+                        }
+                    }
+                    //transaction is loss
+                    else if (transactionType == 5)
+                    {
+                        try
+                        {
+                            _ComSrv.getTransactionInformation(SessionId, (uint)transaction.GetValue(0), out information, out informationType, out errMsg);
+                        }
+                        catch
+                        {
+                            MessageBox.Show(errMsg);
+                        }
+                        if (typeTmp == 1)
+                        {
+                            lbBetAmountList.Items.Add(information.GetValue(3));
+                            lbFirstNumberPerRollList.Items.Add(information.GetValue(1));
+                            lbSecondNumberPerRollList.Items.Add(information.GetValue(2));
+                            lbFirstNumberDrawn.Items.Add(information.GetValue(4));
+                            lbSecondNumberDrawn.Items.Add(information.GetValue(5));
+                            lbWinLossList.Items.Add(((double)information.GetValue(3) * (-1)).ToString());
+                            lbPayInList.Items.Add("");
+                            lbBalanceList.Items.Add(transaction.GetValue(1));
+                        }
+                        else if (typeTmp == 0)
+                        {
+                            lbBetAmountList.Items.Add(information.GetValue(3));
+                            lbFirstNumberPerRollList.Items.Add(information.GetValue(1));
+                            lbSecondNumberPerRollList.Items.Add(information.GetValue(2));
+                            lbFirstNumberDrawn.Items.Add(information.GetValue(4));
+                            lbSecondNumberDrawn.Items.Add(information.GetValue(5));
+                            lbWinLossList.Items.Add(((double)information.GetValue(6) * (-1)).ToString());
+                            lbPayInList.Items.Add("");
+                            lbBalanceList.Items.Add(transaction.GetValue(1));
+                        }
+                    }
+                }
+                while (isFinished != 1);
+                
+            }
+            catch
+            {
+                MessageBox.Show(errMsg);
+            }
+
+            
+                  
+       }
+#else
+        public HistoryPage(INETMyCasino _RemSrvMyCasinoMain, string usernameTmp, int sessionIdTmp, MyCasinoUserTypes typeTmp)
         {
             _RemSrvMyCasino = _RemSrvMyCasinoMain;
             InitializeComponent();
+            //Init
+            SessionId = sessionIdTmp;
+            bool isFinished;
+            List<string> transaction;
+            List<string> information = null;
+            int informationType;
+            int transactionType;
+            string errMsg="";
+            try
+            {
+                do
+                {
+                    _RemSrvMyCasino.getTransactions(SessionId, out isFinished, out transaction, out transactionType, out errMsg);
+                    //transaction is deposit
+                    if (isFinished == true) break;
+                    if (transactionType == 0)
+                    {
+                        lbBetAmountList.Items.Add("");
+                        lbFirstNumberPerRollList.Items.Add("");
+                        lbSecondNumberPerRollList.Items.Add("");
+                        lbFirstNumberDrawn.Items.Add("");
+                        lbSecondNumberDrawn.Items.Add("");
+                        lbWinLossList.Items.Add("");
+                        lbPayInList.Items.Add(transaction.ElementAt(2));
+                        lbBalanceList.Items.Add(transaction.ElementAt(1));
+
+                    }
+                    //transaction is win
+                    else if (transactionType == 4)
+                    {
+                        try
+                        {
+                            int idTrans;
+                            int.TryParse(transaction.ElementAt(0), out idTrans);
+                            _RemSrvMyCasino.getTransactionInformation(SessionId, idTrans, out information, out informationType, out errMsg);
+                        }
+                        catch
+                        {
+                            MessageBox.Show(errMsg);
+                        }
+                        if (typeTmp == MyCasinoUserTypes.Gamer)
+                        {
+                            lbBetAmountList.Items.Add(information.ElementAt(3));
+                            lbFirstNumberPerRollList.Items.Add(information.ElementAt(1));
+                            lbSecondNumberPerRollList.Items.Add(information.ElementAt(2));
+                            lbFirstNumberDrawn.Items.Add(information.ElementAt(4));
+                            lbSecondNumberDrawn.Items.Add(information.ElementAt(5));
+                            lbWinLossList.Items.Add(information.ElementAt(6));
+                            lbPayInList.Items.Add("");
+                            lbBalanceList.Items.Add(transaction.ElementAt(1));
+                        }
+                        else if (typeTmp == MyCasinoUserTypes.Operator)
+                        {
+                            lbBetAmountList.Items.Add(information.ElementAt(3));
+                            lbFirstNumberPerRollList.Items.Add(information.ElementAt(1));
+                            lbSecondNumberPerRollList.Items.Add(information.ElementAt(2));
+                            lbFirstNumberDrawn.Items.Add(information.ElementAt(4));
+                            lbSecondNumberDrawn.Items.Add(information.ElementAt(5));
+                            lbWinLossList.Items.Add(information.ElementAt(3));
+                            lbPayInList.Items.Add("");
+                            lbBalanceList.Items.Add(transaction.ElementAt(1));
+                        }
+                    }
+                    //transaction is loss
+                    else if (transactionType == 5)
+                    {
+                        try
+                        {
+                            int idTrans;
+                            int.TryParse(transaction.ElementAt(0), out idTrans);
+                            _RemSrvMyCasino.getTransactionInformation(SessionId, idTrans, out information, out informationType, out errMsg);
+                        }
+                        catch
+                        {
+                            MessageBox.Show(errMsg);
+                        }
+                        if (typeTmp == MyCasinoUserTypes.Gamer)
+                        {
+                            int amount;
+                            int.TryParse((information.ElementAt(3)),out amount);
+                            lbBetAmountList.Items.Add(information.ElementAt(3));
+                            lbFirstNumberPerRollList.Items.Add(information.ElementAt(1));
+                            lbSecondNumberPerRollList.Items.Add(information.ElementAt(2));
+                            lbFirstNumberDrawn.Items.Add(information.ElementAt(4));
+                            lbSecondNumberDrawn.Items.Add(information.ElementAt(5));
+                            lbWinLossList.Items.Add((amount * (-1)).ToString());
+                            lbPayInList.Items.Add("");
+                            lbBalanceList.Items.Add(transaction.ElementAt(1));
+                        }
+                        else if (typeTmp == MyCasinoUserTypes.Operator)
+                        {
+                            int amount;
+                            int.TryParse((information.ElementAt(6)), out amount);
+                            lbBetAmountList.Items.Add(information.ElementAt(3));
+                            lbFirstNumberPerRollList.Items.Add(information.ElementAt(1));
+                            lbSecondNumberPerRollList.Items.Add(information.ElementAt(2));
+                            lbFirstNumberDrawn.Items.Add(information.ElementAt(4));
+                            lbSecondNumberDrawn.Items.Add(information.ElementAt(5));
+                            lbWinLossList.Items.Add((amount * (-1)).ToString());
+                            lbPayInList.Items.Add("");
+                            lbBalanceList.Items.Add(transaction.ElementAt(1));
+                        }
+                    }
+                }
+                while (isFinished != true);
+
+            }
+            catch
+            {
+                MessageBox.Show(errMsg);
+            }
         }
+#endif
     }
+
 }

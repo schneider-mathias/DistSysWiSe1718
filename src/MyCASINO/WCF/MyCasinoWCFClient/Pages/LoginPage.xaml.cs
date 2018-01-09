@@ -1,4 +1,5 @@
-﻿#define SINGLETON
+﻿//#define COM
+//#define SINGLETON
 
 using System;
 using System.Collections.Generic;
@@ -26,14 +27,17 @@ namespace MyCasinoWCFClient.Pages
     /// </summary>
     public partial class LoginPage : Page
     {
-#if SINGLETON
-       // private ChannelFactory<INETMyCasino> _remSrvMyCasinoFactory = new ChannelFactory<INETMyCasino>(new BasicHttpBinding());
+
+#if COM
+        private COMMyCasinoSrvLib.COMMyCasino _comSrv;
+
+        public COMMyCasinoSrvLib.COMMyCasino _ComSrv
+        {
+            get { return _comSrv; }
+            set { _comSrv = value; }
+        }
+
 #else
-
-#endif
-        
-        //public INETMyCasino _remSrvMyCasino;
-
         private INETMyCasino _remSrvMyCasinoLogin;
 
         public INETMyCasino _RemSrvMyCasinoLogin
@@ -41,18 +45,24 @@ namespace MyCasinoWCFClient.Pages
             get { return _remSrvMyCasinoLogin; }
             set { _remSrvMyCasinoLogin = value; }
         }
-
+#endif
 
         public int _sessionId;
         private MyCasinoUserTypes _userType;
         private string _errMsg;
-
-
+#if COM
+        public LoginPage(COMMyCasinoSrvLib.COMMyCasino _comSrv)
+        {
+            _ComSrv = _comSrv;
+            InitializeComponent();
+        }
+#else
         public LoginPage(INETMyCasino _RemSrvMyCasino)
         {
             _RemSrvMyCasinoLogin = _RemSrvMyCasino;
             InitializeComponent();
         }
+#endif
 
 #region Username and Password standard values
 
@@ -126,15 +136,25 @@ namespace MyCasinoWCFClient.Pages
         /// <param name="e"></param>
         private void btnLogin_Click(object sender, RoutedEventArgs e)
         {
-            // TODO: Passwortüberprüfung noch einbauen
-            IPAddress ip;
-           // string srvAddress = "http://localhost:1200/MyCasinoWCF";
+#if COM
 
+            short tmpUsertype;
+            uint _sessionId;
             try
             {
-                //_RemSrvMyCasino = _remSrvMyCasinoFactory.CreateChannel(new EndpointAddress(srvAddress));
-                
+                    _ComSrv.login(tbxUsername.Text, pwbPassword.Password, out _sessionId, out tmpUsertype, out _errMsg);
+                this.NavigationService.Navigate(new GamingPage(_ComSrv, tbxUsername.Text, _sessionId, tmpUsertype));
+
+            }
+            catch
+            {
+                MessageBox.Show(_errMsg);
+            }
+#else
+        try
+            {
                 if (_RemSrvMyCasinoLogin.login(tbxUsername.Text, pwbPassword.Password, out _sessionId, out _userType, out _errMsg))
+
                 {
                     this.NavigationService.Navigate(new GamingPage(_RemSrvMyCasinoLogin, tbxUsername.Text, _sessionId, _userType));
                     return;
@@ -158,6 +178,7 @@ namespace MyCasinoWCFClient.Pages
             }
             
             //If authentifications is ok, login to the next page
+#endif
         }
     }
 }
