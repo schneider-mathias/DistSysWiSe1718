@@ -307,6 +307,10 @@ BOOL MyCasino::DeleteBet(SHORT firstNumber, SHORT secondNumber)
 			deleteSuccess = TRUE;
 			break;
 		}
+		else
+		{
+			it++;
+		}
 	}
 
 	return deleteSuccess;
