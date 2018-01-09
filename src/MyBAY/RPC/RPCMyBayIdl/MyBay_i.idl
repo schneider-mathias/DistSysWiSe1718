@@ -1,0 +1,58 @@
+//#include "rpc.h"
+
+[
+	uuid(BEE48EE5-830F-453C-AAE4-9B6B3F4FC270),
+	version(1.0),
+	pointer_default(unique)
+]
+interface MyBay_i
+{
+	typedef struct String_t
+	{
+		unsigned long size;
+		unsigned long len;
+		[size_is(size), length_is(len)] char *str;
+	}String_t;
+
+	typedef struct MyBayAuctionBidder_t
+	{
+		struct String_t userName;
+		double bid;
+	}MyBayAuctionBidder_t;
+	
+	typedef struct MyBayAuction_t
+	{
+		/*unsigned long auctionNumber;
+		char *articleName;
+		double startBid;
+		double highestBid;
+		char *highestBidder;
+		struct MyBayAuctionBidder_t bidder;
+		int* interestedUsers;*/
+
+		unsigned long auctionNumber;
+		struct String_t articleName;
+		double startBid;
+		double highestBid;
+		struct String_t highestBidder;
+		struct MyBayAuctionBidder_t bidder;			// wird auch serialisiert und deserialisiert
+		struct String_t interestedUsers;			// string der serialisiert und deserialisiert wird
+		int numInterestedUsers;
+		int numBidder;
+		//int* interestedUsers = (int *) malloc(sizeof(int));
+		// Für mehr Elemente im Array:
+		// Int* temp = realloc(interestedUsers, new_bytes);
+
+	}MyBayAuction_t;
+
+	error_status_t login([in, string] unsigned char *username, [in, string] unsigned char *password, [out] unsigned long* sessionId);
+	error_status_t logout([in] unsigned long sessionId);
+	error_status_t offer([in] unsigned long sessionId, [in, string] unsigned char *articleName, [in] double startBid, [out] unsigned long* auctionNumber);
+	error_status_t interested([in]unsigned long sessionId, [in] unsigned long auctionNumber);
+	error_status_t getAuctions([in]unsigned long sessionId, [in] unsigned long flags, [in, string] unsigned char *articleName, [out] unsigned long* countAuctions, [out] String_t* auctions);
+	error_status_t bid([in]unsigned long sessionId, [in] unsigned long auctionNumber, [in] double bidVal);
+	error_status_t details([in]unsigned long sessionId, [in] unsigned long auctionNumber, [out] String_t* allBids, [out] unsigned long* countBids);
+	error_status_t endauction([in]unsigned long sessionId, [in] unsigned long auctionNumber);
+	error_status_t getMessage([in]unsigned long sessionId, [out] boolean* messageAvailable, [out] unsigned long* messageType, [out] String_t* message);
+}
+

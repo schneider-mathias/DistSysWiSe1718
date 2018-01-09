@@ -1,0 +1,4 @@
+[implicit_handle(handle_t hMyBay_i)]
+interface MyBay_i
+{
+}
