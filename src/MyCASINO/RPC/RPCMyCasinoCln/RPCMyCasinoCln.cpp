@@ -1,22 +1,29 @@
 #include "MyCasino_i.h"    
 #include "Config.h"
 #include "RpcException.h"
-#include <iostream>
 
 #include "RPCMyCasinoCommandLineInterface.h"
 #include "CmdInterpreter.h"
 
 
-static void Bind(void);
+static void Bind(char*);
 static void UnBind(void);
 static void rpcCalls(void);
 void startCommandLineInterface();
 
-void main(void)
+void main(int argc, char**argv)
 {
+	char* srvAdress = NULL;
+
+	if (argc > 1)
+	{
+		srvAdress =  (char*)malloc((strlen(argv[1]) + 1) * sizeof(char));
+		srvAdress = _strdup(argv[1]);
+	}
+
 	try
 	{
-		Bind();
+		Bind(srvAdress);
 		try
 		{
 			rpcCalls();
@@ -26,23 +33,26 @@ void main(void)
 			UnBind();
 			throw;
 		}
-		/* RPC-Bindung freigeben */
+		//free RPC binding
 		UnBind();
 	}
 	catch (RpcException& e)
 	{
 		if (e.GetStatus() == RPC_S_SERVER_UNAVAILABLE)
 		{
-			std::cerr << "[Error]: Server is not available. Stop client." << std::endl;
+			printf("[Error]: Server is not available. Stop client.\n");
 		}
 		else
 		{
-			printf("Unbekannter Fehler\nstat=0x%x, text=%s, type=%s\n",
+			printf("Unknown error\nstat=0x%x, text=%s, type=%s\n",
 				(int)e.GetStatus(), e.GetErrorText(), e.GetErrorType());
 		}
 	}
 
-	printf("Enter druecken!\n");
+	if (NULL != srvAdress)
+		free(srvAdress);
+
+	printf("Please press a button.\n");
 	getchar();
 }
 
@@ -68,12 +78,15 @@ void rpcCalls(void)
 	RpcEndExcept
 }
 
-void Bind(void)
+void Bind(char* remoteNetwAddr)
 {
 	RPC_STATUS status;
 	unsigned char *protocolSequence = (UCHAR*)MYCASINO_RPC_PROT_SEQ;
 	unsigned char *endpoint = (UCHAR*)MYCASINO_RPC_ENDPOINT;
-	unsigned char *netwAddr = (UCHAR*)MYCASINO_RPC_DEF_NETWADDR;
+	unsigned char *netwAddr = (UCHAR*)"127.0.0.1";
+
+	if (NULL != remoteNetwAddr)
+		netwAddr = (UCHAR*)remoteNetwAddr;
 
 	unsigned char *stringBinding = NULL;
 
