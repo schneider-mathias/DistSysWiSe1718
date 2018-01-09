@@ -26,7 +26,7 @@ int main(int argc, char**argv)
 
 	// Erzeugung auf anderem Rechner (auch mit Rechernamen)
 	COSERVERINFO srvInfo = { 0, L"127.0.0.1", 0, 0 };
-	LPWSTR lpwstr_SrvName = 0;
+	LPWSTR lpwstr_SrvName = NULL;
 	
 	if (argc > 1)
 	{
@@ -59,9 +59,13 @@ int main(int argc, char**argv)
 	interpreter.registerCmdDispatcher(&myCasinoCLI, p);
 	interpreter.run();
 
+
+
 	p_ICOMMyCasinoSrv->Release();
 	CoUninitialize();
 
+	if (NULL != lpwstr_SrvName)
+		delete lpwstr_SrvName;
 
 	return S_OK;
 }
