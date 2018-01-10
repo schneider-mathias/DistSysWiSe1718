@@ -356,6 +356,10 @@ void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, 
 			else if (args.at(1) == L"\-A")
 				flag = 2;
 		}
+		if (args.size() == 2 && flag == 0)
+		{
+			artNamePart = wstring_to_char(args.at(1));
+		}
 		// Falls ein Artikelnameteil angegben wurde
 		if (args.size() > 2)
 		{
