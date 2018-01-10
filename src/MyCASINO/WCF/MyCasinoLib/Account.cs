@@ -50,9 +50,17 @@ namespace MyCasinoLib
                             Int32.TryParse(substring[1], out money);
                         if (substring[0] == username)
                         {
+                            
                             //read moneyamount from file
                             Transaction readFileTransaction = new Transaction();
-                            readFileTransaction.M_id = 1;
+                            if (dictTransDraw.Count == 0)
+                            {
+                                readFileTransaction.M_id = 1;
+                            }
+                            else
+                            {
+                                readFileTransaction.M_id = dictTransDraw.Last().Key.M_id+1;
+                            }
                             readFileTransaction.CurrentAmount = money;
                             MoneyAmountLeft = money;
                             readFileTransaction.ChangeAmount = 0;
@@ -75,7 +83,19 @@ namespace MyCasinoLib
         {
             try
             {
-                Transaction trans = new Transaction(dictTransDraw.Last().Key.M_id + 1, dictTransDraw.Last().Key.CurrentAmount + amountMoney, amountMoney,name,typeTmp);
+                int index = 0;
+                for (int k = dictTransDraw.Count-1; k > 1; k--)
+                {
+                    index = k;
+                    if (dictTransDraw.ElementAt(k).Key.TransType == MyCasinoTransactionTypes.DEPOSIT &&
+                        dictTransDraw.ElementAt(k).Key.Name == name) break;
+                    else if (dictTransDraw.ElementAt(k).Key.TransType == MyCasinoTransactionTypes.BET_WIN &&
+                        dictTransDraw.ElementAt(k).Key.Name == name) break;
+                    else if (dictTransDraw.ElementAt(k).Key.TransType == MyCasinoTransactionTypes.BET_LOSS &&
+                        dictTransDraw.ElementAt(k).Key.Name == name) break;
+                    
+                }
+                Transaction trans = new Transaction(dictTransDraw.Last().Key.M_id + 1, dictTransDraw.ElementAt(index).Key.CurrentAmount + amountMoney, amountMoney,name,typeTmp);
                 dictTransDraw.Add(trans,null);
                 moneyAmountLeft += amountMoney;
                 return true;
@@ -86,10 +106,11 @@ namespace MyCasinoLib
             }
         }
 
-        public bool Bet(string nameTmp ,double amountMoneyTmp, int firstNumberTmp, int secondNumberTmp, out  MyCasinoTransactionTypes typetmp, out bool overridden, out bool delOverriddenBet)
+        public bool Bet(string nameTmp ,double amountMoneyTmp, int firstNumberTmp, int secondNumberTmp, out  MyCasinoTransactionTypes typetmp, out bool overridden, out bool delOverriddenBet, out bool _betDel)
         {
                 overridden = true;
                 delOverriddenBet = false;
+                _betDel = false;
             try
             {
                 Bet tmpbet = new Bet(nameTmp, firstNumberTmp, secondNumberTmp, amountMoneyTmp);
@@ -100,6 +121,8 @@ namespace MyCasinoLib
                     MoneyAmountLeft += delbet.M_setAmount;
                     typetmp = MyCasinoTransactionTypes.CANCELED;
                     betList.Remove(delbet);
+                    _betDel = true;
+                    delOverriddenBet = true;//new
                     return true;
                 }
                 if (amountMoneyTmp == 0)
@@ -183,18 +206,18 @@ namespace MyCasinoLib
             {
                 foreach (Bet bet in betList)
                 {
+                    //Two matches profit save
+                    if (bet.M_firstNumber == firstNumber && bet.M_secondNumber == secondNumber)
+                    {
+                        CalculateProfit(bet.M_setAmount, out oneMatch, out twoMatches);
+                        profit.Add(twoMatches);
+                    }
                     //One match profit save
-                    if (bet.M_firstNumber == firstNumber || bet.M_secondNumber == secondNumber || bet.M_firstNumber == secondNumber
+                    else if (bet.M_firstNumber == firstNumber || bet.M_secondNumber == secondNumber || bet.M_firstNumber == secondNumber
                         || bet.M_secondNumber == firstNumber)
                     {
                         CalculateProfit(bet.M_setAmount, out oneMatch, out twoMatches);
                         profit.Add(oneMatch);
-                    }
-                    //Two matches profit save
-                    else if (bet.M_firstNumber == firstNumber && bet.M_secondNumber == secondNumber)
-                    {
-                        CalculateProfit(bet.M_setAmount, out oneMatch, out twoMatches);
-                        profit.Add(twoMatches);
                     }
                     else profit.Add(0);
                 }
@@ -214,12 +237,14 @@ namespace MyCasinoLib
             secondNumber = 0;
             try
             {
-                do
-                {
-                    Random rnd = new Random();
-                    firstNumber = rnd.Next(1, 5);
-                    secondNumber = rnd.Next(1, 5);
-                } while (!(firstNumber < secondNumber));
+                //do
+                //{
+                //    Random rnd = new Random();
+                //    firstNumber = rnd.Next(1, 5);
+                //    secondNumber = rnd.Next(1, 5);
+                //} while (!(firstNumber < secondNumber));
+                firstNumber = 1;
+                secondNumber = 2;
                 return true;
             }
             catch
