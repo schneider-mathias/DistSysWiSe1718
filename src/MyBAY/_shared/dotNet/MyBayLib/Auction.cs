@@ -21,7 +21,7 @@ namespace MyBayLib
 {
     public class Auction
     {
-        public static Dictionary<UInt32, ConcurrentBag<Message>> messageBucket = new Dictionary<uint, ConcurrentBag<Message>>();
+        public static ConcurrentDictionary<UInt32, ConcurrentBag<Message>> messageBucket = new ConcurrentDictionary<UInt32, ConcurrentBag<Message>>();
 
         // Will increase for each new auction
         private static UInt32 auctionNumberCount = 0;
@@ -235,7 +235,7 @@ namespace MyBayLib
         {
             if (!messageBucket.ContainsKey(receipientIndex))
             {
-                messageBucket.Add(receipientIndex, new ConcurrentBag<Message>());
+                messageBucket.TryAdd(receipientIndex, new ConcurrentBag<Message>());
             }
 
             try
