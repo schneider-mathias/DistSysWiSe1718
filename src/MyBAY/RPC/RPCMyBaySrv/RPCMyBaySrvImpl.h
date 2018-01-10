@@ -1,6 +1,12 @@
+/************************************************************/
+/*                                                          */
+/* Inhalt:    Serverimplementierung	- Header	            */
+/*                                                          */
+/* Autor:	  Johannes Sauer		                        */
+/* Stand:     23. Jan 2018                                  */
+/*															*/	
+/************************************************************/
 #pragma once
-
-#include "RpcException.h"
 
 #include <Windows.h>
 #include <map>
@@ -10,6 +16,10 @@
 #include <thread>
 
 using namespace std;
+
+/********************************************************************/
+/*						Strukturdefinitionen						*/
+/********************************************************************/
 
 struct bidder
 {
@@ -29,16 +39,6 @@ struct auction
 	int auctionStatus;							// 0 = offen, 1 = kurz vor Abschluss, 2 = Beendet
 };
 
-// Auktionsnummernprüfung für auction
-struct find_auctionNumber : std::unary_function<auction, bool> {
-	DWORD auctionNumber;
-	find_auctionNumber(DWORD auctionNumber) :auctionNumber(auctionNumber) { }
-	bool operator()(auction const& m) const {
-		return m.auctionNumber == auctionNumber;
-	}
-};
-
-//CRITICAL_SECTION m_critSection;
 CritSectionWrapper critSecWrapper;
 std::map<std::wstring, unsigned long> users;
 std::vector<auction> AuctionList;
@@ -48,11 +48,28 @@ std::vector<thread> myThreads;
 /********************************************************************/
 /*						Funktionsdefinitionen						*/
 /********************************************************************/
-
+error_status_t login(unsigned char *username, unsigned char *password, unsigned long* sessionId);
+error_status_t logout(unsigned long sessionId);
+error_status_t offer(unsigned long sessionId, unsigned char *articleName, double startBid, unsigned long* auctionNumber);
+error_status_t interested(unsigned long sessionId, unsigned long auctionNumber);
+error_status_t getAuctions(unsigned long sessionId, unsigned long flags, unsigned char *articleName, unsigned long* countAuctions, String_t* auctions);
+error_status_t bid(unsigned long sessionId, unsigned long auctionNumber, double bidVal);
+error_status_t details(unsigned long sessionId, unsigned long auctionNumber, String_t *allBids, unsigned long* countBids);
+error_status_t endauction(unsigned long sessionId, unsigned long auctionNumber);
+error_status_t getMessage(unsigned long sessionId, boolean* messageAvailable, unsigned long* messageType, String_t* message);
 void auctionEndProcess(wstring user, unsigned long auctionNumber);
 void addEndAuctionMessage(wstring user, unsigned long auctionNumber, int warningNr);
 void endAuction(unsigned long auctionNumber);
 
+
+//// Auktionsnummernprüfung für auction
+//struct find_auctionNumber : std::unary_function<auction, bool> {
+//	DWORD auctionNumber;
+//	find_auctionNumber(DWORD auctionNumber) :auctionNumber(auctionNumber) { }
+//	bool operator()(auction const& m) const {
+//		return m.auctionNumber == auctionNumber;
+//	}
+//};
 
 /********************************************************************/
 /*							Hilfsfunktionen							*/
@@ -99,11 +116,59 @@ wstring getUserName(unsigned long sessionId)
 }
 
 // Um alle Auktionen persistent zu halten werden alle Auktionen in eine Datei geschrieben
-void writeAuctionToFile()
+void writeAuctionsToFile()
 {
 	//TODO:: writeAuctionsToFile()
-	auction newAuct = AuctionList.at(AuctionList.size()-1);
+	// 1. String erstellen für 1. Zeile
+	// 2. Serialisiern
+	// 3. in Datei schreiben
+	// 4. String erstellen für 2. Zeile
+	// ...
 
+	std::wofstream auctionsFile;
+	vector<wstring> listOfAuctions;
+	// Auktionen zerlegen und in Liste speichern
+	for (std::vector<auction>::iterator it = AuctionList.begin(); it != AuctionList.end(); ++it)
+	{
+		// Einzelinfos der Auktion, die in erste Zeile gespeichert werden
+		wstring auctionInfos;
+		auctionInfos += (*it).articleName + PLACEHOLDER_FOR_SERIALISATION_DESERIALISATION;
+		auctionInfos += to_wstring((*it).auctionNumber) + PLACEHOLDER_FOR_SERIALISATION_DESERIALISATION;
+		auctionInfos += to_wstring((*it).auctionStatus) + PLACEHOLDER_FOR_SERIALISATION_DESERIALISATION;
+		auctionInfos += to_wstring((*it).highestBid) + PLACEHOLDER_FOR_SERIALISATION_DESERIALISATION;
+		auctionInfos += (*it).highestBidder + PLACEHOLDER_FOR_SERIALISATION_DESERIALISATION;
+		auctionInfos += to_wstring((*it).startBid) + PLACEHOLDER_FOR_SERIALISATION_DESERIALISATION;
+
+		// Alle interessierten User der Auktion, die in zweiter Zeile gespeichert werden
+		wstring auctionInterestedUsers;
+		for (std::vector<wstring>::iterator it2 = (*it).interestedUserList.begin(); it2 != (*it).interestedUserList.end(); ++it2)
+		{
+			auctionInterestedUsers += (*it2) + PLACEHOLDER_FOR_SERIALISATION_DESERIALISATION;
+		}
+
+		// Alle Bieter der Auktion, die in dritter Spalte gespeichert werden
+		wstring auctionBidder;
+		for (std::vector<bidder>::iterator it2 = (*it).BidderList.begin(); it2 != (*it).BidderList.end(); ++it2)
+		{
+			auctionBidder += to_wstring((*it2).bid) + PLACEHOLDER_FOR_SERIALISATION_DESERIALISATION;
+			auctionBidder += (*it2).userName + PLACEHOLDER_FOR_SERIALISATION_DESERIALISATION;
+		}
+		listOfAuctions.push_back(auctionInfos);
+		listOfAuctions.push_back(auctionInterestedUsers);
+		listOfAuctions.push_back(auctionBidder);
+	}
+
+	auctionsFile.open(L"MyBayAuctions.csv", std::ios::out);
+	if (auctionsFile.is_open())
+	{
+		// Schreibe alle Auktionen in die Datei
+		for (std::vector<wstring>::iterator it = listOfAuctions.begin(); it != listOfAuctions.end(); ++it)
+		{
+			auctionsFile << (*it) << "\n";				
+		}
+	}
+
+	auctionsFile.close();
 }
 
 // Erzeugt neue Auktion und fügt diese der Liste aller Auktionen hinzu
@@ -281,6 +346,7 @@ wstring serializeAuctionDetails(unsigned long auctionNumber)
 				// Gebotsnummer
 				wstring tempBidStr1 = to_wstring(distance((*it).BidderList.begin(), it2));
 				serStr += tempBidStr1;
+				serStr += PLACEHOLDER_FOR_SERIALISATION_DESERIALISATION;
 
 				// Bietername
 				wstring tempBidStr2 = (*it2).userName;
@@ -296,6 +362,8 @@ wstring serializeAuctionDetails(unsigned long auctionNumber)
 		}
 	}
 	LeaveCriticalSection(critSecWrapper.getInstance());
+	if (serStr == L"")
+		serStr = L"NO_DETAILS";
 	return serStr;
 }
 

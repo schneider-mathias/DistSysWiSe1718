@@ -1,3 +1,12 @@
+/************************************************************/
+/*                                                          */
+/* Inhalt:    RPCMyBayCln - Header				            */
+/*                                                          */
+/* Autor:	  Johannes Sauer		                        */
+/* Stand:     23. Jan 2018                                  */
+/*															*/
+/************************************************************/
+
 #pragma once
 #include <vector>
 #include "MyBayDefines.h"
@@ -70,7 +79,7 @@ void printMessage(vector<wstring> messageVec, unsigned long messageType)
 	wcout << endl;
 	if (messageType == 0)
 	{
-		wcout << "---------------------- Neues Gebot----------------------" << endl;
+		wcout << "------------------------------------- Neues Gebot --------------------------------------" << endl;
 		wcout << "Artikelname: " << messageVec.at(2) << endl;
 		if (messageVec.at(1) != L"")
 			wcout << "Bieter: " << messageVec.at(1) << endl;
@@ -82,20 +91,20 @@ void printMessage(vector<wstring> messageVec, unsigned long messageType)
 			wcout << "kurz vor Ende" << endl;
 		if (messageVec.at(4) == L"2")
 			wcout << "Beendet" << endl;
-		wcout << "-----------------------------------------------" << endl;
+		wcout << "----------------------------------------------------------------------------------------" << endl;
 	}
 	else if (messageType == 1)
 	{
-		wcout << "------------------ Auktion endet bald ------------------" << endl;
+		wcout << "------------------------------------- Auktion endet bald --------------------------------------" << endl;
 		wcout << "Die Auktion " << messageVec.at(3) << " endet bald." << endl;
 		wcout << "Artikelname: " << messageVec.at(2) << endl;
 		wcout << "Hoechstgebot: " << messageVec.at(4) << endl;
 		wcout << "Nr. Warnung: " << messageVec.at(1) << endl;
-		wcout << "--------------------------------------------------------" << endl;
+		wcout << "----------------------------------------------------------------------------------------" << endl;
 	}
 	else if (messageType == 2)
 	{
-		wcout << "------------------ Auktion beendet ---------------------" << endl;
+		wcout << "------------------------------------- Auktion beendet --------------------------------------" << endl;
 		wcout << "Artikel: " << messageVec.at(2) << endl;
 		wcout << "Kaeufer: " << messageVec.at(1) << endl;
 		wcout << "Preis: " << messageVec.at(3) << endl;
@@ -106,7 +115,7 @@ void printMessage(vector<wstring> messageVec, unsigned long messageType)
 			wcout << "kurz vor Ende" << endl;
 		if (messageVec.at(4) == L"2")
 			wcout << "Beendet" << endl;
-		wcout << "--------------------------------------------------------" << endl;
+		wcout << "----------------------------------------------------------------------------------------" << endl;
 	}
 	else if (messageType == 3)
 	{

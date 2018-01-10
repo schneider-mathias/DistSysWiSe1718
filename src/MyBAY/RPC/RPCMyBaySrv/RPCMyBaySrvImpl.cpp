@@ -1,3 +1,13 @@
+/************************************************************/
+/*                                                          */
+/* Inhalt:    Serverimplementierung				            */
+/*                                                          */
+/* Autor:	  Johannes Sauer		                        */
+/* Stand:     23. Jan 2018                                  */
+/*															*/
+/************************************************************/
+
+#pragma once
 #include "MyBay_i_h.h"
 #include <iostream>
 #include <algorithm>
@@ -9,17 +19,13 @@
 #include "CharStringConverter.h"
 #include "RPCMyBaySrvImpl.h"
 #include "MyBayDefines.h"
-//#include "CritSectionWrapper.h"
-//#include"HelperFunktions.h"
 
 using namespace std;
 
 
 // Globale Variablen
-//users* userList;
 long numUser = 0;
 unsigned long numAuct = 0;
-//CritSectionWrapper critSecWrapper;
 
 error_status_t login(unsigned char *username, unsigned char *password, unsigned long* sessionId)
 {
@@ -95,9 +101,9 @@ error_status_t offer(unsigned long sessionId, unsigned char *articleName, double
 	unsigned long newAuctNumb = addNewAuction(sarticleName, startBid);
 	// User der Liste der interessierten User für diese Auktion hinzufügen
 	BOOL userAdded = addUserToInterestedUserList(user, newAuctNumb);
-
-	// TODO: Schreibe Auctionen in Datei um persistent zu halten (in .h schon vorhanden) 
-	writeAuctionToFile();
+	
+	// aktualisiert die MyBayAuctions.txt
+	writeAuctionsToFile();
 
 	*auctionNumber = newAuctNumb;		// Auktionsnummer zurückliefern
 	
@@ -124,6 +130,10 @@ error_status_t interested(unsigned long sessionId, unsigned long auctionNumber)
 	{
 		return ERROR_USER_ALREADY_INTERESTED;
 	}
+
+	// aktualisiert die MyBayAuctions.txt
+	writeAuctionsToFile();
+
 	return RPC_S_OK;
 }
 
@@ -145,10 +155,11 @@ error_status_t getAuctions(unsigned long sessionId, unsigned long flags, unsigne
 	}
 	wstring serStr = serializeAuctions(interestingAuctions);
 
-	int serStrLen = serStr.size();
-	auctions->str = (unsigned char*)midl_user_allocate(10000);			//TODO: Größe noch berechnen 
-	auctions->size = serStrLen;
-	auctions->len = serStrLen;
+	// Speicher für die Übertragung des String_t allokieren
+	int serStrSize = sizeof(char) * (serStr.size() + 1);
+	auctions->str = (unsigned char*)midl_user_allocate(serStrSize);			
+	auctions->size = serStrSize;
+	auctions->len = serStrSize;
 
 	strcpy((char*)auctions->str, (char*)wstring_to_char(serStr.c_str()));
 
@@ -183,6 +194,9 @@ error_status_t bid(unsigned long sessionId, unsigned long auctionNumber, double 
 	}
 	addNewBidToMessages(articleName, bidVal, user);
 
+	// aktualisiert die MyBayAuctions.txt
+	writeAuctionsToFile();
+
 	return RPC_S_OK;
 }
 
@@ -205,10 +219,11 @@ error_status_t details(unsigned long sessionId, unsigned long auctionNumber, Str
 	// Gebote serialisieren
 	wstring serStr = serializeAuctionDetails(auctionNumber);
 
-	int serStrLen = serStr.size();
-	allBids->str = (unsigned char*)midl_user_allocate(10000);			//TODO: Größe noch berechnen 
-	allBids->size = serStrLen;
-	allBids->len = serStrLen;
+	// Speicher für die Übertragung des String_t allokieren
+	int serStrSize = sizeof(char) * (serStr.size() + 1);
+	allBids->str = (unsigned char*)midl_user_allocate(serStrSize);			
+	allBids->size = serStrSize;
+	allBids->len = serStrSize;
 	
 	strcpy((char*)allBids->str, (char*)wstring_to_char(serStr.c_str()));
 
@@ -231,12 +246,14 @@ error_status_t endauction(unsigned long sessionId, unsigned long auctionNumber)
 		return ERROR_USER_IS_NOT_AUCTIONEER;
 	BOOL endAuctionSuccessfull = endAuction(user, auctionNumber);
 
+	// aktualisiert die MyBayAuctions.txt
+	writeAuctionsToFile();
+
 	return RPC_S_OK;
 }
 
 error_status_t getMessage(unsigned long sessionId, boolean* messageAvailable, unsigned long* messageType, String_t* message)
 {
-	//addNewBidToMessages(L"car", 100); // TEST
 	// Prüfen ob User eingeloggt ist
 	if (BOOL isLoggedIn = loginCheck(sessionId) == FALSE)
 	{
@@ -252,9 +269,11 @@ error_status_t getMessage(unsigned long sessionId, boolean* messageAvailable, un
 		// Nachricht serialisieren
 		wstring serStr = serializeMessage(newMessage);
 
-		message->str = (unsigned char*)midl_user_allocate(10000);			// TODO: Größe noch berechnen 
-		message->size = 10000;
-		message->len = 10000;
+		// Speicher für die Übertragung des String_t allokieren
+		int serStrSize = sizeof(char) * (serStr.size() + 1);
+		message->str = (unsigned char*)midl_user_allocate(serStrSize);			
+		message->size = serStrSize;
+		message->len = serStrSize;
 
 		strcpy((char*)message->str, (char*)wstring_to_char(serStr.c_str()));
 	}
