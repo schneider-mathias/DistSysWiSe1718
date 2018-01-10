@@ -30,6 +30,7 @@ void main(int argc, char**argv)
 {
 	char* srvAdress = NULL;
 
+	// legt bei einer zusätzlichen Eingabe die IP-Adresse des Servers fest
 	if (argc > 1)
 	{
 		srvAdress = (char*)malloc((strlen(argv[1]) + 1) * sizeof(char));

@@ -116,11 +116,59 @@ wstring getUserName(unsigned long sessionId)
 }
 
 // Um alle Auktionen persistent zu halten werden alle Auktionen in eine Datei geschrieben
-void writeAuctionToFile()
+void writeAuctionsToFile()
 {
 	//TODO:: writeAuctionsToFile()
-	auction newAuct = AuctionList.at(AuctionList.size()-1);
+	// 1. String erstellen für 1. Zeile
+	// 2. Serialisiern
+	// 3. in Datei schreiben
+	// 4. String erstellen für 2. Zeile
+	// ...
 
+	std::wofstream auctionsFile;
+	vector<wstring> listOfAuctions;
+	// Auktionen zerlegen und in Liste speichern
+	for (std::vector<auction>::iterator it = AuctionList.begin(); it != AuctionList.end(); ++it)
+	{
+		// Einzelinfos der Auktion, die in erste Zeile gespeichert werden
+		wstring auctionInfos;
+		auctionInfos += (*it).articleName + PLACEHOLDER_FOR_SERIALISATION_DESERIALISATION;
+		auctionInfos += to_wstring((*it).auctionNumber) + PLACEHOLDER_FOR_SERIALISATION_DESERIALISATION;
+		auctionInfos += to_wstring((*it).auctionStatus) + PLACEHOLDER_FOR_SERIALISATION_DESERIALISATION;
+		auctionInfos += to_wstring((*it).highestBid) + PLACEHOLDER_FOR_SERIALISATION_DESERIALISATION;
+		auctionInfos += (*it).highestBidder + PLACEHOLDER_FOR_SERIALISATION_DESERIALISATION;
+		auctionInfos += to_wstring((*it).startBid) + PLACEHOLDER_FOR_SERIALISATION_DESERIALISATION;
+
+		// Alle interessierten User der Auktion, die in zweiter Zeile gespeichert werden
+		wstring auctionInterestedUsers;
+		for (std::vector<wstring>::iterator it2 = (*it).interestedUserList.begin(); it2 != (*it).interestedUserList.end(); ++it2)
+		{
+			auctionInterestedUsers += (*it2) + PLACEHOLDER_FOR_SERIALISATION_DESERIALISATION;
+		}
+
+		// Alle Bieter der Auktion, die in dritter Spalte gespeichert werden
+		wstring auctionBidder;
+		for (std::vector<bidder>::iterator it2 = (*it).BidderList.begin(); it2 != (*it).BidderList.end(); ++it2)
+		{
+			auctionBidder += to_wstring((*it2).bid) + PLACEHOLDER_FOR_SERIALISATION_DESERIALISATION;
+			auctionBidder += (*it2).userName + PLACEHOLDER_FOR_SERIALISATION_DESERIALISATION;
+		}
+		listOfAuctions.push_back(auctionInfos);
+		listOfAuctions.push_back(auctionInterestedUsers);
+		listOfAuctions.push_back(auctionBidder);
+	}
+
+	auctionsFile.open(L"MyBayAuctions.csv", std::ios::out);
+	if (auctionsFile.is_open())
+	{
+		// Schreibe alle Auktionen in die Datei
+		for (std::vector<wstring>::iterator it = listOfAuctions.begin(); it != listOfAuctions.end(); ++it)
+		{
+			auctionsFile << (*it) << "\n";				
+		}
+	}
+
+	auctionsFile.close();
 }
 
 // Erzeugt neue Auktion und fügt diese der Liste aller Auktionen hinzu
