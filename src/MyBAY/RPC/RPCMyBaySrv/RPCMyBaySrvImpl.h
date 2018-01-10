@@ -1,3 +1,11 @@
+/************************************************************/
+/*                                                          */
+/* Inhalt:    Serverimplementierung	- Header	            */
+/*                                                          */
+/* Autor:	  Johannes Sauer		                        */
+/* Stand:     23. Jan 2018                                  */
+/*															*/	
+/************************************************************/
 #pragma once
 
 #include <Windows.h>
@@ -31,6 +39,12 @@ struct auction
 	int auctionStatus;							// 0 = offen, 1 = kurz vor Abschluss, 2 = Beendet
 };
 
+CritSectionWrapper critSecWrapper;
+std::map<std::wstring, unsigned long> users;
+std::vector<auction> AuctionList;
+std::vector<vector<wstring>> Messages;
+std::vector<thread> myThreads;
+
 /********************************************************************/
 /*						Funktionsdefinitionen						*/
 /********************************************************************/
@@ -48,27 +62,14 @@ void addEndAuctionMessage(wstring user, unsigned long auctionNumber, int warning
 void endAuction(unsigned long auctionNumber);
 
 
-// Auktionsnummernprüfung für auction
-struct find_auctionNumber : std::unary_function<auction, bool> {
-	DWORD auctionNumber;
-	find_auctionNumber(DWORD auctionNumber) :auctionNumber(auctionNumber) { }
-	bool operator()(auction const& m) const {
-		return m.auctionNumber == auctionNumber;
-	}
-};
-
-CritSectionWrapper critSecWrapper;
-std::map<std::wstring, unsigned long> users;
-std::vector<auction> AuctionList;
-std::vector<vector<wstring>> Messages;
-std::vector<thread> myThreads;
-
-/********************************************************************/
-/*						Funktionsdefinitionen						*/
-/********************************************************************/
-
-
-
+//// Auktionsnummernprüfung für auction
+//struct find_auctionNumber : std::unary_function<auction, bool> {
+//	DWORD auctionNumber;
+//	find_auctionNumber(DWORD auctionNumber) :auctionNumber(auctionNumber) { }
+//	bool operator()(auction const& m) const {
+//		return m.auctionNumber == auctionNumber;
+//	}
+//};
 
 /********************************************************************/
 /*							Hilfsfunktionen							*/

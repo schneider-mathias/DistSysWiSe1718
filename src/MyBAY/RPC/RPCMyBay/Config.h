@@ -1,3 +1,12 @@
+/************************************************************/
+/*                                                          */
+/* Inhalt:    Konfiguration						            */
+/*                                                          */
+/* Autor:	  Johannes Sauer		                        */
+/* Stand:     23. Jan 2018                                  */
+/*															*/
+/************************************************************/
+
 #ifndef RPC_MYBAY_CONFIG_H
 #define RPC_MYBAY_CONFIG_H
 

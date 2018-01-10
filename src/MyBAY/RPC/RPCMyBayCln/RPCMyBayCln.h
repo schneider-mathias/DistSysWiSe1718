@@ -1,3 +1,12 @@
+/************************************************************/
+/*                                                          */
+/* Inhalt:    RPCMyBayCln - Header				            */
+/*                                                          */
+/* Autor:	  Johannes Sauer		                        */
+/* Stand:     23. Jan 2018                                  */
+/*															*/
+/************************************************************/
+
 #pragma once
 #include <vector>
 #include "MyBayDefines.h"

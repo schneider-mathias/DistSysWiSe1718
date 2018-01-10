@@ -1,3 +1,12 @@
+/************************************************************/
+/*                                                          */
+/* Inhalt:    Serverimplementierung				            */
+/*                                                          */
+/* Autor:	  Johannes Sauer		                        */
+/* Stand:     23. Jan 2018                                  */
+/*															*/
+/************************************************************/
+
 #pragma once
 #include "MyBay_i_h.h"
 #include <iostream>
@@ -235,7 +244,6 @@ error_status_t endauction(unsigned long sessionId, unsigned long auctionNumber)
 
 error_status_t getMessage(unsigned long sessionId, boolean* messageAvailable, unsigned long* messageType, String_t* message)
 {
-	//addNewBidToMessages(L"car", 100); // TEST
 	// Prüfen ob User eingeloggt ist
 	if (BOOL isLoggedIn = loginCheck(sessionId) == FALSE)
 	{
