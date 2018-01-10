@@ -20,11 +20,24 @@
 
 using namespace std;
 
-void main(void)
+void rpcCalls(void);
+void Bind(char* remoteNetwAddr);
+void UnBind(void);
+void readConsole();
+void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, boolean *threadAllow);
+
+void main(int argc, char**argv)
 {
+	char* srvAdress = NULL;
+
+	if (argc > 1)
+	{
+		srvAdress = (char*)malloc((strlen(argv[1]) + 1) * sizeof(char));
+		srvAdress = _strdup(argv[1]);
+	}
 	try
 	{
-		Bind();
+		Bind(srvAdress);
 		try
 		{
 			rpcCalls();
@@ -69,12 +82,15 @@ void rpcCalls(void)
 	RpcEndExcept
 }
 
-void Bind(void)
+void Bind(char* remoteNetwAddr)
 {
 	RPC_STATUS status;
 	unsigned char *protocolSequence = (UCHAR*)MYBAY_RPC_PROT_SEQ;
 	unsigned char *endpoint = (UCHAR*)MYBAY_RPC_ENDPOINT;
 	unsigned char *netwAddr = (UCHAR*)MYBAY_RPC_DEF_NETWADDR;
+
+	if (NULL != remoteNetwAddr)
+		netwAddr = (UCHAR*)remoteNetwAddr;
 
 	unsigned char *stringBinding = NULL;
 
