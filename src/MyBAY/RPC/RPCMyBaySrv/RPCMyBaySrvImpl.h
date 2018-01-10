@@ -1,7 +1,5 @@
 #pragma once
 
-#include "RpcException.h"
-
 #include <Windows.h>
 #include <map>
 #include <vector>
@@ -10,6 +8,10 @@
 #include <thread>
 
 using namespace std;
+
+/********************************************************************/
+/*						Strukturdefinitionen						*/
+/********************************************************************/
 
 struct bidder
 {
@@ -29,6 +31,23 @@ struct auction
 	int auctionStatus;							// 0 = offen, 1 = kurz vor Abschluss, 2 = Beendet
 };
 
+/********************************************************************/
+/*						Funktionsdefinitionen						*/
+/********************************************************************/
+error_status_t login(unsigned char *username, unsigned char *password, unsigned long* sessionId);
+error_status_t logout(unsigned long sessionId);
+error_status_t offer(unsigned long sessionId, unsigned char *articleName, double startBid, unsigned long* auctionNumber);
+error_status_t interested(unsigned long sessionId, unsigned long auctionNumber);
+error_status_t getAuctions(unsigned long sessionId, unsigned long flags, unsigned char *articleName, unsigned long* countAuctions, String_t* auctions);
+error_status_t bid(unsigned long sessionId, unsigned long auctionNumber, double bidVal);
+error_status_t details(unsigned long sessionId, unsigned long auctionNumber, String_t *allBids, unsigned long* countBids);
+error_status_t endauction(unsigned long sessionId, unsigned long auctionNumber);
+error_status_t getMessage(unsigned long sessionId, boolean* messageAvailable, unsigned long* messageType, String_t* message);
+void auctionEndProcess(wstring user, unsigned long auctionNumber);
+void addEndAuctionMessage(wstring user, unsigned long auctionNumber, int warningNr);
+void endAuction(unsigned long auctionNumber);
+
+
 // Auktionsnummernprüfung für auction
 struct find_auctionNumber : std::unary_function<auction, bool> {
 	DWORD auctionNumber;
@@ -38,7 +57,6 @@ struct find_auctionNumber : std::unary_function<auction, bool> {
 	}
 };
 
-//CRITICAL_SECTION m_critSection;
 CritSectionWrapper critSecWrapper;
 std::map<std::wstring, unsigned long> users;
 std::vector<auction> AuctionList;
@@ -49,9 +67,7 @@ std::vector<thread> myThreads;
 /*						Funktionsdefinitionen						*/
 /********************************************************************/
 
-void auctionEndProcess(wstring user, unsigned long auctionNumber);
-void addEndAuctionMessage(wstring user, unsigned long auctionNumber, int warningNr);
-void endAuction(unsigned long auctionNumber);
+
 
 
 /********************************************************************/
@@ -281,6 +297,7 @@ wstring serializeAuctionDetails(unsigned long auctionNumber)
 				// Gebotsnummer
 				wstring tempBidStr1 = to_wstring(distance((*it).BidderList.begin(), it2));
 				serStr += tempBidStr1;
+				serStr += PLACEHOLDER_FOR_SERIALISATION_DESERIALISATION;
 
 				// Bietername
 				wstring tempBidStr2 = (*it2).userName;
@@ -296,6 +313,8 @@ wstring serializeAuctionDetails(unsigned long auctionNumber)
 		}
 	}
 	LeaveCriticalSection(critSecWrapper.getInstance());
+	if (serStr == L"")
+		serStr = L"NO_DETAILS";
 	return serStr;
 }
 
