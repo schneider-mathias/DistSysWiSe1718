@@ -32,12 +32,31 @@ namespace MyBayWCFCln
             string srvAddress = "http://localhost:3333/MyBayWCF";
             _remoteSrvMyBay = _MyBayFactory.CreateChannel(new EndpointAddress(srvAddress));
 
-            UInt32 sessionID;
-            String teststring = _remoteSrvMyBay.login("BlaBlubb", "22334", out sessionID);
+            /*
+            UInt32 sessionIDUser1;
+            UInt32 sessionIDUser2;
+            UInt32 sessionIDUser3;
+            String teststring = _remoteSrvMyBay.login("Martin", "Passwort1", out sessionIDUser1);
+             teststring = _remoteSrvMyBay.login("Manuel", "Passwort2", out sessionIDUser2);
+             teststring = _remoteSrvMyBay.login("Mathias", "Passwort3", out sessionIDUser3);
 
-            UInt32 auctionnumber;
-            teststring = _remoteSrvMyBay.offer(sessionID, "AUTO", 22.99, out auctionnumber);
+            UInt32 auctionnumber1;
+            UInt32 auctionnumber2;
+            UInt32 auctionnumber3;
+            teststring = _remoteSrvMyBay.offer(sessionIDUser1, "AUTO", 22.99, out auctionnumber1);
+            teststring = _remoteSrvMyBay.offer(sessionIDUser2, "Haus", 1.99, out auctionnumber2);
+            teststring = _remoteSrvMyBay.offer(sessionIDUser3, "Ente", 10.00, out auctionnumber3);
 
+            List<AuctionTransfer> newList;
+            UInt32 count;
+            teststring = _remoteSrvMyBay.getAuctions(sessionIDUser1, 1, "", out count, out newList);
+
+            teststring = _remoteSrvMyBay.getAuctions(sessionIDUser1, 0, "", out count, out newList);
+
+            teststring = _remoteSrvMyBay.getAuctions(sessionIDUser1, 0, "H", out count, out newList);
+
+            teststring = _remoteSrvMyBay.getAuctions(sessionIDUser1, 2, "H", out count, out newList);
+            */
             InitializeComponent();
         }
     }

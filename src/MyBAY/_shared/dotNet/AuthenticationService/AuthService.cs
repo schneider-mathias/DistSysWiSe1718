@@ -104,6 +104,8 @@ namespace AuthenticationService
 
         public static Boolean isLoggedIn(UInt32 sessionID)
         {
+            if (sessionID == 0) return false;
+
             foreach (User usr in _allUsers)
             {
                 if (usr.SessionID == sessionID)

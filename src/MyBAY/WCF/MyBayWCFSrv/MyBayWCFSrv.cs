@@ -23,12 +23,15 @@ namespace MyBayWCFSrv
         private List<Auction> listAuctions;
         //private ConcurrentBag<Auction> bagtest;
 
+        #region C'Tors
         public MyBayWCFSrv()
         {
             AuthenticationService.AuthService.initializeAuthService();
             this.listAuctions = new List<Auction>();
         }
+        #endregion
 
+        #region Methods
         public String login(String userName, String password, out UInt32 sessionID)
         {
             UInt32 loginSessionID;
@@ -93,9 +96,62 @@ namespace MyBayWCFSrv
             UInt32 userIndex = AuthenticationService.AuthService.getIndexBySessionID(sessionID);
 
             List<Auction> personalizedAuctionList;
-            personalizedAuctionList = this.listAuctions.Where(m => m.BidderInterested.Contains(userIndex)).ToList<Auction>();           
+            
+            // flags can be 0: normal getAuctions 1: get all Auctions 2: get all Auctions including the one which are ended
+            switch(flags)
+            {
+                case 0: // Get all auctions where User is Interested in and which are not closed
+                    lock (this.listAuctions)
+                    {
+                        // ConvertAll Method is being used, because Method creates a deepcopy of the Object with creating new Objects -> that listAuctions is not blocked too long
+                        personalizedAuctionList = this.listAuctions.FindAll(w => (w.BidderInterested.Contains(userIndex) && w.AuctionState != 2)).ConvertAll(item => new Auction(item));
+                    }
+                    break;
+                case 1: // Get all auctions which are open
+                    lock (this.listAuctions)
+                    {
+                        personalizedAuctionList = this.listAuctions.FindAll(w => w.AuctionState != 2).ConvertAll(item => new Auction(item));
+                    }
+                    break;
+                case 2: // Get all auctions
+                    lock(this.listAuctions)
+                    {
+                        personalizedAuctionList = this.listAuctions.ConvertAll(item => new Auction(item));
+                    }
+                    break;
+                default:
+                    personalizedAuctionList = new List<Auction>();
+                    break;
+            }
 
+            if (!String.IsNullOrEmpty(artName))
+            {
+                personalizedAuctionList = personalizedAuctionList.FindAll(item => item.ArtName.StartsWith(artName));
 
+                if (personalizedAuctionList.Count < 1)
+                {
+                    return "Keine Auktionen mit den angegebenen Artikelnamen gefunden";
+                }
+            }
+
+            if (personalizedAuctionList.Count < 1)
+            {
+                return "Keine Auktionen mit den angegebenen Parametern gefunden";
+            }
+
+            foreach (Auction auct in personalizedAuctionList)
+            {
+                AuctionTransfer transferItem = new AuctionTransfer();
+                transferItem.ArtName = auct.ArtName;
+                transferItem.AuctNumber = auct.AuctionNumber;
+                transferItem.CountBids = auct.CountBids;
+                transferItem.HighestBid = auct.HighestBid.BidValue;
+                transferItem.AuctionState = auct.AuctionState;
+
+                auctions.Add(transferItem);
+            }
+            countAuctions = (UInt32) auctions.Count;
+            
             return "OK";
         }
 
@@ -245,5 +301,7 @@ namespace MyBayWCFSrv
             }            
             return "OK";            
         }
+        #endregion
+
     }
 }

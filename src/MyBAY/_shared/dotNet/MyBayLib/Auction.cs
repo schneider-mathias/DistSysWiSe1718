@@ -25,7 +25,7 @@ namespace MyBayLib
 
         // Will increase for each new auction
         private static UInt32 auctionNumberCount = 0;
-        private List<Bid> bidList;       
+        private List<Bid> bidList = new List<Bid>();    
         private UInt16 auctionEndCounter = 1;
 
         private System.Timers.Timer auctionEndTimer;
@@ -69,6 +69,14 @@ namespace MyBayLib
             }
         }
 
+        public UInt32 CountBids
+        {
+            get
+            {
+                return (UInt32)this.bidList.Count;
+            }
+        }
+
         private UInt32 _auctionState;
 
         public UInt32 AuctionState
@@ -102,7 +110,7 @@ namespace MyBayLib
             this._auctionState = 0; // AuctionState 0 -> Auction is running and open
 
             this.bidList = new List<Bid>();
-            this._bidderInterested = new List<uint>();
+            this._bidderInterested = new List<UInt32>();
 
             // Auctioneer automatically interested in auction
             this._bidderInterested.Add(auctioneer);
@@ -110,6 +118,17 @@ namespace MyBayLib
             auctionEndTimer = new System.Timers.Timer();
             auctionEndTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
             auctionEndTimer.Interval = 3000;
+        }
+
+        // CopyConstructor
+        public Auction(Auction oldAuction)
+        {
+            _highestBid = oldAuction._highestBid;
+            _artName = oldAuction._artName;
+            _auctionNumber = oldAuction._auctionNumber;
+            _auctionState = oldAuction._auctionState;
+            _bidderInterested = new List<UInt32>(oldAuction._bidderInterested);
+            _auctioneer = oldAuction._auctioneer;
         }
         #endregion
 
@@ -256,7 +275,7 @@ namespace MyBayLib
 
     public class AuctionTransfer
     {
-        public UInt32 ArtNumber { get; set; }
+        public UInt32 AuctNumber { get; set; }
 
         public String ArtName { get; set; }
 
