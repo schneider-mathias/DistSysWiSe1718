@@ -118,10 +118,13 @@ void UnBind(void)
 
 void readConsole()
 {
-	std::cout << "--------------------------------------------------------" << std::endl;
-	std::cout << "--------------Eingaben koennen durchgefuehrt werden-------" << std::endl;
-	std::cout << "--------------------------------------------------------" << std::endl;
-	
+	std::cout << "----------------------------------------------------------------" << std::endl;
+	std::cout << "-		Herzlich Willkommen bei MyBay - Ihrem Auktionshaus		 -" << std::endl;
+	std::cout << "----------------------------------------------------------------" << std::endl;
+	cout << endl;
+	cout << "Bitte loggen Sie sich zuerst ein." << endl;
+	cout << endl;
+
 	unsigned long sessionID = 0;
 	boolean threadAllow = TRUE;
 	
@@ -252,9 +255,11 @@ void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, 
 			MyOwnAuctions.push_back(auctionNumber);						// füge die neue Auktion der Liste meiner eigenen Auktionen hinzu
 			if (hr == S_OK)
 			{
-				cout << "Eine Auktion fuer den Artikel wurde gestartet." << endl;
+				cout << "------------------------------------------------------------" << endl;
+				cout << "Die Auktion wurde gestartet." << endl;
 				cout << "Das Startgebot lautet: " << startBid << endl;
 				cout << "Deine Auktion hat die Auktionsnummer: " << auctionNumber << endl;
+				cout << "------------------------------------------------------------" << endl;
 				//MyAuctions.push_back(auctionNumber);		// fügt die Auktionsnummer zur Liste der eigenen Auktionen hinzu
 			}
 			else if (hr == ERROR_USER_NOT_LOGGED_IN)
@@ -296,13 +301,31 @@ void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, 
 			}
 			hr = interested(*sessionID, auctionNumber);
 			if (hr == RPC_S_OK)
+			{
+				cout << "------------------------------------------------------------" << endl;
 				cerr << "Sie werden ab sofort ueber Neues der Auktion benachrichtigt." << endl;
+				cout << "------------------------------------------------------------" << endl;
+			}
+				
 			else if (hr == ERROR_USER_NOT_LOGGED_IN)
+			{
+				cout << "------------------------------------------------------------" << endl;
 				cout << "Fehler: Bitte zuerst einloggen." << endl;
+				cout << "------------------------------------------------------------" << endl;
+			}
 			else if (hr == ERROR_AUCTIONNUMBER_NOT_AVAILABLE)
+			{
+				cout << "------------------------------------------------------------" << endl;
 				cout << "Fehler: Auktion nicht vorhanden." << endl;
+				cout << "------------------------------------------------------------" << endl;
+			}
+				
 			else if (hr == ERROR_USER_ALREADY_INTERESTED)
+			{
+				cout << "------------------------------------------------------------" << endl;
 				cout << "Fehler: Sie sind bereits unter den Interessierten der Auktion." << endl;
+				cout << "------------------------------------------------------------" << endl;
+			}	
 			else
 				cerr << "Es ist ein unerwarteter Fehler aufgetreten. Bitte versuche es erneut." << endl;
 		}
@@ -345,40 +368,60 @@ void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, 
 			// Ausgabe der Auktionen
 			int cnt = 0;
 			wcout << endl;
+
+			/* Testprint */
+			int i = 10;
+			std::cout.width(15); std::cout << left << "Auktionsnummer";
+			std::cout.width(20); std::cout << left << "Artikelname";
+			std::cout.width(15); std::cout << left << "Anzahl Gebote";
+			std::cout.width(15); std::cout << left << "Hoechstgebot" << endl;
+			std::cout << "-----------------------------------------------------------------" << endl;
+			/* End Testprint */
+
 			for (std::vector<wstring>::iterator it = allAuctVec.begin(); it != allAuctVec.end(); it++)
 			{
 				if (cnt == 0)
 				{
-					wcout << "Auktionsnummer: " << (*it) << endl;
+					std::cout.width(15); std::cout << left << wstring_to_char((*it));
 					cnt++;
 				}
 
 				else if (cnt == 1)
 				{
-					wcout << "Artikelname: " << (*it) << endl;
+					std::cout.width(20); std::cout << left << wstring_to_char((*it));
 					cnt++;
 				}
 
 				else if (cnt == 2)
 				{
-					wcout << "Anzahl Gebote: " << (*it) << endl;
+					std::cout.width(15); std::cout << left << wstring_to_char((*it));
 					cnt++;
 				}
 
 				else if (cnt == 3)
 				{
-					wcout << "Hoechstgebot: " << (*it) << endl;
+					std::cout.width(15); std::cout << left << wstring_to_char((*it));
 					cnt = 0;
+					wcout << endl;
 				}
-				wcout << endl;
 			}
+			std::cout << "-----------------------------------------------------------------" << endl;
 			wcout << endl;
 
 		}
 		else if (hr == ERROR_USER_NOT_LOGGED_IN)
+		{
+			cout << "------------------------------------------------------------" << endl;
 			cout << "Fehler: Bitte zuerst einloggen." << endl;
+			cout << "------------------------------------------------------------" << endl;
+		}
+			
 		else if (hr == NO_AUCTIONS_AVAILABLE)
+		{
+			cout << "------------------------------------------------------------" << endl;
 			cout << "Ihre Eingabe ergab keine Ergebnisse." << endl;
+			cout << "------------------------------------------------------------" << endl;
+		}	
 		else
 			cerr << "Es ist ein unerwarteter Fehler aufgetreten. Bitte versuche es erneut." << endl;
 
@@ -418,15 +461,42 @@ void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, 
 			}
 			hr = bid(*sessionID, auctionNumber, bidVal);
 			if (hr == RPC_S_OK)
+			{
+				cout << "------------------------------------------------------------" << endl;
 				cerr << "Gebot erfolgreich abgegeben." << endl;
+				cout << "------------------------------------------------------------" << endl;
+			}
+				
 			else if (hr == ERROR_USER_NOT_LOGGED_IN)
+			{
+				cout << "------------------------------------------------------------" << endl;
 				cout << "Fehler: Bitte zuerst einloggen." << endl;
+				cout << "------------------------------------------------------------" << endl;
+			}
+				
 			else if (hr == ERROR_AUCTIONNUMBER_DOES_NOT_ESXIST)
+			{
+				cout << "------------------------------------------------------------" << endl;
 				cout << "Fehler: Auktion nicht vorhanden." << endl;
+				cout << "------------------------------------------------------------" << endl;
+			}
+				
+
+				
 			else if (hr == ERROR_AUCTION_CLOSED)
+			{
+				cout << "------------------------------------------------------------" << endl;
 				cout << "Fehler: Die Auktion ist bereits geschlossen." << endl;
+				cout << "------------------------------------------------------------" << endl;
+			}
+				
 			else if (hr == ERROR_BID_TOO_LOW)
+			{
+				cout << "------------------------------------------------------------" << endl;
 				cout << "Fehler: Das Gebot muss groesser als das Hoechstgebot sein." << endl;
+				cout << "------------------------------------------------------------" << endl;
+
+			}
 			else
 				cerr << "Es ist ein unerwarteter Fehler aufgetreten. Bitte versuche es erneut." << endl;
 		}
@@ -468,6 +538,7 @@ void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, 
 
 				// Ausgabe aller Gebote
 				int columnLengthBidder = 20;
+				cout << "------------------------------------------------------------------------" << endl;
 				wcout << "Folgende Gebote wurden fuer die Auktion " << auctionNumber << "bisher abgegeben:" << endl;
 				cout << endl;
 				wcout << "Nr	" << "Bieter           " << "Gebot" << endl;		// 17 
@@ -483,12 +554,22 @@ void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, 
 					}
 					wcout << "|" << allBidsVec[i + 2] << endl;	// Gebot
 				}
+				cout << "------------------------------------------------------------------------" << endl;
 				cout << endl;
 			}
 			else if (hr == ERROR_USER_NOT_LOGGED_IN)
+			{
+				cout << "------------------------------------------------------------" << endl;
 				cout << "Fehler: Bitte zuerst einloggen." << endl;
+				cout << "------------------------------------------------------------" << endl;
+			}
+				
 			else if (hr == ERROR_USER_IS_NOT_AUCTIONEER)
+			{
+				cout << "------------------------------------------------------------" << endl;
 				cout << "Fehler: Sie koennen nur als Auktionator alle Gebote einsehen." << endl;
+				cout << "------------------------------------------------------------" << endl;
+			}
 			else
 				cerr << "Es ist ein unerwarteter Fehler aufgetreten. Bitte versuche es erneut." << endl;
 			
@@ -526,11 +607,23 @@ void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, 
 			}
 			hr = endauction(*sessionID, auctionNumber);
 			if (hr == RPC_S_OK)
+			{
+				cout << "------------------------------------------------------------" << endl;
 				cout << "Auktion wird in 15 Sekunden beendet." << endl;
+				cout << "------------------------------------------------------------" << endl;
+			}
 			else if (hr == ERROR_USER_NOT_LOGGED_IN)
+			{
+				cout << "------------------------------------------------------------" << endl;
 				cout << "Fehler: Bitte zuerst einloggen." << endl;
+				cout << "------------------------------------------------------------" << endl;
+			}
 			else if (hr == ERROR_USER_IS_NOT_AUCTIONEER)
+			{
+				cout << "------------------------------------------------------------" << endl;
 				cout << "Fehler: Sie können nur Auktionen beenden, die Sie auch erstellt haben." << endl;
+				cout << "------------------------------------------------------------" << endl;
+			}
 			else
 				cerr << "Es ist ein unerwarteter Fehler aufgetreten. Bitte versuche es erneut." << endl;
 
@@ -548,6 +641,7 @@ void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, 
 		cout << "details <Auktionsnummer>" << endl;
 		cout << "endauction <Auktionsnummer" << endl;
 		cout << "******************** MyBAY ********************" << endl;
+		cout << endl;
 	}
 	else
 	{

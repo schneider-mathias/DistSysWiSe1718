@@ -453,19 +453,19 @@ vector<auction> filterArtName(wstring user, wstring sarticleName)
 }
 
 // Filtert alle Auktionen, die die Bedingungen der Flags erfüllen
-vector<auction> filterAuctionsByFlags(wstring user, unsigned long flags, vector<auction> filtedArtNameAuctions)
+vector<auction> filterAuctionsByFlags(wstring user, unsigned long flags, vector<auction> filteredArtNameAuctions)
 {
 	vector<auction> filteredAuctionsByFlags;
 	// [-A] -> alle Auktionen
 	if (flags == 2)
 	{
-		filteredAuctionsByFlags = filtedArtNameAuctions;
+		filteredAuctionsByFlags = filteredArtNameAuctions;
 	}
 	// [-a] -> offene Auktionen
 	else if (flags == 1)
 	{
 		EnterCriticalSection(critSecWrapper.getInstance());
-		for (std::vector<auction>::iterator it = AuctionList.begin(); it != AuctionList.end(); it++)
+		for (std::vector<auction>::iterator it = filteredArtNameAuctions.begin(); it != filteredArtNameAuctions.end(); it++)
 		{
 			if ((*it).auctionStatus == 0)
 			{
@@ -478,7 +478,7 @@ vector<auction> filterAuctionsByFlags(wstring user, unsigned long flags, vector<
 	else if (flags == 0)
 	{
 		EnterCriticalSection(critSecWrapper.getInstance());
-		for (std::vector<auction>::iterator it = AuctionList.begin(); it != AuctionList.end(); it++)
+		for (std::vector<auction>::iterator it = filteredArtNameAuctions.begin(); it != filteredArtNameAuctions.end(); it++)
 		{
 			for (std::vector<wstring>::iterator it2 = (*it).interestedUserList.begin(); it2 != (*it).interestedUserList.end(); ++it2)
 			{

@@ -50,6 +50,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RPCMyBayIdl", "RPC\RPCMyBayIdl\RPCMyBayIdl.vcxproj", "{9E8A2268-60A0-45DA-9DE7-A678FBB159E9}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RPCMyBaySrv", "RPC\RPCMyBaySrv\RPCMyBaySrv.vcxproj", "{486C9F3C-B1A4-4178-9088-EBE0907E531B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9E8A2268-60A0-45DA-9DE7-A678FBB159E9} = {9E8A2268-60A0-45DA-9DE7-A678FBB159E9}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
