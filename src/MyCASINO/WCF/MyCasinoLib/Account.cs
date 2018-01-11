@@ -37,7 +37,7 @@ namespace MyCasinoLib
         {
             try
             {
-                //Read UserTransactionfile.csv line by line
+                //Read UserBalance.txt line by line
                 using (FileStream fs = File.OpenRead(@"d:\StdArbVS\trunk\src\MyCASINO\WCF\MyCasinoData\UserBalance.txt"))
                 using (StreamReader sr = new StreamReader(fs))
                 {
@@ -83,7 +83,7 @@ namespace MyCasinoLib
         {
             try
             {
-                int index = 0;
+                int index = dictTransDraw.Count - 1;
                 for (int k = dictTransDraw.Count-1; k > 1; k--)
                 {
                     index = k;

@@ -211,8 +211,8 @@ namespace MyCasinoWCFClient.Pages
                         else
                         {
                             lbBalanceList.Items.Add(transaction.ElementAt(1));
-                            lbPayInList.Items.Add(transaction.ElementAt(2));
                         }
+                        lbPayInList.Items.Add(transaction.ElementAt(2));
                         lbBetAmountList.Items.Add("");
                         lbFirstNumberPerRollList.Items.Add("");
                         lbSecondNumberPerRollList.Items.Add("");
