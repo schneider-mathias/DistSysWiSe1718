@@ -24,7 +24,7 @@ void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, 
 std::vector<std::wstring> args;					// Eingabeargument
 std::vector<unsigned long> MyOwnAuctions;		// Liste meiner eigenen Auktionen (Nummer)
 
-// Deserialisiert einen String, dessen Wörter mit Leerzeichen getrennt sind
+// Deserialisiert einen char*, dessen Wörter mit Leerzeichen getrennt sind
 std::vector<wstring> deserialize(unsigned char *inStr, unsigned long len)
 {
 	vector<wstring> desStr;

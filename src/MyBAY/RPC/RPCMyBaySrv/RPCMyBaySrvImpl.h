@@ -115,16 +115,106 @@ wstring getUserName(unsigned long sessionId)
 	return ret;
 }
 
+// Alle Auktionen aus der Datei auslesen und in AuctionList speichern
+void readAuctionsFromFile()
+{
+	std::wifstream auctionsFile;
+	auctionsFile.open(L"MyBayAuctions.csv", std::ios::in);
+	// Öffnen der Datei
+	if (auctionsFile.is_open())
+	{
+		auction rauction;
+		wstring fline;
+		int line = 0;
+		// einzelne Zeilen einlesen
+		while (getline(auctionsFile, fline))
+		{
+			wstring delimiter = L" ";
+			// Einzelne Auktionsdetails 
+			if (line == 0)
+			{
+				size_t delimPos = fline.find(delimiter);
+				rauction.articleName = fline.substr(0, delimPos);									// Artikelname
+				fline.erase(0, delimPos + delimiter.length());
+
+				delimPos = fline.find(delimiter);
+				char * tmp = wstring_to_char(fline.substr(0, delimPos));
+				rauction.auctionNumber = strtoul(tmp, NULL, 0);										// Auktionsnummer
+				fline.erase(0, delimPos + delimiter.length());
+
+				delimPos = fline.find(delimiter);
+				tmp = wstring_to_char(fline.substr(0, delimPos));
+				rauction.auctionStatus = strtoul(tmp, NULL, 0);										// Auktionsstatus
+				fline.erase(0, delimPos + delimiter.length());
+
+				delimPos = fline.find(delimiter);
+				rauction.auctionStatus = stod(wstring_to_char(fline.substr(0, delimPos)));			// Höchstgebot
+				fline.erase(0, delimPos + delimiter.length());
+
+				delimPos = fline.find(delimiter);
+				rauction.highestBidder = fline.substr(0, delimPos);									// Höchstbietender
+				fline.erase(0, delimPos + delimiter.length());
+
+				delimPos = fline.find(delimiter);
+				rauction.startBid = stod(wstring_to_char(fline.substr(0, delimPos)));				// Startgebot
+				fline.erase(0, delimPos + delimiter.length());
+
+				line++;
+			}
+			// alle an der Auktion Interessierten
+			else if (line == 1)
+			{
+				size_t delimPos;
+				wstring rintUser;
+				vector<wstring> rintUserList;
+				// bis keine Wert mehr in der Zeile
+				while (delimPos = fline.find(delimiter))
+				{
+					rintUser = fline.substr(0, delimPos);											// interessierter User
+					fline.erase(0, delimPos + delimiter.length());
+					rintUserList.push_back(rintUser);
+				}
+				line++;
+			}
+			// alle Bieter der Auktion
+			else if (line == 2)
+			{
+				size_t delimPos;
+				bidder rbidder;
+				vector<bidder> rbidderList;
+				int bidderInfo = 0;
+				// Suche nach Bieterinformationen solange ein Trennungszeichen vorhanden
+				while (delimPos = fline.find(delimiter))
+				{
+					// Gebot des Bieters 
+					if (bidderInfo == 0)
+					{
+						delimPos = fline.find(delimiter);
+						rbidder.bid = stod(wstring_to_char(fline.substr(0, delimPos)));				// Höchstgebot
+						fline.erase(0, delimPos + delimiter.length());
+						bidderInfo++;
+					}
+					// Bietername
+					else if (bidderInfo == 1)
+					{
+						delimPos = fline.find(delimiter);
+						rbidder.userName = fline.substr(0, delimPos);								// Bietername
+						fline.erase(0, delimPos + delimiter.length());
+						bidderInfo = 0;
+						rbidderList.push_back(rbidder);
+					}
+				}
+				line = 0;
+			}
+
+			
+		}
+	}
+}
+
 // Um alle Auktionen persistent zu halten werden alle Auktionen in eine Datei geschrieben
 void writeAuctionsToFile()
 {
-	//TODO:: writeAuctionsToFile()
-	// 1. String erstellen für 1. Zeile
-	// 2. Serialisiern
-	// 3. in Datei schreiben
-	// 4. String erstellen für 2. Zeile
-	// ...
-
 	std::wofstream auctionsFile;
 	vector<wstring> listOfAuctions;
 	// Auktionen zerlegen und in Liste speichern

@@ -55,7 +55,20 @@ serializeAuctions:
 	2 Zahl der aktuellen Gebote
 	3 Höchstgebot
 
+writeAuctionsToFile:
+	1. Zeile:
+	0 Artikelname
+	1 Auktionsnummer
+	2 Auktionsstatus
+	3 Höchstgebot
+	4 Höchstbietender
+	5 Startgebot
 
+	2. Zeile:
+	Interested Users
+
+	3. Zeile:
+	Bieter
 
 COM: 
 	errMsg = "OK"		// wenn alles passt

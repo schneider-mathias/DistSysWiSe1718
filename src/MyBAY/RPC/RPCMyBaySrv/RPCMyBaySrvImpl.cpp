@@ -32,6 +32,12 @@ error_status_t login(unsigned char *username, unsigned char *password, unsigned 
 	wifstream csvread;
 	srand((unsigned)time(NULL)); // Zufallsgenerator initialisieren.
 
+	// Wenn sich der erste Nutzer einloggt, werden die persistent gespeicherten Auktionen aus der Datei ausgelesen
+	if (users.size() == 0)
+	{
+		readAuctionsFromFile();
+	}
+
 	/* Abfrage ob User nicht schon eingeloggt ist.*/
 	if (BOOL isLoggedIn = loginCheck(*username) == TRUE)
 	{
@@ -44,7 +50,9 @@ error_status_t login(unsigned char *username, unsigned char *password, unsigned 
 		wstring fline, fname, fpassword;
 		wstring suser = char_to_wstring((char*)username);
 		wstring spassword = char_to_wstring((char*)password);
-		while (getline(csvread, fline))
+
+		// in jeder Zeile prüfen ob der Username und Passwort mit den Eingegebenen übereinstimmen
+		while (getline(csvread, fline))				
 		{
 			wstring delimiter = L";";
 			size_t delimPos = fline.find(delimiter);
