@@ -77,6 +77,13 @@ error_status_t login(unsigned long*  sessionId, unsigned char *username, unsigne
 			return RPC_E_FAULT;
 		}
 	}
+	// close all open bets
+	else if (user->GetUserType() == MyCasinoUserTypes::Gamer)
+	{
+		BOOL retVal = getCasino()->CloseBets(*user);
+		if (FAILED(retVal))
+			return retVal;
+	}
 
 	BOOL resVal = RPC_S_OK;
 	if (!getCasino()->IsOpened())
