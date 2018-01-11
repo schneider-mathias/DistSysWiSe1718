@@ -1,4 +1,13 @@
-﻿using System;
+﻿/*************************************************************************/
+/*                                                                       */
+/*    Inhalt:    AuthenticaionService in seperated DLL                   */
+/*                                                                       */
+/*    Autor(en): Manuel Schlemelch                                       */
+/*    Stand:     11.01.2018                                              */
+/*                                                                       */
+/*************************************************************************/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,8 +22,9 @@ namespace AuthenticationService
 
         public static void initializeAuthService()
         {
-            string tempPath = Path.GetTempPath();
-            tempPath += "mybay_user.txt";
+            string tempPath = Path.GetPathRoot(Environment.SystemDirectory);
+
+            tempPath += "_MyBayData\\mybay_user.txt";
             string[] allLines;
 
             try

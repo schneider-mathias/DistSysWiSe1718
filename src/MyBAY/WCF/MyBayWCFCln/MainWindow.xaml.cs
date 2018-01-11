@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define COM
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,8 +28,16 @@ namespace MyBayWCFCln
     /// </summary>
     public partial class MainWindow : Window
     {
+#if COM
+        /// <summary>
+        /// MyBay COM Server
+        /// </summary>
+        //private .COMMyINVENT _myBayCOMSrv = new COMMyINVENTSvrLib.COMMyINVENT();
+#else
         private ChannelFactory<IMyBay> _MyBayFactory = new ChannelFactory<IMyBay>(new BasicHttpBinding());
         private IMyBay _remoteSrvMyBay;
+#endif
+                    
         private UInt32 sessionID;
         private string srvAddress;
 
@@ -40,24 +50,22 @@ namespace MyBayWCFCln
             this.getMessageTimer = new Timer();
             this.getMessageTimer.Interval = 1500;
             this.getMessageTimer.Elapsed += OnTimedEvent;
-            //string srvAddress = "http://localhost:3333/MyBayWCF";
-            //_remoteSrvMyBay = _MyBayFactory.CreateChannel(new EndpointAddress(srvAddress));
-
 
             InitializeComponent();
         }
 
         private void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)
         {
+
+            if (sessionID == 0) return;
+
+            this.getMessageTimer.Interval = 1500;
+            Boolean messageAvailable;
+            UInt32 messageType;
+            MessageTransfer message;
+
             try
             {
-                if (sessionID == 0) return;
-
-                this.getMessageTimer.Interval = 1500;
-                Boolean messageAvailable;
-                UInt32 messageType;
-                MessageTransfer message;
-
                 String returnStr = _remoteSrvMyBay.getMessage(sessionID,out messageAvailable,out messageType, out message);
                 if (returnStr.Contains("OK"))
                 {
@@ -137,71 +145,93 @@ namespace MyBayWCFCln
 
         private void loginBtn_Click(object sender, RoutedEventArgs e)
         {
+            if (String.IsNullOrEmpty(this.srvIPTxtBox.Text))
+            {
+                MessageBox.Show("Bitte geben Sie eine Serveradresse ein", "Fehler", MessageBoxButton.OK);
+                return;
+            }
+
             this.srvAddress = this.srvIPTxtBox.Text + "MyBayWCF";
             if (this.loginBtn.Content.ToString().Contains("Login"))
             {
                 try
                 {
+#if COM
+                    Type comType = Type.GetTypeFromCLSID(new Guid("UID"), this.srvAddress, false);
+                    _comSrv = (mybay.mybaycom)Activator.CreateInstance(comType);
+                    _comServer.login(this.usernameTxtBox.Text, this.passwordBox.Password, out sessionID);
+#else
                     _remoteSrvMyBay = _MyBayFactory.CreateChannel(new EndpointAddress(srvAddress));
-
                     String returnStr = _remoteSrvMyBay.login(this.usernameTxtBox.Text, this.passwordBox.Password, out sessionID);
-
-                    if (returnStr.Contains("OK"))
-                    {
-                        //MessageBox.Show("User wurde erfolgreich mit der Session ID: " + sessionID.ToString() + " angemeldet", "Hinweis", MessageBoxButton.OK);
-                        this.loginBtn.Content = "Logout";
-                        this.usernameTxtBox.IsEnabled = false;
-                        this.passwordBox.IsEnabled = false;
-                        this.srvIPTxtBox.IsEnabled = false;
-
-                        // Enable all other functionality
-                        this.btn_NewAuction.IsEnabled = true;
-                        this.getAuctions.IsEnabled = true;
-
-                        this.getMessageTimer.Start();
-                    }
-                    else
+                    if (!returnStr.Contains("OK"))
                     {
                         MessageBox.Show(returnStr, "Fehler", MessageBoxButton.OK);
+                        return;
                     }
+                    
+                    this.loginBtn.Content = "Logout";
+                    this.usernameTxtBox.IsEnabled = false;
+                    this.passwordBox.IsEnabled = false;
+                    this.srvIPTxtBox.IsEnabled = false;
+
+                    // Enable all other functionality
+                    this.btn_NewAuction.IsEnabled = true;
+                    this.getAuctions.IsEnabled = true;
+                    this.getMessageTimer.Start();
+#endif
                 }
-                catch (Exception)
+                catch (Exception except)
                 {
-                    MessageBoxResult result = MessageBox.Show("Fehler beim Verbinden zum Server, haben Sie die richtige Adresse eingegeben?", "Warnung", MessageBoxButton.OK);
+#if COM
+                    // TODO com exception translation
+#else
+                    MessageBox.Show("Fehler beim Verbinden zum Server, haben Sie die richtige Adresse eingegeben? " + except.Message, "Warnung", MessageBoxButton.OK);
+#endif
                 }
             }
             else
             {
                 try
                 {
-                    _remoteSrvMyBay = _MyBayFactory.CreateChannel(new EndpointAddress(srvAddress));
+#if COM
+                    _comServer.logout(this.sessionID);
+                    this.getMessageTimer.Stop();
 
+#else
                     String returnStr = _remoteSrvMyBay.logout(this.sessionID);
-
-                    if (returnStr.Contains("OK"))
-                    {
-                        MessageBox.Show("User wurde erfolgreich abgemeldet", "Hinweis", MessageBoxButton.OK);
-                        this.sessionID = 0;
-                        this.loginBtn.Content = "Login";
-                        this.usernameTxtBox.IsEnabled = true;
-                        this.passwordBox.IsEnabled = true;
-                        this.srvIPTxtBox.IsEnabled = true;
-
-                        // Disable all other functionality
-                        this.btn_NewAuction.IsEnabled = false;
-                        this.getAuctions.IsEnabled = false;
-
-                        this.getMessageTimer.Stop();
-
-                    }
-                    else
+                    if (!returnStr.Contains("OK"))
                     {
                         MessageBox.Show(returnStr, "Fehler", MessageBoxButton.OK);
+                        return;
                     }
+                    this.getMessageTimer.Stop();
+
+                    // Close Client Connection
+                    if (_remoteSrvMyBay != null)
+                    {
+                        ((IClientChannel)_remoteSrvMyBay).Close();
+                        ((IDisposable)_remoteSrvMyBay).Dispose();
+                        _remoteSrvMyBay = null;
+                    }
+#endif
+                    MessageBox.Show("User wurde erfolgreich abgemeldet", "Hinweis", MessageBoxButton.OK);
+                    this.sessionID = 0;
+                    this.usernameTxtBox.IsEnabled = true;
+                    this.passwordBox.IsEnabled = true;
+                    this.srvIPTxtBox.IsEnabled = true;
+                    this.loginBtn.Content = "Login";
+
+                    // Disable all other functionality
+                    this.btn_NewAuction.IsEnabled = false;
+                    this.getAuctions.IsEnabled = false;
                 }
-                catch (Exception)
+                catch (Exception except)
                 {
-                    MessageBoxResult result = MessageBox.Show("Fehler beim Verbinden zum Server, haben Sie die richtige Adresse eingegeben?", "Warnung", MessageBoxButton.OK);
+#if COM
+                    // TODO com exception translation
+#else
+                    MessageBox.Show("Fehler beim Verbinden zum Server, haben Sie die richtige Adresse eingegeben? " + except.Message, "Warnung", MessageBoxButton.OK);
+#endif
                 }
             }
 
@@ -219,7 +249,7 @@ namespace MyBayWCFCln
                    MessageBox.Show("Bitte geben Sie einen gültigen Wert für das Startgebot an", "Warnung", MessageBoxButton.OK);
                 }
 
-                String returnStr = _remoteSrvMyBay.offer(sessionID,this.artNameTxtBox.Text,tempStartBid, out auctionNumber);
+                String returnStr = _remoteSrvMyBay.offer(sessionID, this.artNameTxtBox.Text, tempStartBid, out auctionNumber);
 
                 if (returnStr.Contains("OK"))
                 {
@@ -236,13 +266,6 @@ namespace MyBayWCFCln
                 MessageBoxResult result = MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
             }
         }
-
-        //private void startBid_TxtBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        //{
-        //    Regex regex = new Regex("^$?[0-9][0-9.]*(.d{1,2})?$|^$?[.]([d][d]?)$");
-        //    e.Handled = !regex.IsMatch((sender as TextBox).Text.Insert((sender as TextBox).SelectionStart, e.Text));
-        //}
-
 
         private void getAuctions_Click_1(object sender, RoutedEventArgs e)
         {
