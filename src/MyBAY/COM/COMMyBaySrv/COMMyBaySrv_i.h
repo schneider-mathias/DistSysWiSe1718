@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Mon Jan 08 10:32:48 2018
+/* at Thu Jan 11 21:08:49 2018
  */
 /* Compiler settings for COMMyBaySrv.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -76,7 +76,7 @@ extern "C"{
 /* interface __MIDL_itf_COMMyBaySrv_0000_0000 */
 /* [local] */ 
 
-typedef SAFEARRAY * SAVEARRAY_VAR;
+typedef SAFEARRAY * SAFEARRAY_VAR;
 
 
 
@@ -101,57 +101,48 @@ EXTERN_C const IID IID_ICOMMyBay;
         virtual /* [id] */ HRESULT STDMETHODCALLTYPE login( 
             /* [in] */ BSTR username,
             /* [in] */ BSTR password,
-            /* [out] */ ULONG *sessionId,
-            /* [out] */ BSTR *errMsg) = 0;
+            /* [out] */ ULONG *sessionId) = 0;
         
         virtual /* [id] */ HRESULT STDMETHODCALLTYPE logout( 
-            /* [in] */ ULONG sessionId,
-            /* [out] */ BSTR *errMsg) = 0;
+            /* [in] */ ULONG sessionId) = 0;
         
         virtual /* [id] */ HRESULT STDMETHODCALLTYPE offer( 
             /* [in] */ ULONG sessionId,
             /* [in] */ BSTR articleName,
             /* [in] */ DOUBLE startBid,
-            /* [out] */ ULONG *auctionNumber,
-            /* [out] */ BSTR *errMsg) = 0;
+            /* [out] */ ULONG *auctionNumber) = 0;
         
         virtual /* [id] */ HRESULT STDMETHODCALLTYPE interested( 
             /* [in] */ ULONG sessionId,
-            /* [in] */ ULONG auctionNumber,
-            /* [out] */ BSTR *errMsg) = 0;
+            /* [in] */ ULONG auctionNumber) = 0;
         
         virtual /* [id] */ HRESULT STDMETHODCALLTYPE getAuctions( 
             /* [in] */ ULONG sessionId,
             /* [in] */ ULONG flags,
             /* [in] */ BSTR articleName,
             /* [out] */ ULONG *countAuctions,
-            /* [out] */ SAVEARRAY_VAR *auctions,
-            /* [out] */ BSTR *errMsg) = 0;
+            /* [out] */ SAFEARRAY_VAR *auctions) = 0;
         
         virtual /* [id] */ HRESULT STDMETHODCALLTYPE bid( 
             /* [in] */ ULONG sessionId,
             /* [in] */ ULONG auctionNumber,
-            /* [in] */ DOUBLE bidVal,
-            /* [out] */ BSTR *errMsg) = 0;
+            /* [in] */ DOUBLE bidVal) = 0;
         
         virtual /* [id] */ HRESULT STDMETHODCALLTYPE details( 
             /* [in] */ ULONG sessionId,
             /* [in] */ ULONG auctionNumber,
-            /* [out] */ SAVEARRAY_VAR *allBids,
-            /* [out] */ ULONG *countBids,
-            /* [out] */ BSTR *errMsg) = 0;
+            /* [out] */ SAFEARRAY_VAR *allBids,
+            /* [out] */ ULONG *countBids) = 0;
         
         virtual /* [id] */ HRESULT STDMETHODCALLTYPE endauction( 
             /* [in] */ ULONG sessionId,
-            /* [in] */ ULONG auctionNumber,
-            /* [out] */ BSTR *errMsg) = 0;
+            /* [in] */ ULONG auctionNumber) = 0;
         
         virtual /* [id] */ HRESULT STDMETHODCALLTYPE getMessage( 
             /* [in] */ ULONG sessionId,
-            /* [out] */ BOOL *einBoolwasIchNichtWeiß,
+            /* [out] */ BOOL *messageAvailable,
             /* [out] */ ULONG *messageType,
-            /* [out] */ SAVEARRAY_VAR *message,
-            /* [out] */ BSTR *errMsg) = 0;
+            /* [out] */ SAFEARRAY_VAR *message) = 0;
         
     };
     
@@ -215,27 +206,23 @@ EXTERN_C const IID IID_ICOMMyBay;
             ICOMMyBay * This,
             /* [in] */ BSTR username,
             /* [in] */ BSTR password,
-            /* [out] */ ULONG *sessionId,
-            /* [out] */ BSTR *errMsg);
+            /* [out] */ ULONG *sessionId);
         
         /* [id] */ HRESULT ( STDMETHODCALLTYPE *logout )( 
             ICOMMyBay * This,
-            /* [in] */ ULONG sessionId,
-            /* [out] */ BSTR *errMsg);
+            /* [in] */ ULONG sessionId);
         
         /* [id] */ HRESULT ( STDMETHODCALLTYPE *offer )( 
             ICOMMyBay * This,
             /* [in] */ ULONG sessionId,
             /* [in] */ BSTR articleName,
             /* [in] */ DOUBLE startBid,
-            /* [out] */ ULONG *auctionNumber,
-            /* [out] */ BSTR *errMsg);
+            /* [out] */ ULONG *auctionNumber);
         
         /* [id] */ HRESULT ( STDMETHODCALLTYPE *interested )( 
             ICOMMyBay * This,
             /* [in] */ ULONG sessionId,
-            /* [in] */ ULONG auctionNumber,
-            /* [out] */ BSTR *errMsg);
+            /* [in] */ ULONG auctionNumber);
         
         /* [id] */ HRESULT ( STDMETHODCALLTYPE *getAuctions )( 
             ICOMMyBay * This,
@@ -243,37 +230,32 @@ EXTERN_C const IID IID_ICOMMyBay;
             /* [in] */ ULONG flags,
             /* [in] */ BSTR articleName,
             /* [out] */ ULONG *countAuctions,
-            /* [out] */ SAVEARRAY_VAR *auctions,
-            /* [out] */ BSTR *errMsg);
+            /* [out] */ SAFEARRAY_VAR *auctions);
         
         /* [id] */ HRESULT ( STDMETHODCALLTYPE *bid )( 
             ICOMMyBay * This,
             /* [in] */ ULONG sessionId,
             /* [in] */ ULONG auctionNumber,
-            /* [in] */ DOUBLE bidVal,
-            /* [out] */ BSTR *errMsg);
+            /* [in] */ DOUBLE bidVal);
         
         /* [id] */ HRESULT ( STDMETHODCALLTYPE *details )( 
             ICOMMyBay * This,
             /* [in] */ ULONG sessionId,
             /* [in] */ ULONG auctionNumber,
-            /* [out] */ SAVEARRAY_VAR *allBids,
-            /* [out] */ ULONG *countBids,
-            /* [out] */ BSTR *errMsg);
+            /* [out] */ SAFEARRAY_VAR *allBids,
+            /* [out] */ ULONG *countBids);
         
         /* [id] */ HRESULT ( STDMETHODCALLTYPE *endauction )( 
             ICOMMyBay * This,
             /* [in] */ ULONG sessionId,
-            /* [in] */ ULONG auctionNumber,
-            /* [out] */ BSTR *errMsg);
+            /* [in] */ ULONG auctionNumber);
         
         /* [id] */ HRESULT ( STDMETHODCALLTYPE *getMessage )( 
             ICOMMyBay * This,
             /* [in] */ ULONG sessionId,
-            /* [out] */ BOOL *einBoolwasIchNichtWeiß,
+            /* [out] */ BOOL *messageAvailable,
             /* [out] */ ULONG *messageType,
-            /* [out] */ SAVEARRAY_VAR *message,
-            /* [out] */ BSTR *errMsg);
+            /* [out] */ SAFEARRAY_VAR *message);
         
         END_INTERFACE
     } ICOMMyBayVtbl;
@@ -311,32 +293,32 @@ EXTERN_C const IID IID_ICOMMyBay;
     ( (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr) ) 
 
 
-#define ICOMMyBay_login(This,username,password,sessionId,errMsg)	\
-    ( (This)->lpVtbl -> login(This,username,password,sessionId,errMsg) ) 
+#define ICOMMyBay_login(This,username,password,sessionId)	\
+    ( (This)->lpVtbl -> login(This,username,password,sessionId) ) 
 
-#define ICOMMyBay_logout(This,sessionId,errMsg)	\
-    ( (This)->lpVtbl -> logout(This,sessionId,errMsg) ) 
+#define ICOMMyBay_logout(This,sessionId)	\
+    ( (This)->lpVtbl -> logout(This,sessionId) ) 
 
-#define ICOMMyBay_offer(This,sessionId,articleName,startBid,auctionNumber,errMsg)	\
-    ( (This)->lpVtbl -> offer(This,sessionId,articleName,startBid,auctionNumber,errMsg) ) 
+#define ICOMMyBay_offer(This,sessionId,articleName,startBid,auctionNumber)	\
+    ( (This)->lpVtbl -> offer(This,sessionId,articleName,startBid,auctionNumber) ) 
 
-#define ICOMMyBay_interested(This,sessionId,auctionNumber,errMsg)	\
-    ( (This)->lpVtbl -> interested(This,sessionId,auctionNumber,errMsg) ) 
+#define ICOMMyBay_interested(This,sessionId,auctionNumber)	\
+    ( (This)->lpVtbl -> interested(This,sessionId,auctionNumber) ) 
 
-#define ICOMMyBay_getAuctions(This,sessionId,flags,articleName,countAuctions,auctions,errMsg)	\
-    ( (This)->lpVtbl -> getAuctions(This,sessionId,flags,articleName,countAuctions,auctions,errMsg) ) 
+#define ICOMMyBay_getAuctions(This,sessionId,flags,articleName,countAuctions,auctions)	\
+    ( (This)->lpVtbl -> getAuctions(This,sessionId,flags,articleName,countAuctions,auctions) ) 
 
-#define ICOMMyBay_bid(This,sessionId,auctionNumber,bidVal,errMsg)	\
-    ( (This)->lpVtbl -> bid(This,sessionId,auctionNumber,bidVal,errMsg) ) 
+#define ICOMMyBay_bid(This,sessionId,auctionNumber,bidVal)	\
+    ( (This)->lpVtbl -> bid(This,sessionId,auctionNumber,bidVal) ) 
 
-#define ICOMMyBay_details(This,sessionId,auctionNumber,allBids,countBids,errMsg)	\
-    ( (This)->lpVtbl -> details(This,sessionId,auctionNumber,allBids,countBids,errMsg) ) 
+#define ICOMMyBay_details(This,sessionId,auctionNumber,allBids,countBids)	\
+    ( (This)->lpVtbl -> details(This,sessionId,auctionNumber,allBids,countBids) ) 
 
-#define ICOMMyBay_endauction(This,sessionId,auctionNumber,errMsg)	\
-    ( (This)->lpVtbl -> endauction(This,sessionId,auctionNumber,errMsg) ) 
+#define ICOMMyBay_endauction(This,sessionId,auctionNumber)	\
+    ( (This)->lpVtbl -> endauction(This,sessionId,auctionNumber) ) 
 
-#define ICOMMyBay_getMessage(This,sessionId,einBoolwasIchNichtWeiß,messageType,message,errMsg)	\
-    ( (This)->lpVtbl -> getMessage(This,sessionId,einBoolwasIchNichtWeiß,messageType,message,errMsg) ) 
+#define ICOMMyBay_getMessage(This,sessionId,messageAvailable,messageType,message)	\
+    ( (This)->lpVtbl -> getMessage(This,sessionId,messageAvailable,messageType,message) ) 
 
 #endif /* COBJMACROS */
 
