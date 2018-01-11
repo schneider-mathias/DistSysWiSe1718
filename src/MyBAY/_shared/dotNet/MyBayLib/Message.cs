@@ -55,8 +55,6 @@ namespace MyBayLib
 
     public class MessageTransfer
     {
-        public UInt32 Type { get; set; }
-
         // Depending on MessageType, Client will interprete
         public String MessageText { get; set; }
 

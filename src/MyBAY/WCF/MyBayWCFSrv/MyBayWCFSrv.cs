@@ -249,7 +249,7 @@ namespace MyBayWCFSrv
         {
             messageType = 0;
             messageAvailable = false;
-            message = default(MessageTransfer);
+            message = new MessageTransfer();
             if (!AuthenticationService.AuthService.isLoggedIn(sessionID)) return "Die angegebene SessionID ist nicht registriert, loggen Sie sich erneut ein";
 
             Message tempMessage;
@@ -265,7 +265,7 @@ namespace MyBayWCFSrv
                     Auction.messageBucket.TryGetValue(userIndex, out tempBag);
 
                     tempBag.TryTake(out tempMessage);
-                    if (!tempMessage.Equals(default(Message)))
+                    if (tempMessage != null)
                     {
                         message.MessageDoubleValue = tempMessage.MessageDoubleValue;
                         message.MessageIntValue = tempMessage.MessageIntValue;
@@ -276,13 +276,13 @@ namespace MyBayWCFSrv
                         switch (tempMessage.Type)
                         {
                             case MessageType.NewBid:
-                                message.Type = 0;
+                                messageType = 0;
                                 break;
                             case MessageType.AuctionEndStart:
-                                message.Type = 1;
+                                messageType = 1;
                                 break;
                             case MessageType.EndOfAuction:
-                                message.Type = 2;
+                                messageType = 2;
                                 break;
                         }
                     }
@@ -295,8 +295,9 @@ namespace MyBayWCFSrv
                 else return "NoMessage";
                
             }                
-            catch (Exception)
+            catch (Exception e)
             {
+
                 return "Fehler bei der Verarbeitung der Messages im Server";
             }            
             return "OK";            
