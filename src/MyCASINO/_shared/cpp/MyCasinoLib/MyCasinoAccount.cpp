@@ -47,7 +47,7 @@ BOOL MyCasinoAccount::Deserialize(std::wstring in)
 		parts.push_back(temp);
 
 	if (parts.size() != MY_CASINO_ACCOUNT_SERIALIZED_PROPERTY_COUNT)
-		return ERROR_MY_CASINO_MALFORMED_DATABASE_FILE;
+		return E_MY_CASINO_MALFORMED_DATABASE_FILE;
 
 	DOUBLE initialBalance = 0.0;
 	try
@@ -56,7 +56,7 @@ BOOL MyCasinoAccount::Deserialize(std::wstring in)
 	}
 	catch (...)
 	{
-		return ERROR_MY_CASINO_MALFORMED_DATABASE_FILE;
+		return E_MY_CASINO_MALFORMED_DATABASE_FILE;
 	}
 
 	// deposit inital value on account
@@ -85,7 +85,7 @@ BOOL MyCasinoAccount::CreateTransaction(DOUBLE changeAmount, MyCasinoTransaction
 	case MyCasinoTransactionsTypes::DEPOSIT:
 		// deposit has to be positive
 		if (changeAmount < 0.0)
-			return ERROR_MY_CASINO_INVALID_CHANGE_AMOUNT;
+			return E_MY_CASINO_INVALID_CHANGE_AMOUNT;
 
 		{
 			SCOPED_LOCK(balanceMutex);
@@ -94,11 +94,11 @@ BOOL MyCasinoAccount::CreateTransaction(DOUBLE changeAmount, MyCasinoTransaction
 		break;
 	case MyCasinoTransactionsTypes::WITHDRAWAL:
 		if (changeAmount + GetCurrentBalance() < 0)
-			return ERROR_MY_CASINO_ACCOUNT_BALANCE_NOT_SUFFICIENT;
+			return E_MY_CASINO_ACCOUNT_BALANCE_NOT_SUFFICIENT;
 
 		// withdrawal has to be negativ
 		if (changeAmount > 0.0)
-			return ERROR_MY_CASINO_INVALID_CHANGE_AMOUNT;
+			return E_MY_CASINO_INVALID_CHANGE_AMOUNT;
 		
 		{
 			SCOPED_LOCK(balanceMutex);
@@ -107,7 +107,7 @@ BOOL MyCasinoAccount::CreateTransaction(DOUBLE changeAmount, MyCasinoTransaction
 		break;
 	case MyCasinoTransactionsTypes::BET_WAGER:
 		if (changeAmount + GetCurrentBalance() < 0 )
-			return ERROR_MY_CASINO_ACCOUNT_BALANCE_NOT_SUFFICIENT;
+			return E_MY_CASINO_ACCOUNT_BALANCE_NOT_SUFFICIENT;
 
 		{
 			SCOPED_LOCK(balanceMutex);
@@ -115,7 +115,7 @@ BOOL MyCasinoAccount::CreateTransaction(DOUBLE changeAmount, MyCasinoTransaction
 		}
 		break;
 	default:
-		return ERROR_MY_CASINO_INVALID_TRANSACTION_TYPE;
+		return E_MY_CASINO_INVALID_TRANSACTION_TYPE;
 	}
 
 
@@ -156,7 +156,7 @@ BOOL MyCasinoAccount::CancelTransaction(ULONG transactionId)
 		}
 		break;
 	default:
-		return ERROR_MY_CASINO_INVALID_TRANSACTION_TYPE;
+		return E_MY_CASINO_INVALID_TRANSACTION_TYPE;
 	}
 
 	transaction->SetTransactionType(MyCasinoTransactionsTypes::CANCELED, NULL, NULL);
@@ -228,7 +228,7 @@ BOOL MyCasinoAccount::ChangeTransaction(ULONG transactionId, DOUBLE changeAmount
 
 	// only BET_WAGER transaction type is allowed to have a transation
 	if(transaction->GetTransactionType() != MyCasinoTransactionsTypes::BET_WAGER)
-		return ERROR_MY_CASINO_INVALID_TRANSACTION_TRANSITION;
+		return E_MY_CASINO_INVALID_TRANSACTION_TRANSITION;
 
 	
 	transaction->SetTransactionType(type, information, infoType);	
@@ -242,7 +242,7 @@ BOOL MyCasinoAccount::ChangeTransaction(ULONG transactionId, DOUBLE changeAmount
 		additionalWageDifference = -(previousAmount - changeAmount);
 
 		if (GetCurrentBalance() - additionalWageDifference < 0)
-			return ERROR_MY_CASINO_ACCOUNT_BALANCE_NOT_SUFFICIENT;
+			return E_MY_CASINO_ACCOUNT_BALANCE_NOT_SUFFICIENT;
 
 		{
 			SCOPED_LOCK(balanceMutex);
@@ -299,7 +299,7 @@ BOOL MyCasinoAccount::ChangeTransaction(ULONG transactionId, DOUBLE changeAmount
 	}
 	else
 	{
-		return ERROR_MY_CASINO_INVALID_TRANSACTION_TRANSITION;
+		return E_MY_CASINO_INVALID_TRANSACTION_TRANSITION;
 	}
 
 	transaction->SetChangeAmount(additionalWageDifference,m_currentBalance);

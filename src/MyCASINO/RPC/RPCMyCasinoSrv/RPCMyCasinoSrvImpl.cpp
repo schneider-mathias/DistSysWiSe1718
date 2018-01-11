@@ -58,24 +58,18 @@ error_status_t login(unsigned long*  sessionId, unsigned char *username, unsigne
 {
 
 	if (!getAuthService()->login(char_to_wstring((char*)username), char_to_wstring((char*)password), sessionId))
-	{
-		return RPC_E_ACCESS_DENIED;
-	}
+		return E_MY_CASINO_ACCESS_DENIED;
 
 	MyCasinoUser* user = NULL;
 	if (!getAuthService()->isLoggedIn(*sessionId, &user))
-	{
-		return RPC_E_FAULT;
-	}
+		return E_MY_CASINO_INTERNAL_AUTH_SERVICE_ERROR;
 
 	*userType = user->GetUserType();
 	if (*userType == MyCasinoUserTypes::Operator)
 	{
 		BOOL retVal = getCasino()->Open(user);
 		if (FAILED(retVal))
-		{
-			return RPC_E_FAULT;
-		}
+			return retVal;
 	}
 	// close all open bets
 	else if (user->GetUserType() == MyCasinoUserTypes::Gamer)
@@ -87,7 +81,7 @@ error_status_t login(unsigned long*  sessionId, unsigned char *username, unsigne
 
 	BOOL resVal = RPC_S_OK;
 	if (!getCasino()->IsOpened())
-		resVal = INFORMATION_MY_CASINO_NO_OPERATOR_LOGGED_IN;
+		resVal = S_MY_CASINO_NO_OPERATOR_LOGGED_IN;
 
 	return resVal;
 }
@@ -96,27 +90,23 @@ error_status_t logout(unsigned long sessionId)
 {
 	MyCasinoUser* user = NULL;
 	if (!getAuthService()->isLoggedIn(sessionId, &user))
-	{
-		return ERROR_MY_CASINO_USER_NOT_LOGGED_IN;
-	}
+		return E_MY_CASINO_USER_NOT_LOGGED_IN;
 
 	// check if user is operator and close casino if it is the current operator
 	if (user->GetUserType() == MyCasinoUserTypes::Operator)
 	{
 		if (!getCasino()->IsOperator(*user))
-			return ERROR_MY_CASINO_USER_NOT_LOGGED_IN;
+			return E_MY_CASINO_USER_NOT_LOGGED_IN;
 
 		getCasino()->Close();
 	}
 
 	if (!getAuthService()->logout(sessionId))
-	{
-		return ERROR_MY_CASINO_USER_LOGOUT_FAILED;
-	}
+		return E_MY_CASINO_USER_LOGOUT_FAILED;
 
 	BOOL resVal = S_OK;
 	if (!getCasino()->IsOpened())
-		resVal = INFORMATION_MY_CASINO_NO_OPERATOR_LOGGED_IN;
+		resVal = S_MY_CASINO_NO_OPERATOR_LOGGED_IN;
 
 	return resVal;
 }
@@ -126,10 +116,10 @@ error_status_t deposit(unsigned long sessionId, unsigned char *name, double amou
 {
 	MyCasinoUser* user = NULL;
 	if (!getAuthService()->isLoggedIn(sessionId, &user))
-		return ERROR_MY_CASINO_USER_NOT_LOGGED_IN;
+		return E_MY_CASINO_USER_NOT_LOGGED_IN;
 
 	if (!getCasino()->IsOperator(*user))
-		return ERROR_MY_CASINO_USER_PERMISSION_DENIED;
+		return E_MY_CASINO_USER_PERMISSION_DENIED;
 
 	ULONG sessionIdForDeposit = 0;
 	getAuthService()->isLoggedIn(char_to_wstring((char*)name), &sessionIdForDeposit);
@@ -137,11 +127,11 @@ error_status_t deposit(unsigned long sessionId, unsigned char *name, double amou
 	// get user for deposit
 	MyCasinoUser* userForDeposit = NULL;
 	if (!getAuthService()->isLoggedIn(sessionIdForDeposit, &userForDeposit))
-		return ERROR_MY_CASINO_USER_FOR_DEPOSIT_NOT_LOGGED_IN;
+		return E_MY_CASINO_USER_FOR_DEPOSIT_NOT_LOGGED_IN;
 
 	BOOL resVal = getCasino()->Deposit(*userForDeposit, amountMoney);
 	if (FAILED(resVal))
-		return ERROR_MY_CASINO_ACCOUNT_DEPOSIT_FAILED;
+		return E_MY_CASINO_ACCOUNT_DEPOSIT_FAILED;
 
 	return RPC_S_OK;
 }
@@ -150,13 +140,13 @@ error_status_t bet(unsigned long sessionId, double amountMoney, short firstNumbe
 {
 	MyCasinoUser* user = NULL;
 	if (!getAuthService()->isLoggedIn(sessionId, &user))
-		return ERROR_MY_CASINO_USER_NOT_LOGGED_IN;
+		return E_MY_CASINO_USER_NOT_LOGGED_IN;
 
 	if (!getCasino()->IsOpened())
-		return ERROR_MY_CASINO_NO_OPERATOR;
+		return E_MY_CASINO_NO_OPERATOR;
 
 	if (user->GetUserType() == MyCasinoUserTypes::Operator)
-		return ERROR_MY_CASINO_USER_PERMISSION_DENIED;
+		return E_MY_CASINO_USER_PERMISSION_DENIED;
 
 	// create the bet
 	BOOL retVal = getCasino()->Bet(*user, firstNumber, secondNumber, amountMoney);
@@ -171,7 +161,7 @@ error_status_t calculateProfit(unsigned long sessionId, double amountMoney, shor
 {
 	MyCasinoUser* user = NULL;
 	if (!getAuthService()->isLoggedIn(sessionId, &user))
-		return ERROR_MY_CASINO_USER_NOT_LOGGED_IN;
+		return E_MY_CASINO_USER_NOT_LOGGED_IN;
 
 	// create a dummy bet object in order to calculate profits
 	MyCasinoBet dummyBet(user->m_username, 1, firstNumber, secondNumber, amountMoney);
@@ -184,7 +174,7 @@ error_status_t showbets(unsigned long sessionId, MyCasinoBet_t** bets, unsigned 
 {
 	MyCasinoUser* user = NULL;
 	if (!getAuthService()->isLoggedIn(sessionId, &user))
-		return ERROR_MY_CASINO_USER_NOT_LOGGED_IN;
+		return E_MY_CASINO_USER_NOT_LOGGED_IN;
 
 	std::vector<MyCasinoBet*> betsSnapshot = getCasino()->GetBets();
 	*count = betsSnapshot.size();
@@ -211,7 +201,7 @@ error_status_t showbets(unsigned long sessionId, MyCasinoBet_t** bets, unsigned 
 
 	BOOL resVal = S_OK;
 	if (!getCasino()->IsOpened())
-		resVal = INFORMATION_MY_CASINO_NO_OPERATOR_LOGGED_IN;
+		resVal = S_MY_CASINO_NO_OPERATOR_LOGGED_IN;
 
 
 	return resVal;
@@ -222,10 +212,10 @@ error_status_t drawTest(unsigned long sessionId, short firstNumberTest, short se
 {
 	MyCasinoUser* user = NULL;
 	if (!getAuthService()->isLoggedIn(sessionId, &user))
-		return ERROR_MY_CASINO_USER_NOT_LOGGED_IN;
+		return E_MY_CASINO_USER_NOT_LOGGED_IN;
 
 	if (!getCasino()->IsOperator(*user))
-		return ERROR_MY_CASINO_USER_PERMISSION_DENIED;
+		return E_MY_CASINO_USER_PERMISSION_DENIED;
 
 	short *drawnFirstNumber = new short(firstNumberTest);
 	short *drawnSecondNumber = new short(secondNumberTest);
@@ -237,7 +227,6 @@ error_status_t drawTest(unsigned long sessionId, short firstNumberTest, short se
 	delete drawnFirstNumber;
 	delete drawnSecondNumber;
 
-
 	return RPC_S_OK;
 }
 
@@ -247,10 +236,10 @@ error_status_t draw(unsigned long sessionId, short* firstNumber, short* secondNu
 
 	MyCasinoUser* user = NULL;
 	if (!getAuthService()->isLoggedIn(sessionId, &user))
-		return ERROR_MY_CASINO_USER_NOT_LOGGED_IN;
+		return E_MY_CASINO_USER_NOT_LOGGED_IN;
 
 	if (!getCasino()->IsOperator(*user))
-		return ERROR_MY_CASINO_USER_PERMISSION_DENIED;
+		return E_MY_CASINO_USER_PERMISSION_DENIED;
 
 	short *drawnFirstNumber = NULL;
 	short *drawnSecondNumber = NULL;
@@ -273,7 +262,7 @@ error_status_t getTransactions(unsigned long sessionId, boolean* isFinished, MyC
 
 	MyCasinoUser* user = NULL;
 	if (!getAuthService()->isLoggedIn(sessionId, &user))
-		return ERROR_MY_CASINO_USER_NOT_LOGGED_IN;
+		return E_MY_CASINO_USER_NOT_LOGGED_IN;
 
 	MyCasinoTransaction* nextTransaction = NULL;
 	*isFinished = getCasino()->GetNextTransaction(*user, &nextTransaction);
@@ -289,7 +278,7 @@ error_status_t getTransactions(unsigned long sessionId, boolean* isFinished, MyC
 
 	BOOL resVal = RPC_S_OK;
 	if (!getCasino()->IsOpened())
-		resVal = INFORMATION_MY_CASINO_NO_OPERATOR_LOGGED_IN;
+		resVal = S_MY_CASINO_NO_OPERATOR_LOGGED_IN;
 
 	return resVal;
 }
@@ -300,12 +289,12 @@ error_status_t getTransactionInformation(unsigned long sessionId, unsigned long 
 
 	MyCasinoUser* user = NULL;
 	if (!getAuthService()->isLoggedIn(sessionId, &user))
-		return ERROR_MY_CASINO_USER_NOT_LOGGED_IN;
+		return E_MY_CASINO_USER_NOT_LOGGED_IN;
 
 	IMyCasinoTransactionInformation *currentDetails = NULL;
 	MyCasinoTransactionsInformationTypes detailType;
 	if (!getCasino()->GetTransactionInfomation(*user, transactionId, &currentDetails, &detailType))
-		return ERROR_MY_CASINO_TRANSACTION_INFOMRATION_NOT_AVAILABLE;
+		return E_MY_CASINO_TRANSACTION_INFOMRATION_NOT_AVAILABLE;
 
 	// get information details as TaggedUnion vector and convert it to a CComSafeArray
 	std::vector<TaggedUnion>currentInformation = (*currentDetails).GetInformation();
@@ -314,7 +303,7 @@ error_status_t getTransactionInformation(unsigned long sessionId, unsigned long 
 	wbuilder["indentation"] = "\t";
 	Json::Value* transactionInformationAsJson = NULL;
 	if (!::toJson((*currentDetails).GetInformation(), &transactionInformationAsJson))
-		return ERROR_MY_CASINO_TRANSACTION_INFOMRATION_NOT_AVAILABLE;
+		return E_MY_CASINO_TRANSACTION_INFOMRATION_NOT_AVAILABLE;
 	
 	std::string document = Json::writeString(wbuilder, *transactionInformationAsJson);
 
@@ -329,13 +318,9 @@ error_status_t getTransactionInformation(unsigned long sessionId, unsigned long 
 
 	*informationType = detailType;
 
-	BOOL resVal = S_OK;
+	BOOL resVal = RPC_S_OK;
 	if (!getCasino()->IsOpened())
-		resVal = INFORMATION_MY_CASINO_NO_OPERATOR_LOGGED_IN;
+		resVal = S_MY_CASINO_NO_OPERATOR_LOGGED_IN;
 
 	return resVal;
-
-
-
-	return RPC_E_FAULT;
 }

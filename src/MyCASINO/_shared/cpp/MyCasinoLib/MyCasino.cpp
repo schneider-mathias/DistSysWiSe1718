@@ -68,7 +68,7 @@ BOOL MyCasino::Open(MyCasinoUser* user)
 		return TRUE;
 
 	if (IsOpened())
-		return ERROR_MY_CASINO_HAS_ALREADY_OPERATOR;
+		return E_MY_CASINO_HAS_ALREADY_OPERATOR;
 
 	{
 		SCOPED_LOCK(m_operatorMutex);
@@ -77,7 +77,7 @@ BOOL MyCasino::Open(MyCasinoUser* user)
 	
 	MyCasinoAccount* account = NULL;
 	if (!LoadAccount(*m_pOperator, &account))
-		return ERROR_MY_CASINO_CANNOT_LOAD_ACCOUNT;
+		return E_MY_CASINO_CANNOT_LOAD_ACCOUNT;
 
 	{
 		SCOPED_LOCK(m_operatorMutex);
@@ -121,7 +121,7 @@ BOOL MyCasino::LoadAccounts(std::wstring filename)
 		if(FAILED(resVal))
 		{
 			delete loadedAccount;
-			return ERROR_MY_CASINO_CANNOT_LOAD_ACCOUNTS;
+			return E_MY_CASINO_CANNOT_LOAD_ACCOUNTS;
 		}
 
 		{
@@ -189,7 +189,7 @@ BOOL MyCasino::CalcProfit(MyCasinoBet& bet, DOUBLE* rewardForOne, DOUBLE* reward
 {
 	// check if first and second number are valid for this game
 	if (!IsValidBetNumber(bet.GetFirstNumber()) || !IsValidBetNumber(bet.GetSecondNumber()))
-		return ERROR_MY_CASINO_BET_INVALID_NUMBER;
+		return E_MY_CASINO_BET_INVALID_NUMBER;
 	
 	// one number gives doouble wager back
 	*rewardForOne = bet.GetSetAmount() * MY_CASINO_BET_REWARD_FACTOR_FOR_ONE;
@@ -214,7 +214,7 @@ BOOL MyCasino::CalcProfit(MyCasinoBet& bet, DOUBLE* rewardForOne, DOUBLE* reward
 BOOL MyCasino::Bet(MyCasinoUser& user, SHORT firstNumber, SHORT secondNumber, DOUBLE setAmount)
 {
 	if (!IsOpened())
-		return ERROR_MY_CASINO_NO_OPERATOR;
+		return E_MY_CASINO_NO_OPERATOR;
 
 	MyCasinoBet* bet = NULL;
 	// if bet does not exists yet create a new bet
@@ -240,7 +240,7 @@ BOOL MyCasino::Bet(MyCasinoUser& user, SHORT firstNumber, SHORT secondNumber, DO
 
 			// book transaction on gamer account
 			if (!GetAccount(user, &account))
-				return ERROR_MY_CASINO_CANNOT_LOAD_ACCOUNT;
+				return E_MY_CASINO_CANNOT_LOAD_ACCOUNT;
 
 			ULONG transactionId;
 			resVal = (account)->CreateTransaction(-(bet->GetSetAmount()), MyCasinoTransactionsTypes::BET_WAGER, bet, &infoType, &transactionId);
@@ -262,12 +262,12 @@ BOOL MyCasino::Bet(MyCasinoUser& user, SHORT firstNumber, SHORT secondNumber, DO
 			
 			return TRUE;
 
-		case INFORMATION_MY_CASINO_USER_HAS_NUMBERS:
+		case S_MY_CASINO_USER_HAS_NUMBERS:
 			// user has already bet on this numbers, apply new values on bet and account
 			
 
 			if (!GetAccount(user, &account))
-				return ERROR_MY_CASINO_CANNOT_LOAD_ACCOUNT;
+				return E_MY_CASINO_CANNOT_LOAD_ACCOUNT;
 
 
 			// first check if new amount is 0, in this case close the bet
@@ -275,7 +275,7 @@ BOOL MyCasino::Bet(MyCasinoUser& user, SHORT firstNumber, SHORT secondNumber, DO
 			{
 				// remove entry from map
 				if (!DeleteBet(bet->GetFirstNumber(), bet->GetSecondNumber()))
-					return ERROR_MY_CASINO_BET_CANNOT_DELETE;
+					return E_MY_CASINO_BET_CANNOT_DELETE;
 
 				// cancel transactions
 				resVal = CloseBet(user, *bet);
@@ -303,11 +303,11 @@ BOOL MyCasino::Bet(MyCasinoUser& user, SHORT firstNumber, SHORT secondNumber, DO
 			// check if gamer account balance is sufficient
 			setAmountDifference = setAmount - previousWager;
 			if ((account)->GetCurrentBalance() - setAmountDifference < 0)
-				return ERROR_MY_CASINO_USER_ACCOUNT_BALANCE_NOT_SUFFICIENT;
+				return E_MY_CASINO_USER_ACCOUNT_BALANCE_NOT_SUFFICIENT;
 			
 			// adjust transaction object
 			if (!(account)->GetTransaction(bet, &currentTransactionId))
-				return ERROR_MY_CASINO_UNKNOWN_TRANSACTION_ID;
+				return E_MY_CASINO_UNKNOWN_TRANSACTION_ID;
 
 			resVal = (account)->ChangeTransaction(currentTransactionId, -setAmount, MyCasinoTransactionsTypes::BET_WAGER, bet, &infoType);
 			if (FAILED(resVal))
@@ -315,7 +315,7 @@ BOOL MyCasino::Bet(MyCasinoUser& user, SHORT firstNumber, SHORT secondNumber, DO
 
 			// adjust operators transaction object
 			if (!(m_pOperatorAccount)->GetTransaction(bet, &currentTransactionId))
-				return ERROR_MY_CASINO_UNKNOWN_TRANSACTION_ID;
+				return E_MY_CASINO_UNKNOWN_TRANSACTION_ID;
 
 			resVal = (m_pOperatorAccount)->ChangeTransaction(currentTransactionId, setAmount, MyCasinoTransactionsTypes::BET_WAGER, bet, &infoType);
 			if (FAILED(resVal))
@@ -325,11 +325,11 @@ BOOL MyCasino::Bet(MyCasinoUser& user, SHORT firstNumber, SHORT secondNumber, DO
 			bet->SetWager(setAmount);
 
 			return TRUE;
-		case ERROR_MY_CASINO_BET_INVALID_NUMBER:
-			return ERROR_MY_CASINO_BET_INVALID_NUMBER;
-		case ERROR_MY_CASINO_BET_ALREADY_TAKEN:
+		case E_MY_CASINO_BET_INVALID_NUMBER:
+			return E_MY_CASINO_BET_INVALID_NUMBER;
+		case E_MY_CASINO_BET_ALREADY_TAKEN:
 			// same bet by different users is not allowed
-			return ERROR_MY_CASINO_BET_ALREADY_TAKEN;
+			return E_MY_CASINO_BET_ALREADY_TAKEN;
 	}
 
 	return FALSE;
@@ -338,7 +338,7 @@ BOOL MyCasino::Bet(MyCasinoUser& user, SHORT firstNumber, SHORT secondNumber, DO
 BOOL MyCasino::DeleteBet(SHORT firstNumber, SHORT secondNumber)
 {
 	if (!IsOpened())
-		return ERROR_MY_CASINO_NO_OPERATOR;
+		return E_MY_CASINO_NO_OPERATOR;
 
 	BOOL deleteSuccess = FALSE;
 
@@ -371,12 +371,12 @@ BOOL MyCasino::CloseBet(const MyCasinoUser& user, MyCasinoBet& bet)
 	MyCasinoAccount* account = NULL;
 
 	if (!GetAccount(user, &account))
-		return ERROR_MY_CASINO_CANNOT_LOAD_ACCOUNT;
+		return E_MY_CASINO_CANNOT_LOAD_ACCOUNT;
 
 	ULONG currentTransactionId = -1;
 	// cancel gamer transaction 
 	if (!(account)->GetTransaction(&bet, &currentTransactionId))
-		return ERROR_MY_CASINO_UNKNOWN_TRANSACTION_ID;
+		return E_MY_CASINO_UNKNOWN_TRANSACTION_ID;
 
 	BOOL resVal = (account)->CancelTransaction(currentTransactionId);
 	if (FAILED(resVal))
@@ -384,7 +384,7 @@ BOOL MyCasino::CloseBet(const MyCasinoUser& user, MyCasinoBet& bet)
 
 	// cancel operator transaction 
 	if (!(m_pOperatorAccount)->GetTransaction(&bet, &currentTransactionId))
-		return ERROR_MY_CASINO_UNKNOWN_TRANSACTION_ID;
+		return E_MY_CASINO_UNKNOWN_TRANSACTION_ID;
 
 	resVal = (m_pOperatorAccount)->CancelTransaction(currentTransactionId);
 	if (FAILED(resVal))
@@ -433,7 +433,7 @@ BOOL MyCasino::CloseBets(const MyCasinoUser& user)
 BOOL MyCasino::GetBet(SHORT firstNumber, SHORT secondNumber, MyCasinoBet** bet)
 {
 	if (!IsOpened())
-		return ERROR_MY_CASINO_NO_OPERATOR;
+		return E_MY_CASINO_NO_OPERATOR;
 
 	*bet = NULL;
 	{
@@ -465,7 +465,7 @@ BOOL MyCasino::GetAccount(const MyCasinoUser& user, MyCasinoAccount** account)
 		if (NULL != m_pOperator && user == *m_pOperator)
 		{
 			if (NULL == m_pOperatorAccount)
-				return ERROR_MY_CASINO_CANNOT_LOAD_ACCOUNT;
+				return E_MY_CASINO_CANNOT_LOAD_ACCOUNT;
 
 			*account = m_pOperatorAccount;
 			return TRUE;
@@ -515,7 +515,7 @@ BOOL MyCasino::CheckOperatorAccount(MyCasinoBet& bet)
 		SCOPED_LOCK(m_operatorMutex);
 		if (rewardForOne > m_pOperatorAccount->GetCurrentBalance() + bet.GetSetAmount() ||
 			rewardForTwo > m_pOperatorAccount->GetCurrentBalance() + bet.GetSetAmount())
-			return ERROR_MY_CASINO_OPERATOR_ACCOUNT_BALANCE_NOT_SUFFICIENT;
+			return E_MY_CASINO_OPERATOR_ACCOUNT_BALANCE_NOT_SUFFICIENT;
 	}
 	return TRUE;
 }
@@ -533,7 +533,7 @@ BOOL MyCasino::CheckBet(MyCasinoUser& user, MyCasinoBet& bet)
 
 	// check if first and second number are valid for this game
 	if (!IsValidBetNumber(bet.GetFirstNumber()) || !IsValidBetNumber(bet.GetSecondNumber()))
-		return ERROR_MY_CASINO_BET_INVALID_NUMBER;
+		return E_MY_CASINO_BET_INVALID_NUMBER;
 
 	
 	{
@@ -546,9 +546,9 @@ BOOL MyCasino::CheckBet(MyCasinoUser& user, MyCasinoBet& bet)
 				)
 			{
 				if (user == (*it).first)
-					resVal = INFORMATION_MY_CASINO_USER_HAS_NUMBERS;
+					resVal = S_MY_CASINO_USER_HAS_NUMBERS;
 				else
-					resVal = ERROR_MY_CASINO_BET_ALREADY_TAKEN;
+					resVal = E_MY_CASINO_BET_ALREADY_TAKEN;
 				break;
 			}
 		}
@@ -560,11 +560,11 @@ BOOL MyCasino::CheckBet(MyCasinoUser& user, MyCasinoBet& bet)
 BOOL MyCasino::Deposit(MyCasinoUser& user, DOUBLE amount)
 {
 	if (!IsOpened())
-		return ERROR_MY_CASINO_NO_OPERATOR;
+		return E_MY_CASINO_NO_OPERATOR;
 
 	MyCasinoAccount* account = NULL;
 	if (!GetAccount(user, &account))
-		return ERROR_MY_CASINO_CANNOT_LOAD_ACCOUNT;
+		return E_MY_CASINO_CANNOT_LOAD_ACCOUNT;
 
 	ULONG transactionId;
 	BOOL retVal = (account)->CreateTransaction(amount, MyCasinoTransactionsTypes::DEPOSIT, NULL, NULL, &transactionId);
@@ -572,7 +572,7 @@ BOOL MyCasino::Deposit(MyCasinoUser& user, DOUBLE amount)
 		return retVal;
 
 	if (!SaveAccounts())
-		return ERROR_MY_CASINO_CANNOT_SAVE_ACCOUNTS;
+		return E_MY_CASINO_CANNOT_SAVE_ACCOUNTS;
 
 	return TRUE;
 }
@@ -580,7 +580,7 @@ BOOL MyCasino::Deposit(MyCasinoUser& user, DOUBLE amount)
 BOOL MyCasino::Withdraw(MyCasinoUser& user, DOUBLE amount)
 {
 	if (!IsOpened())
-		return ERROR_MY_CASINO_NO_OPERATOR;
+		return E_MY_CASINO_NO_OPERATOR;
 
 	return E_NOTIMPL;
 }
@@ -588,7 +588,7 @@ BOOL MyCasino::Withdraw(MyCasinoUser& user, DOUBLE amount)
 BOOL MyCasino::Draw(SHORT** firstNumber, SHORT** secondNumber)
 {
 	if (!IsOpened())
-		return ERROR_MY_CASINO_NO_OPERATOR;
+		return E_MY_CASINO_NO_OPERATOR;
 
 	if (NULL == *firstNumber)
 		*firstNumber = new short(GenerateDrawNumber(NULL));
@@ -632,10 +632,10 @@ BOOL MyCasino::Draw(SHORT** firstNumber, SHORT** secondNumber)
 			GetAccount((*it).first, &account);
 
 			if (!(account)->GetTransaction((*it).second, &currentTransactionId))
-				return ERROR_MY_CASINO_UNKNOWN_TRANSACTION_ID;
+				return E_MY_CASINO_UNKNOWN_TRANSACTION_ID;
 
 			if (!(m_pOperatorAccount)->GetTransaction((*it).second, &currentOperatorTransactionId))
-				return ERROR_MY_CASINO_UNKNOWN_TRANSACTION_ID;
+				return E_MY_CASINO_UNKNOWN_TRANSACTION_ID;
 
 			MyCasinoTransactionsInformationTypes infoType = MyCasinoTransactionsInformationTypes::Bet;
 			if (totalReward > 0.001)
@@ -693,7 +693,7 @@ BOOL MyCasino::Draw(SHORT** firstNumber, SHORT** secondNumber)
 
 	// save user accounts
 	if (!SaveAccounts())
-		return ERROR_MY_CASINO_CANNOT_SAVE_ACCOUNTS;
+		return E_MY_CASINO_CANNOT_SAVE_ACCOUNTS;
 
 	return TRUE;
 }
@@ -724,7 +724,7 @@ BOOL MyCasino::GetNextTransaction(MyCasinoUser& user, MyCasinoTransaction** cons
 {
 	MyCasinoAccount* account = NULL;
 	if (!GetAccount(user, &account))
-		return ERROR_MY_CASINO_CANNOT_LOAD_ACCOUNT;
+		return E_MY_CASINO_CANNOT_LOAD_ACCOUNT;
 
 	return (account)->GetNextTransaction(transaction);
 }
@@ -733,7 +733,7 @@ BOOL MyCasino::GetTransactionInfomation(MyCasinoUser& user, ULONG transationId, 
 {
 	MyCasinoAccount* account = NULL;
 	if (!GetAccount(user, &account))
-		return ERROR_MY_CASINO_CANNOT_LOAD_ACCOUNT;
+		return E_MY_CASINO_CANNOT_LOAD_ACCOUNT;
 
 	return (account)->GetTransactionInformation(transationId, transactionInformation, type);
 }
@@ -741,10 +741,10 @@ BOOL MyCasino::GetTransactionInfomation(MyCasinoUser& user, ULONG transationId, 
 BOOL MyCasino::Close()
 {
 	if (!IsOpened())
-		return ERROR_MY_CASINO_NO_OPERATOR;
+		return E_MY_CASINO_NO_OPERATOR;
 
 	if (!SaveAccounts())
-		return ERROR_MY_CASINO_CANNOT_SAVE_ACCOUNTS;
+		return E_MY_CASINO_CANNOT_SAVE_ACCOUNTS;
 
 	// close all current bets
 	ULONG currentTransactionId = -1;
