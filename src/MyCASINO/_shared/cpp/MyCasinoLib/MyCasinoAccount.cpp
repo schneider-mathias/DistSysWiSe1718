@@ -93,7 +93,7 @@ BOOL MyCasinoAccount::CreateTransaction(DOUBLE changeAmount, MyCasinoTransaction
 		}
 		break;
 	case MyCasinoTransactionsTypes::WITHDRAWAL:
-		if (changeAmount > GetCurrentBalance())
+		if (changeAmount + GetCurrentBalance() < 0)
 			return ERROR_MY_CASINO_ACCOUNT_BALANCE_NOT_SUFFICIENT;
 
 		// withdrawal has to be negativ
@@ -106,7 +106,7 @@ BOOL MyCasinoAccount::CreateTransaction(DOUBLE changeAmount, MyCasinoTransaction
 		}
 		break;
 	case MyCasinoTransactionsTypes::BET_WAGER:
-		if (changeAmount > GetCurrentBalance())
+		if (changeAmount + GetCurrentBalance() < 0 )
 			return ERROR_MY_CASINO_ACCOUNT_BALANCE_NOT_SUFFICIENT;
 
 		{
