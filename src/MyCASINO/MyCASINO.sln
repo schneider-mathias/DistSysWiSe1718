@@ -101,6 +101,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCasinoWCFServer", "WCF\MyCasinoWCFServer\MyCasinoWCFServer.csproj", "{E2132C6D-6726-4A44-9976-53DA792E3CD2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCasinoWCFClient", "WCF\MyCasinoWCFClient\MyCasinoWCFClient.csproj", "{540EE318-DAFE-48AE-8A50-D847ADF48601}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1950D7F9-9A59-4FCF-95B1-1A20614CF768} = {1950D7F9-9A59-4FCF-95B1-1A20614CF768}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib_json", "..\_shared\cpp\jsoncpp-1.8.4\makefiles\msvc2015\lib_json.vcxproj", "{1E6C2C1C-6453-4129-AE3F-0EE8E6599C89}"
 EndProject
