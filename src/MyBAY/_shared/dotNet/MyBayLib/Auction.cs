@@ -113,6 +113,8 @@ namespace MyBayLib
             this.bidList = new List<Bid>();
             this._bidderInterested = new List<UInt32>();
 
+            this._countBids = 0;
+
             // Auctioneer automatically interested in auction
             this._bidderInterested.Add(auctioneer);
 
@@ -130,6 +132,7 @@ namespace MyBayLib
             _auctionState = oldAuction._auctionState;
             _bidderInterested = new List<UInt32>(oldAuction._bidderInterested);
             _auctioneer = oldAuction._auctioneer;
+            _countBids = oldAuction._countBids;
         }
         #endregion
 
@@ -142,19 +145,23 @@ namespace MyBayLib
             }
             lock (this)
             {
-                Bid newBid = new Bid((UInt32)bidList.Count + 1, bidderIndex, bidValue);
+                Bid newBid = new Bid((UInt32)(bidList.Count + 1), bidderIndex, bidValue);
 
                 if (newBid.BidValue > this.HighestBid.BidValue)
                 {
                     this.bidList.Add(newBid);
                     this._highestBid = newBid;
-                    this._countBids = (UInt32)bidList.Count;
+                    this._countBids = newBid.BidNumber;
+
+                    lock (this._bidderInterested)
+                    {
+                        if (!this._bidderInterested.Contains(bidderIndex)) this._bidderInterested.Add(bidderIndex);
+                    }
                 }
                 else
                 {
-                    return "Das Angegebene Gebot ist zu niedrig, Gebot wird nicht akzeptiert";
+                    return "Gebot ist zu niedrig, bieten Sie mehr als: " + this._highestBid.BidValue.ToString("C") + "€";
                 }
-                
             }
             informBidders(bidValue, bidderIndex);
             return "OK";
@@ -199,13 +206,18 @@ namespace MyBayLib
             return true;
         }
 
-        public bool endAuction()
+        public string endAuction()
         {
+            if (this._auctionState != 0)
+            {
+                return "Auction wird oder ist bereits beendet";
+            }
+
             this._auctionState = 1; // AuctionState 1 -> Auction is preparing to be finished
 
             this.auctionEndTimer.Enabled = true;
 
-            return true;
+            return "OK";
         }
 
         private void OnTimedEvent(object source, ElapsedEventArgs e)
@@ -228,6 +240,9 @@ namespace MyBayLib
 
                 foreach (UInt32 bidder in biddersInterested)
                 {
+                    // Different message for auctioneer
+                    if (bidder == this._auctioneer) continue;
+
                     Message newMessage = new Message(MessageType.EndOfAuction, buyer, this.ArtName, HighestBid.BidValue, 2, 0);
                     AddMessageToBucket(bidder, newMessage);
                 }
@@ -235,21 +250,23 @@ namespace MyBayLib
                 // For the auctioneer
                 AddMessageToBucket(this.Auctioneer, new Message(MessageType.EndOfAuction, buyer, this.ArtName, HighestBid.BidValue, 2, 0));
             }
-
-            foreach (UInt32 bidder in biddersInterested)
+            else
             {
-                // Different message for auctioneer
-                if (bidder == this._auctioneer) continue;
+                foreach (UInt32 bidder in biddersInterested)
+                {
+                    // Different message for auctioneer
+                    if (bidder == this._auctioneer) continue;
 
-                Message newMessage = new Message(MessageType.AuctionEndStart, this.ArtName, String.Empty, 0.0, auctionEndCounter,this.AuctionNumber);
-                AddMessageToBucket(bidder, newMessage);
+                    Message newMessage = new Message(MessageType.AuctionEndStart, this.ArtName, String.Empty, 0.0, auctionEndCounter, this.AuctionNumber);
+                    AddMessageToBucket(bidder, newMessage);
 
+                }
+
+                // For the auctioneer
+                AddMessageToBucket(this.Auctioneer, new Message(MessageType.AuctionEndStart, this.ArtName, String.Empty, 0.0, auctionEndCounter, this.AuctionNumber));
+
+                auctionEndCounter++;
             }
-
-            // For the auctioneer
-            AddMessageToBucket(this.Auctioneer, new Message(MessageType.AuctionEndStart, this.ArtName, String.Empty, 0.0, auctionEndCounter, this.AuctionNumber));
-
-            auctionEndCounter++;
         }
 
         private bool AddMessageToBucket(UInt32 receipientIndex, Message message)

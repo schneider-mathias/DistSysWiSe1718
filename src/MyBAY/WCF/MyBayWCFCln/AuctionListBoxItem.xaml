@@ -6,11 +6,19 @@
              xmlns:local="clr-namespace:MyBayWCFCln"
              mc:Ignorable="d"
              d:DesignHeight="30" 
-             d:DesignWidth="300" Height="{Binding ActualWidth, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListView}}}">
-    <Grid x:Name="AuctionListBoxGrid1" Background="#FF99F599">
-        <Label x:Name="lblAuctionName" Content="" HorizontalAlignment="Left" Margin="2,2,0,0" VerticalAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Disabled" Background="White" Width="150" HorizontalContentAlignment="Center"/>
-        <Label x:Name="lbl_AuctionNumber" Content="" HorizontalAlignment="Left" Margin="154,2,2,2" VerticalAlignment="Top" Width="60" ScrollViewer.VerticalScrollBarVisibility="Disabled" Background="White" HorizontalContentAlignment="Center"/>
-        <Label x:Name="lbl_HighestBid" Content="" HorizontalAlignment="Left" Margin="216,2,2,2" VerticalAlignment="Top" Width="60" ScrollViewer.VerticalScrollBarVisibility="Disabled" Background="White" HorizontalContentAlignment="Center"/>
-        <Label x:Name="lbl_CountBids" Content="" HorizontalAlignment="Left" Margin="278,2,2,0" VerticalAlignment="Top" Width="60" ScrollViewer.VerticalScrollBarVisibility="Disabled" Background="White" HorizontalContentAlignment="Center"/>
+             d:DesignWidth="400" >
+    <!--Width="{Binding ActualWidth, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListView}}}">-->
+    <Grid x:Name="AuctionListBoxGrid1" Background="#FF99F599" >
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="160"/>
+            <ColumnDefinition Width="80"/>
+            <ColumnDefinition Width="80"/>
+            <ColumnDefinition Width="80"/>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Label Grid.Column="0" x:Name="lblAuctionName" Content="" HorizontalAlignment="Stretch" Margin="2,2,2,2" VerticalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Disabled" Background="White" HorizontalContentAlignment="Center"/>
+        <Label Grid.Column="1" x:Name="lbl_AuctionNumber" Content="" HorizontalAlignment="Stretch" Margin="2,2,2,2" VerticalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Disabled" Background="White" HorizontalContentAlignment="Center"/>
+        <Label Grid.Column="2" x:Name="lbl_HighestBid" Content="" HorizontalAlignment="Stretch" Margin="2,2,2,2" VerticalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Disabled" Background="White" HorizontalContentAlignment="Center"/>
+        <Label Grid.Column="3" x:Name="lbl_CountBids" Content="" HorizontalAlignment="Stretch" Margin="2,2,2,2" VerticalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Disabled" Background="White" HorizontalContentAlignment="Center"/>
     </Grid>
 </UserControl>
