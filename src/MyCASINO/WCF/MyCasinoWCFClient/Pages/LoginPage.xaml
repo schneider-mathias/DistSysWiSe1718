@@ -8,39 +8,28 @@
       d:DesignHeight="700" d:DesignWidth="700"
       Title="LoginPage">
 
-    <!--DarkGray Background-->
+    <!--Background-->
     <Grid Background="CornflowerBlue">
-
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" TextBlock.TextAlignment="Center">
-
                 <!--Main login window-->
                 <Border Background="White" CornerRadius="8" Padding="15 50 15 15" Width="350" Margin="50 15 50 15">
-
                     <StackPanel>
                         <!--MyCasino & Anmeldungs text -->
                         <TextBlock Text="MyCasino" FontSize="36" Foreground="OrangeRed" />
                         <!--Login text-->
                         <TextBlock Text="Anmeldung" Padding="0 10 0 25"  Foreground="OrangeRed" FontSize="26" Opacity="0.5" />
-
                         <!--Wrong Login-->
-
                         <TextBlock x:Name="tblAuthentificationFailed" Text="" FontSize="10" Foreground="red" Visibility="Visible" />
-
                         <!--Username-->
                         <TextBox x:Name="tbxUsername" Text="Username" LostFocus="tbxUsername_LostFocus" PreviewMouseDown="TextBox_PreviewMouseDown" Padding="0 5 0 0" Foreground="LightGray" Margin="45 0 45 0" BorderThickness="0 0 0 1"  FontSize="26" />
                         <!--Password-->
                         <PasswordBox x:Name="pwbPassword" Password="****" LostFocus="pwbPassword_LostFocus" PreviewMouseDown="PasswordBox_PreviewMouseDown"  Foreground="LightGray" Padding="0 5 0 0" BorderThickness="0 0 0 1" FontSize="26" Margin="45 0 45 0" />
-
                         <!--Login Button-->
-
                         <Button x:Name="btnLogin" Click="btnLogin_Click" Content="Login" FontSize="30" VerticalAlignment="Center" Width="120" Background="OrangeRed" Margin="0 40 0 25" Foreground="White"/>
-
                     </StackPanel>
                 </Border>
-
             </StackPanel>
         </ScrollViewer>
-
     </Grid>
 </Page>

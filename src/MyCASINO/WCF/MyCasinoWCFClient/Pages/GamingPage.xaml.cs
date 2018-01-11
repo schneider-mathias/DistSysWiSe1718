@@ -89,30 +89,23 @@ namespace MyCasinoWCFClient.Pages
         }
 #else
         private MyCasinoUserTypes userType;
-
         public MyCasinoUserTypes UserType
         {
             get { return userType; }
             set { userType = value; }
         }
-
         private int sessionId;
-
         public int SessionId
         {
             get { return sessionId; }
             set { sessionId = value; }
         }
-
-       
         private INETMyCasino _remSrvMyCasino;
-
         public INETMyCasino _RemSrvMyCasino
         {
             get { return _remSrvMyCasino; }
             set { _remSrvMyCasino = value; }
         }
-
         public GamingPage(INETMyCasino _RemSrvMyCasinoMain, string usernameTmp, int sessionIdTmp, MyCasinoUserTypes typeTmp)
         {
             InitializeComponent();
@@ -136,29 +129,24 @@ namespace MyCasinoWCFClient.Pages
             {
                 BtnPayIn.Visibility = Visibility.Hidden;
             }
-
         }
 #endif
         private void BtnPlay_Click(object sender, RoutedEventArgs e)
         {
 #if COM
             PlayHistoryPage.Content = new PlayPage(_ComSrv, Username, SessionId, UserType);
-
 #else
             PlayHistoryPage.Content = new PlayPage(_RemSrvMyCasino, Username, SessionId, UserType);
 #endif
         }
-
         private void BtnHistory_Click(object sender, RoutedEventArgs e)
         {
 #if COM
             PlayHistoryPage.Content = new HistoryPage(_ComSrv, Username, SessionId, UserType);
-
 #else
             PlayHistoryPage.Content = new HistoryPage(_RemSrvMyCasino, Username, SessionId, UserType);
 #endif
         }
-
         private void BtnPayIn_Click(object sender, RoutedEventArgs e)
         {
 #if COM
@@ -167,26 +155,37 @@ namespace MyCasinoWCFClient.Pages
             PlayHistoryPage.Content = new PayInPage(_RemSrvMyCasino, Username, SessionId, UserType);
 #endif
         }
-
         private void btnLogout_Click(object sender, RoutedEventArgs e)
         {
-            
 #if COM
             try
             {
                 _ComSrv.logout(SessionId, out errMsg);
                 System.Windows.Application.Current.Shutdown();
             }
-            catch
+            catch (Exception ex)
             {
-                MessageBox.Show(errMsg);
+                if (ex is COMException)
+                    errMsg = Codes.ResolveCode((ex as COMException).ErrorCode);
+                else
+                    errMsg = "Unknown";
             }
 #else
-            if(_RemSrvMyCasino.logout(SessionId, out errMsg))
+            try
             {
-                System.Windows.Application.Current.Shutdown();
+                if (_RemSrvMyCasino.logout(SessionId, out errMsg))
+                {
+                    System.Windows.Application.Current.Shutdown();
+                }
+                if (errMsg == "INVALID_SESSION_ID")
+                {
+                    MessageBox.Show("Ungültige ID!");
+                }
             }
-                MessageBox.Show("Fehler beim Logout");
+            catch(Exception ex)
+            {
+                MessageBox.Show("Fehler beim Logout: " + ex.ToString());
+            }
 #endif
         }
     }

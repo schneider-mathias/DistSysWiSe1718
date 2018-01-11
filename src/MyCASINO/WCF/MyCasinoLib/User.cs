@@ -68,6 +68,11 @@ namespace MyCasinoLib
 
     public class AuthService
     {
+        
+        /// <summary>
+        /// lock object for userlist
+        /// </summary>
+        private Object thisLockUserList = new Object();
         /// <summary>
         /// Single instanced list for all users 
         /// </summary>
@@ -98,7 +103,10 @@ namespace MyCasinoLib
                         string[] substring = line.Split();
                         Int32.TryParse(substring[0], out id);
                         Int32.TryParse(substring[3], out type);
-                        userList.Add(new User(id, substring[1], substring[2], (MyCasinoUserTypes)type));
+                        lock (thisLockUserList)
+                        {
+                            userList.Add(new User(id, substring[1], substring[2], (MyCasinoUserTypes)type));
+                        }
                     }
                 }
                 //Get initial money
@@ -113,8 +121,11 @@ namespace MyCasinoLib
                         Int32.TryParse(substring[1], out money);
                         foreach (User user in userList)
                         {
-                            if (user.username == substring[0])
-                                user.account.MoneyAmountLeft = money;
+                            lock (thisLockUserList)
+                            {
+                                if (user.username == substring[0])
+                                    user.account.MoneyAmountLeft = money;
+                            }
                         }
                     }
                 }
@@ -125,100 +136,105 @@ namespace MyCasinoLib
             }
             return true;
         }
-
-        //TODO: change string errMsg to out string & return errorvalues
-        //public string Login(string username, string pw, out int sessionId, out MyCasinoUserTypes type, List<Transaction> transactionList, out User currUser)
         public string Login(string username, string pw, out int sessionId, out MyCasinoUserTypes type, Dictionary<Transaction, Draw> dictTransDraw, out User currUser)
         {
-            foreach (User user in userList)
+            lock (thisLockUserList)
             {
-                //TODO: Lock?
-                if (username == user.username && pw == user.Password && 0 == user.SessionId)
+                foreach (User user in userList)
                 {
-                    if (user.UserType == MyCasinoUserTypes.Operator && m_operator == true)
+                    if (username == user.username && pw == user.Password && 0 == user.SessionId)
                     {
-                        user.SessionId = unchecked(Convert.ToInt32(GenerateId()));
+                        if (user.UserType == MyCasinoUserTypes.Operator && m_operator == true)
+                        {
+                            user.SessionId = unchecked(Convert.ToInt32(GenerateId()));
+                            sessionId = user.SessionId;
+                            type = user.UserType;
+                            currUser = user;
+                            return "OPERATOR_ALREADY_LOGGED_IN";
+                        }
+
+                        if (user.UserType == MyCasinoUserTypes.Operator && m_operator == false)
+                        {
+                            m_operator = true;
+                        }
+                        //Read transaction information
+                        user.account.ReadUserTransaction(user.username, dictTransDraw);
+
+                        //user.SessionId = unchecked(Convert.ToInt32(GenerateId()));
+                        user.SessionId = Math.Abs(unchecked(GenerateId()));
                         sessionId = user.SessionId;
                         type = user.UserType;
                         currUser = user;
-                        return "OPERATOR_ALREADY_LOGGED_IN";
+                        return "S_OK";
                     }
 
-                    if (user.UserType == MyCasinoUserTypes.Operator && m_operator == false)
-                    {
-                        m_operator = true;
-                    }
-                    //Read transaction information
-                    user.account.ReadUserTransaction(user.username, dictTransDraw);
-                   
-                    //user.SessionId = unchecked(Convert.ToInt32(GenerateId()));
-                    user.SessionId = Math.Abs(unchecked(GenerateId()));
-                    sessionId = user.SessionId;
-                    type = user.UserType;
-                    currUser = user;
-                    return "S_OK";
                 }
-
             }
             sessionId = 0;
             type = MyCasinoUserTypes.ERROR;
-
-            foreach (User user in userList)
+            lock (thisLockUserList)
             {
-                if (username == user.username && pw == user.Password && 0 != user.SessionId)
+                foreach (User user in userList)
                 {
-                    currUser = null;
-                    return "ALREADY_LOGGED_IN";
+                    if (username == user.username && pw == user.Password && 0 != user.SessionId)
+                    {
+                        currUser = null;
+                        return "ALREADY_LOGGED_IN";
+                    }
                 }
             }
             currUser = null;
             return "WRONG_USERNAME_OR_PASSWORD";
         }
-
         private int GenerateId()
         {
             byte[] buff = Guid.NewGuid().ToByteArray();
             return BitConverter.ToInt32(buff, 0);
         }
-
         public string Logout(int sessionId)
         {
             //save all current amounts for all users
             using (StreamWriter sw = new StreamWriter(@"d:\StdArbVS\trunk\src\MyCASINO\WCF\MyCasinoData\UserBalance.txt", false))
             {
-                foreach (User userWrite in userList)
+                lock (thisLockUserList)
                 {
-                    sw.WriteLine(userWrite.Username.ToString()+ " " + userWrite.account.MoneyAmountLeft);
+                    foreach (User userWrite in userList)
+                    {
+                        sw.WriteLine(userWrite.Username.ToString() + " " + userWrite.account.MoneyAmountLeft);
+                    }
                 }
             }
-
-            foreach (User user in userList)
+            lock (thisLockUserList)
             {
-                
-                if (sessionId == user.SessionId && user.UserType == MyCasinoUserTypes.Operator)
+                foreach (User user in userList)
                 {
-                    m_operator = false;
-                    user.SessionId = 0;
-                    return "S_OK";
-                }
 
-                if (sessionId == user.SessionId)
-                {
-                    user.SessionId = 0;
-                    return "S_OK";
+                    if (sessionId == user.SessionId && user.UserType == MyCasinoUserTypes.Operator)
+                    {
+                        m_operator = false;
+                        user.SessionId = 0;
+                        return "S_OK";
+                    }
+
+                    if (sessionId == user.SessionId)
+                    {
+                        user.SessionId = 0;
+                        return "S_OK";
+                    }
                 }
             }
             return "COULD_NOT_FIND_USER_LOGOUT_UNSUCCESSFUL";
-
         }
-
         public bool SessionIdCheck(int sessionId)
         {
-            foreach (User user in userList)
+            lock (thisLockUserList)
             {
-                if (sessionId == user.SessionId)
+                foreach (User user in userList)
                 {
-                    return true;
+                    if (sessionId == user.SessionId)
+                    {
+                        return true;
+                    }
                 }
             }
             return false;

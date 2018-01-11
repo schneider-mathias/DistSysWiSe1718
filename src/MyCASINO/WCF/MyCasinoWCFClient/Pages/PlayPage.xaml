@@ -38,7 +38,8 @@
             </Grid.RowDefinitions>
 
             <!--Draw button for casino owner only-->
-            <Button x:Name="btnDraw" Click="btnDraw_Click" Content="Zufallszahlen ziehen" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="5" FontSize="30" Margin="10 100 10 10"  Background="CornflowerBlue" Foreground="White"/>
+            <Button x:Name="btnDraw" Click="btnDraw_Click" Content="Zufall ziehen" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" FontSize="30" Margin="10 100 10 10"  Background="CornflowerBlue" Foreground="White"/>
+            <Button x:Name="btnDrawNumbers" Click="btnDrawNumbers_Click" Content="Zahlen ziehen" Grid.Row="1" Grid.Column="4" Grid.ColumnSpan="2" FontSize="30" Margin="10 100 10 10"  Background="CornflowerBlue" Foreground="White"/>
 
             <!--Number1 used to bet-->
             <ToggleButton x:Name="btnRowOneNumberOne" Click="btnRowOneNumberOne_Click" Content="1" Grid.Row="2" Grid.Column="1" FontSize="50" Margin="10" Width="80" Height="80" Background="OrangeRed" Foreground="White"/>

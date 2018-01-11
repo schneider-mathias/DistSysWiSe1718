@@ -40,21 +40,11 @@
                 Background="OrangeRed" FontSize="30" Width="140" Margin="0 0 5 0"/>
         <Button x:Name="BtnPayIn" Click="BtnPayIn_Click" Content="Einzahlen" Grid.Row="1" Grid.Column="3" 
                 Background="OrangeRed" FontSize="30" Width="140" Margin="0 0 50 0"/>
-
-        <!--Money amount on screen-->
-        <TextBlock Text="Guthaben:" Grid.Row="1" Grid.Column="4" FontSize="30"/>
-        <TextBox Text="BETRAG$$$" Grid.Row="1" Grid.Column="5" Foreground="OrangeRed" Background="CornflowerBlue" Margin="0 0 30 0" FontSize="30"
-                 IsHitTestVisible="False"/>
-
         <!--User-->
         <TextBlock Text="Angemeldet als:" Grid.Row="1" Grid.Column="6" FontSize="30"/>
         <TextBlock x:Name="tblUsername" Text="" Grid.Row="1" Grid.Column="7" Foreground="OrangeRed" Background="CornflowerBlue" FontSize="30" IsHitTestVisible="False"/>
-
         <!--Logout-->
         <Button x:Name="btnLogout" Click="btnLogout_Click" Content="Logout" Background="OrangeRed" Grid.Row="1" Grid.Column="10" HorizontalAlignment="Right" MaxWidth="125" MinWidth="100" FontSize="30"/>
-
         <Frame x:Name="PlayHistoryPage" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="10"/>
-
-
     </Grid>
 </Page>

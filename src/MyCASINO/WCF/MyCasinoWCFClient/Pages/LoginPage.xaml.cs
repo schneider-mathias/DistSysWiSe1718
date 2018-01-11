@@ -152,10 +152,6 @@ namespace MyCasinoWCFClient.Pages
             {
                 if (ex is COMException)
                     _errMsg = Codes.ResolveCode((ex as COMException).ErrorCode);
-                else if (ex is UnauthorizedAccessException)
-                    _errMsg = Codes.ResolveCode((ex as UnauthorizedAccessException).HResult);
-                else if (ex is UnauthorizedAccessException)
-                    _errMsg = Codes.ResolveCode((ex as UnauthorizedAccessException).HResult);
                 else
                     _errMsg = "Unknown";
 

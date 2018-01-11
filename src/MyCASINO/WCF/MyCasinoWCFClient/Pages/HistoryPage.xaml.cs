@@ -98,9 +98,12 @@ namespace MyCasinoWCFClient.Pages
                         {
                             _ComSrv.getTransactionInformation(SessionId,(uint)transaction.GetValue(0), out information, out informationType,out errMsg);
                         }
-                        catch
+                        catch (Exception ex)
                         {
-                            MessageBox.Show(errMsg);
+                            if (ex is COMException)
+                                errMsg = Codes.ResolveCode((ex as COMException).ErrorCode);
+                            else
+                                errMsg = "Unknown";
                         }
                         if (typeTmp == 1)
                         {
@@ -132,9 +135,12 @@ namespace MyCasinoWCFClient.Pages
                         {
                             _ComSrv.getTransactionInformation(SessionId, (uint)transaction.GetValue(0), out information, out informationType, out errMsg);
                         }
-                        catch
+                        catch (Exception ex)
                         {
-                            MessageBox.Show(errMsg);
+                            if (ex is COMException)
+                                errMsg = Codes.ResolveCode((ex as COMException).ErrorCode);
+                            else
+                            errMsg = "Unknown";
                         }
                         if (typeTmp == 1)
                         {
@@ -163,9 +169,12 @@ namespace MyCasinoWCFClient.Pages
                 while (isFinished != 1);
                 
             }
-            catch
+            catch (Exception ex)
             {
-                MessageBox.Show(errMsg);
+                if (ex is COMException)
+                    errMsg = Codes.ResolveCode((ex as COMException).ErrorCode);
+                else
+                    errMsg = "Unknown";
             }
 
             
@@ -190,6 +199,10 @@ namespace MyCasinoWCFClient.Pages
                 do
                 {
                     _RemSrvMyCasino.getTransactions(SessionId, out isFinished, out transaction, out transactionType, out errMsg);
+                    if (errMsg == "INVALID_SESSION_ID")
+                    {
+                        MessageBox.Show("Ungültige ID!");
+                    }
                     //transaction is deposit
                     if (isFinished == true) break;
                     if (transactionType == 0)
@@ -229,10 +242,14 @@ namespace MyCasinoWCFClient.Pages
                             int idTrans;
                             int.TryParse(transaction.ElementAt(0), out idTrans);
                             _RemSrvMyCasino.getTransactionInformation(SessionId, idTrans, out information, out informationType, out errMsg);
+                            if (errMsg == "INVALID_SESSION_ID")
+                            {
+                                MessageBox.Show("Ungültige ID!");
+                            }
                         }
-                        catch
+                        catch(Exception ex)
                         {
-                            MessageBox.Show(errMsg);
+                            MessageBox.Show("Fehler beim abholen der Informationen für die Transaktionen: "+ ex);
                         }
                         if (typeTmp == MyCasinoUserTypes.Gamer)
                         {
@@ -268,10 +285,14 @@ namespace MyCasinoWCFClient.Pages
                             int idTrans;
                             int.TryParse(transaction.ElementAt(0), out idTrans);
                             _RemSrvMyCasino.getTransactionInformation(SessionId, idTrans, out information, out informationType, out errMsg);
+                            if (errMsg == "INVALID_SESSION_ID")
+                            {
+                                MessageBox.Show("Ungültige ID!");
+                            }
                         }
-                        catch
+                        catch(Exception ex)
                         {
-                            MessageBox.Show(errMsg);
+                            MessageBox.Show("Fehler beim abholen der Informationen für die Transaktionen: " + ex);
                         }
                         if (typeTmp == MyCasinoUserTypes.Gamer)
                         {
@@ -305,9 +326,9 @@ namespace MyCasinoWCFClient.Pages
                 while (isFinished != true);
                 opMoney = 0;
             }
-            catch
+            catch(Exception ex)
             {
-                MessageBox.Show(errMsg);
+                MessageBox.Show("Fehler beim abholen der Transaktionen: " + ex);
             }
         }
 #endif
