@@ -54,6 +54,9 @@
     <ClInclude Include="COMMyBay.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="CritSectionWrapper.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="COMMyBaySrv.rc">

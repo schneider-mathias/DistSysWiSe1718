@@ -228,7 +228,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="COMMyBay.cpp" />
+    <ClCompile Include="COMMyBay.cpp">
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../../_shared/cpp/AuthServiceLib;../../_shared/cpp/MyBayLib;../../../_shared/cpp/HelperLib;../../_shared/cpp</AdditionalIncludeDirectories>
+    </ClCompile>
     <ClCompile Include="COMMyBaySrv.cpp" />
     <ClCompile Include="COMMyBaySrv_i.c">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
@@ -268,6 +270,7 @@
   <ItemGroup>
     <ClInclude Include="COMMyBay.h" />
     <ClInclude Include="COMMyBaySrv_i.h" />
+    <ClInclude Include="CritSectionWrapper.h" />
     <ClInclude Include="dllmain.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />

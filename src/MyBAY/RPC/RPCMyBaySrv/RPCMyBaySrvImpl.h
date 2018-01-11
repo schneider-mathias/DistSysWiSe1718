@@ -61,16 +61,6 @@ void auctionEndProcess(wstring user, unsigned long auctionNumber);
 void addEndAuctionMessage(wstring user, unsigned long auctionNumber, int warningNr);
 void endAuction(unsigned long auctionNumber);
 
-
-//// Auktionsnummernprüfung für auction
-//struct find_auctionNumber : std::unary_function<auction, bool> {
-//	DWORD auctionNumber;
-//	find_auctionNumber(DWORD auctionNumber) :auctionNumber(auctionNumber) { }
-//	bool operator()(auction const& m) const {
-//		return m.auctionNumber == auctionNumber;
-//	}
-//};
-
 /********************************************************************/
 /*							Hilfsfunktionen							*/
 /********************************************************************/

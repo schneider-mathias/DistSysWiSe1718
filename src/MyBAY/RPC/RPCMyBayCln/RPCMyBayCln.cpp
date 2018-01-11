@@ -446,7 +446,7 @@ void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, 
 			cout << "----------------------------------------------------------------------------------------" << endl;
 		}
 			
-		else if (hr == NO_AUCTIONS_AVAILABLE)
+		else if (hr == ERROR_NO_AUCTIONS_AVAILABLE)
 		{
 			cout << "----------------------------------------------------------------------------------------" << endl;
 			cout << "Ihre Eingabe ergab keine Ergebnisse." << endl;

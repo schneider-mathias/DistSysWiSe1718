@@ -160,7 +160,7 @@ error_status_t getAuctions(unsigned long sessionId, unsigned long flags, unsigne
 	vector<auction> interestingAuctions = getInterestingAuctions(user, flags, sarticleName);
 	if (interestingAuctions.size() == 0)
 	{
-		return NO_AUCTIONS_AVAILABLE;
+		return ERROR_NO_AUCTIONS_AVAILABLE;
 	}
 	wstring serStr = serializeAuctions(interestingAuctions);
 
