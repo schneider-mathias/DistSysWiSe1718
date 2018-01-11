@@ -510,9 +510,12 @@ void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, 
 				cout << "Fehler: Auktion nicht vorhanden." << endl;
 				cout << "----------------------------------------------------------------------------------------" << endl;
 			}
-				
-
-				
+			else if (hr == ERROR_BID_NEGATIVE)
+			{
+				cout << "----------------------------------------------------------------------------------------" << endl;
+				cout << "Fehler: Das Startgebot muss eine positive Zahl sein." << endl;
+				cout << "----------------------------------------------------------------------------------------" << endl;
+			}	
 			else if (hr == ERROR_AUCTION_CLOSED)
 			{
 				cout << "----------------------------------------------------------------------------------------" << endl;
@@ -660,10 +663,16 @@ void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, 
 				cout << "Fehler: Bitte zuerst einloggen." << endl;
 				cout << "----------------------------------------------------------------------------------------" << endl;
 			}
+			else if (hr == ERROR_AUCTION_CLOSED)
+			{
+				cout << "----------------------------------------------------------------------------------------" << endl;
+				cout << "Fehler: Die Auktion ist bereits geschlossen." << endl;
+				cout << "----------------------------------------------------------------------------------------" << endl;
+			}
 			else if (hr == ERROR_USER_IS_NOT_AUCTIONEER)
 			{
 				cout << "----------------------------------------------------------------------------------------" << endl;
-				cout << "Fehler: Sie können nur Auktionen beenden, die Sie auch erstellt haben." << endl;
+				cout << "Fehler: Sie koennen nur Auktionen beenden, die Sie auch erstellt haben." << endl;
 				cout << "----------------------------------------------------------------------------------------" << endl;
 			}
 			else
