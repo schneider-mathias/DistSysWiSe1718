@@ -183,8 +183,6 @@ namespace MyCasinoLib
 
         public string Logout(int sessionId)
         {
-            //emtpy all bets
-
             //save all current amounts for all users
             using (StreamWriter sw = new StreamWriter(@"d:\StdArbVS\trunk\src\MyCASINO\WCF\MyCasinoData\UserBalance.txt", false))
             {

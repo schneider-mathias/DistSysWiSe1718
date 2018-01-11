@@ -45,16 +45,59 @@ namespace MyCasinoWCFServer
                 Console.WriteLine(errMsg);
                 return false;
             }
-            //delete user in loggedlist
-            foreach (User user in userListLoggedOn)
+            //delete user in loggedlist and empty all bets of specific user
+            User userOperatorCheck = userListLoggedOn.Find(item => item.UserType == MyCasinoUserTypes.Operator);
+            if (userOperatorCheck != null)
             {
-                if (user.SessionId == sessionId)
+                if (sessionId == userOperatorCheck.SessionId)
+                
                 {
-                    name = user.Username;
-                    userListLoggedOn.Remove(user);
-                    break;
+                    for (int i = 0; i < dictTransDraw.Count; i++)
+                    {
+                        if (dictTransDraw.ElementAt(i).Key.TransType == MyCasinoTransactionTypes.BET_WAGER)
+                        {
+                            dictTransDraw.ElementAt(i).Key.TransType = MyCasinoTransactionTypes.CANCELED;
+                            //set money of unfinished bets back and delete bets
+                            foreach (User user in userListLoggedOn)
+                            {
+                                user.account.DelBets();
+                                user.account.MoneyAmountLeft += dictTransDraw.ElementAt(i).Value.DrawBet.M_setAmount;
+                            }
+                            userOperatorCheck.account.MoneyAmountLeft -= dictTransDraw.ElementAt(i).Value.DrawBet.M_setAmount;
+                        }
+                    }
+                    //user from logged list
+                    name = userOperatorCheck.Username;
+                    userListLoggedOn.Remove(userOperatorCheck);
                 }
             }
+            else
+            {
+                foreach (User user in userListLoggedOn)
+                {
+                    if (user.SessionId == sessionId)
+                    {
+                        for (int i = 0; i < dictTransDraw.Count; i++)
+                        {
+                            //set money of unfinished bets back
+                            if (dictTransDraw.ElementAt(i).Key.Name == user.username &&
+                                dictTransDraw.ElementAt(i).Key.TransType == MyCasinoTransactionTypes.BET_WAGER)
+                            {
+                                dictTransDraw.ElementAt(i).Key.TransType = MyCasinoTransactionTypes.CANCELED;
+                                user.account.MoneyAmountLeft += dictTransDraw.ElementAt(i).Value.DrawBet.M_setAmount;
+                                userOperatorCheck.account.MoneyAmountLeft -= dictTransDraw.ElementAt(i).Value.DrawBet.M_setAmount;
+                            }
+                        }
+                        //delete bets and user from logged list
+                        user.account.DelBets();
+                        name = user.Username;
+                        userListLoggedOn.Remove(user);
+                        break;
+                    }
+                }
+            }
+
+
             //set sessionid in userlist to 0
             errMsg = m_authService.Logout(sessionId);
             //Logout successful
