@@ -172,14 +172,7 @@ namespace MyBayWCFSrv
                 }
             }
 
-            if (auctionTemp.HighestBid.BidValue < bidVal)
-            {
-                return auctionTemp.addBid(AuthenticationService.AuthService.getIndexBySessionID(sessionID), bidVal);
-            }
-            else
-            {
-                return "Das Angegebene Gebot ist zu niedrig, bieten Sie mehr als: " + auctionTemp.HighestBid.ToString();
-            }
+            return auctionTemp.addBid(AuthenticationService.AuthService.getIndexBySessionID(sessionID), bidVal);
         }
 
         public String details(UInt32 sessionID, UInt32 auctionNumber, out UInt32 countBids, out List<BidTransfer> allBids)
@@ -214,6 +207,8 @@ namespace MyBayWCFSrv
                 tempTransfer.BidValue = bid.BidValue;
                 allBids.Add(tempTransfer);
             }
+            countBids = (UInt32) copyBids.Count;
+
             return "OK";           
         }
 
@@ -240,9 +235,9 @@ namespace MyBayWCFSrv
                 {
                     return "Die angegebene Auktionsnummer konnte nicht gefunden werden";
                 }
-                if(tempAuction.endAuction()) return "OK";
+
+                return tempAuction.endAuction();
             }
-            return "OK";
         }
 
         public String getMessage(UInt32 sessionID, out Boolean messageAvailable, out UInt32 messageType, out MessageTransfer message)
