@@ -268,7 +268,13 @@ namespace MyBayWCFCln
 
                 this.eventListBox.Items.Clear();
 
-                String returnStr = _remoteSrvMyBay.getAuctions(sessionID,flags,"", out countAuctions, out newListAuctions);
+                String returnStr;
+                if (String.IsNullOrEmpty(this.txtBox_Search.Text))
+                {
+                    returnStr = _remoteSrvMyBay.getAuctions(sessionID, flags, "", out countAuctions, out newListAuctions);
+                }
+                else returnStr = _remoteSrvMyBay.getAuctions(sessionID, flags, this.txtBox_Search.Text, out countAuctions, out newListAuctions);
+
                 if (returnStr.Contains("OK"))
                 {
                     
