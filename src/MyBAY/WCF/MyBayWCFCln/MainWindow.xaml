@@ -5,8 +5,32 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MyBayWCFCln"
         mc:Ignorable="d"
-        Title="MyBay" Height="350" Width="525">
-    <Grid>
-        
+        Title="MyBay" Height="768" Width="1024">
+    <Grid Margin="0,0,0,0">
+        <TextBox x:Name="usernameTxtBox" HorizontalAlignment="Left" Height="20" Margin="96,35,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="165" TextAlignment="Center" MinLines="5" AcceptsReturn="True"/>
+        <PasswordBox x:Name="passwordBox" HorizontalAlignment="Left" Margin="96,60,0,0" VerticalAlignment="Top" Width="165" RenderTransformOrigin="0.485,-1.327" Height="20" HorizontalContentAlignment="Center"/>
+        <Label x:Name="lblUsername" Content="Username" HorizontalAlignment="Left" Margin="21,35,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.635,0.689" Height="20" Width="70" ScrollViewer.VerticalScrollBarVisibility="Disabled" FontSize="10" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="1"/>
+        <Label x:Name="lblPassword" Content="Password" HorizontalAlignment="Left" Margin="21,60,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.587,2.678" Height="20" Width="70" ScrollViewer.VerticalScrollBarVisibility="Disabled" FontSize="10" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="1"/>
+        <Label x:Name="lblUsername_Copy" Content="Server-IP" HorizontalAlignment="Left" Margin="21,10,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.635,0.689" Height="20" Width="70" ScrollViewer.VerticalScrollBarVisibility="Disabled" FontSize="10" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="1"/>
+        <TextBox x:Name="srvIPTxtBox" HorizontalAlignment="Left" Height="20" Margin="96,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="165" TextAlignment="Center" MinLines="5" AcceptsReturn="True" Text="http://localhost:3333/"/>
+        <Button x:Name="loginBtn" Content="Login" HorizontalAlignment="Left" Margin="266,9,0,0" VerticalAlignment="Top" Width="75" Height="21" Click="loginBtn_Click"/>
+        <Button x:Name="btn_NewAuction" Content="Neue Auktion Erstellen" HorizontalAlignment="Left" Margin="66,162,0,0" VerticalAlignment="Top" Width="195" Height="29" ScrollViewer.VerticalScrollBarVisibility="Disabled" FontSize="16" TextOptions.TextFormattingMode="Display" Padding="0,0,0,3" VerticalContentAlignment="Center" Click="btn_NewAuction_Click" IsEnabled="False" RenderTransformOrigin="0.35,0.444"/>
+        <TextBox x:Name="artNameTxtBox" HorizontalAlignment="Left" Height="23" Margin="141,106,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" UndoLimit="96" TextAlignment="Center"/>
+        <TextBox x:Name="startBid_TxtBox" HorizontalAlignment="Left" Height="23" Margin="141,134,0,0" TextWrapping="Wrap" Text="0.00" VerticalAlignment="Top" Width="120" UndoLimit="96" TextAlignment="Center"/>
+        <Label x:Name="label1" Content="Artikelbezeichnung" HorizontalAlignment="Left" Margin="21,106,0,0" VerticalAlignment="Top" Width="115" HorizontalContentAlignment="Right"/>
+        <Label x:Name="label1_Copy" Content="Startgebot" HorizontalAlignment="Left" Margin="21,131,0,0" VerticalAlignment="Top" Width="115" HorizontalContentAlignment="Right"/>
+        <ListBox x:Name="eventListBox" HorizontalAlignment="Left" Height="238" Margin="474,48,0,0" VerticalAlignment="Top" Width="508"/>
+        <Label x:Name="labelListBox" Content="Auktionen" HorizontalAlignment="Left" Margin="474,22,0,0" VerticalAlignment="Top" Width="115" HorizontalContentAlignment="Center"/>
+        <Button x:Name="getAuctions" Content="Aktualisiere Auktionen" HorizontalAlignment="Left" Margin="474,303,0,0" VerticalAlignment="Top" Width="157" Height="26" Click="getAuctions_Click_1" IsEnabled="False"/>
+        <RadioButton x:Name="radioBtnInterested" Content="Interessiert" HorizontalAlignment="Left" Margin="655,302,0,0" VerticalAlignment="Top" IsChecked="True" GroupName="getAuctionFlag"/>
+        <RadioButton x:Name="radioBtnAllOpen" Content="Alle offenen Auktionen" HorizontalAlignment="Left" Margin="655,322,0,0" VerticalAlignment="Top" GroupName="getAuctionFlag"/>
+        <RadioButton x:Name="radioBtnAll" Content="Alle Auktionen" HorizontalAlignment="Left" Margin="655,342,0,0" VerticalAlignment="Top" GroupName="getAuctionFlag"/>
+        <Button x:Name="getDetails" Content="Zeige Details" HorizontalAlignment="Left" Margin="825,303,0,0" VerticalAlignment="Top" Width="157" Height="26" IsEnabled="False" Click="getDetails_Click"/>
+        <TextBox x:Name="newBid_txtBox" HorizontalAlignment="Left" Height="23" Margin="338,135,0,0" TextWrapping="Wrap" Text="0.00" VerticalAlignment="Top" Width="120" UndoLimit="96" TextAlignment="Center"/>
+        <Button x:Name="newBid_Btn" Content="Biete" HorizontalAlignment="Left" Margin="338,103,0,0" VerticalAlignment="Top" Width="120" Height="26" IsEnabled="False" Click="newBid_Btn_Click"/>
+        <Button x:Name="auctionEnd_Btn" Content="Auktion beenden" HorizontalAlignment="Left" Margin="338,197,0,0" VerticalAlignment="Top" Width="120" Height="26" Click="auctionEnd_Btn_Click" IsEnabled="False"/>
+        <ListBox x:Name="messageListBox" HorizontalAlignment="Left" Height="238" Margin="474,413,0,0" VerticalAlignment="Top" Width="508"/>
+        <Label x:Name="labelMessageListBox" Content="Nachrichten" HorizontalAlignment="Left" Margin="474,387,0,0" VerticalAlignment="Top" Width="115" HorizontalContentAlignment="Center"/>
+
     </Grid>
 </Window>

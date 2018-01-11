@@ -184,6 +184,7 @@ namespace MyCasinoWCFClient.Pages
             int informationType;
             int transactionType;
             string errMsg="";
+            double opMoney=0;
             try
             {
                 do
@@ -193,14 +194,31 @@ namespace MyCasinoWCFClient.Pages
                     if (isFinished == true) break;
                     if (transactionType == 0)
                     {
+                        if (typeTmp == MyCasinoUserTypes.Operator)
+                        {
+                            double opMoneyTmp = 0;
+                            if (opMoney == 0)
+                            {
+                                double.TryParse(transaction.ElementAt(1), out opMoneyTmp);
+                            }
+                            else
+                            {
+                                double.TryParse(transaction.ElementAt(2), out opMoneyTmp);
+                            }
+                            opMoney += opMoneyTmp;
+                            lbBalanceList.Items.Add(opMoney);
+                        }
+                        else
+                        {
+                            lbBalanceList.Items.Add(transaction.ElementAt(1));
+                        }
+                        lbPayInList.Items.Add(transaction.ElementAt(2));
                         lbBetAmountList.Items.Add("");
                         lbFirstNumberPerRollList.Items.Add("");
                         lbSecondNumberPerRollList.Items.Add("");
                         lbFirstNumberDrawn.Items.Add("");
                         lbSecondNumberDrawn.Items.Add("");
                         lbWinLossList.Items.Add("");
-                        lbPayInList.Items.Add(transaction.ElementAt(2));
-                        lbBalanceList.Items.Add(transaction.ElementAt(1));
 
                     }
                     //transaction is win
@@ -229,14 +247,17 @@ namespace MyCasinoWCFClient.Pages
                         }
                         else if (typeTmp == MyCasinoUserTypes.Operator)
                         {
+                            int amount;
+                            int.TryParse((information.ElementAt(6)), out amount);
+                            opMoney = opMoney - amount;
                             lbBetAmountList.Items.Add(information.ElementAt(3));
                             lbFirstNumberPerRollList.Items.Add(information.ElementAt(1));
                             lbSecondNumberPerRollList.Items.Add(information.ElementAt(2));
                             lbFirstNumberDrawn.Items.Add(information.ElementAt(4));
                             lbSecondNumberDrawn.Items.Add(information.ElementAt(5));
-                            lbWinLossList.Items.Add(information.ElementAt(3));
+                            lbWinLossList.Items.Add(((amount * (-1)).ToString()));
                             lbPayInList.Items.Add("");
-                            lbBalanceList.Items.Add(transaction.ElementAt(1));
+                            lbBalanceList.Items.Add(opMoney);
                         }
                     }
                     //transaction is loss
@@ -268,20 +289,21 @@ namespace MyCasinoWCFClient.Pages
                         else if (typeTmp == MyCasinoUserTypes.Operator)
                         {
                             int amount;
-                            int.TryParse((information.ElementAt(6)), out amount);
+                            int.TryParse((information.ElementAt(3)), out amount);
+                            opMoney = opMoney + amount;
                             lbBetAmountList.Items.Add(information.ElementAt(3));
                             lbFirstNumberPerRollList.Items.Add(information.ElementAt(1));
                             lbSecondNumberPerRollList.Items.Add(information.ElementAt(2));
                             lbFirstNumberDrawn.Items.Add(information.ElementAt(4));
                             lbSecondNumberDrawn.Items.Add(information.ElementAt(5));
-                            lbWinLossList.Items.Add((amount * (-1)).ToString());
+                            lbWinLossList.Items.Add((amount).ToString());
                             lbPayInList.Items.Add("");
-                            lbBalanceList.Items.Add(transaction.ElementAt(1));
+                            lbBalanceList.Items.Add(opMoney);
                         }
                     }
                 }
                 while (isFinished != true);
-
+                opMoney = 0;
             }
             catch
             {

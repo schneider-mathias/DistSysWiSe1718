@@ -69,11 +69,12 @@ namespace MyBayLib
             }
         }
 
+        private UInt32 _countBids;
         public UInt32 CountBids
         {
             get
             {
-                return (UInt32)this.bidList.Count;
+                return this._countBids;
             }
         }
 
@@ -147,6 +148,7 @@ namespace MyBayLib
                 {
                     this.bidList.Add(newBid);
                     this._highestBid = newBid;
+                    this._countBids = (UInt32)bidList.Count;
                 }
                 else
                 {

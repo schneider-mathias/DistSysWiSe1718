@@ -32,6 +32,12 @@ error_status_t login(unsigned char *username, unsigned char *password, unsigned 
 	wifstream csvread;
 	srand((unsigned)time(NULL)); // Zufallsgenerator initialisieren.
 
+	// Wenn sich der erste Nutzer einloggt, werden die persistent gespeicherten Auktionen aus der Datei ausgelesen
+	if (users.size() == 0)
+	{
+		readAuctionsFromFile();
+	}
+
 	/* Abfrage ob User nicht schon eingeloggt ist.*/
 	if (BOOL isLoggedIn = loginCheck(*username) == TRUE)
 	{
@@ -44,7 +50,9 @@ error_status_t login(unsigned char *username, unsigned char *password, unsigned 
 		wstring fline, fname, fpassword;
 		wstring suser = char_to_wstring((char*)username);
 		wstring spassword = char_to_wstring((char*)password);
-		while (getline(csvread, fline))
+
+		// in jeder Zeile prüfen ob der Username und Passwort mit den Eingegebenen übereinstimmen
+		while (getline(csvread, fline))				
 		{
 			wstring delimiter = L";";
 			size_t delimPos = fline.find(delimiter);
@@ -101,9 +109,9 @@ error_status_t offer(unsigned long sessionId, unsigned char *articleName, double
 	unsigned long newAuctNumb = addNewAuction(sarticleName, startBid);
 	// User der Liste der interessierten User für diese Auktion hinzufügen
 	BOOL userAdded = addUserToInterestedUserList(user, newAuctNumb);
-
-	// TODO: Schreibe Auctionen in Datei um persistent zu halten (in .h schon vorhanden) 
-	writeAuctionToFile();
+	
+	// aktualisiert die MyBayAuctions.txt
+	writeAuctionsToFile();
 
 	*auctionNumber = newAuctNumb;		// Auktionsnummer zurückliefern
 	
@@ -130,6 +138,10 @@ error_status_t interested(unsigned long sessionId, unsigned long auctionNumber)
 	{
 		return ERROR_USER_ALREADY_INTERESTED;
 	}
+
+	// aktualisiert die MyBayAuctions.txt
+	writeAuctionsToFile();
+
 	return RPC_S_OK;
 }
 
@@ -190,6 +202,9 @@ error_status_t bid(unsigned long sessionId, unsigned long auctionNumber, double 
 	}
 	addNewBidToMessages(articleName, bidVal, user);
 
+	// aktualisiert die MyBayAuctions.txt
+	writeAuctionsToFile();
+
 	return RPC_S_OK;
 }
 
@@ -238,6 +253,9 @@ error_status_t endauction(unsigned long sessionId, unsigned long auctionNumber)
 	if (userIsAuctioneer == FALSE)
 		return ERROR_USER_IS_NOT_AUCTIONEER;
 	BOOL endAuctionSuccessfull = endAuction(user, auctionNumber);
+
+	// aktualisiert die MyBayAuctions.txt
+	writeAuctionsToFile();
 
 	return RPC_S_OK;
 }

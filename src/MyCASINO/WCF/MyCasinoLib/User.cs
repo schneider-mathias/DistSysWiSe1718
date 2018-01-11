@@ -86,10 +86,11 @@ namespace MyCasinoLib
         {
             try
             {
-                //Read Userfile.csv line by line
+                //Read UserList.txt line by line
                 using (FileStream fs = File.OpenRead(@"d:\StdArbVS\trunk\src\MyCASINO\WCF\MyCasinoData\UserList.txt"))
                 using (StreamReader sr = new StreamReader(fs))
                 {
+
                     string line;
                     while ((line = sr.ReadLine()) != null)
                     {
@@ -98,6 +99,23 @@ namespace MyCasinoLib
                         Int32.TryParse(substring[0], out id);
                         Int32.TryParse(substring[3], out type);
                         userList.Add(new User(id, substring[1], substring[2], (MyCasinoUserTypes)type));
+                    }
+                }
+                //Get initial money
+                using (FileStream fsBal = File.OpenRead(@"d:\StdArbVS\trunk\src\MyCASINO\WCF\MyCasinoData\UserBalance.txt"))
+                using (StreamReader srBal = new StreamReader(fsBal))
+                {
+                    string line;
+                    while ((line = srBal.ReadLine()) != null)
+                    {
+                        int money = 0;
+                        string[] substring = line.Split();
+                        Int32.TryParse(substring[1], out money);
+                        foreach (User user in userList)
+                        {
+                            if (user.username == substring[0])
+                                user.account.MoneyAmountLeft = money;
+                        }
                     }
                 }
             }
@@ -165,8 +183,20 @@ namespace MyCasinoLib
 
         public string Logout(int sessionId)
         {
+            //emtpy all bets
+
+            //save all current amounts for all users
+            using (StreamWriter sw = new StreamWriter(@"d:\StdArbVS\trunk\src\MyCASINO\WCF\MyCasinoData\UserBalance.txt", false))
+            {
+                foreach (User userWrite in userList)
+                {
+                    sw.WriteLine(userWrite.Username.ToString()+ " " + userWrite.account.MoneyAmountLeft);
+                }
+            }
+
             foreach (User user in userList)
             {
+                
                 if (sessionId == user.SessionId && user.UserType == MyCasinoUserTypes.Operator)
                 {
                     m_operator = false;
