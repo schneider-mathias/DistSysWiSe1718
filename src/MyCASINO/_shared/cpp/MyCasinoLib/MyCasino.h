@@ -19,6 +19,7 @@ public:
 	BOOL GetNextTransaction(MyCasinoUser& user, MyCasinoTransaction** const transaction);
 	BOOL GetTransactionInfomation(MyCasinoUser& user, ULONG transationId, IMyCasinoTransactionInformation** const transactionInformation, MyCasinoTransactionsInformationTypes* type);
 	BOOL Bet(MyCasinoUser& user, SHORT firstNumber, SHORT secondNumber, DOUBLE setAmount);
+	BOOL CloseBets(const MyCasinoUser& user);
 	BOOL CalculateProfit(MyCasinoBet& bet, DOUBLE* priceForOne, DOUBLE* priceForTwo);
 	BOOL Deposit(MyCasinoUser& user, DOUBLE amount);
 	BOOL Withdraw(MyCasinoUser& user, DOUBLE amount);

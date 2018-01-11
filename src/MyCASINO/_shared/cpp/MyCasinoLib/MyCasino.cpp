@@ -393,6 +393,43 @@ BOOL MyCasino::CloseBet(const MyCasinoUser& user, MyCasinoBet& bet)
 	return TRUE;
 }
 
+BOOL MyCasino::CloseBets(const MyCasinoUser& user)
+{
+	BOOL resVal = TRUE;
+
+	{
+		SCOPED_LOCK(m_betsMutex);
+
+		for (std::multimap<MyCasinoUser, MyCasinoBet*>::iterator it = m_currentBets.begin(); it != m_currentBets.end();)
+		{
+			if (user == (*it).first)
+			{
+				
+				// close transactions
+				resVal = CloseBet(user, *(*it).second);
+				if (!resVal)
+					return resVal;
+				
+				// save bets in order to delete them later
+				{
+					SCOPED_LOCK(m_formerBetsMutex);
+					m_formerBets.push_back((*it).second);
+				}
+
+				// delete bet entry
+				it = m_currentBets.erase(it);
+			}
+			else 
+			{
+				it++;
+			}
+		}
+	}
+
+	return resVal;
+}
+
+
 BOOL MyCasino::GetBet(SHORT firstNumber, SHORT secondNumber, MyCasinoBet** bet)
 {
 	if (!IsOpened())

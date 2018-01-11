@@ -104,6 +104,16 @@ STDMETHODIMP CCOMMyCasino::logout(ULONG sessionId, BSTR* errMsg)
 		
 		getCasino().Close();
 	}
+	// close all open bets
+	else if (user->GetUserType() == MyCasinoUserTypes::Gamer)
+	{
+		BOOL retVal = getCasino().CloseBets(*user);
+		if (FAILED(retVal))
+		{
+			*errMsg = wstr_to_bstr(TRANSLATE_MYCASINO_ERRORCODE(errCode, retVal));
+			return E_FAIL;
+		}
+	}
 
 	// log out user
 	if (!getAuthService().logout(sessionId))
