@@ -19,6 +19,7 @@ using MyCasinoLib;
 using MyCasinoWCFLib;
 using System.ServiceModel;
 using System.Net;
+using System.Runtime.InteropServices;
 
 namespace MyCasinoWCFClient.Pages
 {
@@ -142,13 +143,23 @@ namespace MyCasinoWCFClient.Pages
             uint _sessionId;
             try
             {
+                
                     _ComSrv.login(tbxUsername.Text, pwbPassword.Password, out _sessionId, out tmpUsertype, out _errMsg);
                 this.NavigationService.Navigate(new GamingPage(_ComSrv, tbxUsername.Text, _sessionId, tmpUsertype));
 
             }
-            catch
+            catch (Exception ex)
             {
-                MessageBox.Show(_errMsg);
+                if (ex is COMException)
+                    _errMsg = Codes.ResolveCode((ex as COMException).ErrorCode);
+                else if (ex is UnauthorizedAccessException)
+                    _errMsg = Codes.ResolveCode((ex as UnauthorizedAccessException).HResult);
+                else if (ex is UnauthorizedAccessException)
+                    _errMsg = Codes.ResolveCode((ex as UnauthorizedAccessException).HResult);
+                else
+                    _errMsg = "Unknown";
+
+                tblAuthentificationFailed.Text = _errMsg;
             }
 #else
         try

@@ -6,7 +6,7 @@
 #define ERROR_MY_CASINO_USER_PERMISSION_DENIED 0x80110002L
 #define ERROR_MY_CASINO_USER_FOR_DEPOSIT_NOT_LOGGED_IN 0x80110003L
 #define ERROR_MY_CASINO_USER_LOGOUT_FAILED 0x80110004L
-
+#define ERROR_MY_CASINO_ACCESS_DENIED 0x80110005L
 #define ERROR_MY_CASINO_HAS_ALREADY_OPERATOR 0x80010001L
 #define ERROR_MY_CASINO_NO_OPERATOR 0x80010002L
 #define ERROR_MY_CASINO_CANNOT_LOAD_ACCOUNT 0x80010003L
@@ -37,6 +37,8 @@ inline std::wstring translate_error_message(unsigned long errorcode)
 {
 	switch (errorcode)
 	{
+	case E_ACCESSDENIED:
+		return std::wstring(L"Invalid username or password.");
 	case ERROR_MY_CASINO_USER_NOT_LOGGED_IN:
 		return std::wstring(L"User is not logged in.");
 	case ERROR_MY_CASINO_USER_PERMISSION_DENIED:
@@ -47,6 +49,8 @@ inline std::wstring translate_error_message(unsigned long errorcode)
 		return std::wstring(L"Error during logout.");
 	case ERROR_MY_CASINO_HAS_ALREADY_OPERATOR:
 		return std::wstring(L"Current casino server already has an logged in operator.");
+	case ERROR_MY_CASINO_ACCESS_DENIED:
+		return std::wstring(L"Invalid user name or password.");
 	case ERROR_MY_CASINO_NO_OPERATOR:
 		return std::wstring(L"Current casino server has no logged in operator.");
 	case ERROR_MY_CASINO_CANNOT_LOAD_ACCOUNT:
