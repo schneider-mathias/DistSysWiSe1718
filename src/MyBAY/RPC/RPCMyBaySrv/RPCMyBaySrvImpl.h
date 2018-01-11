@@ -148,7 +148,7 @@ void readAuctionsFromFile()
 				fline.erase(0, delimPos + delimiter.length());
 
 				delimPos = fline.find(delimiter);
-				rauction.auctionStatus = stod(wstring_to_char(fline.substr(0, delimPos)));			// Höchstgebot
+				rauction.highestBid = stod(wstring_to_char(fline.substr(0, delimPos)));				// Höchstgebot
 				fline.erase(0, delimPos + delimiter.length());
 
 				delimPos = fline.find(delimiter);
@@ -168,13 +168,15 @@ void readAuctionsFromFile()
 				wstring rintUser;
 				vector<wstring> rintUserList;
 				// bis keine Wert mehr in der Zeile
-				while (delimPos = fline.find(delimiter))
+				while (fline.find(delimiter) != std::string::npos)
 				{
+					delimPos = fline.find(delimiter);
 					rintUser = fline.substr(0, delimPos);											// interessierter User
 					fline.erase(0, delimPos + delimiter.length());
 					rintUserList.push_back(rintUser);
 				}
 				line++;
+				rauction.interestedUserList = rintUserList;
 			}
 			// alle Bieter der Auktion
 			else if (line == 2)
@@ -184,8 +186,9 @@ void readAuctionsFromFile()
 				vector<bidder> rbidderList;
 				int bidderInfo = 0;
 				// Suche nach Bieterinformationen solange ein Trennungszeichen vorhanden
-				while (delimPos = fline.find(delimiter))
+				while (fline.find(delimiter) != std::string::npos)
 				{
+					delimPos = fline.find(delimiter);
 					// Gebot des Bieters 
 					if (bidderInfo == 0)
 					{
@@ -205,9 +208,9 @@ void readAuctionsFromFile()
 					}
 				}
 				line = 0;
+				rauction.BidderList = rbidderList;
+				AuctionList.push_back(rauction);													// nach 3. Zeile ist die Auktion fertig eingelesen und kann der Auktionsliste hinzugefügt werden
 			}
-
-			
 		}
 	}
 }
@@ -304,7 +307,7 @@ BOOL addUserToInterestedUserList(wstring user, unsigned long auctionNumber)
 		{
 			for (std::vector<wstring>::iterator it2 = (*it).interestedUserList.begin(); it2 != (*it).interestedUserList.end(); ++it2)
 			{
-				if (user == (*it2))
+				if (user == (*it2))						// User interessiert sich bereits für die Auktion
 				{
 					LeaveCriticalSection(critSecWrapper.getInstance());
 					return FALSE;
@@ -320,11 +323,16 @@ BOOL addUserToInterestedUserList(wstring user, unsigned long auctionNumber)
 // Status der Auktion 
 int getAuctionState(unsigned long auctionNumber)
 {
+	EnterCriticalSection(critSecWrapper.getInstance());
 	for (std::vector<auction>::iterator it = AuctionList.begin(); it != AuctionList.end(); ++it)
 	{
 		if ((*it).auctionNumber == auctionNumber)
+		{
+			LeaveCriticalSection(critSecWrapper.getInstance());
 			return (*it).auctionStatus;
+		}
 	}
+	LeaveCriticalSection(critSecWrapper.getInstance());
 }
 
 // Fügt ein Gebot zur Auktion hinzu
@@ -356,6 +364,23 @@ BOOL addBidToAuction(unsigned long auctionNumber, double bidVal, wstring user)
 	}
 	LeaveCriticalSection(critSecWrapper.getInstance());
 	return TRUE;
+}
+
+// Prüft ob Auktion bereits geschlossen oder kurz vor Schluss
+// return TRUE, wenn Auktion noch offen
+BOOL auctionStatusCheck(unsigned long auctionNumber)
+{
+	EnterCriticalSection(critSecWrapper.getInstance());
+	for (std::vector<auction>::iterator it = AuctionList.begin(); it != AuctionList.end(); ++it)
+	{
+		if ((*it).auctionStatus == 0)
+		{
+			LeaveCriticalSection(critSecWrapper.getInstance());
+			return TRUE;
+		}
+	}
+	LeaveCriticalSection(critSecWrapper.getInstance());
+	return FALSE;
 }
 
 // Prüft ob User die Auktion selbst erstellt hat und ob die Auktion mit der angegebenen Auktion überhaupt vorhanden ist
@@ -534,12 +559,12 @@ wstring serializeMessage(vector<wstring> newMessage)
 }
 
 // Fügt die Nachricht für alle Interessierten der Messagebox hinzu, dass ein neues Gebot abgegeben wurde
-void addNewBidToMessages(wstring articleName, double bidVal, wstring user)
+void addNewBidToMessages(unsigned long auctionNumber, double bidVal, wstring user)
 {
 	EnterCriticalSection(critSecWrapper.getInstance());
 	for (std::vector<auction>::iterator it = AuctionList.begin(); it != AuctionList.end(); ++it)
 	{
-		if (articleName == (*it).articleName)
+		if (auctionNumber == (*it).auctionNumber)
 		{
 			for (std::vector<wstring>::iterator it2 = (*it).interestedUserList.begin(); it2 != (*it).interestedUserList.end(); ++it2)
 			{
@@ -555,7 +580,7 @@ void addNewBidToMessages(wstring articleName, double bidVal, wstring user)
 					newMessage.push_back(user);												// (2) Name des Bieters
 				else
 					newMessage.push_back(L"");												// (2) Name des Bieters wird nur dem Auktionator angezeigt
-				newMessage.push_back(articleName);											// (3) Artikelname
+				newMessage.push_back((*it).articleName);									// (3) Artikelname
 				newMessage.push_back(bidValCut);											// (4) Gebot
 				newMessage.push_back(L"0");													// (5) Auktionsstatus
 
@@ -704,9 +729,6 @@ void auctionEndProcess(wstring user, unsigned long auctionNumber)
 	addEndAuctionMessage(user, auctionNumber, 2);
 	Sleep(5000);
 
-	// Message hinzufügen, die sagt, dass die Auktion beendet
-	addEndAuctionMessage(user, auctionNumber, 3);
-
 	// Auktion beenden
 	endAuction(auctionNumber);
 }
@@ -755,7 +777,7 @@ void endAuction(unsigned long auctionNumber)
 				// Message, dass Auktion beendet wurde	
 				vector<wstring> newMessage;
 				unsigned long messageType = 2;							// MessageType = 2 => Auktion beendet
-				newMessage.push_back((*it).interestedUserList.at(0));	// (0) Auktionator, der die Nachricht erhalten soll
+				newMessage.push_back((*it2));							// (0) User, der die Nachricht erhalten soll
 				newMessage.push_back(to_wstring(messageType));			// (1) MessageType
 				newMessage.push_back((*it).highestBidder);				// (2) Höchstbietender
 				newMessage.push_back((*it).articleName);				// (3) Artikelname

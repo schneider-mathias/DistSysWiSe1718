@@ -35,6 +35,7 @@ error_status_t login(unsigned char *username, unsigned char *password, unsigned 
 	// Wenn sich der erste Nutzer einloggt, werden die persistent gespeicherten Auktionen aus der Datei ausgelesen
 	if (users.size() == 0)
 	{
+		AuctionList.clear();
 		readAuctionsFromFile();
 	}
 
@@ -171,6 +172,7 @@ error_status_t getAuctions(unsigned long sessionId, unsigned long flags, unsigne
 
 	strcpy((char*)auctions->str, (char*)wstring_to_char(serStr.c_str()));
 
+
 	*countAuctions = interestingAuctions.size();
 
 	return RPC_S_OK;
@@ -190,6 +192,10 @@ error_status_t bid(unsigned long sessionId, unsigned long auctionNumber, double 
 	{
 		return ERROR_AUCTIONNUMBER_DOES_NOT_ESXIST;
 	}
+	if (bidVal < 0)
+	{
+		return ERROR_BID_NEGATIVE;
+	}
 	int auctionState = getAuctionState(auctionNumber);
 	if (auctionState == 2)		// Auktion geschlossen
 	{
@@ -200,7 +206,7 @@ error_status_t bid(unsigned long sessionId, unsigned long auctionNumber, double 
 	{
 		return ERROR_BID_TOO_LOW;
 	}
-	addNewBidToMessages(articleName, bidVal, user);
+	addNewBidToMessages(auctionNumber, bidVal, user);
 
 	// aktualisiert die MyBayAuctions.txt
 	writeAuctionsToFile();
@@ -249,6 +255,9 @@ error_status_t endauction(unsigned long sessionId, unsigned long auctionNumber)
 		return ERROR_USER_NOT_LOGGED_IN;
 	}
 	wstring user = getUserName(sessionId);
+	BOOL auctionStatusOpen = auctionStatusCheck(auctionNumber);
+	if (auctionStatusOpen == FALSE)
+		return ERROR_AUCTION_CLOSED;
 	BOOL userIsAuctioneer = userCreatedAuctioncheck(user, auctionNumber);
 	if (userIsAuctioneer == FALSE)
 		return ERROR_USER_IS_NOT_AUCTIONEER;
