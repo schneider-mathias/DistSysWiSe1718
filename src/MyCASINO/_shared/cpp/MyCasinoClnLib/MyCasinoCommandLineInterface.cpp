@@ -59,27 +59,29 @@ bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> argu
 	else if (command.compare(L"payin") == 0)
 	{
 		double amountMoney;
-		int amountMoneyLowerBound = 0;
+		double amountMoneyLowerBound = 0;
+		double amountMoneyUpperBound = UPPER_MONEY_BOUNDARY;
 		return checkCallPrerequisites(MyCasinoUserTypes::Operator)
 			&& checkCallArguments(arguments, 2, std::vector<size_t>()= { 2 })
-			&& safeArgumentCast<double>(arguments, 2, &amountMoney, &amountMoneyLowerBound, NULL, ArgumentType::MONEY)
+			&& safeArgumentCast<double>(arguments, 2, &amountMoney, &amountMoneyLowerBound, &amountMoneyUpperBound, ArgumentType::MONEY)
 			&& payin(arguments.at(1), amountMoney);
 	}
 	else if (command.compare(L"bet") == 0)
 	{
 		double setMoney;
-		int setMoneyLowerBound = 0;
+		double setMoneyLowerBound = 0;
+		double setMoneyUpperBound = UPPER_MONEY_BOUNDARY;
 
 		unsigned short firstNumber;
 		unsigned short secondNumber;
 
-		int numberLowerBound = 1;
-		int firstNumberUpperBound = 4;
-		int numberUpperBound = 5;
+		double numberLowerBound = 1;
+		double firstNumberUpperBound = 4;
+		double numberUpperBound = 5;
 
 		return checkCallPrerequisites(MyCasinoUserTypes::Any)
 			&& checkCallArguments(arguments, 3, std::vector<size_t>() = { 3 })
-			&& safeArgumentCast<double>(arguments, 1, &setMoney, &setMoneyLowerBound, NULL, ArgumentType::MONEY)
+			&& safeArgumentCast<double>(arguments, 1, &setMoney, &setMoneyLowerBound, &setMoneyUpperBound, ArgumentType::MONEY)
 			&& safeArgumentCast<unsigned short>(arguments, 2, &firstNumber, &numberLowerBound, &firstNumberUpperBound)
 			&& safeArgumentCast<unsigned short>(arguments, 3, &secondNumber, &(numberLowerBound = (firstNumber + 1)), &numberUpperBound)
 			&& bet(setMoney, firstNumber, secondNumber);
@@ -97,9 +99,9 @@ bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> argu
 		unsigned short** firstNumberPtrHolder = &firstNumberPtr;
 		unsigned short** secondNumberPtrHolder = &secondNumberPtr;
 
-		int numberLowerBound = 1;
-		int firstNumberUpperBound = 4;
-		int numberUpperBound = 5;
+		double numberLowerBound = 1;
+		double firstNumberUpperBound = 4;
+		double numberUpperBound = 5;
 
 		// if first number pointer is set, it becomes the lower boundary, otherwise set it to 0 (will be ignored anyway)
 		bool retVal = checkCallPrerequisites(MyCasinoUserTypes::Operator)
@@ -162,7 +164,8 @@ bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> argu
 		std::cout << "user <name> <passwort>" << std::endl;
 		if(NULL == m_pUserType || MyCasinoUserTypes::Operator == *m_pUserType)
 			std::cout << "payin* <name> <amount>" << std::endl;
-		std::cout << "bet <amount> <first number> <second number>" << std::endl;
+		if (NULL == m_pUserType || MyCasinoUserTypes::Gamer == *m_pUserType)
+			std::cout << "bet <amount> <first number> <second number>" << std::endl;
 		std::cout << "showbets" << std::endl;
 		if (NULL == m_pUserType || MyCasinoUserTypes::Operator == *m_pUserType)
 			std::cout << "draw* [<first number> <second number>]" << std::endl;

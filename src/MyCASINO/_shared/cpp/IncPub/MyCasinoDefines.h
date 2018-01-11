@@ -136,6 +136,8 @@ inline std::wstring resolve_mycasino_code(long infocode)
 
 #define TRANSACTION_PROPTERY_COUNT 3
 
+#define UPPER_MONEY_BOUNDARY 1e12
+
 enum MyCasinoTransactionsInformationTypes
 {
 	Bet = 0

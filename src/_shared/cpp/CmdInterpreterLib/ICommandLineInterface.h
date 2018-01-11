@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <iomanip>
 #include <math.h>
 
 enum ArgumentType
@@ -14,8 +15,8 @@ enum ArgumentType
 class ICommandLineInterface {
 public:
 	virtual bool ProcessCommand(std::vector<std::wstring>) = 0;
-protected:
-	bool checkNumericArgument(int number, int* minBound = nullptr, int* maxBound = nullptr)
+private:
+	bool checkNumericArgument(int number, double* minBound = nullptr, double* maxBound = nullptr)
 	{
 		if (NULL == minBound && NULL == maxBound)
 			return true;
@@ -27,6 +28,38 @@ protected:
 			return number >= *minBound && number <= *maxBound;
 	}
 
+	std::wstring doubleToScientificWString(double value,int precision=2)
+	{
+		std::wstringstream str;
+		str << std::setprecision(precision) << value;
+		return str.str();
+	}
+
+	void outputNotInRange(std::wstring& argument, double* minBound, double* maxBound)
+	{
+		std::wstring boundaries;
+		if (NULL != minBound && NULL != maxBound)
+		{
+			boundaries.append(doubleToScientificWString(*minBound));
+			boundaries.append(L"-");
+			boundaries.append(doubleToScientificWString(*maxBound));
+		}
+		else if (NULL != minBound && NULL == maxBound)
+		{
+			boundaries.append(L">=");
+			boundaries.append(doubleToScientificWString(*minBound));
+		}
+		else if (NULL == minBound && NULL != maxBound)
+		{
+			boundaries.append(L"<=");
+			boundaries.append(doubleToScientificWString(*maxBound));
+		}
+
+		if (!boundaries.empty())
+			std::wcerr << "Argument " << argument << " does not fit to boundaries: "  << boundaries << std::endl;
+	}
+
+protected:
 	bool checkCallArguments(std::vector<std::wstring>& arguments, size_t minArgumentsCount, std::vector<size_t>& validArgumentsCount)
 	{
 		bool argumentCountIsValid = true;
@@ -69,7 +102,7 @@ protected:
 
 
 	template< typename T>
-	bool safeArgumentCast(std::vector<std::wstring>& arguments, int position, T** castedValue, int* minBound = nullptr, int* maxBound = nullptr, ArgumentType type = ArgumentType::DEFAULT)
+	bool safeArgumentCast(std::vector<std::wstring>& arguments, int position, T** castedValue, double* minBound = nullptr, double* maxBound = nullptr, ArgumentType type = ArgumentType::DEFAULT)
 	{
 		try
 		{
@@ -95,28 +128,7 @@ protected:
 
 			bool isInRange = checkNumericArgument(**castedValue, minBound, maxBound);
 			if (!isInRange)
-			{
-				std::wstring boundaries;
-				if (NULL != minBound && NULL != maxBound)
-				{
-					boundaries.append(std::to_wstring(*minBound));
-					boundaries.append(L"-");
-					boundaries.append(std::to_wstring(*maxBound));
-				}
-				else if (NULL != minBound && NULL == maxBound)
-				{
-					boundaries.append(L">=");
-					boundaries.append(std::to_wstring(*minBound));
-				}
-				else if (NULL == minBound && NULL != maxBound)
-				{
-					boundaries.append(L"<=");
-					boundaries.append(std::to_wstring(*maxBound));
-				}
-
-				if (!boundaries.empty())
-					std::wcerr << "Argument at position " << position << " with value " << arguments.at(position) << " does not fit to boundaries: " << boundaries << std::endl;
-			}
+				outputNotInRange(arguments.at(position), minBound, maxBound);
 
 			return isInRange;
 
@@ -131,7 +143,7 @@ protected:
 
 
 	template< typename T>
-	bool safeArgumentCast(std::vector<std::wstring>& arguments, int position, T* castedValue, int* minBound = nullptr, int* maxBound = nullptr, ArgumentType type = ArgumentType::DEFAULT)
+	bool safeArgumentCast(std::vector<std::wstring>& arguments, int position, T* castedValue, double* minBound = nullptr, double* maxBound = nullptr, ArgumentType type = ArgumentType::DEFAULT)
 	{
 		try
 		{
@@ -157,6 +169,7 @@ protected:
 				*castedValue = stod(arguments.at(position));
 				if(type==ArgumentType::MONEY)
 					*castedValue = floorf(*castedValue * 100) / 100;
+
 			}
 			else
 			{
@@ -166,28 +179,7 @@ protected:
 			
 			bool isInRange = checkNumericArgument(*castedValue, minBound, maxBound);
 			if (!isInRange)
-			{
-				std::wstring boundaries;
-				if (NULL != minBound && NULL != maxBound)
-				{
-					boundaries.append(std::to_wstring(*minBound));
-					boundaries.append(L"-");
-					boundaries.append(std::to_wstring(*maxBound));
-				}
-				else if (NULL != minBound && NULL == maxBound)
-				{
-					boundaries.append(L">=");
-					boundaries.append(std::to_wstring(*minBound));
-				}
-				else if (NULL == minBound && NULL != maxBound)
-				{
-					boundaries.append(L"<=");
-					boundaries.append(std::to_wstring(*maxBound));
-				}
-
-				if (!boundaries.empty())
-					std::wcerr << "Argument " << arguments.at(position) << " does not fit to boundaries: " << boundaries << std::endl;
-			}
+				outputNotInRange(arguments.at(position), minBound, maxBound);
 
 			return isInRange;
 				
