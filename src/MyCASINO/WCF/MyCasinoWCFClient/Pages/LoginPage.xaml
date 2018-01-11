@@ -24,9 +24,9 @@
                         <!--Username-->
                         <TextBox x:Name="tbxUsername" Text="Username" LostFocus="tbxUsername_LostFocus" PreviewMouseDown="TextBox_PreviewMouseDown" Padding="0 5 0 0" Foreground="LightGray" Margin="45 0 45 0" BorderThickness="0 0 0 1"  FontSize="26" />
                         <!--Password-->
-                        <PasswordBox x:Name="pwbPassword" Password="****" LostFocus="pwbPassword_LostFocus" PreviewMouseDown="PasswordBox_PreviewMouseDown"  Foreground="LightGray" Padding="0 5 0 0" BorderThickness="0 0 0 1" FontSize="26" Margin="45 0 45 0" />
+                        <PasswordBox x:Name="pwbPassword" Password="****" GotFocus="pwbPassword_GotFocus" LostFocus="pwbPassword_LostFocus" PreviewMouseDown="PasswordBox_PreviewMouseDown"  Foreground="LightGray" Padding="0 5 0 0" BorderThickness="0 0 0 1" FontSize="26" Margin="45 0 45 0" />
                         <!--Login Button-->
-                        <Button x:Name="btnLogin" Click="btnLogin_Click" Content="Login" FontSize="30" VerticalAlignment="Center" Width="120" Background="OrangeRed" Margin="0 40 0 25" Foreground="White"/>
+                        <Button x:Name="btnLogin"  IsDefault="True" Click="btnLogin_Click" Content="Login" FontSize="30" VerticalAlignment="Center" Width="120" Background="OrangeRed" Margin="0 40 0 25" Foreground="White"/>
                     </StackPanel>
                 </Border>
             </StackPanel>

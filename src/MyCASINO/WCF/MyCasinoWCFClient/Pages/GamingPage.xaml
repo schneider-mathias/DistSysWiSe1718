@@ -8,43 +8,44 @@
       
       d:DesignHeight="700" d:DesignWidth="1300"
       Title="GamingPage">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <Grid Background="CornflowerBlue">
+            <!--Grid column definition-->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="5"/>
+            </Grid.ColumnDefinitions>
+            <!--Grid row definition-->
+            <Grid.RowDefinitions>
+                <RowDefinition Height="5"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="5"/>
+            </Grid.RowDefinitions>
 
-    <Grid Background="CornflowerBlue">
-        <!--Grid column definition-->
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="5"/>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="5"/>
-        </Grid.ColumnDefinitions>
-        <!--Grid row definition-->
-        <Grid.RowDefinitions>
-            <RowDefinition Height="5"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="5"/>
-        </Grid.RowDefinitions>
-
-        <!--Play and history buttons-->
-        <Button x:Name="BtnPlay" Click="BtnPlay_Click" Content="Spielen" Grid.Row="1" Grid.Column="1" 
+            <!--Play and history buttons-->
+            <Button x:Name="BtnPlay" Click="BtnPlay_Click" Content="Spielen" Grid.Row="1" Grid.Column="1" 
                 Background="OrangeRed" FontSize="30" Width="140" Margin="0 0 5 0"/>
-        <Button x:Name="BtnHistory" Click="BtnHistory_Click" Content="Verlauf" Grid.Row="1" Grid.Column="2"
+            <Button x:Name="BtnHistory" Click="BtnHistory_Click" Content="Verlauf" Grid.Row="1" Grid.Column="2"
                 Background="OrangeRed" FontSize="30" Width="140" Margin="0 0 5 0"/>
-        <Button x:Name="BtnPayIn" Click="BtnPayIn_Click" Content="Einzahlen" Grid.Row="1" Grid.Column="3" 
+            <Button x:Name="BtnPayIn" Click="BtnPayIn_Click" Content="Einzahlen" Grid.Row="1" Grid.Column="3" 
                 Background="OrangeRed" FontSize="30" Width="140" Margin="0 0 50 0"/>
-        <!--User-->
-        <TextBlock Text="Angemeldet als:" Grid.Row="1" Grid.Column="6" FontSize="30"/>
-        <TextBlock x:Name="tblUsername" Text="" Grid.Row="1" Grid.Column="7" Foreground="OrangeRed" Background="CornflowerBlue" FontSize="30" IsHitTestVisible="False"/>
-        <!--Logout-->
-        <Button x:Name="btnLogout" Click="btnLogout_Click" Content="Logout" Background="OrangeRed" Grid.Row="1" Grid.Column="10" HorizontalAlignment="Right" MaxWidth="125" MinWidth="100" FontSize="30"/>
-        <Frame x:Name="PlayHistoryPage" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="10"/>
-    </Grid>
+            <!--User-->
+            <TextBlock Text="Angemeldet als:" Grid.Row="1" Grid.Column="6" FontSize="30"/>
+            <TextBlock x:Name="tblUsername" Text="" Grid.Row="1" Grid.Column="7" Foreground="OrangeRed" Background="CornflowerBlue" FontSize="30" IsHitTestVisible="False"/>
+            <!--Logout-->
+            <Button x:Name="btnLogout" Click="btnLogout_Click" Content="Logout" Background="OrangeRed" Grid.Row="1" Grid.Column="10" HorizontalAlignment="Right" MaxWidth="125" MinWidth="100" FontSize="30"/>
+            <Frame x:Name="PlayHistoryPage" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="10"/>
+        </Grid>
+    </ScrollViewer>
 </Page>

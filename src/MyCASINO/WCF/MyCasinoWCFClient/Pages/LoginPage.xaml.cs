@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -128,8 +129,20 @@ namespace MyCasinoWCFClient.Pages
                 pwbPassword.Password = "****";
             }
         }
-
-#endregion
+        /// <summary>
+        /// Passwordbox got focus with tab
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void pwbPassword_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (((PasswordBox)sender).Password == "****")
+            {
+                pwbPassword.Password = "";
+            }
+            ((PasswordBox)sender).Foreground = new SolidColorBrush(Colors.Black);
+        }
+        #endregion
         /// <summary>
         /// Checks if login is ok
         /// </summary>
@@ -187,5 +200,7 @@ namespace MyCasinoWCFClient.Pages
             //If authentifications is ok, login to the next page
 #endif
         }
+
+
     }
 }
