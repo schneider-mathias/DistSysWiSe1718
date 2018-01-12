@@ -47,6 +47,7 @@ std::vector<thread> myThreads;
 BOOL loginCheck(unsigned long sessionId);
 BOOL loginCheck(unsigned char username);
 wstring getUserName(unsigned long sessionId);
+wstring getUserDataPath();
 void readAuctionsFromFile();
 void writeAuctionsToFile();
 ULONG addNewAuction(wstring sarticleName, double startBid);
@@ -115,6 +116,17 @@ wstring getUserName(unsigned long sessionId)
 		}
 	}
 	return ret;
+}
+
+// Liefert den Pfad an dem die Userdaten liegen zurück
+wstring getUserDataPath()
+{
+	wstring userDataPath;
+	wchar_t* buf;
+	size_t size = 0;
+	_wdupenv_s(&buf, &size, L"SystemDrive");
+	userDataPath = wstring(buf) + L"/_MyBayData";
+	return userDataPath;
 }
 
 // Alle Auktionen aus der Datei auslesen und in AuctionList speichern

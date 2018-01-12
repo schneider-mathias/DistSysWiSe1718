@@ -12,8 +12,10 @@
 #include <chrono>
 #include <windows.h>
 #include <iostream>
+#include <atlsafe.h>
 #include "MyBayDefines.h"
 #import "COMMyBaySrv.dll"
+#include "BstrStringConverter.h"
 #include "../COMMyBaySrv/COMMyBaySrv_i.c"
 #include "../COMMyBaySrv/COMMyBaySrv_i.h"
 

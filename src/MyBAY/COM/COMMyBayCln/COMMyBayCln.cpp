@@ -38,8 +38,6 @@ int main(int argc, char**argv)
 
 	hr = CoCreateInstanceEx(CLSID_COMMyBay, NULL, CLSCTX_REMOTE_SERVER,
 		&srvInfo, 1, &multiQi);
-	hr = CoCreateInstanceEx(CLSID_COMMyBay, NULL, CLSCTX_REMOTE_SERVER,
-		&srvInfo, 1, &multiQi);
 	
 	if (FAILED(hr))
 	{

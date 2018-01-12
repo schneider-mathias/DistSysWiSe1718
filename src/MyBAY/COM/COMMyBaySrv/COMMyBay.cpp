@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+//#include <WinBase.h>
 #include <atlsafe.h>
 #include "COMMyBayLogic.h"
 #include "BstrStringConverter.h"
@@ -35,8 +36,8 @@ STDMETHODIMP CCOMMyBay::login(BSTR username, BSTR password, ULONG* sessionId)
 		//cout << "Sie sind bereits angemeldet" << endl;
 		return ERROR_ALREADY_LOGGED_IN;
 	}
-
-	csvread.open("user.csv", ios::in);
+	wstring userDataPath = getUserDataPath();
+	csvread.open("C:\_MyBayData", ios::in);
 	if (csvread) {
 		wstring fline, fname, fpassword;
 		wstring suser = char_to_wstring((char*)username);
