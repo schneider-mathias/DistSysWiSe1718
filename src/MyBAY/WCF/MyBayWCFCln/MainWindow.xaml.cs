@@ -42,8 +42,9 @@ namespace MyBayWCFCln
         private string srvAddress;
 
         private Timer getMessageTimer;
+        public event EventHandler myListBoxUpdateEventHandler;
 
-        public MainWindow()
+         public MainWindow()
         {
             this.DataContext = this;
 
@@ -52,6 +53,8 @@ namespace MyBayWCFCln
             this.getMessageTimer.Elapsed += OnTimedEvent;
 
             InitializeComponent();
+
+            myListBoxUpdateEventHandler += myMessageListBoxUpdateEvent;
         }
 
         private void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)
@@ -75,27 +78,33 @@ namespace MyBayWCFCln
                             if (!String.IsNullOrEmpty(message.MessageText2))
                             {
                                 Dispatcher.BeginInvoke(new Action(delegate ()
-                                {
-                                    listBox_messages.Items.Add("Neues Gebot für Artikel: "
+                                {                                   
+                                    listBox_messages.Items.Add("- Neues Gebot - Artikel: "
                                                             + message.MessageText2
-                                                            + " Gebot: "
+                                                            + " - Gebot: "
                                                             + message.MessageDoubleValue.ToString("C")
-                                                            + " Auktionsstatus: "
+                                                            + " - Auktionsstatus: "
                                                             + message.MessageIntValue.ToString()
-                                                            + " Höchstbietender: "
+                                                            + " - Bieter: "
                                                             + message.MessageText);
+
+                                    // Send event for scrolling to the last item in the ListBox
+                                    myListBoxUpdateEventHandler(this, new EventArgs());
                                 }));                                
                             }
                             else
                             {
                                 Dispatcher.BeginInvoke(new Action(delegate ()
                                 {
-                                    listBox_messages.Items.Add("Neues Gebot für Artikel: "
+                                    listBox_messages.Items.Add("- Neues Gebot - Artikel: "
                                                                 + message.MessageText
-                                                                + " Gebot: "
+                                                                + " - Gebot: "
                                                                 + message.MessageDoubleValue.ToString("C")
-                                                                + " Auktionsstatus: "
+                                                                + " - Auktionsstatus: "
                                                                 + message.MessageIntValue.ToString());
+
+                                    // Send event for scrolling to the last item in the ListBox
+                                    myListBoxUpdateEventHandler(this, new EventArgs());
                                 }));
                             }
                             break;
@@ -104,23 +113,26 @@ namespace MyBayWCFCln
                             {
                                 listBox_messages.Items.Add("Auktion: "
                                                             + message.MessageText
-                                                            + " mit der Auktionsnummer: "
-                                                            + message.MessageIntValue2.ToString()
-                                                            + "\t endet bald, dies ist die "
+                                                            + " endet bald, dies ist die "
                                                             + message.MessageIntValue.ToString()
                                                             + ". Warnung");
-                            
+
+                                // Send event for scrolling to the last item in the ListBox
+                                myListBoxUpdateEventHandler(this, new EventArgs());
                             }));
                             break;
                         case 2:
                             Dispatcher.BeginInvoke(new Action(delegate ()
                             {
-                                listBox_messages.Items.Add("Auktion beendet. Käufer: "
+                                listBox_messages.Items.Add("---------------------------------------------------------------------------------------\n Auktion beendet. Käufer: "
                                 + message.MessageText
                                 + " Preis: "
                                 + message.MessageDoubleValue.ToString("C")
                                 + " Auktionsstatus: "
-                                + message.MessageIntValue.ToString());
+                                + message.MessageIntValue.ToString()
+                                + "\n---------------------------------------------------------------------------------------");
+                                // Send event for scrolling to the last item in the ListBox
+                                myListBoxUpdateEventHandler(this, new EventArgs());
                             }));
                             break;
                         default:
@@ -228,6 +240,9 @@ namespace MyBayWCFCln
                     this.btn_bid.IsEnabled = false;
                     this.btn_getDetails.IsEnabled = false;
                     this.btn_endAuction.IsEnabled = false;
+
+                    // Empty Messagelist
+                    this.listBox_messages.Items.Clear();
                 }
                 catch (Exception except)
                 {
@@ -491,6 +506,13 @@ namespace MyBayWCFCln
             {
                 MessageBoxResult result = MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
             }
+        }
+
+        // Needed for the messages to show the newest Messages automatically
+        private void myMessageListBoxUpdateEvent(object sender, EventArgs e)
+        {
+            listBox_messages.SelectedIndex = listBox_messages.Items.Count - 1;
+            listBox_messages.ScrollIntoView(listBox_messages.SelectedItem);
         }
     }
 }
