@@ -1,25 +1,16 @@
-//#include "AuthService.h"
-#include <windows.h>
 #include <iostream>
 #include <vector>
-#include <string>
-
-
-#include <atlsafe.h>
-
 //#import "COMMyBaySrv.dll"
-
-#include "../COMMyBaySrv/COMMyBaySrv_i.c"
-#include "../COMMyBaySrv/COMMyBaySrv_i.h"
-#include "COMMyBayCln.h"
-
-
+#include "CharStringConverter.h"
 #include "BstrStringConverter.h"
+#include <thread>
+#include <windows.h>
+#include <atlsafe.h>
+#include "COMMyBayCln.h"
+//#include "../COMMyBaySrv/COMMyBaySrv_i.c"
+//#include "../COMMyBaySrv/COMMyBaySrv_i.h"
+
 using namespace std;
-
-
-void readConsole(ICOMMyBay *p_ICOMMyBaySrv);
-void interpretCommand(ULONG *sessionID, ICOMMyBay *p_ICOMMyBaySvr, std::vector<wstring> args);
 
 int main(int argc, char**argv)
 {
@@ -29,12 +20,12 @@ int main(int argc, char**argv)
 	ICOMMyBay *p_ICOMMyBaySrv = NULL;
 	HRESULT hr;
 
-	IID IID_tmpICOMMyINVENT = IID_ICOMMyBay;
+	IID IID_tmpICOMMyBay = IID_ICOMMyBay;
 
 	// Erzeugung auf anderem Rechner (auch mit Rechernamen)
 	COSERVERINFO srvInfo = { 0, L"127.0.0.1", 0, 0 };
 	LPWSTR lpwstr_SrvName = 0;
-	// Überträgt die IP
+	// Überträgt die IP falls über die Kommandozeile eine zusätzliche IP für den Server angegeben wird
 	if (argc > 1)
 	{
 		wstring wstr_SrvName(argv[1], argv[1] + strlen(argv[1]) + 1);
@@ -45,7 +36,7 @@ int main(int argc, char**argv)
 		srvInfo.pwszName = lpwstr_SrvName;
 	}
 
-	MULTI_QI multiQi = { &IID_tmpICOMMyINVENT, 0, 0 };
+	MULTI_QI multiQi = { &IID_tmpICOMMyBay, 0, 0 };
 
 	hr = CoCreateInstanceEx(CLSID_COMMyBay, NULL, CLSCTX_REMOTE_SERVER,
 		&srvInfo, 1, &multiQi);
@@ -74,57 +65,58 @@ int main(int argc, char**argv)
 
 void readConsole(ICOMMyBay *p_ICOMMyBaySrv)
 {
-	ULONG sessionID = 0;
+	std::cout << "----------------------------------------------------------------" << std::endl;
+	std::cout << "-		Herzlich Willkommen bei MyBay - Ihrem Auktionshaus		 -" << std::endl;
+	std::cout << "----------------------------------------------------------------" << std::endl;
+	cout << endl;
+	cout << "Bitte loggen Sie sich zuerst ein." << endl;
+	cout << endl;
+
+	unsigned long sessionID = 0;
+	boolean threadAllow = TRUE;
+
+	std::thread MessageThread(pullMessages, p_ICOMMyBaySrv, &sessionID, &threadAllow);
+
 	while (true)
 	{
-		wchar_t* ccommand = new wchar_t[1];
-		vector<wstring> args;
-		wstring wscommand;
-		int count = 0;
-		vector<int> blankPositions;
-		int startCommandPositon = 0;
+		cout << endl;
+		wstring scommand;
+		std::getline(std::wcin, scommand);
+		int i = 0;
+		args.clear();
 
-		wcin.getline(ccommand, 655455);  //Gesamte Eingabe bis Enter einlesen
-		wscommand = wstring(ccommand);
-
-		// suche Befehl und zugehörige Argumente aus dem String
-		for (size_t i = 0; i < wscommand.size(); i++)
+		//Eingabe parsen und Argumente heraussuchen.Als Trennung zwischen Argumenten wird ein Leerzeichen erwartet
+		while ((i = scommand.find(L" ")) != -1)
 		{
-			// suche nach Leerzeichen und speichere deren Position
-			if (wscommand[i] == ' ')
+			if (i != 0)
 			{
-				blankPositions.push_back(i);
+				args.push_back(scommand.substr(0, i));									// Argument bis zum nächsten Leerzeichen zur Argumenten-Liste hinzufügen
+				scommand = scommand.substr(i + 1, scommand.length());					// Argument vom String entfernen
 			}
 		}
-
-		// suche alle Argumente aus Kommando heraus
-		for (int i = 0; i < (int)blankPositions.size(); i++)
+		// letztes Argument zur Liste der Argumente hinzufügen
+		args.push_back(scommand);
+		interpretCommand(p_ICOMMyBaySrv, &sessionID, args, &threadAllow);
+		if (args.at(0) == L"bye")
 		{
-			int argLength = blankPositions[i] - startCommandPositon;				// Länge des Arguments
-			wstring singleArg = wscommand.substr(startCommandPositon, argLength);		// erzeugt das einzelne Argument
-			args.push_back(singleArg);												// fügt das Argument der Liste hinzu
-			startCommandPositon = blankPositions[i] + 1;
+			break;
 		}
-		// letztes Argument
-		wstring singleArg = wscommand.substr(startCommandPositon, wscommand.size());
-		args.push_back(singleArg);
+	}
+	// Main-Thread waretet auf MessageThread bis dieser fertig ist
+	MessageThread.join();
 
-		interpretCommand(&sessionID, p_ICOMMyBaySrv, args);
-		}
 }
 
-void interpretCommand(ULONG *sessionID, ICOMMyBay *p_ICOMMyBaySvr, std::vector<wstring> args)
+void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::vector<std::wstring> args, boolean *threadAllow)
 {
-	if ((int)args.size() < 0)
+	HRESULT hr;
+	if (args.size() < 0)
 	{
 		return;
 	}
 
-	HRESULT hr;
-	BSTR errMsg;
-
-	// login-Versuch
-	if (args[0] == L"login")
+	// login
+	if (args.at(0) == L"user")
 	{
 		if (args.size() < 3)
 		{
@@ -138,16 +130,18 @@ void interpretCommand(ULONG *sessionID, ICOMMyBay *p_ICOMMyBaySvr, std::vector<w
 			cerr << "login <Username> <Passwort>" << endl;
 			return;
 		}
-		/*BSTR arg1 = wstr_to_bstr(args[1]);*/
-		/*hr = p_ICOMMyBaySvr->login(wstr_to_bstr(args[1]), wstr_to_bstr(args[2]), sessionID, &errMessage)*/
-		hr = S_OK;
+		hr = p_ICOMMyBaySrv->login(wstr_to_bstr(args.at(1)), wstr_to_bstr(args.at(2)), sessionID);
 		if (hr == S_OK)
-			cout << "Einloggen erfolgreich" << endl;
-		else if (hr == E_ACCESSDENIED)
-			cerr << "Benutzername oder Passwort falsch." << endl;
-		else if (hr == E_FAIL)
-			cerr << "Serverproblem! Userfile konnte nicht geöffnet werden!" << endl;
-		else if(hr == 0x800706BA) 
+		{
+			wcout << "Einloggen erfolgreich" << endl;
+		}
+		else if (hr == ERROR_ALREADY_LOGGED_IN)
+			cerr << "Fehler: Sie sind bereits eingeloggt." << endl;
+		else if (hr == ERROR_USERNAME_OR_PASSWORD_WRONG)
+			cerr << "Fehler: Benutzername oder Passwort falsch." << endl;
+		else if (hr == ERROR_FILE_COULD_NOT_BE_OPENED)
+			cerr << "Fehler: Userfile konnte nicht geoeffnet werden!" << endl;
+		else if (hr == 0x800706BA)
 		{
 			cerr << "Verbindung zum Server verloren!" << endl;
 			cerr << "Der Client wird beendet. Bitte druecken Sie Enter." << endl;
@@ -155,38 +149,27 @@ void interpretCommand(ULONG *sessionID, ICOMMyBay *p_ICOMMyBaySvr, std::vector<w
 			exit(hr);
 		}
 		else
-		{
 			cerr << "Es ist ein unerwarteter Fehler aufgetreten. Bitte versuche es erneut." << endl;
-		}
-
+		wcout << endl;
 	}
 
-	// logout-Versuch
-	else if (args[0] == L"logout")
+	// logout
+	else if (args.at(0) == L"bye")
 	{
-		if (args.size() != 1)
+		hr = p_ICOMMyBaySrv->logout((*sessionID));
+		if (hr == S_OK)
 		{
-			cerr << "Für Logout werden keine weiteren Angaben benötigt." << endl;
-			cerr << "Bitte tippen Sie nur: \"logout\" um sich abzumelden." << endl;
-			return;
+			cout << " *** Auf Wiedersehen! *** " << endl;
+			*threadAllow = FALSE;
 		}
+		else if (hr == ERROR_USER_NOT_LOGGED_IN)
+			cout << "Fehler: Nicht eingeloggt" << endl;
 		else
-		{
-			hr = p_ICOMMyBaySvr->logout(*sessionID, &errMsg);
-			if (hr == S_OK)
-			{
-				cerr << "***** Ausloggen erfolgreich *****" << endl;
-			}
-			else
-			{
-				cout << "Sie sind nicht eingeloggt" << endl;
-			}
-
-		}
+			wcout << "Fehler: Ein unerwarteter Fehler ist aufgetreten" << endl;
 	}
 
 	// Auktion eines Artikels starten
-	else if (args[0] == L"offer")
+	else if (args.at(0) == L"offer")
 	{
 		if (args.size() < 3)
 		{
@@ -202,12 +185,12 @@ void interpretCommand(ULONG *sessionID, ICOMMyBay *p_ICOMMyBaySvr, std::vector<w
 		}
 		else
 		{
-			ULONG auctionNumber;
-			DOUBLE startBid;
+			unsigned long auctionNumber;
+			double startBid;
 			// Prüfe ob das Startgebot eine Zahl ist und wandle sie in double 
 			try
 			{
-				startBid = stod(args[2]);
+				startBid = stod(args.at(2));
 			}
 			catch (invalid_argument e)
 			{
@@ -215,16 +198,25 @@ void interpretCommand(ULONG *sessionID, ICOMMyBay *p_ICOMMyBaySvr, std::vector<w
 				return;
 			}
 
-			//hr = p_ICOMMyBaySvr->offer(*sessionID, wstr_to_bstr(args[1]), startBid, &auctionNumber, &errMsg);
+			hr = p_ICOMMyBaySrv->offer(*sessionID, wstr_to_bstr(args.at(1).c_str()), startBid, &auctionNumber);
 			if (hr == S_OK)
 			{
-				cout << "Eine Auktion für den Artikel wurde gestartet." << endl;
-				cout << "Das Startgebot lautet: " << endl;
-				MyAuctions.push_back(auctionNumber);		// fügt die Auktionsnummer zur Liste der eigenen Auktionen hinzu
+				cout << "----------------------------------------------------------------------------------------" << endl;
+				cout << "Die Auktion wurde gestartet." << endl;
+				cout << "Das Startgebot lautet: " << startBid << endl;
+				cout << "Deine Auktion hat die Auktionsnummer: " << auctionNumber << endl;
+				cout << "----------------------------------------------------------------------------------------" << endl;
+				//MyAuctions.push_back(auctionNumber);		// fügt die Auktionsnummer zur Liste der eigenen Auktionen hinzu
 			}
+			else if (hr == ERROR_USER_NOT_LOGGED_IN)
+				cout << "Fehler: Bitte zuerst einloggen!" << endl;
+			else if (hr == ERROR_ARTICLENAME_IS_EMPTY)
+				cout << "Fehler: Artikelname muss angegeben sein." << endl;
 		}
 	}
-	else if (args[0] == L"interested")
+
+	// Nutzer interessiert sich für eine Auktion
+	else if (args.at(0) == L"interested")
 	{
 		if (args.size() < 2)
 		{
@@ -242,10 +234,10 @@ void interpretCommand(ULONG *sessionID, ICOMMyBay *p_ICOMMyBaySvr, std::vector<w
 		{
 			ULONG auctionNumber;
 
-			// convertiert wstring zu ULONG
+			// konvertiert wstring zu ULONG
 			try
 			{
-				string tempAucNmr(args[1].begin(), args[1].end());
+				string tempAucNmr(args.at(1).begin(), args.at(1).end());
 				auctionNumber = strtoul(tempAucNmr.c_str(), NULL, 0);
 			}
 			catch (invalid_argument e)
@@ -253,43 +245,370 @@ void interpretCommand(ULONG *sessionID, ICOMMyBay *p_ICOMMyBaySvr, std::vector<w
 				cout << "Falscher Parameter - das Startgebot muss eine Zahl sein!" << endl;
 				return;
 			}
-			hr = p_ICOMMyBaySvr->interested(*sessionID, auctionNumber, &errMsg);
-			if (hr == E_INVALIDARG)
+			hr = p_ICOMMyBaySrv->interested(*sessionID, auctionNumber);
+			if (hr == S_OK)
 			{
-				cerr << "Fehler: Auktionsnummer nicht vorhanden" << endl;
+				cout << "----------------------------------------------------------------------------------------" << endl;
+				cerr << "Sie werden ab sofort ueber Neues der Auktion benachrichtigt." << endl;
+				cout << "----------------------------------------------------------------------------------------" << endl;
 			}
+
+			else if (hr == ERROR_USER_NOT_LOGGED_IN)
+			{
+				cout << "----------------------------------------------------------------------------------------" << endl;
+				cout << "Fehler: Bitte zuerst einloggen." << endl;
+				cout << "----------------------------------------------------------------------------------------" << endl;
+			}
+			else if (hr == ERROR_AUCTIONNUMBER_NOT_AVAILABLE)
+			{
+				cout << "----------------------------------------------------------------------------------------" << endl;
+				cout << "Fehler: Auktion nicht vorhanden." << endl;
+				cout << "----------------------------------------------------------------------------------------" << endl;
+			}
+
+			else if (hr == ERROR_USER_ALREADY_INTERESTED)
+			{
+				cout << "----------------------------------------------------------------------------------------" << endl;
+				cout << "Fehler: Sie sind bereits unter den Interessierten der Auktion." << endl;
+				cout << "----------------------------------------------------------------------------------------" << endl;
+			}
+			else
+				cerr << "Es ist ein unerwarteter Fehler aufgetreten. Bitte versuche es erneut." << endl;
 		}
 	}
-	else if (args[0] == L"listauctions")
+	else if (args.at(0) == L"listauctions")
 	{
-		if (args.size() == 1)
-		{
-			
-		}
-		else if (args.size() > 2)
+
+		SAFEARRAY_VAR auctions;
+		if (args.size() > 3)
 		{
 			cerr << "Zu viele Parameter." << endl;
 			cerr << "listauctions [-a][-A] [<Artikelnameteil]" << endl;
 			return;
 		}
-		else
+
+		ULONG flag = 0;
+		unsigned long countAuctions;
+		wstring artNamePart = L"";
+
+		// Flags entsprechend setzen
+		// Flag = 0 -> ohne [-a] und [-A]
+		// Flag = 1 -> [-a]
+		// Flag = 2 -> [-A]
+		if (args.size() > 1)
 		{
+			if (args.at(1) == L"\-a")
+				flag = 1;
+			else if (args.at(1) == L"\-A")
+				flag = 2;
+		}
+		if (args.size() == 2 && flag == 0)
+		{
+			artNamePart = args.at(1);
+		}
+		// Falls ein Artikelnameteil angegben wurde
+		if (args.size() > 2)
+		{
+			artNamePart = args.at(2);
+		}
+		hr = p_ICOMMyBaySrv->getAuctions(*sessionID, flag, wstr_to_bstr(artNamePart), &countAuctions, &auctions);
+		if (hr == S_OK)
+		{
+			CComSafeArray<VARIANT> retAuctions(auctions);
+			vector<wstring> allAuctVec;
+			// Alle Elemente im SAFEARRAY werden in einen Vector übertragen
+			for (int i = 0; i < retAuctions.GetCount(); i++)
+			{
+				allAuctVec.push_back(bstr_to_wstr(*retAuctions[i].pbstrVal));
+			}
+
+			// Ausgabe der Auktionen
+			int cnt = 0;
+			wcout << endl;
+
+			/* Testprint */
+			int i = 10;
+			std::cout.width(15); std::cout << left << "Auktionsnummer";
+			std::cout.width(20); std::cout << left << "Artikelname";
+			std::cout.width(15); std::cout << left << "Anzahl Gebote";
+			std::cout.width(15); std::cout << left << "Hoechstgebot" << endl;
+			std::cout << "----------------------------------------------------------------------------------------" << endl;
+			/* End Testprint */
+
+			for (std::vector<wstring>::iterator it = allAuctVec.begin(); it != allAuctVec.end(); it++)
+			{
+				if (cnt == 0)
+				{
+					std::cout.width(15); std::cout << left << wstring_to_char((*it));
+					cnt++;
+				}
+
+				else if (cnt == 1)
+				{
+					std::cout.width(20); std::cout << left << wstring_to_char((*it));
+					cnt++;
+				}
+
+				else if (cnt == 2)
+				{
+					std::cout.width(15); std::cout << left << wstring_to_char((*it));
+					cnt++;
+				}
+
+				else if (cnt == 3)
+				{
+					std::cout.width(15); std::cout << left << wstring_to_char((*it));
+					cnt = 0;
+					wcout << endl;
+				}
+			}
+			std::cout << "----------------------------------------------------------------------------------------" << endl;
+			wcout << endl;
 
 		}
+		else if (hr == ERROR_USER_NOT_LOGGED_IN)
+		{
+			cout << "----------------------------------------------------------------------------------------" << endl;
+			cout << "Fehler: Bitte zuerst einloggen." << endl;
+			cout << "----------------------------------------------------------------------------------------" << endl;
+		}
+
+		else if (hr == ERROR_NO_AUCTIONS_AVAILABLE)
+		{
+			cout << "----------------------------------------------------------------------------------------" << endl;
+			cout << "Ihre Eingabe ergab keine Ergebnisse." << endl;
+			cout << "----------------------------------------------------------------------------------------" << endl;
+		}
+		else
+			cerr << "Es ist ein unerwarteter Fehler aufgetreten. Bitte versuche es erneut." << endl;
 	}
-	else if (args[0] == L"bid")
+	else if (args.at(0) == L"bid")
 	{
+		if (args.size() < 3)
+		{
+			cerr << "Error: Nicht genug Parameter." << endl;
+			cerr << "bid <Auktionsnummer> <Geldbetrag>" << endl;
+			return;
+		}
+		else if (args.size() > 3)
+		{
+			cerr << "Error: Zu viele Parameter." << endl;
+			cerr << "bid <Auktionsnummer> <Geldbetrag>" << endl;
+			return;
+		}
+		else
+		{
+			ULONG auctionNumber;
+			double bidVal;
+			try
+			{
+				// Konvertiert auctionNumber in ULONG
+				string tempAucNmr(args.at(1).begin(), args.at(1).end());
+				auctionNumber = strtoul(tempAucNmr.c_str(), NULL, 0);
+				// Konvertiert bidVal in double
+				string tempbidVal(args.at(2).begin(), args.at(2).end());
+				bidVal = strtod(tempbidVal.c_str(), NULL);
+			}
+			catch (invalid_argument e)
+			{
+				cout << "Falscher Parameter - das Startgebot muss eine Zahl sein!" << endl;
+				return;
+			}
+			hr = p_ICOMMyBaySrv->bid(*sessionID, auctionNumber, bidVal);
+			if (hr == S_OK)
+			{
+				cout << "----------------------------------------------------------------------------------------" << endl;
+				cerr << "Gebot erfolgreich abgegeben." << endl;
+				cout << "----------------------------------------------------------------------------------------" << endl;
+			}
+
+			else if (hr == ERROR_USER_NOT_LOGGED_IN)
+			{
+				cout << "----------------------------------------------------------------------------------------" << endl;
+				cout << "Fehler: Bitte zuerst einloggen." << endl;
+				cout << "----------------------------------------------------------------------------------------" << endl;
+			}
+
+			else if (hr == ERROR_AUCTIONNUMBER_DOES_NOT_ESXIST)
+			{
+				cout << "----------------------------------------------------------------------------------------" << endl;
+				cout << "Fehler: Auktion nicht vorhanden." << endl;
+				cout << "----------------------------------------------------------------------------------------" << endl;
+			}
+			else if (hr == ERROR_BID_NEGATIVE)
+			{
+				cout << "----------------------------------------------------------------------------------------" << endl;
+				cout << "Fehler: Das Startgebot muss eine positive Zahl sein." << endl;
+				cout << "----------------------------------------------------------------------------------------" << endl;
+			}
+			else if (hr == ERROR_AUCTION_CLOSED)
+			{
+				cout << "----------------------------------------------------------------------------------------" << endl;
+				cout << "Fehler: Die Auktion ist bereits geschlossen." << endl;
+				cout << "----------------------------------------------------------------------------------------" << endl;
+			}
+
+			else if (hr == ERROR_BID_TOO_LOW)
+			{
+				cout << "----------------------------------------------------------------------------------------" << endl;
+				cout << "Fehler: Das Gebot muss groesser als das Hoechstgebot sein." << endl;
+				cout << "----------------------------------------------------------------------------------------" << endl;
+
+			}
+			else
+				cerr << "Es ist ein unerwarteter Fehler aufgetreten. Bitte versuche es erneut." << endl;
+		}
+	}
+	else if (args.at(0) == L"details")
+	{
+		if (args.size() < 2)
+		{
+			cerr << "Nicht genug Parameter." << endl;
+			cerr << "details <Auktionsnummer>" << endl;
+			return;
+		}
+		else if (args.size() > 2)
+		{
+			cerr << "Zu viele Parameter." << endl;
+			cerr << "details <Auktionsnummer>" << endl;
+			return;
+		}
+		else
+		{
+			ULONG auctionNumber;
+			SAFEARRAY_VAR allBids;
+			unsigned long countBids;
+			// konvertiert wstring zu ULONG
+			try
+			{
+				string tempAucNmr(args.at(1).begin(), args.at(1).end());
+				auctionNumber = strtoul(tempAucNmr.c_str(), NULL, 0);
+			}
+			catch (invalid_argument e)
+			{
+				cout << "Falscher Parameter - das Startgebot muss eine Zahl sein!" << endl;
+				return;
+			}
+			hr = p_ICOMMyBaySrv->details(*sessionID, auctionNumber, &allBids, &countBids);
+			if (hr == S_OK)
+			{
+				if (countBids == 0)
+				{
+					cout << "----------------------------------------------------------------------------------------" << endl;
+					cout << "Bisher wurden für diese Auktion keine Gebote abgegeben." << endl;
+					cout << "----------------------------------------------------------------------------------------" << endl;
+
+				}
+				else
+				{
+					CComSafeArray<VARIANT> retAllBids(allBids);
+					vector<wstring> allBidsVec;
+					// Alle Elemente im SAFEARRAY werden in einen Vector übertragen
+					for (int i = 0; i < retAllBids.GetCount(); i++)
+					{
+						allBidsVec.push_back(bstr_to_wstr(*retAllBids[i].pbstrVal));
+					}
+
+					// Ausgabe aller Gebote
+					int columnLengthBidder = 20;
+					cout << "----------------------------------------------------------------------------------------" << endl;
+					wcout << "Folgende Gebote wurden fuer die Auktion " << auctionNumber << "bisher abgegeben:" << endl;
+					cout << endl;
+					wcout << "Nr	" << "Bieter           " << "Gebot" << endl;		// 17 
+					wcout << "______________________________________________" << endl;
+					for (int i = 0; i < allBidsVec.size() - 2; i += 3)
+					{
+						wcout << allBidsVec[i];						// Gebotsnummer
+						wcout << "  ";
+						wcout << allBidsVec[i + 1];					// Bietername
+						for (int k = 0; k < columnLengthBidder - allBidsVec[i + 1].size(); k++)
+						{
+							wcout << " ";
+						}
+						wcout << "|" << allBidsVec[i + 2] << endl;	// Gebot
+					}
+					cout << "----------------------------------------------------------------------------------------" << endl;
+					cout << endl;
+				}
+			}
+			else if (hr == ERROR_USER_NOT_LOGGED_IN)
+			{
+				cout << "----------------------------------------------------------------------------------------" << endl;
+				cout << "Fehler: Bitte zuerst einloggen." << endl;
+				cout << "----------------------------------------------------------------------------------------" << endl;
+			}
+
+			else if (hr == ERROR_USER_IS_NOT_AUCTIONEER)
+			{
+				cout << "----------------------------------------------------------------------------------------" << endl;
+				cout << "Fehler: Sie koennen nur als Auktionator alle Gebote einsehen." << endl;
+				cout << "----------------------------------------------------------------------------------------" << endl;
+			}
+			else
+				cerr << "Es ist ein unerwarteter Fehler aufgetreten. Bitte versuche es erneut." << endl;
+		}
 
 	}
-	else if (args[0] == L"details")
+	else if (args.at(0) == L"endauction")
 	{
-
+		if (args.size() < 2)
+		{
+			cerr << "Nicht genug Parameter." << endl;
+			cerr << "details <Auktionsnummer>" << endl;
+			return;
+		}
+		else if (args.size() > 2)
+		{
+			cerr << "Zu viele Parameter." << endl;
+			cerr << "details <Auktionsnummer>" << endl;
+			return;
+		}
+		else
+		{
+			ULONG auctionNumber;
+			// konvertiert wstring zu ULONG
+			try
+			{
+				string tempAucNmr(args.at(1).begin(), args.at(1).end());
+				auctionNumber = strtoul(tempAucNmr.c_str(), NULL, 0);
+			}
+			catch (invalid_argument e)
+			{
+				cout << "----------------------------------------------------------------------------------------" << endl;
+				cout << "Falscher Parameter - das Startgebot muss eine Zahl sein!" << endl;
+				cout << "----------------------------------------------------------------------------------------" << endl;
+				return;
+			}
+			hr = p_ICOMMyBaySrv->endauction(*sessionID, auctionNumber);
+			if (hr == S_OK)
+			{
+				cout << "----------------------------------------------------------------------------------------" << endl;
+				cout << "Auktion wird in 15 Sekunden beendet." << endl;
+				cout << "----------------------------------------------------------------------------------------" << endl;
+			}
+			else if (hr == ERROR_USER_NOT_LOGGED_IN)
+			{
+				cout << "----------------------------------------------------------------------------------------" << endl;
+				cout << "Fehler: Bitte zuerst einloggen." << endl;
+				cout << "----------------------------------------------------------------------------------------" << endl;
+			}
+			else if (hr == ERROR_AUCTION_CLOSED)
+			{
+				cout << "----------------------------------------------------------------------------------------" << endl;
+				cout << "Fehler: Die Auktion ist bereits geschlossen." << endl;
+				cout << "----------------------------------------------------------------------------------------" << endl;
+			}
+			else if (hr == ERROR_USER_IS_NOT_AUCTIONEER)
+			{
+				cout << "----------------------------------------------------------------------------------------" << endl;
+				cout << "Fehler: Sie koennen nur Auktionen beenden, die Sie auch erstellt haben." << endl;
+				cout << "----------------------------------------------------------------------------------------" << endl;
+			}
+			else
+				cerr << "Es ist ein unerwarteter Fehler aufgetreten. Bitte versuche es erneut." << endl;
+		}
 	}
-	else if (args[0] == L"endauction")
-	{
-
-	}
-	else if (args[0] == L"help")
+	else if (args.at(0) == L"help")
 	{
 		cout << "******************** MyBAY ********************" << endl;
 		cout << "login <Username> <Passwort>" << endl;
@@ -299,8 +618,13 @@ void interpretCommand(ULONG *sessionID, ICOMMyBay *p_ICOMMyBaySvr, std::vector<w
 		cout << "listauctions [-a][-A] [<Artikelnameteil]" << endl;
 		cout << "bid <Auktionsnummer> <Geldbetrag>" << endl;
 		cout << "details <Auktionsnummer>" << endl;
-		cout << "endauction <Auktionsnummer" << endl; 
+		cout << "endauction <Auktionsnummer" << endl;
 		cout << "******************** MyBAY ********************" << endl;
+		cout << endl;
+	}
+	else
+	{
+		cout << "Error: keine zulässige Eingabe" << endl;
 	}
 
 }
