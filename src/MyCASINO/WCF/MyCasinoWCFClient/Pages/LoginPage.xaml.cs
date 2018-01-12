@@ -142,6 +142,45 @@ namespace MyCasinoWCFClient.Pages
             }
             ((PasswordBox)sender).Foreground = new SolidColorBrush(Colors.Black);
         }
+
+        /// <summary>
+        /// Ip address to server field got focus, remove standardvalue
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void tbxIpAddress_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (((TextBox)sender).Text == "Localhost")
+            {
+                tbxIpAddress.Text = "";
+            }
+            ((TextBox)sender).Foreground = new SolidColorBrush(Colors.Black);
+        }
+        /// <summary>
+        /// Ip address to server field lost focus, set standardvalues for box if nessecery
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void tbxIpAddress_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (((TextBox)sender).Text == "")
+            {
+                ((TextBox)sender).Foreground = new SolidColorBrush(Colors.LightGray);
+                tbxIpAddress.Text = "Localhost";
+            }
+        }
+        /// <summary>
+        /// Check if it was a number or dot
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void tbxIpAddress_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            e.Handled = !(e.Key >= Key.D0 && e.Key <= Key.D9 ||
+               e.Key >= Key.NumPad0 && e.Key <= Key.NumPad9 ||
+               e.Key == Key.Back || e.Key == Key.OemPeriod
+               );
+        }
         #endregion
         /// <summary>
         /// Checks if login is ok
@@ -150,6 +189,29 @@ namespace MyCasinoWCFClient.Pages
         /// <param name="e"></param>
         private void btnLogin_Click(object sender, RoutedEventArgs e)
         {
+            //check if ip address is valid
+            string ipAddress = tbxIpAddress.Text;
+
+            IPAddress address;
+            if (IPAddress.TryParse(ipAddress, out address))
+            {
+                switch (address.AddressFamily)
+                {
+                    case System.Net.Sockets.AddressFamily.InterNetwork:
+
+                        break;
+
+                    default:
+                        tblAuthentificationFailed.Text = "Falsches IP-Addressen Format";
+                        return;
+                }
+            }
+            else
+            {
+                tblAuthentificationFailed.Text = "Falsches IP-Addressen Format";
+                return;
+            }
+
 #if COM
 
             short tmpUsertype;
@@ -171,7 +233,7 @@ namespace MyCasinoWCFClient.Pages
                 tblAuthentificationFailed.Text = _errMsg;
             }
 #else
-        try
+            try
             {
                 if (_RemSrvMyCasinoLogin.login(tbxUsername.Text, pwbPassword.Password, out _sessionId, out _userType, out _errMsg))
 

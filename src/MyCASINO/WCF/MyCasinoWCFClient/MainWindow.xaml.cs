@@ -49,7 +49,9 @@ namespace MyCasinoWCFClient
 
 
 #else
-            string srvAddress = "http://localhost:1200/MyCasinoWCF";
+            //string srvAddress = "http://localhost:1200/MyCasinoWCF";
+            string srvAddress = "http://192.168.52.216:1200/MyCasinoWCF";
+
             _RemSrvMyCasino = _remSrvMyCasinoFactory.CreateChannel(new EndpointAddress(srvAddress));
             MainFrame.Navigate(new MyCasinoWCFClient.Pages.LoginPage(_RemSrvMyCasino));
 
