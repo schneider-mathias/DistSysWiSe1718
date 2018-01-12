@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -39,6 +40,7 @@ namespace MyCasinoWCFClient.Pages
         }
 
 #else
+        private ChannelFactory<INETMyCasino> _remSrvMyCasinoFactory = new ChannelFactory<INETMyCasino>(new BasicHttpBinding());
         private INETMyCasino _remSrvMyCasinoLogin;
 
         public INETMyCasino _RemSrvMyCasinoLogin
@@ -58,9 +60,8 @@ namespace MyCasinoWCFClient.Pages
             InitializeComponent();
         }
 #else
-        public LoginPage(INETMyCasino _RemSrvMyCasino)
+        public LoginPage()
         {
-            _RemSrvMyCasinoLogin = _RemSrvMyCasino;
             InitializeComponent();
         }
 #endif
@@ -128,8 +129,59 @@ namespace MyCasinoWCFClient.Pages
                 pwbPassword.Password = "****";
             }
         }
+        /// <summary>
+        /// Passwordbox got focus with tab
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void pwbPassword_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (((PasswordBox)sender).Password == "****")
+            {
+                pwbPassword.Password = "";
+            }
+            ((PasswordBox)sender).Foreground = new SolidColorBrush(Colors.Black);
+        }
 
-#endregion
+        /// <summary>
+        /// Ip address to server field got focus, remove standardvalue
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void tbxIpAddress_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (((TextBox)sender).Text == "Localhost")
+            {
+                tbxIpAddress.Text = "";
+            }
+            ((TextBox)sender).Foreground = new SolidColorBrush(Colors.Black);
+        }
+        /// <summary>
+        /// Ip address to server field lost focus, set standardvalues for box if nessecery
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void tbxIpAddress_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (((TextBox)sender).Text == "")
+            {
+                ((TextBox)sender).Foreground = new SolidColorBrush(Colors.LightGray);
+                tbxIpAddress.Text = "Localhost";
+            }
+        }
+        /// <summary>
+        /// Check if it was a number or dot
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void tbxIpAddress_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            e.Handled = !(e.Key >= Key.D0 && e.Key <= Key.D9 ||
+               e.Key >= Key.NumPad0 && e.Key <= Key.NumPad9 ||
+               e.Key == Key.Back || e.Key == Key.OemPeriod
+               );
+        }
+        #endregion
         /// <summary>
         /// Checks if login is ok
         /// </summary>
@@ -137,6 +189,54 @@ namespace MyCasinoWCFClient.Pages
         /// <param name="e"></param>
         private void btnLogin_Click(object sender, RoutedEventArgs e)
         {
+            //check if ip address is valid
+            string ipAddress = tbxIpAddress.Text;
+            IPAddress address;
+
+            if (ipAddress == "Localhost")
+            {
+                //ip is automatically set for localhost
+            }
+            else if (IPAddress.TryParse(ipAddress, out address))
+            {
+                switch (address.AddressFamily)
+                {
+                    case System.Net.Sockets.AddressFamily.InterNetwork:
+
+                        break;
+
+                    default:
+                        tblAuthentificationFailed.Text = "Falsches IP-Addressen Format";
+                        return;
+                }
+            }
+            else
+            {
+                tblAuthentificationFailed.Text = "Falsches IP-Addressen Format";
+                return;
+            }
+
+#if COM
+            Type comType = Type.GetTypeFromCLSID(new Guid("C45F55FC-76D5-4D30-A7D0-2DF66C22ED0D"), "127.0.0.1", false); 
+            COMMyCasinoSrvLib.COMMyCasino _comSrv = (COMMyCasinoSrvLib.COMMyCasino)Activator.CreateInstance(comType);
+
+            //_comSrv.login("Casino", "Passwort", out sessionId, out userType, out errMsg);
+            //System.Array betsResult;
+            //_comSrv.showbets(sessionId, out betsResult, out count, out errMsg);
+            MainFrame.Navigate(new MyCasinoWCFClient.Pages.LoginPage(_comSrv));
+
+
+#else
+            try
+            {
+                _RemSrvMyCasinoLogin = _remSrvMyCasinoFactory.CreateChannel(new EndpointAddress("http://" + ipAddress + ":1200/MyCasinoWCF"));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Fehler beim erstellen der Channel Factory!" + ex);
+            }
+#endif
+
 #if COM
 
             short tmpUsertype;
@@ -152,17 +252,13 @@ namespace MyCasinoWCFClient.Pages
             {
                 if (ex is COMException)
                     _errMsg = Codes.ResolveCode((ex as COMException).ErrorCode);
-                else if (ex is UnauthorizedAccessException)
-                    _errMsg = Codes.ResolveCode((ex as UnauthorizedAccessException).HResult);
-                else if (ex is UnauthorizedAccessException)
-                    _errMsg = Codes.ResolveCode((ex as UnauthorizedAccessException).HResult);
                 else
                     _errMsg = "Unknown";
 
                 tblAuthentificationFailed.Text = _errMsg;
             }
 #else
-        try
+            try
             {
                 if (_RemSrvMyCasinoLogin.login(tbxUsername.Text, pwbPassword.Password, out _sessionId, out _userType, out _errMsg))
 
@@ -183,13 +279,15 @@ namespace MyCasinoWCFClient.Pages
                     tblAuthentificationFailed.Text = "User ist bereits angemeldet";
                 }
             }
-            catch (EndpointNotFoundException ex)
+            catch (EndpointNotFoundException)
             {
-                MessageBox.Show("Fehler beim Login" + ex);     
+                MessageBox.Show("Fehler beim Login: Server nicht gefunden!");     
             }
             
             //If authentifications is ok, login to the next page
 #endif
         }
+
+
     }
 }

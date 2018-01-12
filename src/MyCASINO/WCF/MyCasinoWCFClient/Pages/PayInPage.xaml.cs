@@ -96,18 +96,35 @@ namespace MyCasinoWCFClient.Pages
             {
                 _ComSrv.deposit(SessionId, cbxPayInUsername.Text, amount, out errMsg);
             }
-            catch
+            catch (Exception ex)
             {
-                MessageBox.Show(errMsg);
+                if (ex is COMException)
+                    errMsg = Codes.ResolveCode((ex as COMException).ErrorCode);
+                else
+                    errMsg = "Unknown";
             }
 #else
             _RemSrvMyCasino.deposit(SessionId, cbxPayInUsername.Text, amount, out errMsg);
-            if (errMsg == "User nicht eingeloggt")
+            if (errMsg == "USER_NOT_LOGGED_IN")
             {
-                MessageBox.Show(errMsg);
+                MessageBox.Show("User nicht eingeloggt");
             }
+            else if (errMsg == "PAYIN_TOO_HIGH")
+            {
+                MessageBox.Show("Soviel kann nicht auf einmal Einbezahlt werden");
+            }
+            else if (errMsg == "MAXIMUM_BALANCE_REACHED")
+            {
+                MessageBox.Show("Account Geld maximum erreicht!");
+            }
+            else if (errMsg == "INVALID_SESSION_ID")
+            {
+                MessageBox.Show("Ungültige ID!");
+            }
+
+
 #endif
-                tblPayInSuccessful.Visibility = Visibility.Visible;
+            tblPayInSuccessful.Visibility = Visibility.Visible;
                 btnPayIn.IsEnabled = false;
         }
 

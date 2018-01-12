@@ -14,7 +14,11 @@
 #include <vector>
 #include "MyBayDefines.h"
 #include "CritSectionWrapper.h"
+#include "CharStringConverter.h"
+#include "BstrStringConverter.h"
+#include <fstream>
 #include <thread>
+#include <string>
 #include "COMMyBaySrv_i.h"
 
 #if defined(_WIN32_WCE) && !defined(_CE_DCOM) && !defined(_CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA)
@@ -24,6 +28,8 @@
 /********************************************************************/
 /*						Strukturdefinitionen						*/
 /********************************************************************/
+
+using namespace std;
 
 struct bidder
 {
@@ -49,15 +55,15 @@ std::vector<auction> AuctionList;
 std::vector<vector<wstring>> Messages;
 std::vector<thread> myThreads;
 
-using namespace ATL;
+
 
 
 // COMMyBay
 
 class ATL_NO_VTABLE CCOMMyBay :
-	public CComObjectRootEx<CComSingleThreadModel>,
-	public CComCoClass<CCOMMyBay, &CLSID_COMMyBay>,
-	public IDispatchImpl<ICOMMyBay, &IID_ICOMMyBay, &LIBID_COMMyBaySrvLib, /*wMajor =*/ 1, /*wMinor =*/ 0>
+	public ATL::CComObjectRootEx<ATL::CComSingleThreadModel>,
+	public ATL::CComCoClass<CCOMMyBay, &CLSID_COMMyBay>,
+	public ATL::IDispatchImpl<ICOMMyBay, &IID_ICOMMyBay, &LIBID_COMMyBaySrvLib, /*wMajor =*/ 1, /*wMinor =*/ 0>
 {
 public:
 	CCOMMyBay();
@@ -88,15 +94,15 @@ private:
 	static ULONG num_auct; //Anzahl Auktionen
 
 public:
-	STDMETHOD(login)(BSTR username, BSTR password, ULONG* sessionId, BSTR* errMsg);
-	STDMETHOD(logout)(ULONG sessionId, BSTR* errMsg);
-	STDMETHOD(offer)(ULONG sessionId, BSTR articleName, DOUBLE startBid, ULONG* auctionNumber, BSTR* errMsg);
-	STDMETHOD(interested)(ULONG sessionId, ULONG auctionNumber, BSTR * errMsg);
-	STDMETHOD(getAuctions)(ULONG sessionId, ULONG flags, BSTR articleName, ULONG * countAuctions, SAVEARRAY_VAR * auctions, BSTR * errMsg);
-	STDMETHOD(bid)(ULONG sessionId, ULONG auctionNumber, DOUBLE bidVal, BSTR * errMsg);
-	STDMETHOD(details)(ULONG sessionId, ULONG auctionNumber, SAVEARRAY_VAR * allBids, ULONG * countBids, BSTR * errMsg);
-	STDMETHOD(endauction)(ULONG sessionId, ULONG auctionNumber, BSTR * errMsg);
-	STDMETHOD(getMessage)(ULONG sessionId, BOOL * einBoolwasIchNichtWeiß, ULONG * messageType, SAVEARRAY_VAR * message, BSTR * errMsg);
+	STDMETHOD(login)(BSTR username, BSTR password, ULONG* sessionId);
+	STDMETHOD(logout)(ULONG sessionId);
+	STDMETHOD(offer)(ULONG sessionId, BSTR articleName, DOUBLE startBid, ULONG* auctionNumber);
+	STDMETHOD(interested)(ULONG sessionId, ULONG auctionNumber);
+	STDMETHOD(getAuctions)(ULONG sessionId, ULONG flags, BSTR articleName, ULONG * countAuctions, SAFEARRAY_VAR * auctions);
+	STDMETHOD(bid)(ULONG sessionId, ULONG auctionNumber, DOUBLE bidVal);
+	STDMETHOD(details)(ULONG sessionId, ULONG auctionNumber, SAFEARRAY_VAR * allBids, ULONG * countBids);
+	STDMETHOD(endauction)(ULONG sessionId, ULONG auctionNumber);
+	STDMETHOD(getMessage)(ULONG sessionId, BOOL * einBoolwasIchNichtWeiß, ULONG * messageType, SAFEARRAY_VAR * message);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(COMMyBay), CCOMMyBay)
@@ -105,6 +111,39 @@ OBJECT_ENTRY_AUTO(__uuidof(COMMyBay), CCOMMyBay)
 /********************************************************************/
 /*							Hilfsfunktionen							*/
 /********************************************************************/
+
+BOOL loginCheck(unsigned long sessionId);
+BOOL loginCheck(unsigned char username);
+wstring getUserName(unsigned long sessionId);
+void readAuctionsFromFile();
+void writeAuctionsToFile();
+ULONG addNewAuction(wstring sarticleName, double startBid);
+BOOL checkAuctionNumber(unsigned long auctionNumber);
+BOOL addUserToInterestedUserList(wstring user, unsigned long auctionNumber);
+int getAuctionState(unsigned long auctionNumber);
+BOOL addBidToAuction(unsigned long auctionNumber, double bidVal, wstring user);
+BOOL auctionStatusCheck(unsigned long auctionNumber);
+BOOL userCreatedAuctioncheck(wstring user, unsigned long auctionNumber);
+int getSerializedStrSize(unsigned long auctionNumber);
+unsigned long countBidsOfAuction(unsigned long auctionNumber);
+vector<wstring> getAllBids(ULONG auctionNumber);
+wstring serializeAuctionDetails(unsigned long auctionNumber);
+BOOL endAuction(wstring user, unsigned long auctionNumber);
+vector<wstring> searchForMessage(wstring user);
+int countMessages(wstring user);
+wstring serializeMessage(vector<wstring> newMessage);
+void addNewBidToMessages(unsigned long auctionNumber, double bidVal, wstring user);
+wstring getArticleName(unsigned long auctionNumber);
+vector<auction> filterArtName(wstring user, wstring sarticleName);
+vector<auction> filterAuctionsByFlags(wstring user, unsigned long flags, vector<auction> filteredArtNameAuctions);
+vector<auction> getInterestingAuctions(wstring user, unsigned long flags, wstring sarticleName);
+vector<wstring> filterInterestingInfos(vector<auction> interestingAuctions);
+wstring serializeAuctions(vector<auction> interestingAuctions);
+int numberOfElements(wstring serStr);
+void auctionEndProcess(wstring user, unsigned long auctionNumber);
+void addEndAuctionMessage(wstring user, unsigned long auctionNumber, int warningNr);
+void endAuction(unsigned long auctionNumber);
+
 
 // Prüfe ob User bereits eingeloggt ist
 BOOL loginCheck(unsigned long sessionId)
@@ -364,6 +403,7 @@ int getAuctionState(unsigned long auctionNumber)
 		}
 	}
 	LeaveCriticalSection(critSecWrapper.getInstance());
+	return 0;
 }
 
 // Fügt ein Gebot zur Auktion hinzu
@@ -473,6 +513,28 @@ unsigned long countBidsOfAuction(unsigned long auctionNumber)
 	return numBids;
 }
 
+// Alle Gebote aller Auktionen
+vector<wstring> getAllBids(ULONG auctionNumber)
+{
+	vector<wstring> bidsStr;
+	EnterCriticalSection(critSecWrapper.getInstance());
+	for (std::vector<auction>::iterator it = AuctionList.begin(); it != AuctionList.end(); ++it)
+	{
+		if ((*it).auctionNumber == auctionNumber)
+		{
+			for (std::vector<bidder>::iterator it2 = (*it).BidderList.begin(); it2 != (*it).BidderList.end(); ++it2)
+			{
+				bidsStr.push_back(to_wstring((*it2).bid));				// Gebot
+				bidsStr.push_back((*it2).userName);						// Username
+			}
+		}
+	}
+	LeaveCriticalSection(critSecWrapper.getInstance());
+	return bidsStr;
+}
+
+
+// TODO: wird nicht mehr gebraucht
 // serialisiert die Gebote einer Auktion in chronologischer Reihenfolge
 wstring serializeAuctionDetails(unsigned long auctionNumber)
 {
@@ -527,7 +589,7 @@ BOOL endAuction(wstring user, unsigned long auctionNumber)
 			{
 				LeaveCriticalSection(critSecWrapper.getInstance());
 				// Thread um Nachrichten für die interessierten User zu erzeugen
-				myThreads.push_back(std::thread(auctionEndProcess, user, auctionNumber));
+				myThreads.push_back(thread(auctionEndProcess, user, auctionNumber));
 				//std::thread EndAuktionThread(auctionEndProcess, user, auctionNumber);	// Threadpointer und dann hier starten
 				return TRUE;
 			}
@@ -715,6 +777,21 @@ vector<auction> getInterestingAuctions(wstring user, unsigned long flags, wstrin
 	return filteredAuctionsByFlags;
 }
 
+// Filtert die Informationen aus den Auktionen, die für getAuctions interessant sind
+vector<wstring> filterInterestingInfos(vector<auction> interestingAuctions)
+{
+	vector<wstring> retStr;
+	for (std::vector<auction>::iterator it = interestingAuctions.begin(); it != interestingAuctions.end(); it++)
+	{
+		retStr.push_back(to_wstring((*it).auctionNumber));
+		retStr.push_back((*it).articleName);
+		retStr.push_back(to_wstring((*it).BidderList.size()));
+		retStr.push_back(to_wstring((*it).highestBid));
+	}
+	return retStr;
+}
+
+// TODO: kann raus, wird nicht verwendet
 // Serialisierung der Auktionen für getAuctions 
 wstring serializeAuctions(vector<auction> interestingAuctions)
 {
@@ -736,6 +813,22 @@ wstring serializeAuctions(vector<auction> interestingAuctions)
 	}
 	LeaveCriticalSection(critSecWrapper.getInstance());
 	return serStr;
+}
+
+// Anzahl der Elemente in einem serialisierten String
+int numberOfElements(wstring serStr)
+{
+	size_t delimPos;
+	int numbOfElem = 0;
+	wstring tmpSerStr = serStr;
+	wstring delimiter = L" ";
+	while (tmpSerStr.find(delimiter) != std::string::npos)
+	{
+		delimPos = tmpSerStr.find(delimiter);
+		tmpSerStr.erase(0, delimPos + delimiter.length());
+		numbOfElem++;
+	}
+	return numbOfElem;
 }
 
 

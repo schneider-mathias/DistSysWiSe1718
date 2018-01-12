@@ -104,6 +104,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\COM\COMMyBaySrv\COMMyBaySrv.vcxproj">
+      <Project>{ca318ee3-191c-4e7d-901c-dcc7d7bc8fc2}</Project>
+      <Name>COMMyBaySrv</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\_shared\dotNet\MyBayLib\MyBayLib.csproj">
       <Project>{1a7a39a3-2694-48ef-9df6-924ffe3fc8b9}</Project>
       <Name>MyBayLib</Name>

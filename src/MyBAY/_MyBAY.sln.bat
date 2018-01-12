@@ -21,7 +21,7 @@ if not exist %MYBAY_USERDATA% (
 )
 
 echo Copy data to %MYBAY_USERDATA%
-copy "%USERDATA%" %MYBAY_USERDATAA%
+copy "%USERDATA%" %MYBAY_USERDATA%
 
 echo Start solution:
 echo "%VS140COMNTOOLS%\..\IDE\devenv.exe" "%~dp0%solutionName%"

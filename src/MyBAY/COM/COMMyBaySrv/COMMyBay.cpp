@@ -1,7 +1,17 @@
+/************************************************************/
+/*                                                          */
+/* Inhalt:    Serverimplementierung				            */
+/*                                                          */
+/* Autor:	  Johannes Sauer		                        */
+/* Stand:     23. Jan 2018                                  */
+/*															*/
+/************************************************************/
+
 #include "stdafx.h"
 #include "COMMyBay.h"
 #include "BstrStringConverter.h"
 #include "CharStringConverter.h"
+#include <atlsafe.h>
 #include <fstream>
 #include <iostream>
 #include <stdlib.h>
@@ -11,11 +21,14 @@
 
 using namespace std;
 
-ULONG CCOMMyBay::num_auct;
-
-STDMETHODIMP CCOMMyBay::login(BSTR username, BSTR password, ULONG * sessionId, BSTR * errMsg)
+// CCOMMyBay
+CCOMMyBay::CCOMMyBay()
 {
-	wifstream csvread;
+}
+
+STDMETHODIMP CCOMMyBay::login(BSTR username, BSTR password, ULONG * sessionId)
+{
+	std::wifstream csvread;
 	srand((unsigned)time(NULL)); // Zufallsgenerator initialisieren.
 
 	// Wenn sich der erste Nutzer einloggt, werden die persistent gespeicherten Auktionen aus der Datei ausgelesen
@@ -27,7 +40,7 @@ STDMETHODIMP CCOMMyBay::login(BSTR username, BSTR password, ULONG * sessionId, B
 
 	/* Abfrage ob User nicht schon eingeloggt ist.*/
 	wstring tmp = bstr_to_wstr(username);
-	BOOL isLoggedIn = loginCheck(tmp.c_str);
+	BOOL isLoggedIn = loginCheck((unsigned char)tmp.c_str());
 	if (isLoggedIn == TRUE)
 	{
 		//cout << "Sie sind bereits angemeldet" << endl;
@@ -64,7 +77,7 @@ STDMETHODIMP CCOMMyBay::login(BSTR username, BSTR password, ULONG * sessionId, B
 	return ERROR_USERNAME_OR_PASSWORD_WRONG;
 }
 
-STDMETHODIMP CCOMMyBay::logout(ULONG sessionId, BSTR *errMsg)
+STDMETHODIMP CCOMMyBay::logout(ULONG sessionId)
 {
 	//überprüfen ob user angemeldet und dann aus Liste entfernen
 	std::map<std::wstring, unsigned long>::iterator it;
@@ -79,7 +92,7 @@ STDMETHODIMP CCOMMyBay::logout(ULONG sessionId, BSTR *errMsg)
 	return ERROR_USER_NOT_LOGGED_IN; //user nicht angemeldet
 }
 
-STDMETHODIMP CCOMMyBay::offer(ULONG sessionId, BSTR articleName, DOUBLE startBid, ULONG * auctionNumber, BSTR * errMsg)
+STDMETHODIMP CCOMMyBay::offer(ULONG sessionId, BSTR articleName, DOUBLE startBid, ULONG * auctionNumber)
 {
 	// Prüfen ob User eingeloggt ist
 	if (BOOL isLoggedIn = loginCheck(sessionId) == FALSE)
@@ -107,7 +120,7 @@ STDMETHODIMP CCOMMyBay::offer(ULONG sessionId, BSTR articleName, DOUBLE startBid
 	return S_OK;
 }
 
-STDMETHODIMP CCOMMyBay::interested(ULONG sessionId, ULONG auctionNumber, BSTR* errMsg)
+STDMETHODIMP CCOMMyBay::interested(ULONG sessionId, ULONG auctionNumber)
 {
 	// Prüfen ob User eingeloggt ist
 	if (BOOL isLoggedIn = loginCheck(sessionId) == FALSE)
@@ -134,7 +147,7 @@ STDMETHODIMP CCOMMyBay::interested(ULONG sessionId, ULONG auctionNumber, BSTR* e
 	return S_OK;
 }
 
-STDMETHODIMP CCOMMyBay::getAuctions(ULONG sessionId, ULONG flags, BSTR articleName, ULONG* countAuctions, SAVEARRAY_VAR* auctions, BSTR* errMsg)
+STDMETHODIMP CCOMMyBay::getAuctions(ULONG sessionId, ULONG flags, BSTR articleName, ULONG* countAuctions, SAFEARRAY_VAR* auctions)
 {
 	// Prüfen ob User eingeloggt ist
 	if (BOOL isLoggedIn = loginCheck(sessionId) == FALSE)
@@ -150,24 +163,23 @@ STDMETHODIMP CCOMMyBay::getAuctions(ULONG sessionId, ULONG flags, BSTR articleNa
 	{
 		return ERROR_NO_AUCTIONS_AVAILABLE;
 	}
-	wstring serStr = serializeAuctions(interestingAuctions);
+	vector<wstring> retStr = filterInterestingInfos(interestingAuctions);			// benötigte Informationen aus Auktionen suchen 
 
-	// Speicher für die Übertragung des String_t allokieren
-	// TODO: in SAVEARRAY
-	int serStrSize = sizeof(char) * (serStr.size() + 1);
-	auctions->str = (unsigned char*)midl_user_allocate(serStrSize);
-	auctions->size = serStrSize;
-	auctions->len = serStrSize;
+	ATL::CComSafeArray<VARIANT> auctionsSafeArray(retStr.size());						// SafeArray mit entsprechender Größer initialiseren
 
-	strcpy((char*)auctions->str, (char*)wstring_to_char(serStr.c_str()));
-
-
+	int safeArrIt = 0;
+	// Alle Informationen im SafeArray speichern
+	for (int i = 0; i < retStr.size(); i++)
+	{
+		auctionsSafeArray[safeArrIt++] = wstr_to_bstr(retStr.at(i));
+	}
+	auctionsSafeArray.CopyTo(auctions);												
 	*countAuctions = interestingAuctions.size();
 
 	return S_OK;
 }
 
-STDMETHODIMP CCOMMyBay::bid(ULONG sessionId, ULONG auctionNumber, DOUBLE bidVal, BSTR* errMsg)
+STDMETHODIMP CCOMMyBay::bid(ULONG sessionId, ULONG auctionNumber, DOUBLE bidVal)
 {
 	// Prüfen ob User eingeloggt ist
 	if (BOOL isLoggedIn = loginCheck(sessionId) == FALSE)
@@ -203,7 +215,7 @@ STDMETHODIMP CCOMMyBay::bid(ULONG sessionId, ULONG auctionNumber, DOUBLE bidVal,
 	return S_OK;
 }
 
-STDMETHODIMP CCOMMyBay::details(ULONG sessionId, ULONG auctionNumber, SAVEARRAY_VAR* allBids, ULONG* countBids, BSTR* errMsg)
+STDMETHODIMP CCOMMyBay::details(ULONG sessionId, ULONG auctionNumber, SAFEARRAY_VAR* allBids, ULONG* countBids)
 {
 	// Prüfen ob User eingeloggt ist
 	if (BOOL isLoggedIn = loginCheck(sessionId) == FALSE)
@@ -221,15 +233,18 @@ STDMETHODIMP CCOMMyBay::details(ULONG sessionId, ULONG auctionNumber, SAVEARRAY_
 
 	// Gebote serialisieren
 	wstring serStr = serializeAuctionDetails(auctionNumber);
-
+	vector<wstring> bidsStr = getAllBids(auctionNumber);
 	// Speicher für die Übertragung des String_t allokieren
 	// TODO: SAVEARRAY
-	int serStrSize = sizeof(char) * (serStr.size() + 1);
-	allBids->str = (unsigned char*)midl_user_allocate(serStrSize);
-	allBids->size = serStrSize;
-	allBids->len = serStrSize;
+	ATL::CComSafeArray<VARIANT> auctionsSafeArray(bidsStr.size());						// SafeArray mit entsprechender Größer initialiseren
 
-	strcpy((char*)allBids->str, (char*)wstring_to_char(serStr.c_str()));
+	int safeArrIt = 0;
+	// Alle Informationen im SafeArray speichern
+	for (int i = 0; i < bidsStr.size(); i++)
+	{
+		auctionsSafeArray[safeArrIt++] = wstr_to_bstr(bidsStr.at(i));
+	}
+	auctionsSafeArray.CopyTo(allBids);
 
 	// Anzahl der Auktionen bestimmen
 	*countBids = countBidsOfAuction(auctionNumber);
@@ -237,7 +252,7 @@ STDMETHODIMP CCOMMyBay::details(ULONG sessionId, ULONG auctionNumber, SAVEARRAY_
 	return S_OK;
 }
 
-STDMETHODIMP CCOMMyBay::endauction(ULONG sessionId, ULONG auctionNumber, BSTR* errMsg)
+STDMETHODIMP CCOMMyBay::endauction(ULONG sessionId, ULONG auctionNumber)
 {
 	// Prüfen ob User eingeloggt ist
 	if (BOOL isLoggedIn = loginCheck(sessionId) == FALSE)
@@ -259,7 +274,7 @@ STDMETHODIMP CCOMMyBay::endauction(ULONG sessionId, ULONG auctionNumber, BSTR* e
 	return S_OK;
 }
 
-STDMETHODIMP CCOMMyBay::getMessage(ULONG sessionId, BOOL*messageAvailable, ULONG* messageType, SAVEARRAY_VAR* message, BSTR* errMsg)
+STDMETHODIMP CCOMMyBay::getMessage(ULONG sessionId, BOOL*messageAvailable, ULONG* messageType, SAFEARRAY_VAR* message)
 {
 	// Prüfen ob User eingeloggt ist
 	if (BOOL isLoggedIn = loginCheck(sessionId) == FALSE)
@@ -278,24 +293,27 @@ STDMETHODIMP CCOMMyBay::getMessage(ULONG sessionId, BOOL*messageAvailable, ULONG
 
 		// Speicher für die Übertragung des String_t allokieren
 		// TODO: SAVEARRAY
-		int serStrSize = sizeof(char) * (serStr.size() + 1);
-		message->str = (unsigned char*)midl_user_allocate(serStrSize);
-		message->size = serStrSize;
-		message->len = serStrSize;
 
-		strcpy((char*)message->str, (char*)wstring_to_char(serStr.c_str()));
+		ATL::CComSafeArray<VARIANT> auctionsSafeArray(newMessage.size());						// SafeArray mit entsprechender Größer initialiseren
+
+		int safeArrIt = 0;
+		// Alle Informationen im SafeArray speichern
+		for (int i = 0; i < newMessage.size(); i++)
+		{
+			auctionsSafeArray[safeArrIt++] = wstr_to_bstr(newMessage.at(i));
+		}
+		auctionsSafeArray.CopyTo(message);
 	}
 
 	// Falls noch mehr Nachrichten für den Nutzer bereit liegen, wird der User mit messageAvailable darüber informiert.
-	// Damit weiß er, dass er nochmal Pullen muss um sich die restlichen Nachrichten abzuholen
-	// und nicht wartet bis der Timer bis zum nächsten Pull abgelaufen ist.
+	// Damit weiß er, dass er nochmal Pullen muss, um sich die restlichen Nachrichten abzuholen
+	// und nicht wartet bis der Timer für den nächsten Pull abgelaufen ist.
 	if (msgCnt > 1)
 	{
 		*messageAvailable = TRUE;
 	}
 	else
 		*messageAvailable = FALSE;
-
 
 	return S_OK;
 }

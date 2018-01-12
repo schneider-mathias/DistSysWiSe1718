@@ -9,7 +9,7 @@
         MinHeight="250"
         MinWidth="250"
         Title="MyCasino" Height="650" Width="1450">
-    <Grid>
+    <Grid  ScrollViewer.CanContentScroll="True" ScrollViewer.HorizontalScrollBarVisibility="Auto">
         <!--
         <Frame x:Name="MainFrame" Source="Pages/LoginPage.xaml" NavigationUIVisibility="Hidden" />
         -->

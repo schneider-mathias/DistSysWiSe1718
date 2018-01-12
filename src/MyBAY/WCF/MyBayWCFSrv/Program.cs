@@ -7,8 +7,6 @@
 /*                                                                       */
 /*************************************************************************/
 
-#define SINGLETON
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,14 +21,12 @@ namespace MyBayWCFSrv
     {
         static void Main(string[] args)
         {
-#if SINGLETON
-
             // Create myBaySrv - Objekt (Singleton)
             MyBayWCFSrv myBaySrv = new MyBayWCFSrv();
 
             // Servicehost zur Objektveröffentlichung anlegen
 
-            //ServiceHost svh = new ServiceHost(myInventSrv, new Uri("http://192.168.52.210:3333/MyBayWCF"));
+            //ServiceHost serviceh = new ServiceHost(myBaySrv, new Uri("http://192.168.52.210:3333/MyBayWCF"));
             ServiceHost serviceh = new ServiceHost(myBaySrv, new Uri("http://localhost:3333/MyBayWCF"));
 
             // Einstellungen für ein Singleton mit mehreren Clients vornehmen
@@ -40,11 +36,6 @@ namespace MyBayWCFSrv
 
             serviceBehaviourAttrib.InstanceContextMode = InstanceContextMode.Single;
 
-#else
-            ServiceHost serviceh = new ServiceHost(typeof(MyBayWCFSrv), new Uri("http://192.168.52.210:3333"));
-
-            svh.AddServiceEndpoint(typeof(INETMyInvent), new WSHttpBinding(), "http://192.168.52.210:3333/MyBayWCF");
-#endif
             // MyBay Server-Objekt veröffentlichen
             serviceh.Open();
 

@@ -95,7 +95,7 @@ namespace MyCasinoWCFClient.Pages
 
         private string errMsg;
 
-        
+
 #if COM
         private short numberOne;
 
@@ -158,23 +158,13 @@ namespace MyCasinoWCFClient.Pages
             //disable operator-only features
             if (typeTmp == 1)
             {
+                tblLastDrawing.Visibility = Visibility.Hidden;
                 btnDraw.Visibility = Visibility.Hidden;
+                btnDrawNumbers.Visibility = Visibility.Hidden;
             }
             //disable  gamer only- features
             if (typeTmp == 0)
             {
-                btnRowOneNumberOne.Visibility = Visibility.Hidden;
-                btnRowOneNumberTwo.Visibility = Visibility.Hidden;
-                btnRowOneNumberThree.Visibility = Visibility.Hidden;
-                btnRowOneNumberFour.Visibility = Visibility.Hidden;
-                btnRowOneNumberFive.Visibility = Visibility.Hidden;
-
-                btnRowTwoNumberOne.Visibility = Visibility.Hidden;
-                btnRowTwoNumberTwo.Visibility = Visibility.Hidden;
-                btnRowTwoNumberThree.Visibility = Visibility.Hidden;
-                btnRowTwoNumberFour.Visibility = Visibility.Hidden;
-                btnRowTwoNumberFive.Visibility = Visibility.Hidden;
-
 
                 tbxBetSum.Visibility = Visibility.Hidden;
                 btnBet.Visibility = Visibility.Hidden;
@@ -237,11 +227,6 @@ namespace MyCasinoWCFClient.Pages
         {
             _RemSrvMyCasino = _RemSrvMyCasinoMain;
             InitializeComponent();
-            NameList nameList = new NameList();
-            //lbNameList.ItemsSource = nameList;
-            //lbAmountWinList.ItemsSource = nameList;
-            //lbFirstNumberList.ItemsSource = nameList;
-            //lbSecondNumberList.ItemsSource = nameList;
             BetAmount betAmount = new BetAmount();
             btnRowOneNumberFive.IsEnabled = false;
             SessionId = sessionIdTmp;
@@ -250,23 +235,12 @@ namespace MyCasinoWCFClient.Pages
             if (typeTmp == MyCasinoUserTypes.Gamer)
             {
                 btnDraw.Visibility = Visibility.Hidden;
+                btnDrawNumbers.Visibility = Visibility.Hidden;
+                tblLastDrawing.Visibility = Visibility.Hidden;
             }
             //disable  gamer only- features
             if (typeTmp == MyCasinoUserTypes.Operator)
             {
-                btnRowOneNumberOne.Visibility = Visibility.Hidden;
-                btnRowOneNumberTwo.Visibility = Visibility.Hidden;
-                btnRowOneNumberThree.Visibility = Visibility.Hidden;
-                btnRowOneNumberFour.Visibility = Visibility.Hidden;
-                btnRowOneNumberFive.Visibility = Visibility.Hidden;
-
-                btnRowTwoNumberOne.Visibility = Visibility.Hidden;
-                btnRowTwoNumberTwo.Visibility = Visibility.Hidden;
-                btnRowTwoNumberThree.Visibility = Visibility.Hidden;
-                btnRowTwoNumberFour.Visibility = Visibility.Hidden;
-                btnRowTwoNumberFive.Visibility = Visibility.Hidden;
-
-
                 tbxBetSum.Visibility = Visibility.Hidden;
                 btnBet.Visibility = Visibility.Hidden;
                 tblSetAmount.Visibility = Visibility.Hidden;
@@ -289,7 +263,7 @@ namespace MyCasinoWCFClient.Pages
             //Enable row2 buttons if one button from row 1 is active
             if (btnRowOneNumberOne.IsChecked.Value)
             {
-                //btnRowTwoNumberOne.IsEnabled = true;
+                btnRowTwoNumberOne.IsEnabled = false;
                 btnRowTwoNumberTwo.IsEnabled = true;
                 btnRowTwoNumberThree.IsEnabled = true;
                 btnRowTwoNumberFour.IsEnabled = true;
@@ -311,7 +285,6 @@ namespace MyCasinoWCFClient.Pages
                 btnRowTwoNumberThree.IsChecked = false;
                 btnRowTwoNumberFour.IsChecked = false;
                 btnRowTwoNumberFive.IsChecked = false;
-
             }
 
             //set property for bet
@@ -330,7 +303,6 @@ namespace MyCasinoWCFClient.Pages
             {
                 btnBet.IsEnabled = true;
             }
-
         }
 
         private void btnRowOneNumberTwo_Click(object sender, RoutedEventArgs e)
@@ -344,16 +316,16 @@ namespace MyCasinoWCFClient.Pages
                 btnRowOneNumberFive.IsChecked = false;
             }
 
-            //Enable row2 buttons if one button from row 1 is active
+            //Enable row2 buttons if one button from row 1 is active and disable specific buttons in row 2
             if (btnRowOneNumberTwo.IsChecked.Value)
             {
-                //btnRowTwoNumberOne.IsEnabled = true;
-                //btnRowTwoNumberTwo.IsEnabled = true;
+                btnRowTwoNumberOne.IsEnabled = false;
+                btnRowTwoNumberTwo.IsEnabled = false;
                 btnRowTwoNumberThree.IsEnabled = true;
                 btnRowTwoNumberFour.IsEnabled = true;
                 btnRowTwoNumberFive.IsEnabled = true;
             }
-
+                        
             //set property for bet
             NumberOne = 2;
 
@@ -404,9 +376,9 @@ namespace MyCasinoWCFClient.Pages
             //Enable row2 buttons if one button from row 1 is active
             if (btnRowOneNumberThree.IsChecked.Value)
             {
-                //btnRowTwoNumberOne.IsEnabled = true;
-                //btnRowTwoNumberTwo.IsEnabled = true;
-                //btnRowTwoNumberThree.IsEnabled = true;
+                btnRowTwoNumberOne.IsEnabled = false;
+                btnRowTwoNumberTwo.IsEnabled = false;
+                btnRowTwoNumberThree.IsEnabled = false;
                 btnRowTwoNumberFour.IsEnabled = true;
                 btnRowTwoNumberFive.IsEnabled = true;
             }
@@ -426,7 +398,6 @@ namespace MyCasinoWCFClient.Pages
                 btnRowTwoNumberThree.IsChecked = false;
                 btnRowTwoNumberFour.IsChecked = false;
                 btnRowTwoNumberFive.IsChecked = false;
-
             }
 
             //set property for bet
@@ -461,10 +432,10 @@ namespace MyCasinoWCFClient.Pages
             //Enable row2 buttons if one button from row 1 is active
             if (btnRowOneNumberFour.IsChecked.Value)
             {
-                //btnRowTwoNumberOne.IsEnabled = true;
-                //btnRowTwoNumberTwo.IsEnabled = true;
-                //btnRowTwoNumberThree.IsEnabled = true;
-                //btnRowTwoNumberFour.IsEnabled = true;
+                btnRowTwoNumberOne.IsEnabled = false;
+                btnRowTwoNumberTwo.IsEnabled = false;
+                btnRowTwoNumberThree.IsEnabled = false;
+                btnRowTwoNumberFour.IsEnabled = false;
                 btnRowTwoNumberFive.IsEnabled = true;
             }
 
@@ -483,7 +454,6 @@ namespace MyCasinoWCFClient.Pages
                 btnRowTwoNumberThree.IsChecked = false;
                 btnRowTwoNumberFour.IsChecked = false;
                 btnRowTwoNumberFive.IsChecked = false;
-
             }
             //set property for bet
             NumberOne = 4;
@@ -514,16 +484,6 @@ namespace MyCasinoWCFClient.Pages
                 btnRowOneNumberFour.IsChecked = false;
             }
 
-            //Enable row2 buttons if one button from row 1 is active
-            if (btnRowOneNumberFive.IsChecked.Value)
-            {
-                //btnRowTwoNumberOne.IsEnabled = true;
-                //btnRowTwoNumberTwo.IsEnabled = true;
-                //btnRowTwoNumberThree.IsEnabled = true;
-                //btnRowTwoNumberFour.IsEnabled = true;
-                //btnRowTwoNumberFive.IsEnabled = true;
-            }
-
             //If no button in row1 is active, disable all row2 buttons
             if (!btnRowOneNumberOne.IsChecked.Value && !btnRowOneNumberTwo.IsChecked.Value && !btnRowOneNumberThree.IsChecked.Value
                 && !btnRowOneNumberFour.IsChecked.Value && !btnRowOneNumberFive.IsChecked.Value)
@@ -539,7 +499,6 @@ namespace MyCasinoWCFClient.Pages
                 btnRowTwoNumberThree.IsChecked = false;
                 btnRowTwoNumberFour.IsChecked = false;
                 btnRowTwoNumberFive.IsChecked = false;
-
             }
 
             //set property for bet
@@ -707,12 +666,10 @@ namespace MyCasinoWCFClient.Pages
         private void tbxBetSum_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             //Allow only numbers between "0-9","." and backspace
-
             e.Handled = !(e.Key >= Key.D0 && e.Key <= Key.D9 ||
                 e.Key >= Key.NumPad0 && e.Key <= Key.NumPad9 ||
                 e.Key == Key.Back || e.Key == Key.OemPeriod
                 );
-
         }
 
         private void tbxBetSum_KeyDown(object sender, KeyEventArgs e)
@@ -723,7 +680,6 @@ namespace MyCasinoWCFClient.Pages
             {
                 btnBet.IsEnabled = true;
             }
-
 
             //Only one period is allowed
             if (e.Key == Key.OemPeriod)
@@ -744,14 +700,11 @@ namespace MyCasinoWCFClient.Pages
                     e.Handled = true;
                     return;
                 }
-
             }
-
         }
 
         private void btnBet_Click(object sender, RoutedEventArgs e)
         {
-            
             double amount;
             double.TryParse(tbxBetSum.Text, out amount);
 #if COM
@@ -759,17 +712,41 @@ namespace MyCasinoWCFClient.Pages
             {
                 _ComSrv.bet(SessionId, amount, NumberOne, NumberTwo, out errMsg);
             }
-            catch
+            catch (Exception ex)
             {
-                MessageBox.Show(errMsg);
+                if (ex is COMException)
+                    errMsg = Codes.ResolveCode((ex as COMException).ErrorCode);
+                else
+                    errMsg = "Unknown";
             }
 #else
-
-            _RemSrvMyCasino.bet(SessionId, amount, NumberOne, NumberTwo, out errMsg);
-
-            if ("BET_ALREADY_SET" == errMsg)
+            try
             {
-                MessageBox.Show("Ein anderer Benutzer hat auf diese Zahlen schon gewettet");
+                _RemSrvMyCasino.bet(SessionId, amount, NumberOne, NumberTwo, out errMsg);
+                if ("BET_ALREADY_SET" == errMsg)
+                {
+                    MessageBox.Show("Ein anderer Benutzer hat auf diese Zahlen schon gewettet");
+                }
+                else if ("NOT_ENOUGH_MONEY" == errMsg)
+                {
+                    MessageBox.Show("Nicht genügend Geld vorhanden!");
+                }
+                else if ("NO_OPERATOR_LOGGED_IN" == errMsg)
+                {
+                    MessageBox.Show("Kein Betreiber eingeloggt!");
+                }
+                else if ("BET_AMOUNT_TOO_HIGH" == errMsg)
+                {
+                    MessageBox.Show("Einsatz zu hoch!");
+                }
+                else if (errMsg == "INVALID_SESSION_ID")
+                {
+                    MessageBox.Show("Ungültige ID!");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Fehler beim Anzeigen der Wetten: " + ex.ToString());
             }
 #endif
             //Disable all row2 buttons
@@ -807,7 +784,6 @@ namespace MyCasinoWCFClient.Pages
             {
                 btnBet.IsEnabled = false;
             }
-
         }
 
 #endregion
@@ -821,7 +797,6 @@ namespace MyCasinoWCFClient.Pages
             lbFirstNumberList.Items.Clear();
             lbSecondNumberList.Items.Clear();
             lbAmountWinList.Items.Clear();
-
 #if COM
             //init COM
             uint count = 0;
@@ -840,12 +815,26 @@ namespace MyCasinoWCFClient.Pages
             {
                 _comSrv.showbets(SessionId, out bets, out count, out errMsg);
             }
-            catch
+            catch (Exception ex)
             {
-                MessageBox.Show(errMsg);
+                if (ex is COMException)
+                    errMsg = Codes.ResolveCode((ex as COMException).ErrorCode);
+                else
+                    errMsg = "Unknown";
             }
 #else
-            _RemSrvMyCasino.showbets(SessionId, out names, out firstNumberBetList, out secondNumberBetList, out amountBetList,  out count, out errMsg);
+            try
+            {
+                _RemSrvMyCasino.showbets(SessionId, out names, out firstNumberBetList, out secondNumberBetList, out amountBetList, out count, out errMsg);
+                if (errMsg == "INVALID_SESSION_ID")
+                {
+                    MessageBox.Show("Ungültige ID!");
+                }
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("Fehler beim Anzeigen der Wetten: " + ex.ToString());
+            }
 #endif
 
 #if COM
@@ -860,22 +849,35 @@ namespace MyCasinoWCFClient.Pages
                     lbSecondNumberList.Items.Add(bets.GetValue(i+2).ToString());
                     lbAmountWinList.Items.Add("Eine richtige: " + profitForOneMatch.ToString() + "   Zwei richtige: " + profitForTwoMatches.ToString());
                 }
-                catch
+                catch (Exception ex)
                 {
-                    MessageBox.Show(errMsg);
+                    if (ex is COMException)
+                        errMsg = Codes.ResolveCode((ex as COMException).ErrorCode);
+                    else
+                        errMsg = "Unknown";
                 }
 #else
             for (int i = 0; i < count ; i++)
             {
                 double profitForOneMatch = 0, profitForTwoMatches = 0;
-                _RemSrvMyCasino.calculateProfit(SessionId, amountBetList.ElementAt(i),firstNumberBetList.ElementAt(i),secondNumberBetList.ElementAt(i), out profitForOneMatch, out profitForTwoMatches, out errMsg);
+                try
+                {
+                    _RemSrvMyCasino.calculateProfit(SessionId, amountBetList.ElementAt(i), firstNumberBetList.ElementAt(i), secondNumberBetList.ElementAt(i), out profitForOneMatch, out profitForTwoMatches, out errMsg);
+                    if (errMsg == "INVALID_SESSION_ID")
+                    {
+                        MessageBox.Show("Ungültige ID!");
+                    }
+                }
+                catch(Exception ex)
+                {
+                    MessageBox.Show("Fehler bei Transactionen: " + ex.ToString());
+                }
                 lbNameList.Items.Add(names.ElementAt(i));
                 lbFirstNumberList.Items.Add(firstNumberBetList.ElementAt(i).ToString());
                 lbSecondNumberList.Items.Add(secondNumberBetList.ElementAt(i).ToString());
                 lbAmountWinList.Items.Add("Eine richtige: "+ profitForOneMatch.ToString() + "   Zwei richtige: " + profitForTwoMatches.ToString());
 #endif
             }
-            //set numbers that have been drawn
         }
 
         private void btnDraw_Click(object sender, RoutedEventArgs e)
@@ -883,14 +885,100 @@ namespace MyCasinoWCFClient.Pages
             //init
             string errMsg = null;
 #if COM
-            _ComSrv.draw(SessionId, out firstNumber, out secondNumber, out errMsg);
+            try
+            {
+                _ComSrv.draw(SessionId, out firstNumber, out secondNumber, out errMsg);
+            }
+            catch (Exception ex)
+            {
+                if (ex is COMException)
+                    errMsg = Codes.ResolveCode((ex as COMException).ErrorCode);
+                else
+                    errMsg = "Unknown";
+            }
 #else
-
-            _RemSrvMyCasino.draw(SessionId, out firstNumber, out secondNumber, out errMsg);
+            try
+            {
+                _RemSrvMyCasino.draw(SessionId, out firstNumber, out secondNumber, out errMsg);
+                if (errMsg == "INVALID_SESSION_ID")
+                {
+                    MessageBox.Show("Ungültige ID!");
+                }
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("Fehler beim Ziehen: " + ex.ToString());
+            }
 #endif
             //set numbers that have been drawn
             tblDrawnNumberOne.Text = firstNumber.ToString();
             tblDrawnNumberTwo.Text = secondNumber.ToString();
+
+            //Refresh showbets
+            btnRefresh_Click(new object(), new RoutedEventArgs());
+        }
+
+        private void btnDrawNumbers_Click(object sender, RoutedEventArgs e)
+        {
+            //init
+            string errMsg = null;
+            firstNumber=NumberOne;
+            secondNumber=NumberTwo;
+#if COM
+            try
+            {
+                _ComSrv.drawtest(SessionId, firstNumber, secondNumber, out errMsg);
+            }
+            catch (Exception ex)
+            {
+                if (ex is COMException)
+                    errMsg = Codes.ResolveCode((ex as COMException).ErrorCode);
+                else
+                    errMsg = "Unknown";
+            }
+#else
+            try
+            {
+                _RemSrvMyCasino.drawtest(SessionId, firstNumber, secondNumber, out errMsg);
+                if (errMsg == "ERROR_MY_CASINO_BET_INVALID_NUMBER") MessageBox.Show("Zahlen auswählen!");
+                else if (errMsg == "INVALID_SESSION_ID")
+                {
+                    MessageBox.Show("Ungültige ID!");
+                }
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("Fehler beim Ziehen: " + ex.ToString());
+            }
+#endif
+            //set numbers that have been drawn
+            tblDrawnNumberOne.Text = firstNumber.ToString();
+            tblDrawnNumberTwo.Text = secondNumber.ToString();
+
+            //reset Numbers
+            NumberOne = 0;
+            NumberTwo = 0;
+
+            //Disable all row2 buttons
+            btnRowTwoNumberOne.IsEnabled = false;
+            btnRowTwoNumberTwo.IsEnabled = false;
+            btnRowTwoNumberThree.IsEnabled = false;
+            btnRowTwoNumberFour.IsEnabled = false;
+            btnRowTwoNumberFive.IsEnabled = false;
+
+            //Clear all row2 buttons
+            btnRowTwoNumberOne.IsChecked = false;
+            btnRowTwoNumberTwo.IsChecked = false;
+            btnRowTwoNumberThree.IsChecked = false;
+            btnRowTwoNumberFour.IsChecked = false;
+            btnRowTwoNumberFive.IsChecked = false;
+
+            //Clear all row1 buttons
+            btnRowOneNumberOne.IsChecked = false;
+            btnRowOneNumberTwo.IsChecked = false;
+            btnRowOneNumberThree.IsChecked = false;
+            btnRowOneNumberFour.IsChecked = false;
+            btnRowOneNumberFive.IsChecked = false;
 
             //Refresh showbets
             btnRefresh_Click(new object(), new RoutedEventArgs());

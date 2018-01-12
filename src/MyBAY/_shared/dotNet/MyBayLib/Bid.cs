@@ -29,6 +29,9 @@ namespace MyBayLib
         #region C'tors
         public Bid(UInt32 bidNumber, UInt32 bidderIndex, Double bidValue)
         {
+            // If startbid is less than 0, it's automatically set to 0
+            if (bidValue < 0) bidValue = 0;
+
             this.BidderIndex = bidderIndex;
             this.BidNumber = bidNumber;
             this.BidValue = bidValue;

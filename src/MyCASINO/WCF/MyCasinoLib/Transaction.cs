@@ -15,64 +15,47 @@ namespace MyCasinoLib
         BET_WIN,
         BET_LOSS
     }
-
     public class Transaction
     {
         private MyCasinoTransactionTypes transType;
-
         public MyCasinoTransactionTypes TransType
         {
             get { return transType; }
             set { transType = value; }
         }
-
-
         private string name;
-
         public string Name
         {
             get { return name; }
             set { name = value; }
         }
-
         private int m_id;
-
         public int M_id
         {
             get { return m_id; }
             set { m_id = value; }
         }
-
         private double currentAmount;
-
         public double CurrentAmount
         {
             get { return currentAmount; }
             set { currentAmount = value; }
         }
-
         private double changeAmount;
-
         public double ChangeAmount
         {
             get { return changeAmount; }
             set { changeAmount = value; }
         }
-
         private bool isFinished;
-
         public bool IsFinished
         {
             get { return isFinished; }
             set { isFinished = value; }
         }
-
-
         public Transaction()
         {
-
         }
-
         public Transaction(int m_idTmp, double currentAmountTmp, double changeAmountTmp, string nameTmp, MyCasinoTransactionTypes typeTmp)
         {
             M_id = m_idTmp;
@@ -82,6 +65,5 @@ namespace MyCasinoLib
             TransType = typeTmp;
             IsFinished = false;
         }
-
     }
 }

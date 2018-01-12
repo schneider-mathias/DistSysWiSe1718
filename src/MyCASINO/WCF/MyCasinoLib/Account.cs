@@ -9,30 +9,31 @@ namespace MyCasinoLib
 {
     public class Account
     {
-        //List<Transaction> transactionList = new List<Transaction>();
-        //List<Bet> betResultList = new List<Bet>();
+        /// <summary>
+        /// lock object for betlist
+        /// </summary>
+        private Object thisLockUserList = new Object();
+        /// <summary>
+        /// Betlist for active but unfinished bets
+        /// </summary>
         List<Bet> betList = new List<Bet>();
-
         private double moneyAmountLeft;
-
         public double MoneyAmountLeft
         {
             get { return moneyAmountLeft; }
             set { moneyAmountLeft = value; }
         }
-
-                public Account()
+        public Account()
         {
-
         }
-
         public void getBetList(out List<Bet> bets)
         {
             bets = new List<Bet>();
-            bets.AddRange(betList);
+            lock (thisLockUserList)
+            {
+                bets.AddRange(betList);
+            }
         }
-
-        //public bool ReadUserTransaction(string username, List<Transaction>transactionList)
         public bool ReadUserTransaction(string username, Dictionary<Transaction, Draw> dictTransDraw)
         {
             try
@@ -41,17 +42,16 @@ namespace MyCasinoLib
                 using (FileStream fs = File.OpenRead(@"d:\StdArbVS\trunk\src\MyCASINO\WCF\MyCasinoData\UserBalance.txt"))
                 using (StreamReader sr = new StreamReader(fs))
                 {
-                 
                         string line;
-                        while ((line = sr.ReadLine()) != null)
-                        {
-                            int money = 0;
-                            string[] substring = line.Split();
-                            Int32.TryParse(substring[1], out money);
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        int money = 0;
+                        string[] substring = line.Split();
+                        Int32.TryParse(substring[1], out money);
                         if (substring[0] == username)
                         {
-                            
                             //read moneyamount from file
+                            //Dictonary is already locked
                             Transaction readFileTransaction = new Transaction();
                             if (dictTransDraw.Count == 0)
                             {
@@ -59,21 +59,21 @@ namespace MyCasinoLib
                             }
                             else
                             {
-                                readFileTransaction.M_id = dictTransDraw.Last().Key.M_id+1;
+                                readFileTransaction.M_id = dictTransDraw.Last().Key.M_id + 1;
                             }
                             readFileTransaction.CurrentAmount = money;
                             MoneyAmountLeft = money;
                             readFileTransaction.ChangeAmount = 0;
-                            readFileTransaction.Name=username;
+                            readFileTransaction.Name = username;
                             readFileTransaction.TransType = MyCasinoTransactionTypes.DEPOSIT;
-                            dictTransDraw.Add(readFileTransaction,null);
+                            dictTransDraw.Add(readFileTransaction, null);
                         }
-                        }
+                    }
                  }
-                
             }
-            catch (Exception ex)
+            catch (IOException ex)
             {
+                Console.Write("FILE_READING_ERROR: " + ex);
                 return false;
             }
             return true;
@@ -93,8 +93,8 @@ namespace MyCasinoLib
                         dictTransDraw.ElementAt(k).Key.Name == name) break;
                     else if (dictTransDraw.ElementAt(k).Key.TransType == MyCasinoTransactionTypes.BET_LOSS &&
                         dictTransDraw.ElementAt(k).Key.Name == name) break;
-                    
                 }
+                //already locked
                 Transaction trans = new Transaction(dictTransDraw.Last().Key.M_id + 1, dictTransDraw.ElementAt(index).Key.CurrentAmount + amountMoney, amountMoney,name,typeTmp);
                 dictTransDraw.Add(trans,null);
                 moneyAmountLeft += amountMoney;
@@ -115,33 +115,39 @@ namespace MyCasinoLib
             {
                 Bet tmpbet = new Bet(nameTmp, firstNumberTmp, secondNumberTmp, amountMoneyTmp);
                 //delete bet
-                Bet delbet= betList.Find(item => item.M_firstNumber == firstNumberTmp && item.M_secondNumber == secondNumberTmp && 0==amountMoneyTmp);
-                if (delbet!=null)
+                lock (thisLockUserList)
                 {
-                    MoneyAmountLeft += delbet.M_setAmount;
-                    typetmp = MyCasinoTransactionTypes.CANCELED;
-                    betList.Remove(delbet);
-                    _betDel = true;
-                    delOverriddenBet = true;//new
-                    return true;
+                    Bet delbet = betList.Find(item => item.M_firstNumber == firstNumberTmp && item.M_secondNumber == secondNumberTmp && 0 == amountMoneyTmp);
+                    if (delbet != null)
+                    {
+                        MoneyAmountLeft += delbet.M_setAmount;
+                        typetmp = MyCasinoTransactionTypes.CANCELED;
+                        betList.Remove(delbet);
+                        _betDel = true;
+                        delOverriddenBet = true;
+                        return true;
+                    }
                 }
                 if (amountMoneyTmp == 0)
                 {
                     typetmp = MyCasinoTransactionTypes.CANCELED;
                     return true;
                 }
-                Bet bet = betList.Find(item => item.M_firstNumber == firstNumberTmp && item.M_secondNumber == secondNumberTmp);
-                //delete bet to override it
-                if (bet!=null)
+                lock (thisLockUserList)
                 {
-                    MoneyAmountLeft += bet.M_setAmount;
-                    delOverriddenBet = true;
-                    betList.Remove(bet);
+                    Bet bet = betList.Find(item => item.M_firstNumber == firstNumberTmp && item.M_secondNumber == secondNumberTmp);
+                    //delete bet to override it
+                    if (bet != null)
+                    {
+                        MoneyAmountLeft += bet.M_setAmount;
+                        delOverriddenBet = true;
+                        betList.Remove(bet);
+                    }
+                    //add bet
+                    overridden = false;
+                    typetmp = MyCasinoTransactionTypes.BET_WAGER;
+                    betList.Add(tmpbet);
                 }
-                //add bet
-                overridden = false;
-                typetmp = MyCasinoTransactionTypes.BET_WAGER;
-                betList.Add(tmpbet);
                 return true;
             }
             catch
@@ -159,16 +165,17 @@ namespace MyCasinoLib
             //try to copy a single userinformation into betlist for showbets
             try
             {
-                for (int i = 0; i < betList.Count; i++)
+                lock (thisLockUserList)
                 {
-                    bets.Add(betList.ElementAt(i));
+                    for (int i = 0; i < betList.Count; i++)
+                    {
+                        bets.Add(betList.ElementAt(i));
+                    }
                 }
-                
                 return true;
             }
             catch
             {
-                
                 return false;
             }
         }
@@ -178,15 +185,17 @@ namespace MyCasinoLib
             //Init
             profitForOneMatch = 0;
             profitForTwoMatches = 0;
-
             //Calculate profit for one and two matches of numbers
             try
             {
                 profitForOneMatch = amountMoney * 2;
-                profitForTwoMatches = profitForOneMatch; //TODO: Profit ???
-                for (int i = 0; i < betList.Count; i++)
+                profitForTwoMatches = profitForOneMatch;
+                lock (thisLockUserList)
                 {
-                    profitForTwoMatches += betList.ElementAt(i).M_setAmount;
+                    for (int i = 0; i < betList.Count; i++)
+                    {
+                        profitForTwoMatches += betList.ElementAt(i).M_setAmount;
+                    }
                 }
                 return true;
             }
@@ -204,22 +213,25 @@ namespace MyCasinoLib
             profit = new List<double>();
             try
             {
-                foreach (Bet bet in betList)
+                lock (thisLockUserList)
                 {
-                    //Two matches profit save
-                    if (bet.M_firstNumber == firstNumber && bet.M_secondNumber == secondNumber)
+                    foreach (Bet bet in betList)
                     {
-                        CalculateProfit(bet.M_setAmount, out oneMatch, out twoMatches);
-                        profit.Add(twoMatches);
+                        //Two matches profit save
+                        if (bet.M_firstNumber == firstNumber && bet.M_secondNumber == secondNumber)
+                        {
+                            CalculateProfit(bet.M_setAmount, out oneMatch, out twoMatches);
+                            profit.Add(twoMatches);
+                        }
+                        //One match profit save
+                        else if (bet.M_firstNumber == firstNumber || bet.M_secondNumber == secondNumber || bet.M_firstNumber == secondNumber
+                            || bet.M_secondNumber == firstNumber)
+                        {
+                            CalculateProfit(bet.M_setAmount, out oneMatch, out twoMatches);
+                            profit.Add(oneMatch);
+                        }
+                        else profit.Add(0);
                     }
-                    //One match profit save
-                    else if (bet.M_firstNumber == firstNumber || bet.M_secondNumber == secondNumber || bet.M_firstNumber == secondNumber
-                        || bet.M_secondNumber == firstNumber)
-                    {
-                        CalculateProfit(bet.M_setAmount, out oneMatch, out twoMatches);
-                        profit.Add(oneMatch);
-                    }
-                    else profit.Add(0);
                 }
                 return true;
             }
@@ -237,14 +249,12 @@ namespace MyCasinoLib
             secondNumber = 0;
             try
             {
-                //do
-                //{
-                //    Random rnd = new Random();
-                //    firstNumber = rnd.Next(1, 5);
-                //    secondNumber = rnd.Next(1, 5);
-                //} while (!(firstNumber < secondNumber));
-                firstNumber = 1;
-                secondNumber = 2;
+                do
+                {
+                    Random rnd = new Random();
+                    firstNumber = rnd.Next(1, 5);
+                    secondNumber = rnd.Next(1, 5);
+                } while (!(firstNumber < secondNumber));
                 return true;
             }
             catch
@@ -257,7 +267,10 @@ namespace MyCasinoLib
         {
             try
             {
-                betList.Clear();
+                lock (thisLockUserList)
+                {
+                    betList.Clear();
+                }
                 return true;
             }
             catch
@@ -265,7 +278,6 @@ namespace MyCasinoLib
                 return false;
             }
         }
-
         //evtl löschen
         public bool SaveBetsDrawings(out List<Bet> bets)
         {
@@ -274,7 +286,10 @@ namespace MyCasinoLib
             bets = new List<Bet>();
             try
             {
-                bets.AddRange(betList);
+                lock (thisLockUserList)
+                {
+                    bets.AddRange(betList);
+                }
                 return true;
             }
             catch
