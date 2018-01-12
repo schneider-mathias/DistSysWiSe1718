@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Fri Jan 12 17:37:17 2018
+/* at Fri Jan 12 22:40:54 2018
  */
 /* Compiler settings for COMMyBaySrv.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -360,7 +360,7 @@ static const COMMyBaySrv_MIDL_PROC_FORMAT_STRING COMMyBaySrv__MIDL_ProcFormatStr
 /* 274 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
-	/* Parameter bidVal */
+	/* Parameter bidValue */
 
 /* 276 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
 /* 278 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
@@ -1282,7 +1282,7 @@ static const USER_MARSHAL_ROUTINE_QUADRUPLE UserMarshalRoutines[ WIRE_MARSHAL_TA
 
 
 /* Object interface: ICOMMyBay, ver. 0.0,
-   GUID={0x148D7498,0x389E,0x476E,{0x8A,0x40,0x31,0x18,0x00,0xA2,0x5C,0xE4}} */
+   GUID={0xC3E6334F,0x3574,0x4001,{0x8D,0xBE,0x1B,0x54,0x9B,0x38,0x77,0xD0}} */
 
 #pragma code_seg(".orpc")
 static const unsigned short ICOMMyBay_FormatStringOffsetTable[] =

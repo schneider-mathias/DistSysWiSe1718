@@ -1,12 +1,12 @@
+#include "COMMyBayCln.h"
+#include <atlsafe.h>
 #include <iostream>
 #include <vector>
-//#import "COMMyBaySrv.dll"
+#import "COMMyBaySrv.dll"
 #include "CharStringConverter.h"
 #include "BstrStringConverter.h"
 #include <thread>
 #include <windows.h>
-#include <atlsafe.h>
-#include "COMMyBayCln.h"
 
 using namespace std;
 

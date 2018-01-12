@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Fri Jan 12 17:37:17 2018
+/* at Fri Jan 12 22:40:54 2018
  */
 /* Compiler settings for COMMyBaySrv.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -94,7 +94,7 @@ EXTERN_C const IID IID_ICOMMyBay;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("148D7498-389E-476E-8A40-311800A25CE4")
+    MIDL_INTERFACE("C3E6334F-3574-4001-8DBE-1B549B3877D0")
     ICOMMyBay : public IDispatch
     {
     public:
@@ -126,7 +126,7 @@ EXTERN_C const IID IID_ICOMMyBay;
         virtual /* [id] */ HRESULT STDMETHODCALLTYPE bid( 
             /* [in] */ ULONG sessionId,
             /* [in] */ ULONG auctionNumber,
-            /* [in] */ DOUBLE bidVal) = 0;
+            /* [in] */ DOUBLE bidValue) = 0;
         
         virtual /* [id] */ HRESULT STDMETHODCALLTYPE details( 
             /* [in] */ ULONG sessionId,
@@ -236,7 +236,7 @@ EXTERN_C const IID IID_ICOMMyBay;
             ICOMMyBay * This,
             /* [in] */ ULONG sessionId,
             /* [in] */ ULONG auctionNumber,
-            /* [in] */ DOUBLE bidVal);
+            /* [in] */ DOUBLE bidValue);
         
         /* [id] */ HRESULT ( STDMETHODCALLTYPE *details )( 
             ICOMMyBay * This,
@@ -308,8 +308,8 @@ EXTERN_C const IID IID_ICOMMyBay;
 #define ICOMMyBay_getAuctions(This,sessionId,flags,articleName,countAuctions,auctions)	\
     ( (This)->lpVtbl -> getAuctions(This,sessionId,flags,articleName,countAuctions,auctions) ) 
 
-#define ICOMMyBay_bid(This,sessionId,auctionNumber,bidVal)	\
-    ( (This)->lpVtbl -> bid(This,sessionId,auctionNumber,bidVal) ) 
+#define ICOMMyBay_bid(This,sessionId,auctionNumber,bidValue)	\
+    ( (This)->lpVtbl -> bid(This,sessionId,auctionNumber,bidValue) ) 
 
 #define ICOMMyBay_details(This,sessionId,auctionNumber,allBids,countBids)	\
     ( (This)->lpVtbl -> details(This,sessionId,auctionNumber,allBids,countBids) ) 
@@ -345,7 +345,7 @@ EXTERN_C const CLSID CLSID_COMMyBay;
 
 #ifdef __cplusplus
 
-class DECLSPEC_UUID("BCD466A4-0DB3-468E-9C14-AF36AD44C119")
+class DECLSPEC_UUID("E591CA8E-1693-4BD0-9A65-919D333389AA")
 COMMyBay;
 #endif
 #endif /* __COMMyBaySrvLib_LIBRARY_DEFINED__ */

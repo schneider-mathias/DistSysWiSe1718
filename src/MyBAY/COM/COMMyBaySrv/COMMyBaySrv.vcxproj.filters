@@ -14,7 +14,7 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="Generierte Dateien">
-      <UniqueIdentifier>{7857a95a-2c81-494e-aa94-6a8da85ae975}</UniqueIdentifier>
+      <UniqueIdentifier>{71e4e661-f46b-4efc-bbd3-28afe5e5fb83}</UniqueIdentifier>
       <SourceControlFiles>False</SourceControlFiles>
     </Filter>
   </ItemGroup>
@@ -52,6 +52,9 @@
       <Filter>Generierte Dateien</Filter>
     </ClInclude>
     <ClInclude Include="COMMyBay.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="COMMyBayLogic.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="CritSectionWrapper.h">

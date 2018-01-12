@@ -1,37 +1,26 @@
-/************************************************************/
-/*                                                          */
-/* Inhalt:    Serverimplementierung				            */
-/*                                                          */
-/* Autor:	  Johannes Sauer		                        */
-/* Stand:     23. Jan 2018                                  */
-/*															*/
-/************************************************************/
+// COMMyBay.cpp: Implementierung von CCOMMyBay
 
 #include "stdafx.h"
-#include "COMMyBay.h"
-#include "BstrStringConverter.h"
-#include "CharStringConverter.h"
-#include <atlsafe.h>
 #include <fstream>
 #include <iostream>
-#include <stdlib.h>
-#include <locale>
-#include <codecvt>
 #include <string>
+#include <atlsafe.h>
+#include "COMMyBayLogic.h"
+#include "BstrStringConverter.h"
+#include "CharStringConverter.h"
+#include "COMMyBay.h"
 
-using namespace std;
 
 // CCOMMyBay
-CCOMMyBay::CCOMMyBay()
-{
-}
 
-STDMETHODIMP CCOMMyBay::login(BSTR username, BSTR password, ULONG * sessionId)
+
+
+STDMETHODIMP CCOMMyBay::login(BSTR username, BSTR password, ULONG* sessionId)
 {
 	std::wifstream csvread;
 	srand((unsigned)time(NULL)); // Zufallsgenerator initialisieren.
 
-	// Wenn sich der erste Nutzer einloggt, werden die persistent gespeicherten Auktionen aus der Datei ausgelesen
+								 // Wenn sich der erste Nutzer einloggt, werden die persistent gespeicherten Auktionen aus der Datei ausgelesen
 	if (users.size() == 0)
 	{
 		AuctionList.clear();
@@ -77,6 +66,7 @@ STDMETHODIMP CCOMMyBay::login(BSTR username, BSTR password, ULONG * sessionId)
 	return ERROR_USERNAME_OR_PASSWORD_WRONG;
 }
 
+
 STDMETHODIMP CCOMMyBay::logout(ULONG sessionId)
 {
 	//überprüfen ob user angemeldet und dann aus Liste entfernen
@@ -92,7 +82,8 @@ STDMETHODIMP CCOMMyBay::logout(ULONG sessionId)
 	return ERROR_USER_NOT_LOGGED_IN; //user nicht angemeldet
 }
 
-STDMETHODIMP CCOMMyBay::offer(ULONG sessionId, BSTR articleName, DOUBLE startBid, ULONG * auctionNumber)
+
+STDMETHODIMP CCOMMyBay::offer(ULONG sessionId, BSTR articleName, DOUBLE startBid, ULONG* auctionNumber)
 {
 	// Prüfen ob User eingeloggt ist
 	if (BOOL isLoggedIn = loginCheck(sessionId) == FALSE)
@@ -119,6 +110,7 @@ STDMETHODIMP CCOMMyBay::offer(ULONG sessionId, BSTR articleName, DOUBLE startBid
 
 	return S_OK;
 }
+
 
 STDMETHODIMP CCOMMyBay::interested(ULONG sessionId, ULONG auctionNumber)
 {
@@ -173,13 +165,13 @@ STDMETHODIMP CCOMMyBay::getAuctions(ULONG sessionId, ULONG flags, BSTR articleNa
 	{
 		auctionsSafeArray[safeArrIt++] = wstr_to_bstr(retStr.at(i));
 	}
-	auctionsSafeArray.CopyTo(auctions);												
+	auctionsSafeArray.CopyTo(auctions);
 	*countAuctions = interestingAuctions.size();
 
 	return S_OK;
 }
 
-STDMETHODIMP CCOMMyBay::bid(ULONG sessionId, ULONG auctionNumber, DOUBLE bidVal)
+STDMETHODIMP CCOMMyBay::bid(ULONG sessionId, ULONG auctionNumber, DOUBLE bidValue)
 {
 	// Prüfen ob User eingeloggt ist
 	if (BOOL isLoggedIn = loginCheck(sessionId) == FALSE)
@@ -193,7 +185,7 @@ STDMETHODIMP CCOMMyBay::bid(ULONG sessionId, ULONG auctionNumber, DOUBLE bidVal)
 	{
 		return ERROR_AUCTIONNUMBER_DOES_NOT_ESXIST;
 	}
-	if (bidVal < 0)
+	if (bidValue < 0)
 	{
 		return ERROR_BID_NEGATIVE;
 	}
@@ -202,12 +194,12 @@ STDMETHODIMP CCOMMyBay::bid(ULONG sessionId, ULONG auctionNumber, DOUBLE bidVal)
 	{
 		return ERROR_AUCTION_CLOSED;
 	}
-	BOOL bidSuccessfull = addBidToAuction(auctionNumber, bidVal, user);
+	BOOL bidSuccessfull = addBidToAuction(auctionNumber, bidValue, user);
 	if (bidSuccessfull == FALSE)	// Gebot muss höher als Startgebot und Höchstgebot sein
 	{
 		return ERROR_BID_TOO_LOW;
 	}
-	addNewBidToMessages(auctionNumber, bidVal, user);
+	addNewBidToMessages(auctionNumber, bidValue, user);
 
 	// aktualisiert die MyBayAuctions.txt
 	writeAuctionsToFile();
@@ -215,7 +207,7 @@ STDMETHODIMP CCOMMyBay::bid(ULONG sessionId, ULONG auctionNumber, DOUBLE bidVal)
 	return S_OK;
 }
 
-STDMETHODIMP CCOMMyBay::details(ULONG sessionId, ULONG auctionNumber, SAFEARRAY_VAR* allBids, ULONG* countBids)
+STDMETHODIMP CCOMMyBay::details(ULONG sessionId, ULONG auctionNumber, SAFEARRAY_VAR * allBids, ULONG * countBids)
 {
 	// Prüfen ob User eingeloggt ist
 	if (BOOL isLoggedIn = loginCheck(sessionId) == FALSE)
@@ -274,7 +266,7 @@ STDMETHODIMP CCOMMyBay::endauction(ULONG sessionId, ULONG auctionNumber)
 	return S_OK;
 }
 
-STDMETHODIMP CCOMMyBay::getMessage(ULONG sessionId, BOOL*messageAvailable, ULONG* messageType, SAFEARRAY_VAR* message)
+STDMETHODIMP CCOMMyBay::getMessage(ULONG sessionId, BOOL * messageAvailable, ULONG * messageType, SAFEARRAY_VAR * message)
 {
 	// Prüfen ob User eingeloggt ist
 	if (BOOL isLoggedIn = loginCheck(sessionId) == FALSE)

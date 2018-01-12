@@ -7,38 +7,35 @@
 import "oaidl.idl";
 import "ocidl.idl";
 
-
-
 typedef SAFEARRAY(VARIANT) SAFEARRAY_VAR;
 
 [
 	object,
-	uuid(148D7498-389E-476E-8A40-311800A25CE4),
+	uuid(C3E6334F-3574-4001-8DBE-1B549B3877D0),
 	dual,
 	nonextensible,
 	pointer_default(unique)
 ]
-interface ICOMMyBay : IDispatch {
+interface ICOMMyBay : IDispatch{
 	[id(1)] HRESULT login([in] BSTR username, [in] BSTR password, [out] ULONG* sessionId);
 	[id(2)] HRESULT logout([in] ULONG sessionId);
 	[id(3)] HRESULT offer([in] ULONG sessionId, [in] BSTR articleName, [in] DOUBLE startBid, [out] ULONG* auctionNumber);
 	[id(4)] HRESULT interested([in] ULONG sessionId, [in] ULONG auctionNumber);
 	[id(5)] HRESULT getAuctions([in] ULONG sessionId, [in] ULONG flags, [in] BSTR articleName, [out] ULONG* countAuctions, [out] SAFEARRAY_VAR* auctions);
-	[id(6)] HRESULT bid([in] ULONG sessionId, [in] ULONG auctionNumber, [in] DOUBLE bidVal);
+	[id(6)] HRESULT bid([in] ULONG sessionId, [in] ULONG auctionNumber, [in] DOUBLE bidValue);
 	[id(7)] HRESULT details([in] ULONG sessionId, [in] ULONG auctionNumber, [out] SAFEARRAY_VAR* allBids, [out] ULONG* countBids);
 	[id(8)] HRESULT endauction([in] ULONG sessionId, [in] ULONG auctionNumber);
 	[id(9)] HRESULT getMessage([in] ULONG sessionId, [out] BOOL* messageAvailable, [out] ULONG* messageType, [out] SAFEARRAY_VAR* message);
 };
-
 [
-	uuid(99060876-7DF0-4AE6-A52B-55279F3CBB35),
+	uuid(1D44AFF3-01FA-4E73-B830-297A78FF5194),
 	version(1.0),
 ]
 library COMMyBaySrvLib
 {
 	importlib("stdole2.tlb");
 	[
-		uuid(BCD466A4-0DB3-468E-9C14-AF36AD44C119)
+		uuid(E591CA8E-1693-4BD0-9A65-919D333389AA)		
 	]
 	coclass COMMyBay
 	{
