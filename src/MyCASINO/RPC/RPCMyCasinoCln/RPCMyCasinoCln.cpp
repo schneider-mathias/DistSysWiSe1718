@@ -1,3 +1,4 @@
+#include "IPValidate.h"
 #include "MyCasino_i.h"    
 #include "Config.h"
 #include "RpcException.h"
@@ -19,6 +20,12 @@ void main(int argc, char**argv)
 	{
 		srvAdress =  (char*)malloc((strlen(argv[1]) + 1) * sizeof(char));
 		srvAdress = _strdup(argv[1]);
+
+		if (!validateIpAddress(srvAdress))
+		{
+			std::cout << "Inliad format for IP address parameter: " << srvAdress << std::endl;
+			return;
+		}
 	}
 
 	try

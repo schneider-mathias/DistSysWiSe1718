@@ -112,6 +112,7 @@
   <ItemGroup>
     <ClInclude Include="BstrStringConverter.h" />
     <ClInclude Include="CharStringConverter.h" />
+    <ClInclude Include="IPValidate.h" />
     <ClInclude Include="TaggedUnion.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

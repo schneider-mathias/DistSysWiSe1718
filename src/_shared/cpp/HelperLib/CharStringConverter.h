@@ -1,11 +1,14 @@
-#pragma once
+#ifndef CHAR_STRING_CONVERTER_INLCUDED
+#define CHAR_STRING_CONVERTER_INLCUDED
+
+
 #include <Windows.h>
 #include <string>
 
 
 //https://codereview.stackexchange.com/questions/419/converting-between-stdwstring-and-stdstring
 
-std::wstring char_to_wstring(const char* str2conv)
+inline std::wstring char_to_wstring(const char* str2conv)
 {
 	const std::string& str(str2conv);
 	int size_needed = MultiByteToWideChar(CP_UTF8, 0, &str[0], (int)str.size(), NULL, 0);
@@ -14,7 +17,7 @@ std::wstring char_to_wstring(const char* str2conv)
 	return wstrTo;
 }
 
-char* wstring_to_char(const std::wstring& s)
+inline char* wstring_to_char(const std::wstring& s)
 {
 	int len;
 	int slength = (int)s.length() + 1;
@@ -23,3 +26,5 @@ char* wstring_to_char(const std::wstring& s)
 	WideCharToMultiByte(CP_UTF8, 0, s.c_str(), slength, buf, len, 0, 0);
 	return buf;
 }
+
+#endif // !CHAR_STRING_CONVERTER_INLCUDED

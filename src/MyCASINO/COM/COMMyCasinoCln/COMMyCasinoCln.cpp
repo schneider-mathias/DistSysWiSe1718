@@ -1,3 +1,5 @@
+#include "IPValidate.h"
+
 #include <windows.h>
 #include <iostream>
 
@@ -31,6 +33,12 @@ int main(int argc, char**argv)
 	if (argc > 1)
 	{
 		std::wstring wstr_SrvName(argv[1], argv[1] + strlen(argv[1]) + 1);
+		if (!validateIpAddress(wstr_SrvName))
+		{
+			std::wcerr << "Inliad format for IP address parameter: " << wstr_SrvName << std::endl;
+			return FALSE;
+		}
+
 		lpwstr_SrvName = new WCHAR[wstr_SrvName.length()];
 		StrCpyNW(lpwstr_SrvName, wstr_SrvName.c_str(), wstr_SrvName.length());
 		std::copy(argv[1], argv[1] + strlen(argv[1]), lpwstr_SrvName);
