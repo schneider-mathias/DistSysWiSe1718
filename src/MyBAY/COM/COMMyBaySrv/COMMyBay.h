@@ -14,7 +14,9 @@
 #include <vector>
 #include "MyBayDefines.h"
 #include "CritSectionWrapper.h"
-//TODO: BSTringConverter und CharStringConverter
+#include "CharStringConverter.h"
+#include "BstrStringConverter.h"
+#include <fstream>
 #include <thread>
 #include <string>
 #include "COMMyBaySrv_i.h"
@@ -109,6 +111,39 @@ OBJECT_ENTRY_AUTO(__uuidof(COMMyBay), CCOMMyBay)
 /********************************************************************/
 /*							Hilfsfunktionen							*/
 /********************************************************************/
+
+BOOL loginCheck(unsigned long sessionId);
+BOOL loginCheck(unsigned char username);
+wstring getUserName(unsigned long sessionId);
+void readAuctionsFromFile();
+void writeAuctionsToFile();
+ULONG addNewAuction(wstring sarticleName, double startBid);
+BOOL checkAuctionNumber(unsigned long auctionNumber);
+BOOL addUserToInterestedUserList(wstring user, unsigned long auctionNumber);
+int getAuctionState(unsigned long auctionNumber);
+BOOL addBidToAuction(unsigned long auctionNumber, double bidVal, wstring user);
+BOOL auctionStatusCheck(unsigned long auctionNumber);
+BOOL userCreatedAuctioncheck(wstring user, unsigned long auctionNumber);
+int getSerializedStrSize(unsigned long auctionNumber);
+unsigned long countBidsOfAuction(unsigned long auctionNumber);
+vector<wstring> getAllBids(ULONG auctionNumber);
+wstring serializeAuctionDetails(unsigned long auctionNumber);
+BOOL endAuction(wstring user, unsigned long auctionNumber);
+vector<wstring> searchForMessage(wstring user);
+int countMessages(wstring user);
+wstring serializeMessage(vector<wstring> newMessage);
+void addNewBidToMessages(unsigned long auctionNumber, double bidVal, wstring user);
+wstring getArticleName(unsigned long auctionNumber);
+vector<auction> filterArtName(wstring user, wstring sarticleName);
+vector<auction> filterAuctionsByFlags(wstring user, unsigned long flags, vector<auction> filteredArtNameAuctions);
+vector<auction> getInterestingAuctions(wstring user, unsigned long flags, wstring sarticleName);
+vector<wstring> filterInterestingInfos(vector<auction> interestingAuctions);
+wstring serializeAuctions(vector<auction> interestingAuctions);
+int numberOfElements(wstring serStr);
+void auctionEndProcess(wstring user, unsigned long auctionNumber);
+void addEndAuctionMessage(wstring user, unsigned long auctionNumber, int warningNr);
+void endAuction(unsigned long auctionNumber);
+
 
 // Prüfe ob User bereits eingeloggt ist
 BOOL loginCheck(unsigned long sessionId)
@@ -368,6 +403,7 @@ int getAuctionState(unsigned long auctionNumber)
 		}
 	}
 	LeaveCriticalSection(critSecWrapper.getInstance());
+	return 0;
 }
 
 // Fügt ein Gebot zur Auktion hinzu
@@ -494,6 +530,7 @@ vector<wstring> getAllBids(ULONG auctionNumber)
 		}
 	}
 	LeaveCriticalSection(critSecWrapper.getInstance());
+	return bidsStr;
 }
 
 

@@ -1,3 +1,12 @@
+/************************************************************/
+/*                                                          */
+/* Inhalt:    Serverimplementierung				            */
+/*                                                          */
+/* Autor:	  Johannes Sauer		                        */
+/* Stand:     23. Jan 2018                                  */
+/*															*/
+/************************************************************/
+
 #include "stdafx.h"
 #include "COMMyBay.h"
 #include "BstrStringConverter.h"
@@ -12,11 +21,14 @@
 
 using namespace std;
 
-ULONG CCOMMyBay::num_auct;
+// CCOMMyBay
+CCOMMyBay::CCOMMyBay()
+{
+}
 
 STDMETHODIMP CCOMMyBay::login(BSTR username, BSTR password, ULONG * sessionId)
 {
-	wifstream csvread;
+	std::wifstream csvread;
 	srand((unsigned)time(NULL)); // Zufallsgenerator initialisieren.
 
 	// Wenn sich der erste Nutzer einloggt, werden die persistent gespeicherten Auktionen aus der Datei ausgelesen
@@ -28,7 +40,7 @@ STDMETHODIMP CCOMMyBay::login(BSTR username, BSTR password, ULONG * sessionId)
 
 	/* Abfrage ob User nicht schon eingeloggt ist.*/
 	wstring tmp = bstr_to_wstr(username);
-	BOOL isLoggedIn = loginCheck(tmp.c_str);
+	BOOL isLoggedIn = loginCheck((unsigned char)tmp.c_str());
 	if (isLoggedIn == TRUE)
 	{
 		//cout << "Sie sind bereits angemeldet" << endl;
@@ -153,11 +165,11 @@ STDMETHODIMP CCOMMyBay::getAuctions(ULONG sessionId, ULONG flags, BSTR articleNa
 	}
 	vector<wstring> retStr = filterInterestingInfos(interestingAuctions);			// benötigte Informationen aus Auktionen suchen 
 
-	ATL::CComSafeArray<VARIANT> auctionsSafeArray(retStr.size);						// SafeArray mit entsprechender Größer initialiseren
+	ATL::CComSafeArray<VARIANT> auctionsSafeArray(retStr.size());						// SafeArray mit entsprechender Größer initialiseren
 
 	int safeArrIt = 0;
 	// Alle Informationen im SafeArray speichern
-	for (int i = 0; i < retStr.size; i++)
+	for (int i = 0; i < retStr.size(); i++)
 	{
 		auctionsSafeArray[safeArrIt++] = wstr_to_bstr(retStr.at(i));
 	}
@@ -224,11 +236,11 @@ STDMETHODIMP CCOMMyBay::details(ULONG sessionId, ULONG auctionNumber, SAFEARRAY_
 	vector<wstring> bidsStr = getAllBids(auctionNumber);
 	// Speicher für die Übertragung des String_t allokieren
 	// TODO: SAVEARRAY
-	ATL::CComSafeArray<VARIANT> auctionsSafeArray(bidsStr.size);						// SafeArray mit entsprechender Größer initialiseren
+	ATL::CComSafeArray<VARIANT> auctionsSafeArray(bidsStr.size());						// SafeArray mit entsprechender Größer initialiseren
 
 	int safeArrIt = 0;
 	// Alle Informationen im SafeArray speichern
-	for (int i = 0; i < bidsStr.size; i++)
+	for (int i = 0; i < bidsStr.size(); i++)
 	{
 		auctionsSafeArray[safeArrIt++] = wstr_to_bstr(bidsStr.at(i));
 	}
@@ -282,18 +294,26 @@ STDMETHODIMP CCOMMyBay::getMessage(ULONG sessionId, BOOL*messageAvailable, ULONG
 		// Speicher für die Übertragung des String_t allokieren
 		// TODO: SAVEARRAY
 
+		ATL::CComSafeArray<VARIANT> auctionsSafeArray(newMessage.size());						// SafeArray mit entsprechender Größer initialiseren
+
+		int safeArrIt = 0;
+		// Alle Informationen im SafeArray speichern
+		for (int i = 0; i < newMessage.size(); i++)
+		{
+			auctionsSafeArray[safeArrIt++] = wstr_to_bstr(newMessage.at(i));
+		}
+		auctionsSafeArray.CopyTo(message);
 	}
 
 	// Falls noch mehr Nachrichten für den Nutzer bereit liegen, wird der User mit messageAvailable darüber informiert.
-	// Damit weiß er, dass er nochmal Pullen muss um sich die restlichen Nachrichten abzuholen
-	// und nicht wartet bis der Timer bis zum nächsten Pull abgelaufen ist.
+	// Damit weiß er, dass er nochmal Pullen muss, um sich die restlichen Nachrichten abzuholen
+	// und nicht wartet bis der Timer für den nächsten Pull abgelaufen ist.
 	if (msgCnt > 1)
 	{
 		*messageAvailable = TRUE;
 	}
 	else
 		*messageAvailable = FALSE;
-
 
 	return S_OK;
 }
