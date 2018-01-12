@@ -69,10 +69,40 @@ namespace MyBayWCFCln
 
             try
             {
-                String returnStr = _remoteSrvMyBay.getMessage(sessionID,out messageAvailable,out messageType, out message);
-                if (returnStr.Contains("OK"))
+#if COM
+                Array com_message;
+                _comServer.getMessage(this.sessionID, out messageAvailable, out messageType, out com_message);
+                message = new MessageTransfer();
+                if (com_message != null && messageType != default(UInt32))
                 {
                     switch (messageType)
+                    {
+                        case 0: // New Bid
+                            message.MessageText = (String)com_message.GetValue(0);
+                            message.MessageText2 = (String)com_message.GetValue(1);
+                            message.MessageDoubleValue = (Double)com_message.GetValue(2);
+                            message.MessageIntValue = (UInt32)com_message.GetValue(3);
+                            break;
+                        case 1:
+                            message.MessageIntValue = (UInt32)com_message.GetValue(0);
+                            message.MessageText2 = (String)com_message.GetValue(1);
+                            message.MessageIntValue2 = (UInt32)com_message.GetValue(2);
+                            break;
+                        case 2:
+                            message.MessageText = (String)com_message.GetValue(0);
+                            message.MessageDoubleValue = (Double)com_message.GetValue(1);
+                            message.MessageIntValue = (UInt32)com_message.GetValue(2);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+#else
+                String returnStr = _remoteSrvMyBay.getMessage(sessionID,out messageAvailable,out messageType, out message);
+                if (!returnStr.Contains("OK")) return;
+                
+#endif
+                switch (messageType)
                     {
                         case 0: // New Bid
                             if (!String.IsNullOrEmpty(message.MessageText2))
@@ -142,13 +172,8 @@ namespace MyBayWCFCln
                     {
                         this.getMessageTimer.Interval = 10;
                     }
-                }
-                else
-                {
-                    return;
-                }
             }
-            catch (Exception)
+            catch (Exception except)
             {
                 MessageBoxResult result = MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
             }
@@ -208,7 +233,6 @@ namespace MyBayWCFCln
 #if COM
                     _comServer.logout(this.sessionID);
                     this.getMessageTimer.Stop();
-
 #else
                     String returnStr = _remoteSrvMyBay.logout(this.sessionID);
                     if (!returnStr.Contains("OK"))
@@ -268,7 +292,7 @@ namespace MyBayWCFCln
                 }
 
 #if COM
-
+                _comServer.offer(this.sessionID, this.txtBox_articleName.Text, tempStartBid, out auctionNumber);
 #else
                 String returnStr = _remoteSrvMyBay.offer(sessionID, this.txtBox_articleName.Text, tempStartBid, out auctionNumber);
 
@@ -306,7 +330,7 @@ namespace MyBayWCFCln
                 }
 
 #if COM
-
+                _comServer.bid(this.sessionID, auctionNumber, bidValue);
 #else
                 String returnStr = _remoteSrvMyBay.bid(sessionID, auctionNumber, bidValue);
                 if (!returnStr.Contains("OK"))
@@ -337,6 +361,7 @@ namespace MyBayWCFCln
                 UInt32 auctionNumber = (selectedAuction as AuctionListBoxItem).auctionNumber;
 
 #if COM
+                _comServer.interested(this.sessionID, auctionNumber);
 
 #else
                 String returnStr = _remoteSrvMyBay.interested(sessionID, auctionNumber);
@@ -368,7 +393,7 @@ namespace MyBayWCFCln
                 UInt32 auctionNumber = (selectedAuction as AuctionListBoxItem).auctionNumber;
 
 #if COM
-
+                _comServer.endauction(this.sessionID, auctionNumber);
 #else
                 String returnStr = _remoteSrvMyBay.endauction(sessionID, auctionNumber);
 
@@ -393,7 +418,7 @@ namespace MyBayWCFCln
                 List<AuctionTransfer> newListAuctions;
 
                 UInt32 flags = 0;
-                UInt32 countAuctions;
+                UInt32 countAuctions = 0;
 
                 if ((bool)radioBtn_interested.IsChecked)
                 {
@@ -411,7 +436,24 @@ namespace MyBayWCFCln
                 this.listBox_auctions.Items.Clear();
 
 #if COM
+                Array com_auctions;
+                _comServer.getAuctions(this.sessionID, flags, this.txtBox_search.Text, out countAuctions, out com_auctions);
+                newListAuctions = new List<AuctionTransfer>();
+                if (com_auctions != null && countAuctions > 0)
+                {
+                    for (int i = 0; i < (countAuctions * 5); i++)
+                    {
+                        AuctionTransfer newItem = new AuctionTransfer();
 
+                        newItem.AuctNumber = (UInt32)com_auctions.GetValue(i);
+                        newItem.ArtName = (String)com_auctions.GetValue(++i);
+                        newItem.HighestBid = (Double)com_auctions.GetValue(++i);
+                        newItem.AuctionState = (UInt32)com_auctions.GetValue(++i);
+                        newItem.CountBids = (UInt32)com_auctions.GetValue(++i);
+
+                        newListAuctions.Add(newItem);
+                    }
+                }
 #else
                 String returnStr;
                 if (String.IsNullOrEmpty(this.txtBox_search.Text))
@@ -469,7 +511,22 @@ namespace MyBayWCFCln
                 UInt32 auctionNumber = (selectedAuction as AuctionListBoxItem).auctionNumber;
 
 #if COM
+                Array com_allbids;
+                _comServer.details(this.sessionID, auctionNumber, out com_allbids, out countBids);
+                newListBids = new List<BidTransfer>();
+                if (com_allbids != null && countBids > 0)
+                {
+                    for (int i = 0; i < (countBids * 3); i++)
+                    {
+                        BidTransfer newItem = new BidTransfer();
 
+                        newItem.BidNumber = (UInt32)com_allbids.GetValue(i);
+                        newItem.Bidder = (String)com_allbids.GetValue(++i);
+                        newItem.BidValue = (Double)com_allbids.GetValue(++i);
+
+                        newListBids.Add(newItem);
+                    }
+                }
 #else
                 String returnStr = _remoteSrvMyBay.details(sessionID, auctionNumber, out countBids, out newListBids);
                 if (!returnStr.Contains("OK"))
