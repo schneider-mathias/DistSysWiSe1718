@@ -160,7 +160,7 @@ namespace MyBayLib
                 }
                 else
                 {
-                    return "Gebot ist zu niedrig, bieten Sie mehr als: " + this._highestBid.BidValue.ToString("C") + "€";
+                    return "Gebot ist zu niedrig, bieten Sie mehr als: " + this._highestBid.BidValue.ToString("C");
                 }
             }
             informBidders(bidValue, bidderIndex);
