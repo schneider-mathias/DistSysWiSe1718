@@ -40,6 +40,7 @@ namespace MyCasinoWCFClient.Pages
         }
 
 #else
+        private ChannelFactory<INETMyCasino> _remSrvMyCasinoFactory = new ChannelFactory<INETMyCasino>(new BasicHttpBinding());
         private INETMyCasino _remSrvMyCasinoLogin;
 
         public INETMyCasino _RemSrvMyCasinoLogin
@@ -59,9 +60,8 @@ namespace MyCasinoWCFClient.Pages
             InitializeComponent();
         }
 #else
-        public LoginPage(INETMyCasino _RemSrvMyCasino)
+        public LoginPage()
         {
-            _RemSrvMyCasinoLogin = _RemSrvMyCasino;
             InitializeComponent();
         }
 #endif
@@ -191,9 +191,13 @@ namespace MyCasinoWCFClient.Pages
         {
             //check if ip address is valid
             string ipAddress = tbxIpAddress.Text;
-
             IPAddress address;
-            if (IPAddress.TryParse(ipAddress, out address))
+
+            if (ipAddress == "Localhost")
+            {
+                //ip is automatically set for localhost
+            }
+            else if (IPAddress.TryParse(ipAddress, out address))
             {
                 switch (address.AddressFamily)
                 {
@@ -211,6 +215,27 @@ namespace MyCasinoWCFClient.Pages
                 tblAuthentificationFailed.Text = "Falsches IP-Addressen Format";
                 return;
             }
+
+#if COM
+            Type comType = Type.GetTypeFromCLSID(new Guid("C45F55FC-76D5-4D30-A7D0-2DF66C22ED0D"), "127.0.0.1", false); 
+            COMMyCasinoSrvLib.COMMyCasino _comSrv = (COMMyCasinoSrvLib.COMMyCasino)Activator.CreateInstance(comType);
+
+            //_comSrv.login("Casino", "Passwort", out sessionId, out userType, out errMsg);
+            //System.Array betsResult;
+            //_comSrv.showbets(sessionId, out betsResult, out count, out errMsg);
+            MainFrame.Navigate(new MyCasinoWCFClient.Pages.LoginPage(_comSrv));
+
+
+#else
+            try
+            {
+                _RemSrvMyCasinoLogin = _remSrvMyCasinoFactory.CreateChannel(new EndpointAddress("http://" + ipAddress + ":1200/MyCasinoWCF"));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Fehler beim erstellen der Channel Factory!" + ex);
+            }
+#endif
 
 #if COM
 
@@ -254,9 +279,9 @@ namespace MyCasinoWCFClient.Pages
                     tblAuthentificationFailed.Text = "User ist bereits angemeldet";
                 }
             }
-            catch (EndpointNotFoundException ex)
+            catch (EndpointNotFoundException)
             {
-                MessageBox.Show("Fehler beim Login" + ex);     
+                MessageBox.Show("Fehler beim Login: Server nicht gefunden!");     
             }
             
             //If authentifications is ok, login to the next page
