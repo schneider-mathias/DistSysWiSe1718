@@ -1,0 +1,52 @@
+﻿<phone:PhoneApplicationPage
+    x:Class="MyCasinoWSPhoneClient.LoginPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    FontFamily="{StaticResource PhoneFontFamilyNormal}"
+    FontSize="{StaticResource PhoneFontSizeNormal}"
+    Foreground="{StaticResource PhoneForegroundBrush}"
+    SupportedOrientations="Portrait" Orientation="Portrait"
+    mc:Ignorable="d"
+    shell:SystemTray.IsVisible="True">
+
+    <!--LayoutRoot ist das Stammraster, in dem alle anderen Seiteninhalte platziert werden-->
+    <Grid x:Name="LayoutRoot" Background="Transparent">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!--Background-->
+        <Grid Background="CornflowerBlue">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <!-- VerticalAlignment="Center" HorizontalAlignment="Center" TextBlock.TextAlignment="Center"-->
+                    <!--Main login window-->
+                    <Border Background="White" CornerRadius="8"  Padding="15 10 15 10" Width="350" Margin="50 100 50 100">
+                        <StackPanel>
+                            <!--MyCasino & Anmeldungs text -->
+                            <TextBlock Text="MyCasino" Margin="75 20 75 0" FontSize="40" Foreground="OrangeRed" />
+                            <!--Login text-->
+                            <TextBlock Text="Anmeldung" Margin="75 0 75 25" Padding="0 10 0 10"  Foreground="OrangeRed" FontSize="30" Opacity="0.5" />
+                            <!--Wrong Login-->
+                            <TextBlock x:Name="tblAuthentificationFailed" HorizontalAlignment="Center" Text="" FontSize="10" Foreground="red" Visibility="Visible" />
+                            <!--Username-->
+                            <TextBox x:Name="tbxUsername" Text="Username" HorizontalAlignment="Center" LostFocus="tbxUsername_LostFocus" GotFocus="tbxUsername_GotFocus"  Foreground="LightGray"  BorderThickness="0 0 0 1"  FontSize="30" />
+                            <!--Password-->
+                            <PasswordBox x:Name="pwbPassword" Password="****" HorizontalAlignment="Center" GotFocus="pwbPassword_GotFocus" LostFocus="pwbPassword_LostFocus"  Foreground="LightGray" BorderThickness="0 0 0 1" FontSize="30"  />
+                            <!--Ip address-->
+                            <TextBox x:Name="tbxIpAddress" HorizontalAlignment="Center"  GotFocus="tbxIpAddress_GotFocus" LostFocus="tbxIpAddress_LostFocus" Text="Localhost"   Foreground="LightGray"  BorderThickness="0 0 0 1"  FontSize="30" />
+                            <!--Login Button-->
+                            <Button x:Name="btnLogin"  Click="btnLogin_Click" Content="Login" FontSize="30" VerticalAlignment="Center" Width="130" Background="OrangeRed" Margin="0 10 0 25" Foreground="White"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+
+    </Grid>
+
+</phone:PhoneApplicationPage>

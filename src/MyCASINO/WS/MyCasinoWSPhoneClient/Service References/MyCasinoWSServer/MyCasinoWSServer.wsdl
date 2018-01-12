@@ -1,0 +1,496 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://MyCasinoServer.org/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://MyCasinoServer.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://MyCasinoServer.org/">
+      <s:element name="login">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="username" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="password" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="loginResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="loginResult" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="sessionId" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="userType" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="errMsg" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="logout">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="sessionId" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="logoutResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="logoutResult" type="s:boolean" />
+            <s:element minOccurs="0" maxOccurs="1" name="errMsg" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="deposit">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="sessionId" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="name" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="amountMoney" type="s:double" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="depositResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="depositResult" type="s:boolean" />
+            <s:element minOccurs="0" maxOccurs="1" name="errMsg" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="bet">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="sessionId" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="amountMoney" type="s:double" />
+            <s:element minOccurs="1" maxOccurs="1" name="firstNumber" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="secondNumber" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="betResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="betResult" type="s:boolean" />
+            <s:element minOccurs="0" maxOccurs="1" name="errMsg" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="calculateProfit">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="sessionId" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="amountMoney" type="s:double" />
+            <s:element minOccurs="1" maxOccurs="1" name="firstNumber" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="secondNumber" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="calculateProfitResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="calculateProfitResult" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="profitForOneMatch" type="s:double" />
+            <s:element minOccurs="1" maxOccurs="1" name="profitForTwoMatches" type="s:double" />
+            <s:element minOccurs="0" maxOccurs="1" name="errMsg" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="showbets">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="sessionId" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="showbetsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="showbetsResult" type="s:boolean" />
+            <s:element minOccurs="0" maxOccurs="1" name="names" type="tns:ArrayOfString" />
+            <s:element minOccurs="0" maxOccurs="1" name="firstNumber" type="tns:ArrayOfInt" />
+            <s:element minOccurs="0" maxOccurs="1" name="secondNumber" type="tns:ArrayOfInt" />
+            <s:element minOccurs="0" maxOccurs="1" name="amount" type="tns:ArrayOfDouble" />
+            <s:element minOccurs="1" maxOccurs="1" name="count" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="errMsg" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfString">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="string" nillable="true" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfInt">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="int" type="s:int" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfDouble">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="double" type="s:double" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="drawtest">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="sessionId" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="firstNumberTest" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="secondNumberTest" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="drawtestResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="drawtestResult" type="s:boolean" />
+            <s:element minOccurs="0" maxOccurs="1" name="errMsg" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="draw">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="sessionId" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="drawResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="drawResult" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="firstNumber" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="secondNumber" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="errMsg" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="getTransactions">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="sessionId" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="getTransactionsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="getTransactionsResult" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="isFinished" type="s:boolean" />
+            <s:element minOccurs="0" maxOccurs="1" name="transaction" type="tns:ArrayOfString" />
+            <s:element minOccurs="1" maxOccurs="1" name="transactionType" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="errMsg" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="getTransactionInformation">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="sessionId" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="transactionId" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="getTransactionInformationResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="getTransactionInformationResult" type="s:boolean" />
+            <s:element minOccurs="0" maxOccurs="1" name="information" type="tns:ArrayOfString" />
+            <s:element minOccurs="1" maxOccurs="1" name="informationType" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="errMsg" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="loginSoapIn">
+    <wsdl:part name="parameters" element="tns:login" />
+  </wsdl:message>
+  <wsdl:message name="loginSoapOut">
+    <wsdl:part name="parameters" element="tns:loginResponse" />
+  </wsdl:message>
+  <wsdl:message name="logoutSoapIn">
+    <wsdl:part name="parameters" element="tns:logout" />
+  </wsdl:message>
+  <wsdl:message name="logoutSoapOut">
+    <wsdl:part name="parameters" element="tns:logoutResponse" />
+  </wsdl:message>
+  <wsdl:message name="depositSoapIn">
+    <wsdl:part name="parameters" element="tns:deposit" />
+  </wsdl:message>
+  <wsdl:message name="depositSoapOut">
+    <wsdl:part name="parameters" element="tns:depositResponse" />
+  </wsdl:message>
+  <wsdl:message name="betSoapIn">
+    <wsdl:part name="parameters" element="tns:bet" />
+  </wsdl:message>
+  <wsdl:message name="betSoapOut">
+    <wsdl:part name="parameters" element="tns:betResponse" />
+  </wsdl:message>
+  <wsdl:message name="calculateProfitSoapIn">
+    <wsdl:part name="parameters" element="tns:calculateProfit" />
+  </wsdl:message>
+  <wsdl:message name="calculateProfitSoapOut">
+    <wsdl:part name="parameters" element="tns:calculateProfitResponse" />
+  </wsdl:message>
+  <wsdl:message name="showbetsSoapIn">
+    <wsdl:part name="parameters" element="tns:showbets" />
+  </wsdl:message>
+  <wsdl:message name="showbetsSoapOut">
+    <wsdl:part name="parameters" element="tns:showbetsResponse" />
+  </wsdl:message>
+  <wsdl:message name="drawtestSoapIn">
+    <wsdl:part name="parameters" element="tns:drawtest" />
+  </wsdl:message>
+  <wsdl:message name="drawtestSoapOut">
+    <wsdl:part name="parameters" element="tns:drawtestResponse" />
+  </wsdl:message>
+  <wsdl:message name="drawSoapIn">
+    <wsdl:part name="parameters" element="tns:draw" />
+  </wsdl:message>
+  <wsdl:message name="drawSoapOut">
+    <wsdl:part name="parameters" element="tns:drawResponse" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionsSoapIn">
+    <wsdl:part name="parameters" element="tns:getTransactions" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionsSoapOut">
+    <wsdl:part name="parameters" element="tns:getTransactionsResponse" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionInformationSoapIn">
+    <wsdl:part name="parameters" element="tns:getTransactionInformation" />
+  </wsdl:message>
+  <wsdl:message name="getTransactionInformationSoapOut">
+    <wsdl:part name="parameters" element="tns:getTransactionInformationResponse" />
+  </wsdl:message>
+  <wsdl:portType name="MyCasinoWSServerSoap">
+    <wsdl:operation name="login">
+      <wsdl:input message="tns:loginSoapIn" />
+      <wsdl:output message="tns:loginSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="logout">
+      <wsdl:input message="tns:logoutSoapIn" />
+      <wsdl:output message="tns:logoutSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="deposit">
+      <wsdl:input message="tns:depositSoapIn" />
+      <wsdl:output message="tns:depositSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="bet">
+      <wsdl:input message="tns:betSoapIn" />
+      <wsdl:output message="tns:betSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="calculateProfit">
+      <wsdl:input message="tns:calculateProfitSoapIn" />
+      <wsdl:output message="tns:calculateProfitSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="showbets">
+      <wsdl:input message="tns:showbetsSoapIn" />
+      <wsdl:output message="tns:showbetsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="drawtest">
+      <wsdl:input message="tns:drawtestSoapIn" />
+      <wsdl:output message="tns:drawtestSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="draw">
+      <wsdl:input message="tns:drawSoapIn" />
+      <wsdl:output message="tns:drawSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="getTransactions">
+      <wsdl:input message="tns:getTransactionsSoapIn" />
+      <wsdl:output message="tns:getTransactionsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionInformation">
+      <wsdl:input message="tns:getTransactionInformationSoapIn" />
+      <wsdl:output message="tns:getTransactionInformationSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="MyCasinoWSServerSoap" type="tns:MyCasinoWSServerSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="login">
+      <soap:operation soapAction="http://MyCasinoServer.org/login" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="logout">
+      <soap:operation soapAction="http://MyCasinoServer.org/logout" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deposit">
+      <soap:operation soapAction="http://MyCasinoServer.org/deposit" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="bet">
+      <soap:operation soapAction="http://MyCasinoServer.org/bet" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="calculateProfit">
+      <soap:operation soapAction="http://MyCasinoServer.org/calculateProfit" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="showbets">
+      <soap:operation soapAction="http://MyCasinoServer.org/showbets" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="drawtest">
+      <soap:operation soapAction="http://MyCasinoServer.org/drawtest" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="draw">
+      <soap:operation soapAction="http://MyCasinoServer.org/draw" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getTransactions">
+      <soap:operation soapAction="http://MyCasinoServer.org/getTransactions" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionInformation">
+      <soap:operation soapAction="http://MyCasinoServer.org/getTransactionInformation" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="MyCasinoWSServerSoap12" type="tns:MyCasinoWSServerSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="login">
+      <soap12:operation soapAction="http://MyCasinoServer.org/login" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="logout">
+      <soap12:operation soapAction="http://MyCasinoServer.org/logout" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deposit">
+      <soap12:operation soapAction="http://MyCasinoServer.org/deposit" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="bet">
+      <soap12:operation soapAction="http://MyCasinoServer.org/bet" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="calculateProfit">
+      <soap12:operation soapAction="http://MyCasinoServer.org/calculateProfit" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="showbets">
+      <soap12:operation soapAction="http://MyCasinoServer.org/showbets" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="drawtest">
+      <soap12:operation soapAction="http://MyCasinoServer.org/drawtest" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="draw">
+      <soap12:operation soapAction="http://MyCasinoServer.org/draw" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getTransactions">
+      <soap12:operation soapAction="http://MyCasinoServer.org/getTransactions" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getTransactionInformation">
+      <soap12:operation soapAction="http://MyCasinoServer.org/getTransactionInformation" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="MyCasinoWSServer">
+    <wsdl:port name="MyCasinoWSServerSoap" binding="tns:MyCasinoWSServerSoap">
+      <soap:address location="http://localhost:7193/MyCasinoWSServer.asmx" />
+    </wsdl:port>
+    <wsdl:port name="MyCasinoWSServerSoap12" binding="tns:MyCasinoWSServerSoap12">
+      <soap12:address location="http://localhost:7193/MyCasinoWSServer.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
