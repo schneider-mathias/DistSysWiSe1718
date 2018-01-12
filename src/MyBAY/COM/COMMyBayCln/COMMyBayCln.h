@@ -18,15 +18,15 @@
 
 using namespace std;
 
-static void Bind(void);
-static void UnBind(void);
-static void rpcCalls(void);
+//static void Bind(void);
+//static void UnBind(void);
+//static void rpcCalls(void);
 void readConsole(ICOMMyBay *p_ICOMMyBaySrv);
 void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::vector<std::wstring> args, boolean *threadAllow);
 
-std::vector<std::wstring> args;					// Eingabeargument
+std::vector<std::wstring> args;					// Eingabeargumente
 
-												// Deserialisiert einen char*, dessen Wörter mit Leerzeichen getrennt sind
+// Deserialisiert einen char*, dessen Wörter mit Leerzeichen getrennt sind
 std::vector<wstring> deserialize(unsigned char *inStr, unsigned long len)
 {
 	vector<wstring> desStr;

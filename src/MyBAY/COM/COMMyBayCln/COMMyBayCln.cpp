@@ -7,8 +7,6 @@
 #include <windows.h>
 #include <atlsafe.h>
 #include "COMMyBayCln.h"
-//#include "../COMMyBaySrv/COMMyBaySrv_i.c"
-//#include "../COMMyBaySrv/COMMyBaySrv_i.h"
 
 using namespace std;
 
@@ -40,7 +38,9 @@ int main(int argc, char**argv)
 
 	hr = CoCreateInstanceEx(CLSID_COMMyBay, NULL, CLSCTX_REMOTE_SERVER,
 		&srvInfo, 1, &multiQi);
-
+	hr = CoCreateInstanceEx(CLSID_COMMyBay, NULL, CLSCTX_REMOTE_SERVER,
+		&srvInfo, 1, &multiQi);
+	
 	if (FAILED(hr))
 	{
 		std::cout << "Failure: CoCreateInstanceEx - " << std::hex << hr << std::endl;
@@ -48,11 +48,6 @@ int main(int argc, char**argv)
 	}
 
 	p_ICOMMyBaySrv = (ICOMMyBay*)multiQi.pItf;
-
-	std::cout << "--------------------------------------------------------" << std::endl;
-	std::cout << "--------------Eingaben können durchgeführt werden-------" << std::endl;
-	std::cout << "--------------------------------------------------------" << std::endl;
-	
 
 	readConsole(p_ICOMMyBaySrv);
 
@@ -63,6 +58,7 @@ int main(int argc, char**argv)
 	return 0;
 }
 
+// Liest die Eingaben der Console
 void readConsole(ICOMMyBay *p_ICOMMyBaySrv)
 {
 	std::cout << "----------------------------------------------------------------" << std::endl;
@@ -107,6 +103,7 @@ void readConsole(ICOMMyBay *p_ICOMMyBaySrv)
 
 }
 
+// Eingaben werden entsprechend interpretiert
 void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::vector<std::wstring> args, boolean *threadAllow)
 {
 	HRESULT hr;
