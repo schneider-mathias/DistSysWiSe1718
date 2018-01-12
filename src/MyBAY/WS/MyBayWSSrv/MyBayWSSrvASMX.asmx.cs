@@ -1,36 +1,44 @@
 ﻿/*************************************************************************/
 /*                                                                       */
-/*    Inhalt:   Implementierung der Funktionalität des MyBay WCF-Servers */
+/*    Inhalt:    Implementierung des Webservices                         */
 /*                                                                       */
 /*    Autor(en): Manuel Schlemelch                                       */
-/*    Stand:     09.01.2018                                              */
+/*    Stand:     12.01.2018                                              */
 /*                                                                       */
 /*************************************************************************/
+
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MyBayWCFSrv;
+using System.Web;
+using System.Web.Services;
+using AuthenticationService;
 using MyBayLib;
 using System.Collections.Concurrent;
 
-namespace MyBayWCFSrv
+namespace MyBayWSSrv
 {
-    class MyBayWCFSrv : MyBayWCFLibrary.IMyBay
+    /// <summary>
+    /// Zusammenfassungsbeschreibung für MyBayWSSrvASMX
+    /// </summary>
+    [WebService(Namespace = "http://MyBayServer.org/")]
+    [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
+    [System.ComponentModel.ToolboxItem(false)]
+    public class MyBayWSSrvASMX : System.Web.Services.WebService
     {
         private List<Auction> listAuctions;
 
         #region C'Tors
-        public MyBayWCFSrv()
+        public MyBayWSSrvASMX()
         {
-            AuthenticationService.AuthService.initializeAuthService();
+            AuthService.initializeAuthService();
             this.listAuctions = new List<Auction>();
         }
         #endregion
 
         #region Methods
+        [WebMethod]
         public String login(String userName, String password, out UInt32 sessionID)
         {
             UInt32 loginSessionID;
@@ -42,16 +50,18 @@ namespace MyBayWCFSrv
                 sessionID = loginSessionID;
                 return "OK";
             }
-            
+
             sessionID = 0;
             return ReturnMessage;
         }
 
+        [WebMethod]
         public String logout(UInt32 sessionID)
         {
             return AuthenticationService.AuthService.Logout(sessionID);
         }
 
+        [WebMethod]
         public String offer(UInt32 sessionID, String artName, Double startBid, out UInt32 auctionNumber)
         {
             auctionNumber = 0;
@@ -67,6 +77,7 @@ namespace MyBayWCFSrv
             return "OK";
         }
 
+        [WebMethod]
         public String interested(UInt32 sessionID, UInt32 auctionNumber)
         {
             if (!AuthenticationService.AuthService.isLoggedIn(sessionID)) return "Die angegebene SessionID ist nicht registriert, loggen Sie sich erneut ein";
@@ -87,6 +98,7 @@ namespace MyBayWCFSrv
             return "OK";
         }
 
+        [WebMethod]
         public String getAuctions(UInt32 sessionID, UInt32 flags, String artName, out UInt32 countAuctions, out List<AuctionTransfer> auctions)
         {
             countAuctions = 0;
@@ -95,9 +107,9 @@ namespace MyBayWCFSrv
             UInt32 userIndex = AuthenticationService.AuthService.getIndexBySessionID(sessionID);
 
             List<Auction> personalizedAuctionList;
-            
+
             // flags can be 0: normal getAuctions 1: get all Auctions 2: get all Auctions including the one which are ended
-            switch(flags)
+            switch (flags)
             {
                 case 0: // Get all auctions where User is Interested in and which are not closed
                     lock (this.listAuctions)
@@ -113,7 +125,7 @@ namespace MyBayWCFSrv
                     }
                     break;
                 case 2: // Get all auctions
-                    lock(this.listAuctions)
+                    lock (this.listAuctions)
                     {
                         personalizedAuctionList = this.listAuctions.ConvertAll(item => new Auction(item));
                     }
@@ -149,11 +161,12 @@ namespace MyBayWCFSrv
 
                 auctions.Add(transferItem);
             }
-            countAuctions = (UInt32) auctions.Count;
-            
+            countAuctions = (UInt32)auctions.Count;
+
             return "OK";
         }
 
+        [WebMethod]
         public String bid(UInt32 sessionID, UInt32 auctionNumber, Double bidVal)
         {
             if (!AuthenticationService.AuthService.isLoggedIn(sessionID)) return "Die angegebene SessionID ist nicht registriert, loggen Sie sich erneut ein";
@@ -174,6 +187,7 @@ namespace MyBayWCFSrv
             return auctionTemp.addBid(AuthenticationService.AuthService.getIndexBySessionID(sessionID), bidVal);
         }
 
+        [WebMethod]
         public String details(UInt32 sessionID, UInt32 auctionNumber, out UInt32 countBids, out List<BidTransfer> allBids)
         {
             countBids = 0;
@@ -206,11 +220,12 @@ namespace MyBayWCFSrv
                 tempTransfer.BidValue = bid.BidValue;
                 allBids.Add(tempTransfer);
             }
-            countBids = (UInt32) copyBids.Count;
+            countBids = (UInt32)copyBids.Count;
 
-            return "OK";           
+            return "OK";
         }
 
+        [WebMethod]
         public String endauction(UInt32 sessionID, UInt32 auctionNumber)
         {
             if (!AuthenticationService.AuthService.isLoggedIn(sessionID)) return "Die angegebene SessionID ist nicht registriert, loggen Sie sich erneut ein";
@@ -239,6 +254,7 @@ namespace MyBayWCFSrv
             }
         }
 
+        [WebMethod]
         public String getMessage(UInt32 sessionID, out Boolean messageAvailable, out UInt32 messageType, out MessageTransfer message)
         {
             messageType = 0;
@@ -250,8 +266,8 @@ namespace MyBayWCFSrv
 
             try
             {
-            // Translate SessionID to UserIndex
-            UInt32 userIndex = AuthenticationService.AuthService.getIndexBySessionID(sessionID);
+                // Translate SessionID to UserIndex
+                UInt32 userIndex = AuthenticationService.AuthService.getIndexBySessionID(sessionID);
 
                 if (Auction.messageBucket.ContainsKey(userIndex))
                 {
@@ -284,19 +300,19 @@ namespace MyBayWCFSrv
                     {
                         return "NoMessage";
                     }
-                    if(tempBag.Count > 0) messageAvailable = true;                   
+                    if (tempBag.Count > 0) messageAvailable = true;
                 }
                 else return "NoMessage";
-               
-            }                
+
+            }
             catch (Exception e)
             {
 
                 return "Fehler bei der Verarbeitung der Messages im Server";
-            }            
-            return "OK";            
+            }
+            return "OK";
         }
         #endregion
-
     }
 }
+
