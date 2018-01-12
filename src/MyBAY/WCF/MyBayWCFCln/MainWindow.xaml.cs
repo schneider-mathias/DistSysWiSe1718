@@ -238,7 +238,6 @@ namespace MyBayWCFCln
 #endif
                 }
             }
-
         }
 
         private void btn_NewAuction_Click(object sender, RoutedEventArgs e)
@@ -253,19 +252,20 @@ namespace MyBayWCFCln
                    MessageBox.Show("Bitte geben Sie einen gültigen Wert für das Startgebot an", "Warnung", MessageBoxButton.OK);
                 }
 
+#if COM
+
+#else
                 String returnStr = _remoteSrvMyBay.offer(sessionID, this.txtBox_articleName.Text, tempStartBid, out auctionNumber);
 
-                if (returnStr.Contains("OK"))
-                {
-                    MessageBox.Show("Auktion erfolgreich mit der Auktionsnummer: " + auctionNumber.ToString() + " erstellt", "Hinweis", MessageBoxButton.OK);
-
-                }
-                else
+                if (!returnStr.Contains("OK"))
                 {
                     MessageBox.Show(returnStr, "Fehler", MessageBoxButton.OK);
+                    return;
                 }
+#endif
+                MessageBox.Show("Auktion erfolgreich mit der Auktionsnummer: " + auctionNumber.ToString() + " erstellt", "Hinweis", MessageBoxButton.OK);
             }
-            catch (Exception)
+            catch (Exception exception)
             {
                 MessageBoxResult result = MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
             }
@@ -290,17 +290,19 @@ namespace MyBayWCFCln
                     MessageBox.Show("Bitte geben Sie einen gültigen Wert für das Gebot an", "Warnung", MessageBoxButton.OK);
                 }
 
+#if COM
+
+#else
                 String returnStr = _remoteSrvMyBay.bid(sessionID, auctionNumber, bidValue);
-                if (returnStr.Contains("OK"))
-                {
-                    MessageBox.Show("Gebot Abgegeben", "Hinweis", MessageBoxButton.OK);
-                }
-                else
+                if (!returnStr.Contains("OK"))
                 {
                     MessageBox.Show(returnStr, "Fehler", MessageBoxButton.OK);
+                    return;
                 }
+#endif
+                MessageBox.Show("Gebot Abgegeben", "Hinweis", MessageBoxButton.OK);
             }
-            catch (Exception)
+            catch (Exception exception)
             {
                 MessageBoxResult result = MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
             }
@@ -319,17 +321,19 @@ namespace MyBayWCFCln
                 var selectedAuction = this.listBox_auctions.SelectedItem;
                 UInt32 auctionNumber = (selectedAuction as AuctionListBoxItem).auctionNumber;
 
+#if COM
+
+#else
                 String returnStr = _remoteSrvMyBay.interested(sessionID, auctionNumber);
-                if (returnStr.Contains("OK"))
-                {
-                    MessageBox.Show("Auktion wird nun verfolgt", "Hinweis", MessageBoxButton.OK);
-                }
-                else
+                if (!returnStr.Contains("OK"))
                 {
                     MessageBox.Show(returnStr, "Fehler", MessageBoxButton.OK);
+                    return;
                 }
+#endif
+                MessageBox.Show("Sie folgen dieser Auktion jetzt", "Hinweis", MessageBoxButton.OK);
             }
-            catch (Exception)
+            catch (Exception exception)
             {
                 MessageBoxResult result = MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
             }
@@ -348,17 +352,20 @@ namespace MyBayWCFCln
                 var selectedAuction = this.listBox_auctions.SelectedItem;
                 UInt32 auctionNumber = (selectedAuction as AuctionListBoxItem).auctionNumber;
 
+#if COM
+
+#else
                 String returnStr = _remoteSrvMyBay.endauction(sessionID, auctionNumber);
-                if (returnStr.Contains("OK"))
-                {
-                    MessageBox.Show("Auktion wird beendet", "Hinweis", MessageBoxButton.OK);
-                }
-                else
+
+                if (!returnStr.Contains("OK"))
                 {
                     MessageBox.Show(returnStr, "Fehler", MessageBoxButton.OK);
+                    return;
                 }
+#endif
+                MessageBox.Show("Auktion wird beendet", "Hinweis", MessageBoxButton.OK);
             }
-            catch (Exception)
+            catch (Exception exception)
             {
                 MessageBoxResult result = MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
             }
@@ -388,6 +395,9 @@ namespace MyBayWCFCln
 
                 this.listBox_auctions.Items.Clear();
 
+#if COM
+
+#else
                 String returnStr;
                 if (String.IsNullOrEmpty(this.txtBox_search.Text))
                 {
@@ -395,34 +405,32 @@ namespace MyBayWCFCln
                 }
                 else returnStr = _remoteSrvMyBay.getAuctions(sessionID, flags, this.txtBox_search.Text, out countAuctions, out newListAuctions);
 
-                if (returnStr.Contains("OK"))
+                if (!returnStr.Contains("OK"))
                 {
-
-                    foreach (AuctionTransfer item in newListAuctions)
-                    {
-                        this.listBox_auctions.Items.Add(new AuctionListBoxItem(item.ArtName, item.AuctNumber, item.HighestBid, item.CountBids, item.AuctionState));
-                    }
-                    if (this.listBox_auctions.Items.Count > 0)
-                    {
-                        this.btn_getDetails.IsEnabled = true;
-                        this.btn_bid.IsEnabled = true;
-                        this.btn_endAuction.IsEnabled = true;
-                        this.btn_interested.IsEnabled = true;
-                    }
-                    else
-                    {
-                        this.btn_getDetails.IsEnabled = false;
-                        this.btn_bid.IsEnabled = false;
-                        this.btn_endAuction.IsEnabled = false;
-                        this.btn_interested.IsEnabled = false;
-                    }
+                    MessageBox.Show(returnStr, "Fehler", MessageBoxButton.OK);
+                    return;
+                }
+#endif
+                foreach (AuctionTransfer item in newListAuctions)
+                {
+                    this.listBox_auctions.Items.Add(new AuctionListBoxItem(item.ArtName, item.AuctNumber, item.HighestBid, item.CountBids, item.AuctionState));
+                }
+                if (this.listBox_auctions.Items.Count > 0)
+                {
+                    this.btn_getDetails.IsEnabled = true;
+                    this.btn_bid.IsEnabled = true;
+                    this.btn_endAuction.IsEnabled = true;
+                    this.btn_interested.IsEnabled = true;
                 }
                 else
                 {
-                    MessageBox.Show(returnStr, "Fehler", MessageBoxButton.OK);
+                    this.btn_getDetails.IsEnabled = false;
+                    this.btn_bid.IsEnabled = false;
+                    this.btn_endAuction.IsEnabled = false;
+                    this.btn_interested.IsEnabled = false;
                 }
             }
-            catch (Exception)
+            catch (Exception exception)
             {
                 MessageBoxResult result = MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
             }
@@ -445,38 +453,41 @@ namespace MyBayWCFCln
                 var selectedAuction = this.listBox_auctions.SelectedItem;
                 UInt32 auctionNumber = (selectedAuction as AuctionListBoxItem).auctionNumber;
 
+#if COM
+
+#else
                 String returnStr = _remoteSrvMyBay.details(sessionID, auctionNumber, out countBids, out newListBids);
-                if (returnStr.Contains("OK"))
-                {
-                    this.listBox_auctions.Items.Clear();
-
-                    if (countBids == 0)
-                    {
-                        this.listBox_auctions.Items.Add("Für diese Auktion wurden noch keine Gebote abgegeben");
-                    }
-
-                    newListBids.Sort((a, b) => (a.BidNumber.CompareTo(b.BidNumber)));
-
-                    foreach (BidTransfer item in newListBids)
-                    {
-                        this.listBox_auctions.Items.Add("GebotNr: "
-                                                    + item.BidNumber.ToString()
-                                                    + " - Höhe Gebot: "
-                                                    + item.BidValue.ToString("C")
-                                                    + " - Bieter: "
-                                                    + item.Bidder.ToString());
-                    }
-                    this.btn_interested.IsEnabled = false;
-                    this.btn_bid.IsEnabled = false;
-                    this.btn_endAuction.IsEnabled = false;
-                    this.btn_getDetails.IsEnabled = false;
-                }
-                else
+                if (!returnStr.Contains("OK"))
                 {
                     MessageBox.Show(returnStr, "Fehler", MessageBoxButton.OK);
+                    return;
                 }
+
+#endif
+                this.listBox_auctions.Items.Clear();
+
+                if (countBids == 0)
+                {
+                    this.listBox_auctions.Items.Add("Für diese Auktion wurden noch keine Gebote abgegeben");
+                }
+
+                newListBids.Sort((a, b) => (a.BidNumber.CompareTo(b.BidNumber)));
+
+                foreach (BidTransfer item in newListBids)
+                {
+                    this.listBox_auctions.Items.Add("GebotNr: "
+                                                + item.BidNumber.ToString()
+                                                + " - Höhe Gebot: "
+                                                + item.BidValue.ToString("C")
+                                                + " - Bieter: "
+                                                + item.Bidder.ToString());
+                }
+                this.btn_interested.IsEnabled = false;
+                this.btn_bid.IsEnabled = false;
+                this.btn_endAuction.IsEnabled = false;
+                this.btn_getDetails.IsEnabled = false;
             }
-            catch (Exception)
+            catch (Exception exception)
             {
                 MessageBoxResult result = MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
             }
