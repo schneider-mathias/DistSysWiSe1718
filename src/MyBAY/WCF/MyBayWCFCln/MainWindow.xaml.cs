@@ -91,7 +91,7 @@ namespace MyBayWCFCln
         /// <summary>
         /// MyBay COM Server
         /// </summary>
-        private .COMMyINVENT _myBayCOMSrv = new COMMyINVENTSvrLib.COMMyINVENT();
+        private COMMyBaySrvLib.COMMyBay _comServer;
 #else
         private ChannelFactory<IMyBay> _MyBayFactory = new ChannelFactory<IMyBay>(new BasicHttpBinding());
         private IMyBay _remoteSrvMyBay;
@@ -129,7 +129,10 @@ namespace MyBayWCFCln
             {
 #if COM
                 Array com_message;
-                _comServer.getMessage(this.sessionID, out messageAvailable, out messageType, out com_message);
+                int messageAvailableTemp;
+                _comServer.getMessage(this.sessionID, out messageAvailableTemp, out messageType, out com_message);
+                messageAvailable = Convert.ToBoolean(messageAvailableTemp);
+
                 message = new MessageTransfer();
                 if (com_message != null && messageType != default(UInt32))
                 {
@@ -250,16 +253,17 @@ namespace MyBayWCFCln
                 return;
             }
 
-            this.srvAddress = this.txtBox_serverIP.Text + "MyBayWCF";
             if (this.btn_login.Content.ToString().Contains("Login"))
             {
                 try
                 {
 #if COM
-                    Type comType = Type.GetTypeFromCLSID(new Guid("UID"), this.srvAddress, false);
-                    _comSrv = (mybay.mybaycom)Activator.CreateInstance(comType);
-                    _comServer.login(this.usernameTxtBox.Text, this.passwordBox.Password, out sessionID);
+                    this.srvAddress = this.txtBox_serverIP.Text;
+                    Type comType = Type.GetTypeFromCLSID(new Guid("E591CA8E-1693-4BD0-9A65-919D333389AA"), this.srvAddress, false);
+                    _comServer = (COMMyBaySrvLib.COMMyBay)Activator.CreateInstance(comType);
+                    _comServer.login(this.txtBox_username.Text, this.txtBox_password.Password, out sessionID);
 #else
+                    this.srvAddress = this.txtBox_serverIP.Text + "MyBayWCF";
                     _remoteSrvMyBay = _MyBayFactory.CreateChannel(new EndpointAddress(srvAddress));
                     String returnStr = _remoteSrvMyBay.login(this.txtBox_username.Text, this.txtBox_password.Password, out sessionID);
                     if (!returnStr.Contains("OK"))
@@ -267,7 +271,7 @@ namespace MyBayWCFCln
                         MessageBox.Show(returnStr, "Fehler", MessageBoxButton.OK);
                         return;
                     }
-                    
+#endif
                     this.btn_login.Content = "Logout";
                     this.txtBox_username.IsEnabled = false;
                     this.txtBox_password.IsEnabled = false;
@@ -277,7 +281,6 @@ namespace MyBayWCFCln
                     this.btn_NewAuction.IsEnabled = true;
                     this.btn_getAuctions.IsEnabled = true;
                     this.getMessageTimer.Start();
-#endif
                 }
                 catch (Exception except)
                 {
