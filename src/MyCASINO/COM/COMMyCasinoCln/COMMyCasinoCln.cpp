@@ -35,7 +35,7 @@ int main(int argc, char**argv)
 		std::wstring wstr_SrvName(argv[1], argv[1] + strlen(argv[1]) + 1);
 		if (!validateIpAddress(wstr_SrvName))
 		{
-			std::wcerr << "Inliad format for IP address parameter: " << wstr_SrvName << std::endl;
+			std::wcerr << "Invalid format for IP address parameter: " << wstr_SrvName << std::endl;
 			return FALSE;
 		}
 

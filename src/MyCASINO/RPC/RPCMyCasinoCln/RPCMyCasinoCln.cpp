@@ -23,7 +23,7 @@ void main(int argc, char**argv)
 
 		if (!validateIpAddress(srvAdress))
 		{
-			std::cout << "Inliad format for IP address parameter: " << srvAdress << std::endl;
+			std::cout << "Invalid format for IP address parameter: " << srvAdress << std::endl;
 			return;
 		}
 	}
