@@ -109,7 +109,7 @@ wstring getUserName(unsigned long sessionId)
 void readAuctionsFromFile()
 {
 	std::wifstream auctionsFile;
-	auctionsFile.open(L"MyBayAuctions.csv", std::ios::in);
+	auctionsFile.open(L"..\\..\\_data\\MyBayAuctions.csv", std::ios::in);
 	// Öffnen der Datei
 	if (auctionsFile.is_open())
 	{
@@ -241,7 +241,7 @@ void writeAuctionsToFile()
 		listOfAuctions.push_back(auctionBidder);
 	}
 
-	auctionsFile.open(L"MyBayAuctions.csv", std::ios::out);
+	auctionsFile.open(L"..\\..\\_data\\MyBayAuctions.csv", std::ios::out);
 	if (auctionsFile.is_open())
 	{
 		// Schreibe alle Auktionen in die Datei

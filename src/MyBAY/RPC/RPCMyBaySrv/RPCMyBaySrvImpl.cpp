@@ -46,7 +46,7 @@ error_status_t login(unsigned char *username, unsigned char *password, unsigned 
 		return ERROR_ALREADY_LOGGED_IN;
 	}
 	
-	csvread.open("user.csv", ios::in);
+	csvread.open("..\\..\\_data\\user.csv", ios::in);
 	if (csvread) {
 		wstring fline, fname, fpassword;
 		wstring suser = char_to_wstring((char*)username);
