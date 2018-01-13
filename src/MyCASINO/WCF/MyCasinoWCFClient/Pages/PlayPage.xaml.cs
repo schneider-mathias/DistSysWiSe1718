@@ -21,6 +21,9 @@ using MyCasinoWCFLib;
 using System.ServiceModel;
 using System.Net;
 
+#if COM
+using System.Runtime.InteropServices;
+#endif
 
 namespace MyCasinoWCFClient.Pages
 {
@@ -927,7 +930,7 @@ namespace MyCasinoWCFClient.Pages
 #if COM
             try
             {
-                _ComSrv.drawtest(SessionId, firstNumber, secondNumber, out errMsg);
+                _ComSrv.drawTest(SessionId, firstNumber, secondNumber, out errMsg);
             }
             catch (Exception ex)
             {

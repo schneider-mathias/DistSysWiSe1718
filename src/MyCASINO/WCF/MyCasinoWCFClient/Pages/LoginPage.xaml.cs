@@ -217,13 +217,10 @@ namespace MyCasinoWCFClient.Pages
             }
 
 #if COM
-            Type comType = Type.GetTypeFromCLSID(new Guid("C45F55FC-76D5-4D30-A7D0-2DF66C22ED0D"), "127.0.0.1", false); 
-            COMMyCasinoSrvLib.COMMyCasino _comSrv = (COMMyCasinoSrvLib.COMMyCasino)Activator.CreateInstance(comType);
-
             //_comSrv.login("Casino", "Passwort", out sessionId, out userType, out errMsg);
             //System.Array betsResult;
             //_comSrv.showbets(sessionId, out betsResult, out count, out errMsg);
-            MainFrame.Navigate(new MyCasinoWCFClient.Pages.LoginPage(_comSrv));
+            //this.NavigationService.Navigate(new MyCasinoWCFClient.Pages.LoginPage(_comSrv));
 
 
 #else

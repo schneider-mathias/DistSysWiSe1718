@@ -19,6 +19,10 @@ using MyCasinoWCFLib;
 using System.ServiceModel;
 using System.Net;
 
+#if COM
+using System.Runtime.InteropServices;
+#endif
+
 namespace MyCasinoWCFClient.Pages
 {
     /// <summary>
