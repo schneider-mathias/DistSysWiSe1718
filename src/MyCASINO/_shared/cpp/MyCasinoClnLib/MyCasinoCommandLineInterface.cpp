@@ -111,7 +111,7 @@ bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> argu
 			&& payin(arguments.at(1), amountMoney);
 
 		if(resVal)
-			std::wcout << "Payed " << amountMoney << " in for user " << arguments.at(1) << std::endl;
+			std::cout << "Payed " << amountMoney << " in for user " << wstring_to_string(arguments.at(1)) << std::endl;
 
 		return resVal;
 	}
@@ -136,7 +136,7 @@ bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> argu
 			&& bet(setMoney, firstNumber, secondNumber);
 
 		if (resVal)
-			std::wcout << "Placed bet " << setMoney << " on number " << firstNumber << " and " << secondNumber << std::endl;
+			std::cout << "Placed bet " << setMoney << " on number " << firstNumber << " and " << secondNumber << std::endl;
 
 		return resVal;
 	}

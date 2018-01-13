@@ -162,11 +162,11 @@ bool CmdInterpreter::execute(std::wstring command)
 			if (NULL != m_dispatcherFunc && !CALL_MEMBER_FN(*m_pDispatcherObj, m_dispatcherFunc)(commandArguments))
 			{
 				if (!m_defaultErrorMsg.empty())
-					std::wcout << m_defaultErrorMsg << std::endl;
+					std::cout << wstring_to_string(m_defaultErrorMsg) << std::endl;
 				return false;
 			}
 			if (!m_defaultSuccessMsg.empty())
-				std::wcout << m_defaultSuccessMsg << std::endl;
+				std::cout << wstring_to_string(m_defaultSuccessMsg) << std::endl;
 			
 		}
 		return true;
