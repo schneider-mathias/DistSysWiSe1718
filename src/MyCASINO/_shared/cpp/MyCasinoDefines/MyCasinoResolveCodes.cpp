@@ -30,7 +30,7 @@ extern "C"
 		std::wstring msg;
 		TRANSLATE_MYCASINO_CODE(msg, code);
 
-		const char* szSampleString = wstring_to_string(msg).c_str();
+		char* szSampleString = wstring_to_char(msg);
 		ULONG ulSize = strlen(szSampleString) + sizeof(char);
 		char* pszReturn = NULL;
 
@@ -38,6 +38,8 @@ extern "C"
 		// Copy the contents of szSampleString
 		// to the memory pointed to by pszReturn.
 		strcpy(pszReturn, szSampleString);
+		delete[] szSampleString;
+
 		// Return pszReturn.
 		return pszReturn;
 	}
