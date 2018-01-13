@@ -55,6 +55,7 @@ namespace MyCasinoWCFClient.Pages
             //fill combobox (static)
             cbxPayInUsername.Items.Add("Casino");
             cbxPayInUsername.Items.Add("Gamer");
+            cbxPayInUsername.Items.Add("Gamer_2");
             //cbxPayInUsername.Items.Add("Johannes");
             //cbxPayInUsername.Items.Add("Mathias");
 
