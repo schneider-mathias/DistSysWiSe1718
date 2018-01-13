@@ -108,13 +108,7 @@ void printMessage(vector<wstring> messageVec, unsigned long messageType)
 		wcout << "Artikel: " << messageVec.at(2) << endl;
 		wcout << "Kaeufer: " << messageVec.at(1) << endl;
 		wcout << "Preis: " << messageVec.at(3).substr(0, messageVec.at(3).size() - 4) << endl;
-		wcout << "Auktionsstatus: ";
-		if (messageVec.at(4) == L"0")
-			wcout << "offen" << endl;
-		if (messageVec.at(4) == L"1")
-			wcout << "kurz vor Ende" << endl;
-		if (messageVec.at(4) == L"2")
-			wcout << "Beendet" << endl;
+		wcout << "Auktionsstatus: Beendet" << endl;
 		wcout << "----------------------------------------------------------------------------------------" << endl;
 	}
 	else if (messageType == 3)
