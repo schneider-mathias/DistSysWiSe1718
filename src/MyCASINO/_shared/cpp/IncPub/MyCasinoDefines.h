@@ -1,3 +1,16 @@
+/**--------------------------------------------------------------------------------------------------
+// project:	-
+// file:	MyCasinoDefines.h
+//
+// summary:	Common defines and macros which are shared between client 
+//			and server.
+//
+//			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
+//
+//			Date		Developer			Change
+//			13.01.2018	Mathias Schneider	Created
+ *-----------------------------------------------------------------------------------------------**/
+
 #pragma once
 #include <string>
 #include <windows.h>
@@ -17,7 +30,6 @@
 #define E_MY_CASINO_CANNOT_LOAD_ACCOUNTS 0xA0010009L
 #define E_MY_CASINO_CANNOT_SAVE_ACCOUNTS 0xA001000AL
 #define E_MY_CASINO_MALFORMED_DATABASE_FILE 0xA001000BL
-
 #define E_MY_CASINO_ACCOUNT_BALANCE_NOT_SUFFICIENT 0xA001000CL
 #define E_MY_CASINO_USER_ACCOUNT_BALANCE_NOT_SUFFICIENT 0xA001000DL
 #define E_MY_CASINO_OPERATOR_ACCOUNT_BALANCE_NOT_SUFFICIENT 0xA001000EL
@@ -25,20 +37,24 @@
 #define E_MY_CASINO_INVALID_TRANSACTION_TRANSITION 0xA0010010L
 #define E_MY_CASINO_ACCOUNT_DEPOSIT_FAILED 0xA0010011L
 #define E_MY_CASINO_INVALID_CHANGE_AMOUNT 0xA0010012L
-
 #define E_MY_CASINO_BET_INVALID_NUMBER 0xA0010013L
 #define E_MY_CASINO_BET_ALREADY_TAKEN 0xA0010014L
 #define E_MY_CASINO_BET_CANNOT_DELETE 0xA0010015L
-
 #define E_MY_CASINO_TRANSACTION_INFOMRATION_NOT_AVAILABLE 0xA0010016L
 #define E_MY_CASINO_UNKNOWN_TRANSACTION_ID 0xA0010017L
-
 #define E_MY_CASINO_INTERNAL_AUTH_SERVICE_ERROR 0xA0010018L
 #define E_MY_CASINO_INVALID_OPERATOR 0xA0010019L
 #define E_MY_CASINO_INTERNAL_LOGOUT_ERROR 0xA001001AL
-
 #define S_MY_CASINO_USER_HAS_NUMBERS 0x20010000L
 #define S_MY_CASINO_NO_OPERATOR_LOGGED_IN 0x20010001L
+
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Translate MyCasino error code to message. </summary>
+ *
+ * <param name="errorcode">	The errorcode. </param>
+ *
+ * <returns>	A verbose explanation for the given errorcode. </returns>
+ *-----------------------------------------------------------------------------------------------**/
 
 inline std::wstring translate_error_message(unsigned long errorcode)
 {
@@ -101,6 +117,14 @@ inline std::wstring translate_error_message(unsigned long errorcode)
 	}
 }
 
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Translate MyCasino information code to message. </summary>
+ *
+ * <param name="infocode">	The infocode. </param>
+ *
+ * <returns>	A verbose explanation for the given info code.</returns>
+ *-----------------------------------------------------------------------------------------------**/
+
 inline std::wstring translate_info_message(unsigned long infocode)
 {
 	switch (infocode)
@@ -117,6 +141,13 @@ inline std::wstring translate_info_message(unsigned long infocode)
 #define TRANSLATE_MYCASINO_ERRORCODE(x, retVal) \
 	x = (FAILED(retVal))? translate_error_message(retVal):L"Success"
 
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Resolve any MyCasino code. </summary>
+ *
+ * <param name="infocode">	The code to resolve. </param>
+ *
+ * <returns>	A verbose explanation for the given code. </returns>
+ *-----------------------------------------------------------------------------------------------**/
 
 inline std::wstring resolve_mycasino_code(long infocode)
 {
@@ -127,22 +158,29 @@ inline std::wstring resolve_mycasino_code(long infocode)
 	return x;
 }
 
+// macro for translating MyCasino codes
 #define TRANSLATE_MYCASINO_CODE(x, retVal) \
 	x = resolve_mycasino_code(retVal)
 
-	
+
+// number of properties of bet class
 #define BET_DETAILS_PROPTERY_COUNT 4
+// number of detailed properties of bet class
 #define BET_FULL_DETAILS_PROPTERY_COUNT  7
 
+// number of properties of transaction class
 #define TRANSACTION_PROPTERY_COUNT 3
 
+// upper limit for money numbers
 #define UPPER_MONEY_BOUNDARY 1e12
 
+/** <summary>	Values that represent my casino transactions information types. </summary> */
 enum MyCasinoTransactionsInformationTypes
 {
 	Bet = 0
 };
 
+/** <summary>	Values that represent my casino transactions types. </summary> */
 enum MyCasinoTransactionsTypes
 {
 	DEPOSIT = 0,
@@ -152,6 +190,14 @@ enum MyCasinoTransactionsTypes
 	BET_WIN,
 	BET_LOSS
 };
+
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Resolve transaction type. </summary>
+ *
+ * <param name="type">	The type as enum </param>
+ *
+ * <returns>	A string version of enumeration. </returns>
+ *-----------------------------------------------------------------------------------------------**/
 
 inline std::wstring resolve_transaction_type(MyCasinoTransactionsTypes type)
 {
@@ -174,6 +220,7 @@ inline std::wstring resolve_transaction_type(MyCasinoTransactionsTypes type)
 	}
 }
 
+/** <summary>	Values that represent my casino user types. </summary> */
 enum MyCasinoUserTypes {
 	Operator = 0,
 	Gamer, 

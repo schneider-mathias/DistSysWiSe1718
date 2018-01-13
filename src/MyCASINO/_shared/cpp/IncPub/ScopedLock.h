@@ -1,3 +1,15 @@
+/**--------------------------------------------------------------------------------------------------
+// project:	-
+// file:	ScopedLock.h
+//
+// summary:	Wrapper for a scoped lock depending on VS version
+//
+//			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
+//
+//			Date		Developer			Change
+//			13.01.2018	Mathias Schneider	Created
+ *-----------------------------------------------------------------------------------------------**/
+
 #include <mutex>
 
 // scoped_lock should be prefered but requires C++17:
