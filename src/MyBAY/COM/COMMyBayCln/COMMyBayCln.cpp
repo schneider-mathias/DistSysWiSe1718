@@ -47,7 +47,7 @@ int main(int argc, char**argv)
 
 	p_ICOMMyBaySrv = (ICOMMyBay*)multiQi.pItf;
 
-	readConsole(p_ICOMMyBaySrv);
+	readConsole(p_ICOMMyBaySrv, srvInfo);
 
 	p_ICOMMyBaySrv->Release();
 	CoUninitialize();
@@ -57,7 +57,7 @@ int main(int argc, char**argv)
 }
 
 // Liest die Eingaben der Console
-void readConsole(ICOMMyBay *p_ICOMMyBaySrv)
+void readConsole(ICOMMyBay *p_ICOMMyBaySrv, COSERVERINFO srvInfo)
 {
 	std::cout << "----------------------------------------------------------------" << std::endl;
 	std::cout << "-		Herzlich Willkommen bei MyBay - Ihrem Auktionshaus		 -" << std::endl;
@@ -69,7 +69,7 @@ void readConsole(ICOMMyBay *p_ICOMMyBaySrv)
 	unsigned long sessionID = 0;
 	boolean threadAllow = TRUE;
 
-	std::thread MessageThread(pullMessages, p_ICOMMyBaySrv, &sessionID, &threadAllow);
+	std::thread MessageThread(pullMessages, &sessionID, &threadAllow, srvInfo);
 
 	while (true)
 	{
@@ -97,7 +97,7 @@ void readConsole(ICOMMyBay *p_ICOMMyBaySrv)
 		}
 	}
 	// Main-Thread waretet auf MessageThread bis dieser fertig ist
-	MessageThread.join();
+	//MessageThread.join();
 
 }
 
@@ -314,7 +314,9 @@ void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 			// Alle Elemente im SAFEARRAY werden in einen Vector übertragen
 			for (int i = 0; i < retAuctions.GetCount(); i++)
 			{
-				allAuctVec.push_back(bstr_to_wstr(*retAuctions[i].pbstrVal));
+				//BSTR vari = retAuctions[i].bstrVal;
+				//wstring tmp = bstr_to_wstr(retAuctions[i].bstrVal);
+				allAuctVec.push_back(bstr_to_wstr(retAuctions[i].bstrVal));
 			}
 
 			// Ausgabe der Auktionen
@@ -501,7 +503,7 @@ void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 					// Alle Elemente im SAFEARRAY werden in einen Vector übertragen
 					for (int i = 0; i < retAllBids.GetCount(); i++)
 					{
-						allBidsVec.push_back(bstr_to_wstr(*retAllBids[i].pbstrVal));
+						allBidsVec.push_back(bstr_to_wstr(retAllBids[i].bstrVal));
 					}
 
 					// Ausgabe aller Gebote

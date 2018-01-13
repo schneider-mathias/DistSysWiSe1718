@@ -37,11 +37,12 @@ STDMETHODIMP CCOMMyBay::login(BSTR username, BSTR password, ULONG* sessionId)
 		return ERROR_ALREADY_LOGGED_IN;
 	}
 	wstring userDataPath = getUserDataPath();
-	csvread.open("C:\_MyBayData", ios::in);
+	//csvread.open("C:\/_MyBayData/\user.csv", ios::in);
+	csvread.open("C:/_MyBayData/user.csv", ios::in);
 	if (csvread) {
 		wstring fline, fname, fpassword;
-		wstring suser = char_to_wstring((char*)username);
-		wstring spassword = char_to_wstring((char*)password);
+		wstring suser = bstr_to_wstr(username);
+		wstring spassword = bstr_to_wstr(password);
 
 		// in jeder Zeile prüfen ob der Username und Passwort mit den Eingegebenen übereinstimmen
 		while (getline(csvread, fline))
@@ -148,7 +149,7 @@ STDMETHODIMP CCOMMyBay::getAuctions(ULONG sessionId, ULONG flags, BSTR articleNa
 		return ERROR_USER_NOT_LOGGED_IN;
 	}
 	wstring user = getUserName(sessionId);
-	wstring sarticleName = char_to_wstring((char*)articleName);
+	wstring sarticleName = bstr_to_wstr(articleName);
 
 	// Gebote serialisieren
 	vector<auction> interestingAuctions = getInterestingAuctions(user, flags, sarticleName);
@@ -282,7 +283,7 @@ STDMETHODIMP CCOMMyBay::getMessage(ULONG sessionId, BOOL * messageAvailable, ULO
 		vector<wstring> newMessage = searchForMessage(user);				// Neue Nachticht für den user suchen
 		*messageType = stoul(newMessage.at(1));								// MessageType festlegen
 																			// Nachricht serialisieren
-		wstring serStr = serializeMessage(newMessage);
+		//wstring serStr = serializeMessage(newMessage);
 
 		// Speicher für die Übertragung des String_t allokieren
 		// TODO: SAVEARRAY
@@ -291,7 +292,7 @@ STDMETHODIMP CCOMMyBay::getMessage(ULONG sessionId, BOOL * messageAvailable, ULO
 
 		int safeArrIt = 0;
 		// Alle Informationen im SafeArray speichern
-		for (int i = 0; i < newMessage.size(); i++)
+		for (int i = 1; i < newMessage.size(); i++)
 		{
 			auctionsSafeArray[safeArrIt++] = wstr_to_bstr(newMessage.at(i));
 		}
