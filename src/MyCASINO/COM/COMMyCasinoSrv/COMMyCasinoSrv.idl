@@ -1,12 +1,22 @@
-// COMMyCasinoSrv.idl : IDL source for COMMyCasinoSrv
+/**--------------------------------------------------------------------------------------------------
+// project:	COMMyCasinoSrv
+// file:	COMMyCasinoSrv.idl
 //
-
-// This file will be processed by the MIDL tool to
-// produce the type library (COMMyCasinoSrv.tlb) and marshalling code.
+// summary:	COMMyCasino interface defintion. This file will be 
+//			processed by the MIDL tool to produce the type 
+//			library (COMMyCasinoSrv.tlb) and marshalling code.
+//
+//			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
+//
+//			Date		Developer			Change
+//			13.01.2018	Mathias Schneider	Created
+ *-----------------------------------------------------------------------------------------------**/
 
 import "oaidl.idl";
 import "ocidl.idl";
 
+
+/** <summary>	Defines an alias representing the safearr variable. </summary> */
 typedef SAFEARRAY(VARIANT) SAFEARR_VAR;
 
 [
@@ -27,14 +37,14 @@ interface ICOMMyCasino : IDispatch{
 
 	[id(5)] HRESULT calculateProfit([in] ULONG sessionId, [in] DOUBLE amountMoney, [in] SHORT firstNumber, [in] SHORT secondNumber, [out] DOUBLE* profitForOneMatch, [out] DOUBLE* profitForTwoMatches, [out] BSTR* errMsg);
 	
-	// would also be possible to have only one SAFEARRAY_VARIANT
-	//[id(6)] HRESULT showbets([in] ULONG sessionId, [out] SAFEARRAY(VARIANT)* names, [out] SAFEARRAY(VARIANT)* firstNumbers, [out] SAFEARRAY(VARIANT)* secondNumbers, [out] SAFEARRAY(VARIANT)* amountsOfMoney, [out] ULONG* count, [out] BSTR* errMsg);
-	
-	//bet structure:
-	// [0] - name
-	// [1] - first
-	// [2] - second
-	// [3] - amount
+
+	/**--------------------------------------------------------------------------------------------------
+	 * <summary>
+	 * bet structure:
+	 *  [0] - name [1] - first number [2] - second number [3] - amount.
+	 * </summary>
+	 *-----------------------------------------------------------------------------------------------**/
+
 	[id(6)] HRESULT showbets([in] ULONG sessionId, [out] SAFEARR_VAR* bets, [out] ULONG* count, [out] BSTR* errMsg);
 
 
@@ -42,22 +52,23 @@ interface ICOMMyCasino : IDispatch{
 	[id(7)] HRESULT drawTest([in] ULONG sessionId, [in] SHORT firstNumberTest, [in] SHORT secondNumberTest, [out] BSTR* errMsg);
 	[id(8)] HRESULT draw([in] ULONG sessionId, [out] SHORT* firstNumber, [out] SHORT* secondNumber, [out] BSTR* errMsg);
 
-	// transaction structure:
-	// [0] - id
-	// [1] - currentAmount (=previous + change)
-	// [2] - changeAmount
+	/**--------------------------------------------------------------------------------------------------
+	 * <summary>
+	 * transaction structure: [0] - id [1] - currentAmount (=previous + change) [2] - changeAmount.
+	 * </summary>
+	 *-----------------------------------------------------------------------------------------------**/
 
 	[id(9)] HRESULT getTransactions([in] ULONG sessionId, [out] BOOL* isFinished, [out] SAFEARR_VAR* transaction, [out] ULONG* transactionType, [out] BSTR* errMsg);
 
 	// informationTypes:
-	// - BetType
-	// - NoInformationType
+	// - BetType. 
 
-	// information e.g. =>bet structure:
-	// [0] - name
-	// [1] - first
-	// [2] - second
-	// [3] - amount
+	/**--------------------------------------------------------------------------------------------------
+	 * <summary>
+	 * information e.g. =>bet structure: [0] - name [1] - first [2] - second [3] - amount.
+	 * </summary>
+	 *-----------------------------------------------------------------------------------------------**/
+
 	[id(10)] HRESULT getTransactionInformation([in] ULONG sessionId, [in] ULONG transactionId, [out] SAFEARR_VAR* information, [out] ULONG* informationType, [out] BSTR* errMsg);
 };
 [
