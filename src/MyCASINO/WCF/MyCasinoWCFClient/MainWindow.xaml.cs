@@ -28,14 +28,7 @@ namespace MyCasinoWCFClient
         public MainWindow()
         {
             InitializeComponent();
-#if COM
-            Type comType = Type.GetTypeFromCLSID(new Guid("C45F55FC-76D5-4D30-A7D0-2DF66C22ED0D"), "127.0.0.1", false);
-            COMMyCasinoSrvLib.COMMyCasino _comSrv = (COMMyCasinoSrvLib.COMMyCasino)Activator.CreateInstance(comType);
-            MainFrame.Navigate(new MyCasinoWCFClient.Pages.LoginPage(_comSrv));
-#else
             MainFrame.Navigate(new MyCasinoWCFClient.Pages.LoginPage());
-#endif
-
         }
     }
 }

@@ -53,18 +53,11 @@ namespace MyCasinoWCFClient.Pages
         public int _sessionId;
         private MyCasinoUserTypes _userType;
         private string _errMsg;
-#if COM
-        public LoginPage(COMMyCasinoSrvLib.COMMyCasino _comSrv)
-        {
-            _ComSrv = _comSrv;
-            InitializeComponent();
-        }
-#else
+
         public LoginPage()
         {
             InitializeComponent();
         }
-#endif
 
 #region Username and Password standard values
 
@@ -217,12 +210,16 @@ namespace MyCasinoWCFClient.Pages
             }
 
 #if COM
-            //_comSrv.login("Casino", "Passwort", out sessionId, out userType, out errMsg);
-            //System.Array betsResult;
-            //_comSrv.showbets(sessionId, out betsResult, out count, out errMsg);
-            //this.NavigationService.Navigate(new MyCasinoWCFClient.Pages.LoginPage(_comSrv));
-
-
+            try
+            {
+                Type comType = Type.GetTypeFromCLSID(new Guid("C45F55FC-76D5-4D30-A7D0-2DF66C22ED0D"), ipAddress, false);
+                _ComSrv = (COMMyCasinoSrvLib.COMMyCasino)Activator.CreateInstance(comType);
+            }
+            catch(COMException ex)
+            {
+                tblAuthentificationFailed.Text = "COM Server nicht gefunden";
+                return;
+            }
 #else
             try
             {
