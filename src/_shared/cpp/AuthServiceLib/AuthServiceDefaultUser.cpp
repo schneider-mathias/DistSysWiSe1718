@@ -1,15 +1,24 @@
+/**--------------------------------------------------------------------------------------------------
+// project:	AuthServiceLib
+// file:	AuthServiceDefaultUser.cpp
+//
+// summary:	Implements the authentication service default user class
+//
+//			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
+//
+//			Date		Developer			Change
+//			13.01.2018	Mathias Schneider	Created
+ *-----------------------------------------------------------------------------------------------**/
+
 #include "AuthServiceDefaultUser.h"
 #include <vector>
 #include <sstream>
 
-AuthServiceDefaultUser::AuthServiceDefaultUser()
-{
-}
-
-AuthServiceDefaultUser::~AuthServiceDefaultUser()
-{
-}
-
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Serialize this object to the given stream. </summary>
+ *
+ * <returns>	A std::wstring. </returns>
+ *-----------------------------------------------------------------------------------------------**/
 
 std::wstring AuthServiceDefaultUser::Serialize()
 {
@@ -19,6 +28,15 @@ std::wstring AuthServiceDefaultUser::Serialize()
 	serialized.append(m_password);
 	return serialized;
 }
+
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Deserialize this object to the given stream. </summary>
+ *
+ * <param name="in">	The in. </param>
+ *
+ * <returns>	True if it succeeds, false if it fails. </returns>
+ *-----------------------------------------------------------------------------------------------**/
+
 BOOL AuthServiceDefaultUser::Deserialize(std::wstring in)
 {
 	std::wstring temp;
