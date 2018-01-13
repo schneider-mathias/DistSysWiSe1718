@@ -1,0 +1,17 @@
+﻿<configuration>
+    <system.serviceModel>
+        <bindings>
+            <basicHttpBinding>
+                <binding name="MyBayWSSrvASMXSoap" maxBufferSize="2147483647"
+                    maxReceivedMessageSize="2147483647">
+                    <security mode="None" />
+                </binding>
+            </basicHttpBinding>
+        </bindings>
+        <client>
+            <endpoint address="http://localhost:2664/MyBayWSSrvASMX.asmx"
+                binding="basicHttpBinding" bindingConfiguration="MyBayWSSrvASMXSoap"
+                contract="MyBayWSSrv.MyBayWSSrvASMXSoap" name="MyBayWSSrvASMXSoap" />
+        </client>
+    </system.serviceModel>
+</configuration>
