@@ -1,0 +1,171 @@
+﻿<phone:PhoneApplicationPage
+    x:Class="MyCasinoWSPhoneClient.HistoryPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    FontFamily="{StaticResource PhoneFontFamilyNormal}"
+    FontSize="{StaticResource PhoneFontSizeNormal}"
+    Foreground="{StaticResource PhoneForegroundBrush}"
+    SupportedOrientations="Portrait" Orientation="Portrait"
+    mc:Ignorable="d"
+    shell:SystemTray.IsVisible="True">
+
+    <!--LayoutRoot ist das Stammraster, in dem alle anderen Seiteninhalte platziert werden-->
+    <Grid x:Name="LayoutRoot" Background="Transparent">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid Background="CornflowerBlue">
+            <!--Grid column definition-->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="5"/>
+            </Grid.ColumnDefinitions>
+            <!--Grid row definition-->
+            <Grid.RowDefinitions>
+                <RowDefinition Height="5"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="5"/>
+            </Grid.RowDefinitions>
+
+            <!--Play and history buttons-->
+            <Button x:Name="BtnPlay" Click="BtnPlay_Click" Content="Spielen" Grid.Row="1" Grid.Column="1" 
+                Background="OrangeRed" FontSize="20" Width="150" Margin="0 0 5 0"/>
+            <Button x:Name="BtnHistory" Click="BtnHistory_Click" Content="Verlauf" Grid.Row="1" Grid.Column="2"
+                Background="OrangeRed" FontSize="20" Width="150" Margin="0 0 5 0"/>
+            <Button x:Name="BtnPayIn" Click="BtnPayIn_Click" Content="Einzahlen" Grid.Row="1" Grid.Column="3" 
+                Background="OrangeRed" FontSize="20" Width="150" Margin="0 0 5 0"/>
+            <!--User-->
+            <!--TextBlock Text="Angemeldet als:" VerticalAlignment="Center" Grid.Row="2" Grid.Column="1" FontSize="20"/-->
+            <!--TextBlock x:Name="tblUsername" Text="Name" VerticalAlignment="Center" Grid.Row="2" Grid.Column="2" Foreground="OrangeRed" FontSize="20" IsHitTestVisible="False"/-->
+            <!--Logout-->
+            <Button x:Name="btnLogout" Click="btnLogout_Click" Content="Logout" Background="OrangeRed" Grid.Row="2" Grid.Column="3"  MaxWidth="125" MinWidth="100" FontSize="20"/>
+
+            <!--ddddddddddddddddddddddddddddddddddd-->
+            
+
+            <Border CornerRadius="10" Background="White" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="4" Grid.RowSpan="2" >
+                <Grid >
+                    <!--Column Definition-->
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="5"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="5"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!--Row Definitions-->
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="5"/>
+                    </Grid.RowDefinitions>
+                    <!--Bet Amount-->
+                    <Border Grid.Row="1" Grid.RowSpan="5" Grid.Column="1" BorderThickness="2 2 1 2" 
+                    BorderBrush="CornflowerBlue" Margin="0 0 0 0" VerticalAlignment="Top" MinHeight="615">
+                        <StackPanel >
+                            <TextBox Text="Einsatz" FontSize="10"  BorderThickness="0 0 0 1" 
+                             BorderBrush="CornflowerBlue" IsHitTestVisible="False" />
+                            <ListBox Name="lbBetAmountList" BorderThickness="0 0 0 0" HorizontalContentAlignment="Stretch" IsHitTestVisible="False">
+                            </ListBox>
+                        </StackPanel>
+                    </Border>
+                    <!--Number1 of the speficic roll-->
+                    <Border Grid.Row="1" Grid.RowSpan="5" Grid.Column="2" BorderThickness="1 2 1 2"
+                    BorderBrush="CornflowerBlue" Margin="0 0 0 0" VerticalAlignment="Top" MinHeight="615">
+                        <StackPanel>
+                            <TextBox Text="1 Zahl" FontSize="10"  BorderThickness="0 0 0 1" Margin="0 0 0 0"
+                             BorderBrush="CornflowerBlue" IsHitTestVisible="False"/>
+                            <ListBox Name="lbFirstNumberPerRollList" BorderThickness="0 0 0 0" HorizontalContentAlignment="Stretch" IsHitTestVisible="False">
+                            </ListBox>
+                        </StackPanel>
+                    </Border>
+                    <!--Number2 of specific roll-->
+                    <Border Grid.Row="1" Grid.RowSpan="5" Grid.Column="3" BorderThickness="1 2 1 2"
+                    BorderBrush="CornflowerBlue" Margin="0 0 0 0" VerticalAlignment="Top" MinHeight="615">
+                        <StackPanel>
+                            <TextBox Text="2 Zahl" FontSize="10"  BorderThickness="0 0 0 1" Margin="0 0 0 0"
+                             BorderBrush="CornflowerBlue" IsHitTestVisible="False"/>
+                            <ListBox Name="lbSecondNumberPerRollList" BorderThickness="0 0 0 0" HorizontalContentAlignment="Stretch" IsHitTestVisible="False">
+                            </ListBox>
+                        </StackPanel>
+                    </Border>
+
+                    <!--First drawn Number-->
+                    <!--Border Grid.Row="1" Grid.RowSpan="5" Grid.Column="4" BorderThickness="1 2 1 2"
+                    BorderBrush="CornflowerBlue" Margin="0 0 0 0" VerticalAlignment="Top" MinHeight="615">
+                        <StackPanel>
+                            <TextBox Text="1 Ziehung" FontSize="10"  BorderThickness="0 0 0 1" Margin="0 0 0 0"
+                             BorderBrush="CornflowerBlue" IsHitTestVisible="False"/>
+                            <ListBox Name="lbFirstNumberDrawn" BorderThickness="0 0 0 0" HorizontalContentAlignment="Stretch" IsHitTestVisible="False">
+                            </ListBox>
+                        </StackPanel>
+                    </-->
+                    <!--Second drawn Number-->
+                    <!--Border Grid.Row="1" Grid.RowSpan="5" Grid.Column="5" BorderThickness="1 2 1 2"
+                    BorderBrush="CornflowerBlue" Margin="0 0 0 0" VerticalAlignment="Top" MinHeight="615">
+                        <StackPanel>
+                            <TextBox Text="Ziehung" FontSize="10"  BorderThickness="0 0 0 1" Margin="0 0 0 0"
+                             BorderBrush="CornflowerBlue" IsHitTestVisible="False"/>
+                            <ListBox Name="lbSecondNumberDrawn" BorderThickness="0 0 0 0" HorizontalContentAlignment="Stretch" IsHitTestVisible="False">
+                            </ListBox>
+                        </StackPanel>
+                    </-->
+                    <!--Win or Loss-->
+                    <Border Grid.Row="1" Grid.RowSpan="5" Grid.Column="6" BorderThickness="1 2 1 2"
+                    BorderBrush="CornflowerBlue" Margin="0 0 0 0" VerticalAlignment="Top" MinHeight="615">
+                        <StackPanel>
+                            <TextBox Text="+/-" FontSize="10"  BorderThickness="0 0 0 1" Margin="0 0 0 0"
+                             BorderBrush="CornflowerBlue" IsHitTestVisible="False"/>
+                            <ListBox Name="lbWinLossList" BorderThickness="0 0 0 0" HorizontalContentAlignment="Stretch" IsHitTestVisible="False">
+                            </ListBox>
+                        </StackPanel>
+                    </Border>
+
+                    <!--PayIn-->
+                    <Border Grid.Row="1" Grid.RowSpan="5" Grid.Column="7" BorderThickness="1 2 1 2"
+                    BorderBrush="CornflowerBlue" Margin="0 0 0 0" VerticalAlignment="Top" MinHeight="615">
+                        <StackPanel>
+                            <TextBox Text="Einzahlung" FontSize="10"  BorderThickness="0 0 0 1" Margin="0 0 0 0"
+                             BorderBrush="CornflowerBlue" IsHitTestVisible="False"/>
+                            <ListBox Name="lbPayInList" BorderThickness="0 0 0 0" HorizontalContentAlignment="Stretch" IsHitTestVisible="False">
+                            </ListBox>
+                        </StackPanel>
+                    </Border>
+
+                    <!--Balance-->
+                    <Border Grid.Row="1" Grid.RowSpan="5" Grid.Column="8" BorderThickness="1 2 2 2"
+                    BorderBrush="CornflowerBlue" Margin="0 0 0 0" VerticalAlignment="Top" MinHeight="615" 
+                    HorizontalAlignment="Left" >
+                        <StackPanel>
+                            <TextBox Text="Guthaben" FontSize="10"  BorderThickness="0 0 0 1" Margin="0 0 0 0"
+                             BorderBrush="CornflowerBlue" IsHitTestVisible="False"/>
+                            <ListBox Name="lbBalanceList" BorderThickness="0 0 0 0" HorizontalContentAlignment="Stretch" IsHitTestVisible="False">
+                            </ListBox>
+                        </StackPanel>
+                    </Border>
+                    <!--dddddddddddddddddddddddddd-->
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+
+</phone:PhoneApplicationPage>
