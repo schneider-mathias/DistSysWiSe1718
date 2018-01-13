@@ -1,3 +1,15 @@
+/**--------------------------------------------------------------------------------------------------
+// project:	RPCMyCasinoCln
+// file:	RPCMyCasinoCommandLineInterface.cpp
+//
+// summary:	Implements the RPC my casino command line interface class
+//
+//			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
+//
+//			Date		Developer			Change
+//			13.01.2018	Mathias Schneider	Created
+ *-----------------------------------------------------------------------------------------------**/
+
 #include "RPCMyCasinoCommandLineInterface.h"
 #include "MyCasino_i.h"
 #include "CharStringConverter.h"
@@ -6,6 +18,12 @@
 #include "json\reader.h"
 #include "bprinter\table_printer.h"
 
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Constructor. </summary>
+ *
+ * <param name="interpreter">	[in,out] If non-null, the interpreter. </param>
+ *-----------------------------------------------------------------------------------------------**/
+
 RPCMyCasinoCommandLineInterface::RPCMyCasinoCommandLineInterface(CmdInterpreter* interpreter)
 	:MyCasinoCommandLineInterface(interpreter)
 {
@@ -13,9 +31,19 @@ RPCMyCasinoCommandLineInterface::RPCMyCasinoCommandLineInterface(CmdInterpreter*
 	m_pUserType = NULL;
 }
 
+/** <summary>	Destructor. </summary> */
 RPCMyCasinoCommandLineInterface::~RPCMyCasinoCommandLineInterface()
 {
 }
+
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Users. </summary>
+ *
+ * <param name="user">	  	The user. </param>
+ * <param name="password">	The password. </param>
+ *
+ * <returns>	True if it succeeds, false if it fails. </returns>
+ *-----------------------------------------------------------------------------------------------**/
 
 bool RPCMyCasinoCommandLineInterface::user(std::wstring user, std::wstring password)
 {
@@ -61,6 +89,15 @@ bool RPCMyCasinoCommandLineInterface::user(std::wstring user, std::wstring passw
 	return true;
 }
 
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Payins. </summary>
+ *
+ * <param name="user">  	The user. </param>
+ * <param name="amount">	The amount. </param>
+ *
+ * <returns>	True if it succeeds, false if it fails. </returns>
+ *-----------------------------------------------------------------------------------------------**/
+
 bool RPCMyCasinoCommandLineInterface::payin(std::wstring user, double amount)
 {
 	unsigned char* userCStr = (unsigned char*)wstring_to_char(user);
@@ -79,6 +116,16 @@ bool RPCMyCasinoCommandLineInterface::payin(std::wstring user, double amount)
 	return true;
 }
 
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Bets. </summary>
+ *
+ * <param name="setAmount">   	The set amount. </param>
+ * <param name="firstNumber"> 	The first number. </param>
+ * <param name="secondNumber">	The second number. </param>
+ *
+ * <returns>	True if it succeeds, false if it fails. </returns>
+ *-----------------------------------------------------------------------------------------------**/
+
 bool RPCMyCasinoCommandLineInterface::bet(double setAmount, unsigned short firstNumber, unsigned short secondNumber)
 {
 	error_status_t hr = ::bet(*m_pSessionId, setAmount, (short)firstNumber, (short)secondNumber);
@@ -88,6 +135,12 @@ bool RPCMyCasinoCommandLineInterface::bet(double setAmount, unsigned short first
 
 	return SUCCEEDED(hr);
 }
+
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Showbets this object. </summary>
+ *
+ * <returns>	True if it succeeds, false if it fails. </returns>
+ *-----------------------------------------------------------------------------------------------**/
 
 bool RPCMyCasinoCommandLineInterface::showbets()
 {
@@ -141,6 +194,15 @@ bool RPCMyCasinoCommandLineInterface::showbets()
 	return true;
 }
 
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Draws. </summary>
+ *
+ * <param name="firstNumberTest"> 	[in,out] If non-null, the first number test. </param>
+ * <param name="secondNumberTest">	[in,out] If non-null, the second number test. </param>
+ *
+ * <returns>	True if it succeeds, false if it fails. </returns>
+ *-----------------------------------------------------------------------------------------------**/
+
 bool RPCMyCasinoCommandLineInterface::draw(unsigned short* firstNumberTest, unsigned short* secondNumberTest)
 {
 	error_status_t hr;
@@ -180,6 +242,11 @@ bool RPCMyCasinoCommandLineInterface::draw(unsigned short* firstNumberTest, unsi
 	return hr ? false : true;
 }
 
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Showstatus this object. </summary>
+ *
+ * <returns>	True if it succeeds, false if it fails. </returns>
+ *-----------------------------------------------------------------------------------------------**/
 
 bool RPCMyCasinoCommandLineInterface::showstatus()
 {
@@ -285,6 +352,12 @@ bool RPCMyCasinoCommandLineInterface::showstatus()
 
 	return true;
 }
+
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Byes this object. </summary>
+ *
+ * <returns>	True if it succeeds, false if it fails. </returns>
+ *-----------------------------------------------------------------------------------------------**/
 
 bool RPCMyCasinoCommandLineInterface::bye()
 {

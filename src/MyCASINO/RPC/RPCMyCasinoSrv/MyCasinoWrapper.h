@@ -3,6 +3,12 @@
 
 static MyCasino* myCasino;
 
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Gets the casino. </summary>
+ *
+ * <returns>	Null if it fails, else the casino. </returns>
+ *-----------------------------------------------------------------------------------------------**/
+
 MyCasino* getCasino()
 {
 	if (NULL == myCasino)
@@ -14,6 +20,7 @@ MyCasino* getCasino()
 	return myCasino;
 }
 
+/** <summary>	Clean casino. </summary> */
 void cleanCasino()
 {
 	delete myCasino;

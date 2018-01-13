@@ -1,9 +1,21 @@
+/**--------------------------------------------------------------------------------------------------
+// project:	RPCMyCasinoSrv
+// file:	RPCMyCasinoSrv.c
+//
+// summary:	RPC my casino server class
+//
+//			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
+//
+//			Date		Developer			Change
+//			13.01.2018	Mathias Schneider	Created
+ *-----------------------------------------------------------------------------------------------**/
 
 #include "MyCasino_i.h"
 #include "RpcException.h"
 #include "Config.h"
 #include <stdio.h>
 
+/** <summary>	Main entry-point for this application. </summary> */
 void main(void)
 {
 	RPC_STATUS status;

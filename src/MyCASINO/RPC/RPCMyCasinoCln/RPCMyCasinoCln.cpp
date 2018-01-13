@@ -1,3 +1,15 @@
+/**--------------------------------------------------------------------------------------------------
+// project:	RPCMyCasinoCln
+// file:	RPCMyCasinoCln.cpp
+//
+// summary:	Implements the RPC my casino cln class
+//
+//			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
+//
+//			Date		Developer			Change
+//			13.01.2018	Mathias Schneider	Created
+ *-----------------------------------------------------------------------------------------------**/
+
 #include "IPValidate.h"
 #include "MyCasino_i.h"    
 #include "Config.h"
@@ -11,6 +23,13 @@ static void Bind(char*);
 static void UnBind(void);
 static void rpcCalls(void);
 void startCommandLineInterface();
+
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Main entry-point for this application. </summary>
+ *
+ * <param name="argc">	The number of command-line arguments provided. </param>
+ * <param name="argv">	An array of command-line argument strings. </param>
+ *-----------------------------------------------------------------------------------------------**/
 
 void main(int argc, char**argv)
 {
@@ -63,6 +82,7 @@ void main(int argc, char**argv)
 	getchar();
 }
 
+/** <summary>	RPC calls. </summary> */
 void rpcCalls(void)
 {
 	// save current stream buffer in order to restore it 
@@ -71,6 +91,7 @@ void rpcCalls(void)
 
 	RpcTryExcept
 	{
+		// start command line interface
 		startCommandLineInterface();
 	}
 	RpcExcept(1)
@@ -85,6 +106,14 @@ void rpcCalls(void)
 	RpcEndExcept
 }
 
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Binds the given remote netw address. </summary>
+ *
+ * <exception cref="RpcException">	Thrown when a RPC error condition occurs. </exception>
+ *
+ * <param name="remoteNetwAddr">	[in,out] If non-null, the remote netw address. </param>
+ *-----------------------------------------------------------------------------------------------**/
+
 void Bind(char* remoteNetwAddr)
 {
 	RPC_STATUS status;
@@ -98,12 +127,12 @@ void Bind(char* remoteNetwAddr)
 	unsigned char *stringBinding = NULL;
 
 
-	// Erzeugung der Stringdarstellung des Binding-Handles 
-	status = RpcStringBindingCompose(NULL,             // Objekt UUID
-		protocolSequence, // Server-/Verbindungsdaten
+	// create string presentation of binding handle
+	status = RpcStringBindingCompose(NULL,      //object UUID
+		protocolSequence,						// server connection infomation
 		netwAddr,
 		endpoint,
-		NULL,             // Keine Optionen fuer TCP/IP
+		NULL,									// no options for TCP/IP
 		&stringBinding);
 	if (status)
 	{
@@ -112,7 +141,7 @@ void Bind(char* remoteNetwAddr)
 			"RPC Runtime Error"));
 	}
 
-	// Erzeugung des Binding-Handles
+	//create binding handle
 	status = RpcBindingFromStringBinding(stringBinding,
 		&hMyCasino_i);
 	if (status)
@@ -122,13 +151,19 @@ void Bind(char* remoteNetwAddr)
 			"RPC Runtime Error"));
 	}
 
-	// Freigabe der Stringdarstellung des Binding-Handles 
+	// free string presentation of binding handle
 	status = RpcStringFree(&stringBinding);
 	if (status)
 	{
 		throw(RpcException(status, "RpcStringFree failed", "RPC Error"));
 	}
 }
+
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Un bind. </summary>
+ *
+ * <exception cref="RpcException">	Thrown when a RPC error condition occurs. </exception>
+ *-----------------------------------------------------------------------------------------------**/
 
 void UnBind(void)
 {
@@ -142,6 +177,7 @@ void UnBind(void)
 	}
 }
 
+/** <summary>	Starts command line interface. </summary> */
 void startCommandLineInterface()
 {
 	std::cout << "--- MY CASINO ---" << std::endl;

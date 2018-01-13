@@ -1,3 +1,15 @@
+/**--------------------------------------------------------------------------------------------------
+// project:	RPCMyCasinoIdl
+// file:	MyCasino_i.idl
+//
+// summary:	My casino i class
+//
+//			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
+//
+//			Date		Developer			Change
+//			13.01.2018	Mathias Schneider	Created
+ *-----------------------------------------------------------------------------------------------**/
+
 [
 	uuid(BEE48EE5-830F-453C-AAE4-9B6B3F4FC270),
 	version(1.0),
@@ -5,6 +17,7 @@
 ]
 interface MyCasino_i
 {
+	/** <summary>	A string structure for RPC. </summary> */
 	typedef struct
 	{
 		unsigned short size;
@@ -13,6 +26,7 @@ interface MyCasino_i
 	}
 	String_t;
 
+	/** <summary>	my casino bet. </summary> */
 	typedef struct
 	{
 		String_t name;
@@ -22,6 +36,7 @@ interface MyCasino_i
 	}
 	MyCasinoBet_t;
 
+	/** <summary>	my casino transaction t. </summary> */
 	typedef struct
 	{
 		long id;
@@ -40,11 +55,13 @@ interface MyCasino_i
 
 	error_status_t calculateProfit([in] unsigned long sessionId, [in] double amountMoney, [in] short firstNumber, [in] short secondNumber, [out] double* profitForOneMatch, [out] double* profitForTwoMatches);
 
-	//bet structure:
-	// [0] - name
-	// [1] - first
-	// [2] - second
-	// [3] - amount
+	/**--------------------------------------------------------------------------------------------------
+	 * <summary>
+	 * bet structure:
+	 *  [0] - name [1] - first [2] - second [3] - amount.
+	 * </summary>
+	 *-----------------------------------------------------------------------------------------------**/
+
 	error_status_t showbets([in] unsigned long sessionId, [out, size_is(, *count)] MyCasinoBet_t** bets, [in, out] unsigned long* count);
 
 
@@ -52,21 +69,23 @@ interface MyCasino_i
 	error_status_t drawTest([in] unsigned long sessionId, [in] short firstNumberTest, [in] short secondNumberTest);
 	error_status_t draw([in] unsigned long sessionId, [out] short* firstNumber, [out] short* secondNumber);
 
-	// transaction structure:
-	// [0] - id
-	// [1] - resultAmount (=previous + change)
-	// [2] - changeAmount
+	/**--------------------------------------------------------------------------------------------------
+	 * <summary>
+	 * transaction structure: [0] - id [1] - resultAmount (=previous + change)
+	 * [2] - changeAmount.
+	 * </summary>
+	 *-----------------------------------------------------------------------------------------------**/
 
 	error_status_t getTransactions([in] unsigned long sessionId, [out] boolean* isFinished, [out] MyCasinoTransaction_t* transaction, [out] unsigned long* transactionType);
 
 	// informationTypes:
-	// - BetType
-	// - NoInformationType
+	// - BetType. 
 
-	// information e.g. =>bet structure:
-	// [0] - name
-	// [1] - first
-	// [2] - second
-	// [3] - amount
+	/**--------------------------------------------------------------------------------------------------
+	 * <summary>
+	 * information e.g. =>bet structure: [0] - name [1] - first [2] - second [3] - amount.
+	 * </summary>
+	 *-----------------------------------------------------------------------------------------------**/
+
 	error_status_t getTransactionInformation([in] unsigned long sessionId, [in] unsigned long transactionId, [out] String_t* information, [out] unsigned long* informationType);
 }

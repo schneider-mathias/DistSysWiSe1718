@@ -1,3 +1,15 @@
+/**--------------------------------------------------------------------------------------------------
+// project:	COMMyCasinoCln
+// file:	COMMyCasinoCommandLineInterface.cpp
+//
+// summary:	Implements the com my casino command line interface class
+//
+//			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
+//
+//			Date		Developer			Change
+//			13.01.2018	Mathias Schneider	Created
+ *-----------------------------------------------------------------------------------------------**/
+
 #include <iostream>
 #include <atlsafe.h>
 
@@ -8,16 +20,33 @@
 
 #include "bprinter\table_printer.h"
 
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Constructor. </summary>
+ *
+ * <param name="interpreter">	  	[in,out] If non-null, the interpreter. </param>
+ * <param name="pICOMMyCasinoSrv">	[in,out] If non-null, the icom my casino server. </param>
+ *-----------------------------------------------------------------------------------------------**/
+
 COMMyCasinoCommandLineInterface::COMMyCasinoCommandLineInterface(CmdInterpreter* interpreter, ICOMMyCasino* pICOMMyCasinoSrv)
 	: MyCasinoCommandLineInterface(interpreter)
 {
 	m_pICOMMyCasinoSrv = pICOMMyCasinoSrv;
 }
 
+/** <summary>	Destructor. </summary> */
 COMMyCasinoCommandLineInterface::~COMMyCasinoCommandLineInterface()
 {
 	m_pICOMMyCasinoSrv = NULL;
 }
+
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Users. </summary>
+ *
+ * <param name="user">	  	The user. </param>
+ * <param name="password">	The password. </param>
+ *
+ * <returns>	True if it succeeds, false if it fails. </returns>
+ *-----------------------------------------------------------------------------------------------**/
 
 bool COMMyCasinoCommandLineInterface::user(std::wstring user, std::wstring password)
 {
@@ -61,6 +90,15 @@ bool COMMyCasinoCommandLineInterface::user(std::wstring user, std::wstring passw
 	return true;
 }
 
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Payins. </summary>
+ *
+ * <param name="user">  	The user. </param>
+ * <param name="amount">	The amount. </param>
+ *
+ * <returns>	True if it succeeds, false if it fails. </returns>
+ *-----------------------------------------------------------------------------------------------**/
+
 bool COMMyCasinoCommandLineInterface::payin(std::wstring user, double amount)
 {
 	BSTR errMsg;
@@ -75,6 +113,16 @@ bool COMMyCasinoCommandLineInterface::payin(std::wstring user, double amount)
 	return true;
 }
 
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Bets. </summary>
+ *
+ * <param name="setAmount">   	The set amount. </param>
+ * <param name="firstNumber"> 	The first number. </param>
+ * <param name="secondNumber">	The second number. </param>
+ *
+ * <returns>	True if it succeeds, false if it fails. </returns>
+ *-----------------------------------------------------------------------------------------------**/
+
 bool COMMyCasinoCommandLineInterface::bet(double setAmount, unsigned short firstNumber, unsigned short secondNumber)
 {
 	BSTR errMsg;
@@ -83,6 +131,12 @@ bool COMMyCasinoCommandLineInterface::bet(double setAmount, unsigned short first
 
 	return SUCCEEDED(hr);
 }
+
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Showbets this object. </summary>
+ *
+ * <returns>	True if it succeeds, false if it fails. </returns>
+ *-----------------------------------------------------------------------------------------------**/
 
 bool COMMyCasinoCommandLineInterface::showbets()
 {
@@ -155,6 +209,15 @@ bool COMMyCasinoCommandLineInterface::showbets()
 	return true;
 }
 
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Draws. </summary>
+ *
+ * <param name="firstNumberTest"> 	[in,out] If non-null, the first number test. </param>
+ * <param name="secondNumberTest">	[in,out] If non-null, the second number test. </param>
+ *
+ * <returns>	True if it succeeds, false if it fails. </returns>
+ *-----------------------------------------------------------------------------------------------**/
+
 bool COMMyCasinoCommandLineInterface::draw(unsigned short* firstNumberTest, unsigned short* secondNumberTest)
 {
 	BSTR errMsg;
@@ -194,6 +257,12 @@ bool COMMyCasinoCommandLineInterface::draw(unsigned short* firstNumberTest, unsi
 
 	return true;
 }
+
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Showstatus this object. </summary>
+ *
+ * <returns>	True if it succeeds, false if it fails. </returns>
+ *-----------------------------------------------------------------------------------------------**/
 
 bool COMMyCasinoCommandLineInterface::showstatus()
 {
@@ -304,6 +373,12 @@ bool COMMyCasinoCommandLineInterface::showstatus()
 
 	return true;
 }
+
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Byes this object. </summary>
+ *
+ * <returns>	True if it succeeds, false if it fails. </returns>
+ *-----------------------------------------------------------------------------------------------**/
 
 bool COMMyCasinoCommandLineInterface::bye()
 {

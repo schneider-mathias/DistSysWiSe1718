@@ -1,3 +1,15 @@
+/**--------------------------------------------------------------------------------------------------
+// project:	RPCMyCasinoSrv
+// file:	RPCMyCasinoSrvImpl.cpp
+//
+// summary:	Implements the RPC my casino server implementation class
+//
+//			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
+//
+//			Date		Developer			Change
+//			13.01.2018	Mathias Schneider	Created
+ *-----------------------------------------------------------------------------------------------**/
+
 #include "MyCasino_i.h"
 
 #include "AuthServiceWrapper.h"
@@ -9,8 +21,17 @@
 
 #include "MyCasinoDefines.h"
 
-// include jsoncpp writer (installed using nuget)
+// include jsoncpp writer
 #include "json/writer.h"
+
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Converts this object to a JSON. </summary>
+ *
+ * <param name="currentInformation">	[in,out] Information describing the current. </param>
+ * <param name="resJson">				[in,out] If non-null, the result JSON. </param>
+ *
+ * <returns>	The given data converted to a bool. </returns>
+ *-----------------------------------------------------------------------------------------------**/
 
 bool toJson(std::vector<TaggedUnion>& currentInformation, Json::Value** resJson)
 {
@@ -54,6 +75,17 @@ bool toJson(std::vector<TaggedUnion>& currentInformation, Json::Value** resJson)
 	return true;
 }
 
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Login. </summary>
+ *
+ * <param name="sessionId">	[in,out] If non-null, identifier for the session. </param>
+ * <param name="username"> 	[in,out] If non-null, the username. </param>
+ * <param name="password"> 	[in,out] If non-null, the password. </param>
+ * <param name="userType"> 	[in,out] If non-null, type of the user. </param>
+ *
+ * <returns>	An error_status_t. </returns>
+ *-----------------------------------------------------------------------------------------------**/
+
 error_status_t login(unsigned long*  sessionId, unsigned char *username, unsigned char *password, short* userType)
 {
 
@@ -86,6 +118,14 @@ error_status_t login(unsigned long*  sessionId, unsigned char *username, unsigne
 	return resVal;
 }
 
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Logout. </summary>
+ *
+ * <param name="sessionId">	Identifier for the session. </param>
+ *
+ * <returns>	An error_status_t. </returns>
+ *-----------------------------------------------------------------------------------------------**/
+
 error_status_t logout(unsigned long sessionId)
 {
 	MyCasinoUser* user = NULL;
@@ -111,6 +151,15 @@ error_status_t logout(unsigned long sessionId)
 	return resVal;
 }
 
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Deposits. </summary>
+ *
+ * <param name="sessionId">  	Identifier for the session. </param>
+ * <param name="name">		 	[in,out] If non-null, the name. </param>
+ * <param name="amountMoney">	The amount money. </param>
+ *
+ * <returns>	An error_status_t. </returns>
+ *-----------------------------------------------------------------------------------------------**/
 
 error_status_t deposit(unsigned long sessionId, unsigned char *name, double amountMoney)
 {
@@ -136,6 +185,17 @@ error_status_t deposit(unsigned long sessionId, unsigned char *name, double amou
 	return RPC_S_OK;
 }
 
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Bets. </summary>
+ *
+ * <param name="sessionId">   	Identifier for the session. </param>
+ * <param name="amountMoney"> 	The amount money. </param>
+ * <param name="firstNumber"> 	The first number. </param>
+ * <param name="secondNumber">	The second number. </param>
+ *
+ * <returns>	An error_status_t. </returns>
+ *-----------------------------------------------------------------------------------------------**/
+
 error_status_t bet(unsigned long sessionId, double amountMoney, short firstNumber, short secondNumber)
 {
 	MyCasinoUser* user = NULL;
@@ -156,6 +216,19 @@ error_status_t bet(unsigned long sessionId, double amountMoney, short firstNumbe
 	return RPC_S_OK;
 }
 
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Calculates the profit. </summary>
+ *
+ * <param name="sessionId">			 	Identifier for the session. </param>
+ * <param name="amountMoney">		 	The amount money. </param>
+ * <param name="firstNumber">		 	The first number. </param>
+ * <param name="secondNumber">		 	The second number. </param>
+ * <param name="profitForOneMatch">  	[in,out] If non-null, a match specifying the profit for
+ * 										one. </param>
+ * <param name="profitForTwoMatches">	[in,out] If non-null, the profit for two matches. </param>
+ *
+ * <returns>	The calculated profit. </returns>
+ *-----------------------------------------------------------------------------------------------**/
 
 error_status_t calculateProfit(unsigned long sessionId, double amountMoney, short firstNumber, short secondNumber, double* profitForOneMatch, double* profitForTwoMatches)
 {
@@ -169,6 +242,16 @@ error_status_t calculateProfit(unsigned long sessionId, double amountMoney, shor
 
 	return RPC_S_OK;
 }
+
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Showbets. </summary>
+ *
+ * <param name="sessionId">	Identifier for the session. </param>
+ * <param name="bets">	   	[in,out] If non-null, the bets. </param>
+ * <param name="count">	   	[in,out] If non-null, number of. </param>
+ *
+ * <returns>	An error_status_t. </returns>
+ *-----------------------------------------------------------------------------------------------**/
 
 error_status_t showbets(unsigned long sessionId, MyCasinoBet_t** bets, unsigned long* count)
 {
@@ -207,7 +290,16 @@ error_status_t showbets(unsigned long sessionId, MyCasinoBet_t** bets, unsigned 
 	return resVal;
 }
 
-// result numbers equal input
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	result numbers equal input. </summary>
+ *
+ * <param name="sessionId">		  	Identifier for the session. </param>
+ * <param name="firstNumberTest"> 	The first number test. </param>
+ * <param name="secondNumberTest">	The second number test. </param>
+ *
+ * <returns>	An error_status_t. </returns>
+ *-----------------------------------------------------------------------------------------------**/
+
 error_status_t drawTest(unsigned long sessionId, short firstNumberTest, short secondNumberTest)
 {
 	MyCasinoUser* user = NULL;
@@ -229,6 +321,16 @@ error_status_t drawTest(unsigned long sessionId, short firstNumberTest, short se
 
 	return RPC_S_OK;
 }
+
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Draws. </summary>
+ *
+ * <param name="sessionId">   	Identifier for the session. </param>
+ * <param name="firstNumber"> 	[in,out] If non-null, the first number. </param>
+ * <param name="secondNumber">	[in,out] If non-null, the second number. </param>
+ *
+ * <returns>	An error_status_t. </returns>
+ *-----------------------------------------------------------------------------------------------**/
 
 error_status_t draw(unsigned long sessionId, short* firstNumber, short* secondNumber)
 {
@@ -257,6 +359,17 @@ error_status_t draw(unsigned long sessionId, short* firstNumber, short* secondNu
 	return RPC_S_OK;
 }
 
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Gets the transactions. </summary>
+ *
+ * <param name="sessionId">		 	Identifier for the session. </param>
+ * <param name="isFinished">	 	[in,out] If non-null, true if this object is finished. </param>
+ * <param name="transaction">	 	[in,out] If non-null, the transaction. </param>
+ * <param name="transactionType">	[in,out] If non-null, type of the transaction. </param>
+ *
+ * <returns>	The transactions. </returns>
+ *-----------------------------------------------------------------------------------------------**/
+
 error_status_t getTransactions(unsigned long sessionId, boolean* isFinished, MyCasinoTransaction_t* transaction, unsigned long* transactionType)
 {
 
@@ -282,6 +395,17 @@ error_status_t getTransactions(unsigned long sessionId, boolean* isFinished, MyC
 
 	return resVal;
 }
+
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Gets transaction information. </summary>
+ *
+ * <param name="sessionId">		 	Identifier for the session. </param>
+ * <param name="transactionId">  	Identifier for the transaction. </param>
+ * <param name="information">	 	[in,out] If non-null, the information. </param>
+ * <param name="informationType">	[in,out] If non-null, type of the information. </param>
+ *
+ * <returns>	The transaction information. </returns>
+ *-----------------------------------------------------------------------------------------------**/
 
 error_status_t getTransactionInformation(unsigned long sessionId, unsigned long transactionId, String_t* information, unsigned long* informationType)
 {

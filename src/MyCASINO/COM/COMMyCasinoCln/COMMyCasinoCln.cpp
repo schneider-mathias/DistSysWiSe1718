@@ -1,10 +1,20 @@
+/**--------------------------------------------------------------------------------------------------
+// project:	COMMyCasinoCln
+// file:	COMMyCasinoCln.cpp
+//
+// summary:	Implements the com my casino cln class
+//
+//			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
+//
+//			Date		Developer			Change
+//			13.01.2018	Mathias Schneider	Created
+ *-----------------------------------------------------------------------------------------------**/
+
 #include "IPValidate.h"
 
 #include <windows.h>
 #include <iostream>
-
 #include <string>
-
 #include <atlsafe.h>
 
 #import "COMMyCasinoSrv.dll"
@@ -15,6 +25,15 @@
 #include "BstrStringConverter.h"
 #include "COMMyCasinoCommandLineInterface.h"
 #include "CmdInterpreter.h"
+
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Main entry-point for this application. </summary>
+ *
+ * <param name="argc">	The number of command-line arguments provided. </param>
+ * <param name="argv">	An array of command-line argument strings. </param>
+ *
+ * <returns>	Exit-code for the process - 0 for success, else an error code. </returns>
+ *-----------------------------------------------------------------------------------------------**/
 
 int main(int argc, char**argv)
 {
@@ -66,8 +85,6 @@ int main(int argc, char**argv)
 	dispatcherMemFunc p = &(ICommandLineInterface::ProcessCommand);
 	interpreter.registerCmdDispatcher(&myCasinoCLI, p);
 	interpreter.run();
-
-
 
 	p_ICOMMyCasinoSrv->Release();
 	CoUninitialize();

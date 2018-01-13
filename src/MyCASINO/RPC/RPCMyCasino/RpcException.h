@@ -1,3 +1,15 @@
+/**--------------------------------------------------------------------------------------------------
+// project:	RPCMyCasino
+// file:	RpcException.h
+//
+// summary:	Declares the RPC exception class
+//
+//			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
+//
+//			Date		Developer			Change
+//			13.01.2018	Mathias Schneider	Created
+ *-----------------------------------------------------------------------------------------------**/
+
 #ifndef RPC_EXCEPTION_H
 #define RPC_EXCEPTION_H
 
