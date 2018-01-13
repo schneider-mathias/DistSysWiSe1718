@@ -97,7 +97,7 @@ void readConsole(ICOMMyBay *p_ICOMMyBaySrv, COSERVERINFO srvInfo)
 		}
 	}
 	// Main-Thread waretet auf MessageThread bis dieser fertig ist
-	//MessageThread.join();
+	MessageThread.join();
 
 }
 
@@ -198,10 +198,8 @@ void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 			{
 				cout << "----------------------------------------------------------------------------------------" << endl;
 				cout << "Die Auktion wurde gestartet." << endl;
-				cout << "Das Startgebot lautet: " << startBid << endl;
-				cout << "Deine Auktion hat die Auktionsnummer: " << auctionNumber << endl;
+				cout << "Ihre Auktion hat die Auktionsnummer: " << auctionNumber << endl;
 				cout << "----------------------------------------------------------------------------------------" << endl;
-				//MyAuctions.push_back(auctionNumber);		// fügt die Auktionsnummer zur Liste der eigenen Auktionen hinzu
 			}
 			else if (hr == ERROR_USER_NOT_LOGGED_IN)
 				cout << "Fehler: Bitte zuerst einloggen!" << endl;
@@ -354,7 +352,7 @@ void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 
 				else if (cnt == 3)
 				{
-					std::cout.width(15); std::cout << left << wstring_to_char((*it));
+					std::cout.width(15); std::cout << left << wstring_to_char((*it).substr(0, (*it).size() - 4));
 					cnt = 0;
 					wcout << endl;
 				}
@@ -516,13 +514,13 @@ void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 					for (int i = 0; i < allBidsVec.size() - 2; i += 3)
 					{
 						wcout << allBidsVec[i];						// Gebotsnummer
-						wcout << "  ";
+						wcout << "    ";
 						wcout << allBidsVec[i + 1];					// Bietername
 						for (int k = 0; k < columnLengthBidder - allBidsVec[i + 1].size(); k++)
 						{
 							wcout << " ";
 						}
-						wcout << "|" << allBidsVec[i + 2] << endl;	// Gebot
+						wcout << "|" << allBidsVec[i + 2].substr(0, allBidsVec[i + 2].size() - 4) << endl;	// Gebot mit nur 2 Nachkommastellen
 					}
 					cout << "----------------------------------------------------------------------------------------" << endl;
 					cout << endl;

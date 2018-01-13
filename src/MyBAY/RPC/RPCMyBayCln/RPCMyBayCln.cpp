@@ -283,7 +283,6 @@ void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, 
 			{
 				cout << "----------------------------------------------------------------------------------------" << endl;
 				cout << "Die Auktion wurde gestartet." << endl;
-				cout << "Das Startgebot lautet: " << startBid << endl;
 				cout << "Deine Auktion hat die Auktionsnummer: " << auctionNumber << endl;
 				cout << "----------------------------------------------------------------------------------------" << endl;
 				//MyAuctions.push_back(auctionNumber);		// fügt die Auktionsnummer zur Liste der eigenen Auktionen hinzu
@@ -430,7 +429,7 @@ void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, 
 
 				else if (cnt == 3)
 				{
-					std::cout.width(15); std::cout << left << wstring_to_char((*it));
+					std::cout.width(15); std::cout << left << wstring_to_char((*it).substr(0, (*it).size() - 4));
 					cnt = 0;
 					wcout << endl;
 				}
@@ -594,7 +593,7 @@ void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, 
 						{
 							wcout << " ";
 						}
-						wcout << "|" << allBidsVec[i + 2] << endl;	// Gebot
+						wcout << "|" << allBidsVec[i + 2].substr(0, allBidsVec[i + 2].size() - 4) << endl;	// Gebot
 					}
 					cout << "----------------------------------------------------------------------------------------" << endl;
 					cout << endl;
