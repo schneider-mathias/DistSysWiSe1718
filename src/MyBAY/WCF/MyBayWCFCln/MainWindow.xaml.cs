@@ -79,7 +79,7 @@ namespace MyBayWCFCln
                     retString = "Der angemeldete Benutzer ist nicht der Auktionator dieser Auktion";
                     break;
                 default:
-                    retString = "Unbekannte COM Exception";
+                    retString = "Unbekannte COM Exception" + ex.Message;
                     break;
             }
             return retString;
@@ -117,6 +117,10 @@ namespace MyBayWCFCln
 
             InitializeComponent();
             myListBoxUpdateEventHandler += myMessageListBoxUpdateEvent;
+#if COM
+            this.txtBox_serverIP.Text = "192.168.52.208";
+#else
+#endif
         }
 
         private void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)
@@ -238,7 +242,7 @@ namespace MyBayWCFCln
                     {
                         this.getMessageTimer.Interval = 10;
                     }                
-            #if COM
+#if COM
             }
 #else
 #endif
@@ -385,7 +389,7 @@ namespace MyBayWCFCln
                 MessageBoxResult result = MessageBox.Show(comError.convertException(except), "Fehler", MessageBoxButton.OK);
 #else
                 MessageBoxResult result = MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
-#endif            
+#endif
             }
         }
 
@@ -462,7 +466,7 @@ namespace MyBayWCFCln
                 MessageBoxResult result = MessageBox.Show(comError.convertException(except), "Fehler", MessageBoxButton.OK);
 #else
                 MessageBoxResult result = MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
-#endif      
+#endif
             }
         }
 
@@ -498,7 +502,7 @@ namespace MyBayWCFCln
                 MessageBoxResult result = MessageBox.Show(comError.convertException(except), "Fehler", MessageBoxButton.OK);
 #else
                 MessageBoxResult result = MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
-#endif      
+#endif
             }
         }
 
@@ -584,7 +588,7 @@ namespace MyBayWCFCln
                 MessageBoxResult result = MessageBox.Show(comError.convertException(except), "Fehler", MessageBoxButton.OK);
 #else
                 MessageBoxResult result = MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
-#endif      
+#endif
             }
         }
 
