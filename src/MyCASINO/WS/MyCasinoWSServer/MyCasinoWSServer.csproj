@@ -48,6 +48,9 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="PortForwardLib">
+      <HintPath>..\PortForwardLib.dll</HintPath>
+    </Reference>
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
@@ -87,9 +90,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MyCasinoLib\MyCasinoLib.csproj">
+    <ProjectReference Include="..\MyCasinoLib\MyCasinoWsLib.csproj">
       <Project>{1819cb6b-a1b7-421e-90ec-df90b912bb9b}</Project>
-      <Name>MyCasinoLib</Name>
+      <Name>MyCasinoWsLib</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

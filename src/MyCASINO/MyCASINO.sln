@@ -118,7 +118,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCasinoWSPhoneClient", "WS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCasinoWSServer", "WS\MyCasinoWSServer\MyCasinoWSServer.csproj", "{C1B4CFC6-AE3F-4268-BF9C-8A23CC1D6C0B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCasinoLib", "WS\MyCasinoLib\MyCasinoLib.csproj", "{1819CB6B-A1B7-421E-90EC-DF90B912BB9B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyCasinoWsLib", "WS\MyCasinoLib\MyCasinoWsLib.csproj", "{1819CB6B-A1B7-421E-90EC-DF90B912BB9B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
