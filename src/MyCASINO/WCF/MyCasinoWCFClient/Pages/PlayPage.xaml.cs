@@ -721,6 +721,8 @@ namespace MyCasinoWCFClient.Pages
                     errMsg = Codes.ResolveCode((ex as COMException).ErrorCode);
                 else
                     errMsg = "Unknown";
+
+                MessageBox.Show(errMsg);
             }
 #else
             try
