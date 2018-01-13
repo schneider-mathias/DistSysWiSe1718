@@ -1,23 +1,19 @@
-/********************************************************
-* BstrStringConverter.h -- 
-	Functions for BSTR <-> std::string conversions     *
-*													   *
-*                                                      *
-* Authors:  Mathias, Schneider						   *
-*                                                      *
-* Purpose:  Implementation for converting BSTR 
-			to std::strings and the other way around
-*                                                      *
-* Usage:                                               *
-*		Use this header to use inline functions.
-		Required comsuppw.lib is linked implicitly.
-		Adapted version from 
-		https://stackoverflow.com/questions/6284524/bstr-to-stdstring-stdwstring-and-vice-versa *
-********************************************************/
+/**--------------------------------------------------------------------------------------------------
+// project:
+// file:	BstrStringConverter.h
+//
+// summary:	Inline methods for converting BSTR to std::strings and the other way around.
+//			Requires comsuppw.lib is linked implicitly. Adapted version from
+// https://stackoverflow.com/questions/6284524/bstr-to-stdstring-stdwstring-and-vice-versa
+//
+//			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
+//
+//			Date		Developer			Change
+//			13.01.2018	Mathias Schneider	Created
+ *-----------------------------------------------------------------------------------------------**/
 
 #ifndef __BSTR_STRING_CONVERSION__ 
 #define __BSTR_STRING_CONVERSION__
-
 
 #include <string>
 #include <cassert>
@@ -25,6 +21,15 @@
 
 // link necessary comsuppw.lib library when using this header
 #pragma comment(lib,"comsuppw.lib")
+
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Bstr to string. </summary>
+ *
+ * <param name="str">	The string. </param>
+ *
+ * <returns>	A std::string. </returns>
+ *-----------------------------------------------------------------------------------------------**/
+
 inline std::string bstr_to_str(BSTR str)
 {
 	USES_CONVERSION;
@@ -33,11 +38,27 @@ inline std::string bstr_to_str(BSTR str)
 	return std::string(W2A(str));
 }
 
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Converts a str to a bstr. </summary>
+ *
+ * <param name="str">	The string. </param>
+ *
+ * <returns>	Str as a BSTR. </returns>
+ *-----------------------------------------------------------------------------------------------**/
+
 inline BSTR str_to_bstr(std::string str) 
 {
 	USES_CONVERSION;
 	return CComBSTR(str.c_str()).Detach();
 }
+
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Bstr to wstr. </summary>
+ *
+ * <param name="str">	The string. </param>
+ *
+ * <returns>	A std::wstring. </returns>
+ *-----------------------------------------------------------------------------------------------**/
 
 inline std::wstring bstr_to_wstr(BSTR str)
 {
@@ -46,6 +67,14 @@ inline std::wstring bstr_to_wstr(BSTR str)
 		return std::wstring(L"");
 	return std::wstring(str);
 }
+
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Wstr to bstr. </summary>
+ *
+ * <param name="str">	The string. </param>
+ *
+ * <returns>	A BSTR. </returns>
+ *-----------------------------------------------------------------------------------------------**/
 
 inline BSTR wstr_to_bstr(std::wstring str)
 {

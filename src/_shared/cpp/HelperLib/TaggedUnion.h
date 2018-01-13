@@ -1,12 +1,23 @@
-#pragma once
-//from https ://stackoverflow.com/questions/27760602/one-array-multiple-types
+/**--------------------------------------------------------------------------------------------------
+// project:	HelperLib
+// file:	TaggedUnion.h
+//
+// summary:	Declares the tagged union structure which is similar to a Windows VARIANT, 
+//			but does not require dependecies to windows headern. Inspired by
+//			https://stackoverflow.com/questions/27760602/one-array-multiple-types
+//
+//			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
+//
+//			Date		Developer			Change
+//			13.01.2018	Mathias Schneider	Created
+ *-----------------------------------------------------------------------------------------------**/
 
+#pragma once
 #include <cassert>
 #include <string>
 
 
-// structure for a tagged union which is similar to a VARIANT but does not
-// require dependecies to windows headern
+/** <summary>	A tagged union structure. </summary> */
 struct TaggedUnion
 {
 	enum Type
