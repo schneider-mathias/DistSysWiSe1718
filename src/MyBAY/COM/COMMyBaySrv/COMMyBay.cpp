@@ -288,11 +288,11 @@ STDMETHODIMP CCOMMyBay::getMessage(ULONG sessionId, BOOL * messageAvailable, ULO
 		// Speicher für die Übertragung des String_t allokieren
 		// TODO: SAVEARRAY
 
-		ATL::CComSafeArray<VARIANT> auctionsSafeArray(newMessage.size());						// SafeArray mit entsprechender Größer initialiseren
+		ATL::CComSafeArray<VARIANT> auctionsSafeArray(newMessage.size()-2);						// SafeArray mit entsprechender Größer initialiseren
 
 		int safeArrIt = 0;
 		// Alle Informationen im SafeArray speichern
-		for (int i = 1; i < newMessage.size(); i++)
+		for (int i = 2; i < newMessage.size(); i++)
 		{
 			auctionsSafeArray[safeArrIt++] = wstr_to_bstr(newMessage.at(i));
 		}

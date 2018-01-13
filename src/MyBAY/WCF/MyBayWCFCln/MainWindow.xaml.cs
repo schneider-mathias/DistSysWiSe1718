@@ -20,6 +20,7 @@ using System.ServiceModel;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Timers;
+using System.Globalization;
 
 namespace MyBayWCFCln
 {
@@ -28,50 +29,50 @@ namespace MyBayWCFCln
         static public string convertException(Exception ex)
         {
             string retString = "";
-            switch ((UInt64)ex.HResult)
+            switch ((UInt32)ex.HResult)
             {
-                case 0xA0110001L: // ERROR_AUCTIONNUMBER_NOT_AVAILABLE
+                case 0xA0110001: // ERROR_AUCTIONNUMBER_NOT_AVAILABLE
                     retString = "Die angegebene Auktionsnummer ist nicht verfügbar";
                     break;
-                case 0xA011002L: // ERROR_USER_ALREADY_INTERESTED
+                case 0xA0110002: // ERROR_USER_ALREADY_INTERESTED
                     retString = "Sie verfolgen bereits den Status dieser Auktion";
                     break;
                 // Bid
-                case 0xA011003L: // ERROR_AUCTIONNUMBER_DOES_NOT_ESXIST
+                case 0xA0110003: // ERROR_AUCTIONNUMBER_DOES_NOT_ESXIST
                     retString = "Die angegebene Auktionsnummer ist nicht verfügbar";
                     break;
-                case 0xA011004L: // ERROR_AUCTION_CLOSED
+                case 0xA0110004: // ERROR_AUCTION_CLOSED
                     retString = "Die Auktion ist beendet";
                     break;
-                case 0xA011005L: // ERROR_BID_TOO_LOW
+                case 0xA0110005: // ERROR_BID_TOO_LOW
                     retString = "Das angegebene Gebot ist zu niedrig";
                     break;
-                case 0xA011013L: // ERROR_BID_NEGATIVE
+                case 0xA0110013: // ERROR_BID_NEGATIVE
                     retString = "Das eingegebene Gebot ist negativ";
                     break;
                 // Login
-                case 0xA011006L: // ERROR_ALREADY_LOGGED_IN
+                case 0xA0110006: // ERROR_ALREADY_LOGGED_IN
                     retString = "Sie sind bereits eingeloggt";
                     break;
-                case 0xA011007L: // ERROR_FILE_COULD_NOT_BE_OPENED
+                case 0xA0110007: // ERROR_FILE_COULD_NOT_BE_OPENED
                     retString = "Die Datei konnte nicht geöffnet werden";
                     break;
-                case 0xA011008L: // ERROR_USERNAME_OR_PASSWORD_WRONG
+                case 0xA0110008: // ERROR_USERNAME_OR_PASSWORD_WRONG
                     retString = "Der Benutzername oder das Passwort sind falsch";
                     break;
-                case 0xA011009L: // ERROR_USER_NOT_LOGGED_IN
+                case 0xA0110009: // ERROR_USER_NOT_LOGGED_IN
                     retString = "Der Benutzer ist nicht eingeloggt";
                     break;
                 // Offer
-                case 0xA011010L: // ERROR_ARTICLENAME_IS_EMPTY
+                case 0xA0110010: // ERROR_ARTICLENAME_IS_EMPTY
                     retString = "Der Artikelname darf nicht leer sein";
                     break;
                 // getAuctions
-                case 0xA011011L: // ERROR_NO_AUCTIONS_AVAILABLE
+                case 0xA0110011: // ERROR_NO_AUCTIONS_AVAILABLE
                     retString = "Es sind keine Auktionen verfügbar";
                     break;
                 // Details
-                case 0xA011012L: // ERROR_USER_IS_NOT_AUCTIONEER
+                case 0xA0110012: // ERROR_USER_IS_NOT_AUCTIONEER
                     retString = "Der angemeldete Benutzer ist nicht der Auktionator dieser Auktion";
                     break;
                 default:
@@ -104,7 +105,7 @@ namespace MyBayWCFCln
         public event EventHandler myListBoxUpdateEventHandler;
 
          public MainWindow()
-        {
+         {
             this.DataContext = this;
 
             this.getMessageTimer = new Timer();
@@ -112,7 +113,6 @@ namespace MyBayWCFCln
             this.getMessageTimer.Elapsed += OnTimedEvent;
 
             InitializeComponent();
-
             myListBoxUpdateEventHandler += myMessageListBoxUpdateEvent;
         }
 
@@ -134,42 +134,44 @@ namespace MyBayWCFCln
                 messageAvailable = Convert.ToBoolean(messageAvailableTemp);
 
                 message = new MessageTransfer();
-                if (com_message != null && messageType != default(UInt32))
+                if (com_message != null)
                 {
                     switch (messageType)
                     {
                         case 0: // New Bid
-                            message.MessageText = (String)com_message.GetValue(0);
-                            message.MessageText2 = (String)com_message.GetValue(1);
-                            message.MessageDoubleValue = (Double)com_message.GetValue(2);
-                            message.MessageIntValue = (UInt32)com_message.GetValue(3);
+                            message.MessageText = Convert.ToString(com_message.GetValue(0));
+                            message.MessageText2 = Convert.ToString(com_message.GetValue(1));
+                            message.MessageDoubleValue = Convert.ToDouble(com_message.GetValue(2), new CultureInfo("en-US"));
+                            message.MessageIntValue = Convert.ToUInt32(com_message.GetValue(3));
                             break;
                         case 1:
-                            message.MessageIntValue = (UInt32)com_message.GetValue(0);
-                            message.MessageText2 = (String)com_message.GetValue(1);
-                            message.MessageIntValue2 = (UInt32)com_message.GetValue(2);
+                            message.MessageIntValue = Convert.ToUInt32(com_message.GetValue(0));
+                            message.MessageText = Convert.ToString(com_message.GetValue(1));
+                            message.MessageIntValue2 = Convert.ToUInt32(com_message.GetValue(2));
                             break;
                         case 2:
-                            message.MessageText = (String)com_message.GetValue(0);
-                            message.MessageDoubleValue = (Double)com_message.GetValue(1);
-                            message.MessageIntValue = (UInt32)com_message.GetValue(2);
+                            message.MessageText = Convert.ToString(com_message.GetValue(0));
+                            message.MessageText2 = Convert.ToString(com_message.GetValue(1));
+                            message.MessageDoubleValue = Convert.ToDouble(com_message.GetValue(2), new CultureInfo("en-US"));
+                            message.MessageIntValue = Convert.ToUInt32(com_message.GetValue(3));
                             break;
                         default:
                             break;
                     }
                 }
+                if (com_message != null)
+                {
 #else
                 String returnStr = _remoteSrvMyBay.getMessage(sessionID,out messageAvailable,out messageType, out message);
                 if (!returnStr.Contains("OK")) return;
-                
 #endif
-                switch (messageType)
+                    switch (messageType)
                     {
                         case 0: // New Bid
                             if (!String.IsNullOrEmpty(message.MessageText2))
                             {
                                 Dispatcher.BeginInvoke(new Action(delegate ()
-                                {                                   
+                                {
                                     listBox_messages.Items.Add("- Neues Gebot - Artikel: "
                                                             + message.MessageText2
                                                             + " - Gebot: "
@@ -181,7 +183,7 @@ namespace MyBayWCFCln
 
                                     // Send event for scrolling to the last item in the ListBox
                                     myListBoxUpdateEventHandler(this, new EventArgs());
-                                }));                                
+                                }));
                             }
                             else
                             {
@@ -219,8 +221,8 @@ namespace MyBayWCFCln
                                 + message.MessageText
                                 + " Preis: "
                                 + message.MessageDoubleValue.ToString("C")
-                                + " Auktionsstatus: "
-                                + message.MessageIntValue.ToString()
+                                + " Artikel: "
+                                + message.MessageText2.ToString()
                                 + "\n---------------------------------------------------------------------------------------");
                                 // Send event for scrolling to the last item in the ListBox
                                 myListBoxUpdateEventHandler(this, new EventArgs());
@@ -232,8 +234,13 @@ namespace MyBayWCFCln
                     if (messageAvailable)
                     {
                         this.getMessageTimer.Interval = 10;
-                    }
+                    }                
+            #if COM
             }
+#else
+#endif
+
+        }
             catch (Exception except)
             {
 #if COM
@@ -526,11 +533,11 @@ namespace MyBayWCFCln
                     {
                         AuctionTransfer newItem = new AuctionTransfer();
 
-                        newItem.AuctNumber = (UInt32)com_auctions.GetValue(i);
-                        newItem.ArtName = (String)com_auctions.GetValue(++i);
-                        newItem.HighestBid = (Double)com_auctions.GetValue(++i);
-                        newItem.AuctionState = (UInt32)com_auctions.GetValue(++i);
-                        newItem.CountBids = (UInt32)com_auctions.GetValue(++i);
+                        newItem.AuctNumber = Convert.ToUInt32(com_auctions.GetValue(i));
+                        newItem.ArtName = Convert.ToString(com_auctions.GetValue(++i));
+                        newItem.HighestBid = Convert.ToDouble(com_auctions.GetValue(++i), new CultureInfo("en-US"));
+                        newItem.AuctionState = Convert.ToUInt32(com_auctions.GetValue(++i));
+                        newItem.CountBids = Convert.ToUInt32(com_auctions.GetValue(++i));
 
                         newListAuctions.Add(newItem);
                     }
@@ -605,9 +612,9 @@ namespace MyBayWCFCln
                     {
                         BidTransfer newItem = new BidTransfer();
 
-                        newItem.BidNumber = (UInt32)com_allbids.GetValue(i);
-                        newItem.Bidder = (String)com_allbids.GetValue(++i);
-                        newItem.BidValue = (Double)com_allbids.GetValue(++i);
+                        newItem.BidNumber = Convert.ToUInt32(com_allbids.GetValue(i));
+                        newItem.Bidder = Convert.ToString(com_allbids.GetValue(++i));
+                        newItem.BidValue = Convert.ToDouble(com_allbids.GetValue(++i), new CultureInfo("en-US"));
 
                         newListBids.Add(newItem);
                     }

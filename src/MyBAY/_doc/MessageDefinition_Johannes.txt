@@ -76,3 +76,9 @@ COM:
 
 	return S_OK 		-> errMsg = "OK"  
 	return (irgendein)FAIL 	-> errMsg = entsprechende Fehlermeldung
+
+
+Dinge zu erledigen:
+	- startgebot auf negativ überprüfen
+	- endemessage warnung +1
+	- wenn bieten auf auktion, automatisch interested

@@ -731,8 +731,9 @@ vector<wstring> filterInterestingInfos(vector<auction> interestingAuctions)
 	{
 		retStr.push_back(to_wstring((*it).auctionNumber));
 		retStr.push_back((*it).articleName);
-		retStr.push_back(to_wstring((*it).BidderList.size()));
 		retStr.push_back(to_wstring((*it).highestBid));
+		retStr.push_back(to_wstring((*it).auctionStatus));
+		retStr.push_back(to_wstring((*it).BidderList.size()));
 	}
 	return retStr;
 }
