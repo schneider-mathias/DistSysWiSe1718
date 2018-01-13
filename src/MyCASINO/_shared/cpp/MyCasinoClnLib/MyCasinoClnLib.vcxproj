@@ -74,7 +74,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>../IncPub/;../../../../_shared/cpp/CmdInterpreterLib</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../IncPub/;../../../../_shared/cpp/CmdInterpreterLib;../../../../_shared/cpp/HelperLib</AdditionalIncludeDirectories>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>CmdInterpreterLib.lib</AdditionalDependencies>
@@ -95,7 +95,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>../IncPub/;../../../../_shared/cpp/CmdInterpreterLib</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../IncPub/;../../../../_shared/cpp/CmdInterpreterLib;../../../../_shared/cpp/HelperLib</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>

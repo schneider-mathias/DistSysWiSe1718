@@ -85,8 +85,6 @@ bool COMMyCasinoCommandLineInterface::user(std::wstring user, std::wstring passw
 		return false;
 	}
 
-	std::cout << "Logged in, Id: " << (*m_pSessionId) << ", User Type: " << ((*m_pUserType)? "gamer" : "operator") << std::endl;	
-
 	return true;
 }
 
@@ -246,9 +244,6 @@ bool COMMyCasinoCommandLineInterface::draw(unsigned short* firstNumberTest, unsi
 			resultHandler("draw", hr, bstr_to_str(errMsg));
 			return false;
 		}
-
-		std::cout << "First number: " << firstNumber << std::endl;
-		std::cout << "Second number: " << secondNumber << std::endl;
 	}
 	else 
 	{
@@ -316,7 +311,7 @@ bool COMMyCasinoCommandLineInterface::showstatus()
 		if (transactionType == MyCasinoTransactionsTypes::DEPOSIT
 			|| transactionType == MyCasinoTransactionsTypes::WITHDRAWAL)
 		{ 
-			tp << wstring_to_char(resolve_transaction_type((MyCasinoTransactionsTypes)transactionType)) << changeAmount << resultBalance << "";
+			tp << wstring_to_string(resolve_transaction_type((MyCasinoTransactionsTypes)transactionType)) << changeAmount << resultBalance << "";
 		}
 		else if (transactionType == MyCasinoTransactionsTypes::BET_WIN
 			|| transactionType == MyCasinoTransactionsTypes::BET_LOSS
@@ -348,7 +343,7 @@ bool COMMyCasinoCommandLineInterface::showstatus()
 				}
 
 				// only display wager of finished bets
-				tp << wstring_to_char(resolve_transaction_type((MyCasinoTransactionsTypes)transactionType)) << changeAmount << resultBalance << wstring_to_char(transactionInformationDetails);
+				tp << wstring_to_string(resolve_transaction_type((MyCasinoTransactionsTypes)transactionType)) << changeAmount << resultBalance << wstring_to_string(transactionInformationDetails);
 
 				if (FAILED(SafeArrayDestroy(transactionInformation)))
 				{

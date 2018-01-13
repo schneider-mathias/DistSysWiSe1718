@@ -17,6 +17,8 @@
 #include <iomanip>
 #include <math.h>
 
+#include "CharStringConverter.h"
+
 /** <summary>	Values that represent argument types. </summary> */
 enum ArgumentType
 {
@@ -69,7 +71,7 @@ private:
 		}
 
 		if (!boundaries.empty())
-			std::wcerr << "Argument " << argument << " does not fit to boundaries: "  << boundaries << std::endl;
+			std::cerr << "Argument " << wstring_to_string(argument) << " does not fit to boundaries: "  << wstring_to_string(boundaries) << std::endl;
 	}
 
 protected:
@@ -94,20 +96,20 @@ protected:
 
 		argumentCountIsValid &= (minArgumentsCount <= argumentsCountWithoutCommand);
 
-		if (!argumentCountIsValid)
-		{
-			std::wcerr << "Invalid number of parameters for command " << arguments.at(0) << std::endl;
-		}
-
-		size_t maxSize=0;
+		size_t maxSize = 0;
 		for (std::vector<size_t>::iterator it = validArgumentsCount.begin(); it != validArgumentsCount.end(); ++it)
 			if (maxSize < (*it))
 				maxSize = (*it);
 
+
 		if (argumentsCountWithoutCommand > maxSize)
 		{
 			argumentCountIsValid = true;
-			std::wcerr << "[Warning] Too many parameters for command " << arguments.at(0) << " - ignored last " << std::to_wstring(argumentsCountWithoutCommand-maxSize) << " arguments" << std::endl;
+			std::cerr << "[Warning] Too many parameters for command " << wstring_to_string(arguments.at(0)) << " - ignored last " << std::to_string(argumentsCountWithoutCommand-maxSize) << " arguments" << std::endl;
+		}
+		else if (!argumentCountIsValid)
+		{
+			std::cerr << "[Error] Invalid number of parameters for command " << wstring_to_string(arguments.at(0)) << std::endl;
 		}
 
 		return argumentCountIsValid;
@@ -148,7 +150,7 @@ protected:
 		}
 		catch (...)
 		{
-			std::wcerr << "Argument " << arguments.at(position) << " is malformed and could not be interpreted" << std::endl;
+			std::cerr << "Argument " << wstring_to_string(arguments.at(position)) << " is malformed and could not be interpreted" << std::endl;
 			return false;
 		}
 
@@ -199,7 +201,7 @@ protected:
 		}
 		catch (...)
 		{
-			std::wcerr << "Argument " << arguments.at(position) << " is malformed and could not be interpreted" << std::endl;
+			std::cerr << "Argument " << wstring_to_string(arguments.at(position)) << " is malformed and could not be interpreted" << std::endl;
 			return false;
 		}
 		

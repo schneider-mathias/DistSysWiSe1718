@@ -54,4 +54,17 @@ inline char* wstring_to_char(const std::wstring& s)
 	return buf;
 }
 
+
+inline std::string wstring_to_string(const std::wstring& s)
+{
+	int len;
+	int slength = (int)s.length() + 1;
+	len = WideCharToMultiByte(CP_UTF8, 0, s.c_str(), slength, 0, 0, 0, 0);
+	char* buf = new char[len];
+	WideCharToMultiByte(CP_UTF8, 0, s.c_str(), slength, buf, len, 0, 0);
+	std::string retBuffer(buf);
+	delete[] buf;
+	return retBuffer;
+}
+
 #endif // !CHAR_STRING_CONVERTER_INLCUDED

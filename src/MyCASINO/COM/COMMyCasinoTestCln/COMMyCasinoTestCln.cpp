@@ -486,6 +486,9 @@ int main(int argc, char**argv)
 	p_ICOMMyCasinoSrv->Release();
 	CoUninitialize();
 
+	if (NULL != lpwstr_SrvName)
+		delete[] lpwstr_SrvName;
+
 
 	return S_OK;
 }

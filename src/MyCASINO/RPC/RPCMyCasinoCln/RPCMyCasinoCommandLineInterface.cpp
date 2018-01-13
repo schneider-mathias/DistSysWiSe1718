@@ -69,22 +69,20 @@ bool RPCMyCasinoCommandLineInterface::user(std::wstring user, std::wstring passw
 	m_pSessionId = new unsigned long();
 	m_pUserType = new short();
 
-	unsigned char* userCStr = (unsigned char*)wstring_to_char(user);
-	unsigned char* passwordCStr = (unsigned char*)wstring_to_char(password);
+	unsigned char* userCStr = (unsigned char*)wstring_to_string(user).c_str();
+	unsigned char* passwordCStr = (unsigned char*)wstring_to_string(password).c_str();
 
 	error_status_t hr = ::login(m_pSessionId, userCStr, passwordCStr, m_pUserType);
 	if (FAILED(hr))
 	{
 		std::wstring errCode;
 		TRANSLATE_MYCASINO_CODE(errCode, hr);
-		resultHandler("Could not log in to server", hr, std::string(wstring_to_char(errCode)));
+		resultHandler("Could not log in to server", hr, wstring_to_string(errCode));
 		return false;
 	}
 	
-	std::cout << "Logged in, Id: " << (*m_pSessionId) << ", User Type: " << ((*m_pUserType) ? "gamer" : "operator") << std::endl;
-
-	delete userCStr;
-	delete passwordCStr;
+	delete[] userCStr;
+	delete[] passwordCStr;
 
 	return true;
 }
@@ -100,18 +98,16 @@ bool RPCMyCasinoCommandLineInterface::user(std::wstring user, std::wstring passw
 
 bool RPCMyCasinoCommandLineInterface::payin(std::wstring user, double amount)
 {
-	unsigned char* userCStr = (unsigned char*)wstring_to_char(user);
+	unsigned char* userCStr = (unsigned char*)wstring_to_string(user).c_str();
 
 	error_status_t hr = ::deposit(*m_pSessionId, userCStr, amount);
 	if (FAILED(hr))
 	{
 		std::wstring errCode;
 		TRANSLATE_MYCASINO_CODE(errCode, hr);
-		resultHandler("payin", hr, std::string(wstring_to_char(errCode)));
+		resultHandler("payin", hr, wstring_to_string(errCode));
 		return false;
 	}
-
-	delete userCStr;
 
 	return true;
 }
@@ -131,7 +127,7 @@ bool RPCMyCasinoCommandLineInterface::bet(double setAmount, unsigned short first
 	error_status_t hr = ::bet(*m_pSessionId, setAmount, (short)firstNumber, (short)secondNumber);
 	std::wstring errCode;
 	TRANSLATE_MYCASINO_CODE(errCode, hr);
-	resultHandler("bet", hr, std::string(wstring_to_char(errCode)));
+	resultHandler("bet", hr, wstring_to_string(errCode));
 
 	return SUCCEEDED(hr);
 }
@@ -152,7 +148,7 @@ bool RPCMyCasinoCommandLineInterface::showbets()
 	error_status_t hr = ::showbets(*m_pSessionId, &bets, &count);
 	std::wstring errCode;
 	TRANSLATE_MYCASINO_CODE(errCode, hr);
-	resultHandler("bet", hr, std::string(wstring_to_char(errCode)));
+	resultHandler("bet", hr, wstring_to_string(errCode));
 
 	if (FAILED(hr))
 		return false;
@@ -177,7 +173,7 @@ bool RPCMyCasinoCommandLineInterface::showbets()
 		if (FAILED(hr))
 		{
 			TRANSLATE_MYCASINO_CODE(errCode, hr);
-			resultHandler("calculateProfit", hr, std::string(wstring_to_char(errCode)));
+			resultHandler("calculateProfit", hr, wstring_to_string(errCode));
 			continue;
 		}
 
@@ -216,7 +212,7 @@ bool RPCMyCasinoCommandLineInterface::draw(unsigned short* firstNumberTest, unsi
 		if (FAILED(hr))
 		{		
 			TRANSLATE_MYCASINO_CODE(errCode, hr);
-			resultHandler("drawTest", hr, std::string(wstring_to_char(errCode)));
+			resultHandler("drawTest", hr, wstring_to_string(errCode));
 		}
 	}
 	else if (NULL == firstNumberTest && NULL == secondNumberTest)
@@ -227,12 +223,9 @@ bool RPCMyCasinoCommandLineInterface::draw(unsigned short* firstNumberTest, unsi
 		if (FAILED(hr))
 		{
 			TRANSLATE_MYCASINO_CODE(errCode, hr);
-			resultHandler("draw", hr, std::string(wstring_to_char(errCode)));
+			resultHandler("draw", hr, wstring_to_string(errCode));
 			return false;
 		}
-
-		std::cout << "First number: " << firstNumber << std::endl;
-		std::cout << "Second number: " << secondNumber << std::endl;
 	}
 	else
 	{
@@ -278,7 +271,7 @@ bool RPCMyCasinoCommandLineInterface::showstatus()
 		if (FAILED(hr))
 		{
 			TRANSLATE_MYCASINO_CODE(errCode, hr);
-			resultHandler("getTransactions", hr, std::string(wstring_to_char(errCode)));
+			resultHandler("getTransactions", hr, wstring_to_string(errCode));
 			return false;
 		}
 
@@ -287,7 +280,7 @@ bool RPCMyCasinoCommandLineInterface::showstatus()
 		if (transactionType == MyCasinoTransactionsTypes::DEPOSIT
 			|| transactionType == MyCasinoTransactionsTypes::WITHDRAWAL)
 		{
-			tp << wstring_to_char(resolve_transaction_type((MyCasinoTransactionsTypes)transactionType)) << transaction.changeAmount << transaction.resultAmount << "";
+			tp << wstring_to_string(resolve_transaction_type((MyCasinoTransactionsTypes)transactionType)) << transaction.changeAmount << transaction.resultAmount << "";
 		}
 		else if (transactionType == MyCasinoTransactionsTypes::BET_WIN
 			|| transactionType == MyCasinoTransactionsTypes::BET_LOSS
@@ -299,7 +292,7 @@ bool RPCMyCasinoCommandLineInterface::showstatus()
 			if (FAILED(hr))
 			{
 				TRANSLATE_MYCASINO_CODE(errCode, hr);
-				resultHandler("getTransactionInformation", hr, std::string(wstring_to_char(errCode)));
+				resultHandler("getTransactionInformation", hr, wstring_to_string(errCode));
 				return false;
 			}
 				
@@ -330,7 +323,7 @@ bool RPCMyCasinoCommandLineInterface::showstatus()
 				parsedTransactionInformation.append(informationJson[4].get("value", defaultValue).asString()).append(" ");
 				parsedTransactionInformation.append(informationJson[5].get("value", defaultValue).asString()).append(" ");
 
-				tp << wstring_to_char(resolve_transaction_type((MyCasinoTransactionsTypes)transactionType)) << transaction.changeAmount << transaction.resultAmount << parsedTransactionInformation;
+				tp << wstring_to_string(resolve_transaction_type((MyCasinoTransactionsTypes)transactionType)) << transaction.changeAmount << transaction.resultAmount << parsedTransactionInformation;
 			}
 			else
 			{
@@ -347,7 +340,7 @@ bool RPCMyCasinoCommandLineInterface::showstatus()
 	if (hr > 0)
 	{
 		TRANSLATE_MYCASINO_CODE(errCode, hr);
-		resultHandler("getTransactionInformation", hr, std::string(wstring_to_char(errCode)));
+		resultHandler("getTransactionInformation", hr, wstring_to_string(errCode));
 	}
 
 	return true;
@@ -365,7 +358,7 @@ bool RPCMyCasinoCommandLineInterface::bye()
 
 	error_status_t hr = ::logout(*m_pSessionId);
 	TRANSLATE_MYCASINO_CODE(errCode, hr);
-	resultHandler("getTransactionInformation", hr, std::string(wstring_to_char(errCode)));
+	resultHandler("getTransactionInformation", hr, wstring_to_string(errCode));
 	return hr ? false : true;
 }
 

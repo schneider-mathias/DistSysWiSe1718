@@ -64,7 +64,7 @@ bool toJson(std::vector<TaggedUnion>& currentInformation, Json::Value** resJson)
 			break;
 		case TaggedUnion::Type::WStringPtr:
 			(**resJson)[jsonArrValue]["type"] = "wstring";
-			(**resJson)[jsonArrValue]["value"] = std::string(wstring_to_char((*it).getWString()));
+			(**resJson)[jsonArrValue]["value"] = wstring_to_string((*it).getWString()).c_str();
 			break;
 		default:
 			return false;
@@ -273,13 +273,13 @@ error_status_t showbets(unsigned long sessionId, MyCasinoBet_t** bets, unsigned 
 		(*bets)[i].wager = betsSnapshot.at(i)->GetSetAmount();
 
 		// allocate memory for String_t which is contained in MyCasinoBet_t
-		unsigned short stringSize = strlen((char*)wstring_to_char(betsSnapshot.at(i)->GetUsername())) + 1;
+		unsigned short stringSize = strlen((char*)wstring_to_string(betsSnapshot.at(i)->GetUsername()).c_str()) + 1;
 
 		// copy value
 		(*bets)[i].name.str = (unsigned char*)midl_user_allocate(stringSize);
 		(*bets)[i].name.size = stringSize;
 		(*bets)[i].name.len = stringSize;
-		strcpy((char*)(*bets)[i].name.str, (char*)wstring_to_char(betsSnapshot.at(i)->GetUsername()));
+		strcpy((char*)(*bets)[i].name.str, (char*)wstring_to_string(betsSnapshot.at(i)->GetUsername()).c_str());
 	}
 
 	BOOL resVal = S_OK;

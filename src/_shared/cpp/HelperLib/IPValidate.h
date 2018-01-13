@@ -32,7 +32,7 @@
 bool validateIpAddress(const std::wstring &ipAddress)
 {
 	struct sockaddr_in sa;
-	int result = inet_pton(AF_INET, wstring_to_char(ipAddress), &(sa.sin_addr));
+	int result = inet_pton(AF_INET, wstring_to_string(ipAddress).c_str(), &(sa.sin_addr));
 	return result > 0;
 }
 

@@ -37,7 +37,7 @@ enum CmdModes
 class CmdInterpreter
 {
 public:
-	CmdInterpreter(std::wstring defaultSuccessMsg = L"", std::wstring defaultErrorMsg = L"");
+	CmdInterpreter(std::wstring linePrefix = L"\t",std::wstring defaultSuccessMsg = L"", std::wstring defaultErrorMsg = L"");
 	~CmdInterpreter();
 
 	bool registerCmdDispatcher(ICommandLineInterface* dispatcherObj, dispatcherMemFunc func);
@@ -46,14 +46,19 @@ public:
 	bool execute(std::wstring command);
 	void cout();
 	void stop();
+	std::stringstream& getBuffer() { return m_outBuffer; }
 
 private:
 	bool splitInArgs(std::vector<std::wstring>& qargs, std::wstring command);
+	std::vector<std::string> splitString(const std::string& str, const std::string& delimiter);
 	std::atomic<CmdModes> m_mode;
 	std::stringstream m_outBuffer;
-	std::streambuf* m_previousBuffer;
+	std::streambuf* m_previousBufferOut;
+	std::streambuf* m_previousBufferErrorOut;
+
 	ICommandLineInterface* m_pDispatcherObj;
 	dispatcherMemFunc m_dispatcherFunc;
+	std::wstring m_linePrefix;
 	std::wstring m_defaultSuccessMsg;
 	std::wstring m_defaultErrorMsg;
 };

@@ -14,6 +14,7 @@
 #include "MyCasinoDefines.h"
 #include <iostream>
 #include "comdef.h"
+#include "CharStringConverter.h"
 
 /**--------------------------------------------------------------------------------------------------
  * <summary>	Constructor. </summary>
@@ -90,18 +91,29 @@ bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> argu
 
 	if (command.compare(L"user") == 0)
 	{
-		return checkCallArguments(arguments, 2, std::vector<size_t>() = { 2 })
+		bool resVal = checkCallArguments(arguments, 2, std::vector<size_t>() = { 2 })
 			&& user(arguments.at(1), arguments.at(2));
+
+		if(resVal)
+			std::cout << "Logged in, Id: " << (*m_pSessionId) << ", User Type: " << ((*m_pUserType) ? "gamer" : "operator") << std::endl;
+
+		return resVal;
 	}
 	else if (command.compare(L"payin") == 0)
 	{
 		double amountMoney;
 		double amountMoneyLowerBound = 0;
 		double amountMoneyUpperBound = UPPER_MONEY_BOUNDARY;
-		return checkCallPrerequisites(MyCasinoUserTypes::Operator)
+
+		bool resVal=checkCallPrerequisites(MyCasinoUserTypes::Operator)
 			&& checkCallArguments(arguments, 2, std::vector<size_t>()= { 2 })
 			&& safeArgumentCast<double>(arguments, 2, &amountMoney, &amountMoneyLowerBound, &amountMoneyUpperBound, ArgumentType::MONEY)
 			&& payin(arguments.at(1), amountMoney);
+
+		if(resVal)
+			std::wcout << "Payed " << amountMoney << " in for user " << arguments.at(1) << std::endl;
+
+		return resVal;
 	}
 	else if (command.compare(L"bet") == 0)
 	{
@@ -116,15 +128,22 @@ bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> argu
 		double firstNumberUpperBound = 4;
 		double numberUpperBound = 5;
 
-		return checkCallPrerequisites(MyCasinoUserTypes::Any)
+		bool resVal = checkCallPrerequisites(MyCasinoUserTypes::Any)
 			&& checkCallArguments(arguments, 3, std::vector<size_t>() = { 3 })
 			&& safeArgumentCast<double>(arguments, 1, &setMoney, &setMoneyLowerBound, &setMoneyUpperBound, ArgumentType::MONEY)
 			&& safeArgumentCast<unsigned short>(arguments, 2, &firstNumber, &numberLowerBound, &firstNumberUpperBound)
 			&& safeArgumentCast<unsigned short>(arguments, 3, &secondNumber, &(numberLowerBound = (firstNumber + 1)), &numberUpperBound)
 			&& bet(setMoney, firstNumber, secondNumber);
+
+		if (resVal)
+			std::wcout << "Placed bet " << setMoney << " on number " << firstNumber << " and " << secondNumber << std::endl;
+
+		return resVal;
 	}
 	else if (command.compare(L"showbets") == 0)
 	{
+		checkCallArguments(arguments, 0, std::vector<size_t>() = { 0 });
+
 		return checkCallPrerequisites(MyCasinoUserTypes::Any)
 			&& checkCallArguments(arguments, 0, std::vector<size_t>() = { 0 })
 			&& showbets();
@@ -149,6 +168,10 @@ bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> argu
 				&numberUpperBound)
 			&& draw(*firstNumberPtrHolder, *secondNumberPtrHolder);
 
+
+		if(retVal)
+			std::cout << "First number: " << **firstNumberPtrHolder << ", second number: " << **secondNumberPtrHolder << std::endl;
+
 		delete firstNumberPtr;
 		delete secondNumberPtr;
 
@@ -162,11 +185,7 @@ bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> argu
 	}
 	else if (command.compare(L"bye") == 0)
 	{
-		if (arguments.size() > 1)
-		{
-			std::cerr << "[Warning] - Ignored redudant arguments for command 'bye'" << std::endl;
-			return false;
-		}
+		checkCallArguments(arguments, 0, std::vector<size_t>() = { 0 });
 
 		bool retVal = true;
 		
@@ -215,7 +234,7 @@ bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> argu
 	}
 	else
 	{
-		std::wcerr << "Invalid command " << arguments.at(0) << std::endl;
+		std::cout << "[ERROR] Invalid command " << wstring_to_string(arguments.at(0)) << std::endl;
 	}
 
 	return false;

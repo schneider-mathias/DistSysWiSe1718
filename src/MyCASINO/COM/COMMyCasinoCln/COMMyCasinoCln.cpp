@@ -90,7 +90,7 @@ int main(int argc, char**argv)
 	CoUninitialize();
 
 	if (NULL != lpwstr_SrvName)
-		delete lpwstr_SrvName;
+		delete[] lpwstr_SrvName;
 
 	return S_OK;
 }
