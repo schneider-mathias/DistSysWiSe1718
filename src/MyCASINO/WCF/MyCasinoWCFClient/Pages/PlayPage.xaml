@@ -84,17 +84,6 @@
 
                     <ListBox Name="lbNameList" BorderThickness="0 0 0 0" HorizontalContentAlignment="Stretch" IsHitTestVisible="False">
 
-                        <!--ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <Grid Margin="0,2">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="100" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{Binding Name}"/>
-                                </Grid>
-                            </DataTemplate>
-                        </-->
                     </ListBox>
 
                 </StackPanel>
@@ -108,17 +97,6 @@
 
                     <ListBox Name="lbFirstNumberList" BorderThickness="0 0 0 0" HorizontalContentAlignment="Stretch" IsHitTestVisible="False">
 
-                        <!--ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <Grid Margin="0,2">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="100" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{Binding Name}"/>
-                                </Grid>
-                            </DataTemplate>
-                        </-->
                     </ListBox>
 
                 </StackPanel>
@@ -132,17 +110,6 @@
 
                     <ListBox Name="lbSecondNumberList" BorderThickness="0 0 0 0" HorizontalContentAlignment="Stretch" IsHitTestVisible="False">
 
-                        <!--ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <Grid Margin="0,2">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="100" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{Binding Name}"/>
-                                </Grid>
-                            </DataTemplate>
-                        </-->
                     </ListBox>
                 </StackPanel>
             </Border>
@@ -157,17 +124,6 @@
 
                     <ListBox Name="lbAmountWinList" BorderThickness="0 0 0 0" HorizontalContentAlignment="Stretch" IsHitTestVisible="False">
 
-                        <!--ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <Grid Margin="0,2">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="100" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{Binding Name}"/>
-                                </Grid>
-                            </DataTemplate>
-                        </-->
                     </ListBox>
                 </StackPanel>
             </Border>
