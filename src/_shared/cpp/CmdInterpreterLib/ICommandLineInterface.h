@@ -1,3 +1,15 @@
+/**--------------------------------------------------------------------------------------------------
+// project:	CmdInterpreterLib
+// file:	ICommandLineInterface.h
+//
+// summary:	Declares the ICommandLineInterface interface
+//
+//			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
+//
+//			Date		Developer			Change
+//			13.01.2018	Mathias Schneider	Created
+ *-----------------------------------------------------------------------------------------------**/
+
 #pragma once
 #include <vector>
 #include <string>
@@ -5,6 +17,7 @@
 #include <iomanip>
 #include <math.h>
 
+/** <summary>	Values that represent argument types. </summary> */
 enum ArgumentType
 {
 	DEFAULT = 0,

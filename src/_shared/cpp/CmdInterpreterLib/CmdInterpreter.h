@@ -1,3 +1,16 @@
+/**--------------------------------------------------------------------------------------------------
+// project:	CmdInterpreterLib
+// file:	CmdInterpreter.h
+//
+// summary:	Declares the command interpreter class, inspired by
+// https://stackoverflow.com/questions/19485536/redirect-output-of-an-function-printing-to-console-to-string
+//
+//			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
+//
+//			Date		Developer			Change
+//			13.01.2018	Mathias Schneider	Created
+ *-----------------------------------------------------------------------------------------------**/
+
 #pragma once
 #include <queue>
 #include <atomic>
@@ -6,14 +19,14 @@
 
 #include "ICommandLineInterface.h"
 
-//https ://stackoverflow.com/questions/19485536/redirect-output-of-an-function-printing-to-console-to-string
-
 typedef bool (ICommandLineInterface::*dispatcherMemFunc)(std::vector<std::wstring>);
 
-//https://isocpp.org/wiki/faq/pointers-to-members
+// Helper define for calling a member function of a given object
+// https://isocpp.org/wiki/faq/pointers-to-members
 #define CALL_MEMBER_FN(object,ptrToMember)  ((object).*(ptrToMember))
 
 
+/** <summary>	Values that represent Command modes. </summary> */
 enum CmdModes
 {
 	Reading = 0,

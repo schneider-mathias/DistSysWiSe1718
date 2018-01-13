@@ -1,6 +1,24 @@
+/**--------------------------------------------------------------------------------------------------
+// project:	CmdInterpreterLib
+// file:	CmdInterpreter.cpp
+//
+// summary:	Implements the command interpreter class
+//
+//			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
+//
+//			Date		Developer			Change
+//			13.01.2018	Mathias Schneider	Created
+ *-----------------------------------------------------------------------------------------------**/
+
 #include <iostream>
 #include "CmdInterpreter.h"
 
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Constructor. </summary>
+ *
+ * <param name="defaultSuccessMsg">	The default success message. </param>
+ * <param name="defaultErrorMsg">  	The default error message. </param>
+ *-----------------------------------------------------------------------------------------------**/
 
 CmdInterpreter::CmdInterpreter(std::wstring defaultSuccessMsg, std::wstring defaultErrorMsg)
 	: m_previousBuffer(NULL),
@@ -11,10 +29,20 @@ CmdInterpreter::CmdInterpreter(std::wstring defaultSuccessMsg, std::wstring defa
 {
 }
 
+/** <summary>	Destructor. </summary> */
 CmdInterpreter::~CmdInterpreter()
 {
 	std::cout.rdbuf(m_previousBuffer); //reset
 }
+
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Registers the command dispatcher. </summary>
+ *
+ * <param name="dispatcherObj">	[in,out] If non-null, the dispatcher object. </param>
+ * <param name="func">		   	The function. </param>
+ *
+ * <returns>	True if it succeeds, false if it fails. </returns>
+ *-----------------------------------------------------------------------------------------------**/
 
 bool CmdInterpreter::registerCmdDispatcher(ICommandLineInterface* dispatcherObj, dispatcherMemFunc func)
 {
@@ -23,7 +51,17 @@ bool CmdInterpreter::registerCmdDispatcher(ICommandLineInterface* dispatcherObj,
 	return false;
 }
 
-//https://stackoverflow.com/questions/18675364/c-tokenize-a-string-with-spaces-and-quotes
+/**--------------------------------------------------------------------------------------------------
+ * <summary>
+ * https://stackoverflow.com/questions/18675364/c-tokenize-a-string-with-spaces-and-quotes.
+ * </summary>
+ *
+ * <param name="qargs">  	[in,out] The qargs. </param>
+ * <param name="command">	The command. </param>
+ *
+ * <returns>	True if it succeeds, false if it fails. </returns>
+ *-----------------------------------------------------------------------------------------------**/
+
 bool CmdInterpreter::splitInArgs(std::vector<std::wstring>& qargs, std::wstring command)
 {
 	int len = command.length();
@@ -68,11 +106,13 @@ bool CmdInterpreter::splitInArgs(std::vector<std::wstring>& qargs, std::wstring 
 	return true;
 }
 
+/** <summary>	Initializes this object. </summary> */
 void CmdInterpreter::init()
 {
 	m_previousBuffer = std::cout.rdbuf(m_outBuffer.rdbuf());
 }
 
+/** <summary>	Runs this object. </summary> */
 void CmdInterpreter::run()
 {
 	m_previousBuffer = std::cout.rdbuf(m_outBuffer.rdbuf());
@@ -96,6 +136,14 @@ void CmdInterpreter::run()
 		}
 	}
 }
+
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Executes the given command. </summary>
+ *
+ * <param name="command">	The command. </param>
+ *
+ * <returns>	True if it succeeds, false if it fails. </returns>
+ *-----------------------------------------------------------------------------------------------**/
 
 bool CmdInterpreter::execute(std::wstring command)
 {
@@ -124,6 +172,7 @@ bool CmdInterpreter::execute(std::wstring command)
 	return false;
 }
 
+/** <summary>	Stops this object. </summary> */
 void CmdInterpreter::stop()
 {
 	//empty buffer
@@ -139,6 +188,7 @@ void CmdInterpreter::stop()
 }
 
 
+/** <summary>	Couts this object. </summary> */
 void CmdInterpreter::cout()
 {
 	std::cout.rdbuf(m_previousBuffer);
