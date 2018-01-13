@@ -105,6 +105,11 @@ error_status_t offer(unsigned long sessionId, unsigned char *articleName, double
 	{
 		return ERROR_ARTICLENAME_IS_EMPTY;
 	}
+	// auf negatives Startgebot prüfen
+	if (startBid < 0)
+	{
+		return ERROR_VALUE_NEGATIVE;
+	}
 	
 	// neue Auktion erzeugen
 	unsigned long newAuctNumb = addNewAuction(sarticleName, startBid);

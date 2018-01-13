@@ -134,7 +134,7 @@ wstring getUserDataPath()
 void readAuctionsFromFile()
 {
 	std::wifstream auctionsFile;
-	auctionsFile.open(L"..\\..\\_data\\MyBayAuctions.csv", std::ios::in);
+	auctionsFile.open(L"C:/_MyBayData/MyBayAuctions.csv", std::ios::in);
 	// Öffnen der Datei
 	if (auctionsFile.is_open())
 	{
@@ -267,7 +267,7 @@ void writeAuctionsToFile()
 		listOfAuctions.push_back(auctionBidder);
 	}
 
-	auctionsFile.open(L"..\\..\\_data\\MyBayAuctions.csv", std::ios::out);
+	auctionsFile.open(L"C:/_MyBayData/MyBayAuctions.csv", std::ios::out);
 	if (auctionsFile.is_open())
 	{
 		// Schreibe alle Auktionen in die Datei
@@ -621,8 +621,8 @@ void addNewBidToMessages(unsigned long auctionNumber, double bidVal, wstring use
 				else
 					newMessage.push_back(L"");												// (2) Name des Bieters wird nur dem Auktionator angezeigt
 				newMessage.push_back((*it).articleName);									// (3) Artikelname
-				newMessage.push_back(to_wstring(bidVal));											// (4) Gebot
-				newMessage.push_back(L"0");													// (5) Auktionsstatus
+				newMessage.push_back(to_wstring(bidVal));									// (4) Gebot
+				newMessage.push_back(to_wstring((*it).auctionStatus));						// (5) Auktionsstatus
 
 				Messages.push_back(newMessage);												// Nachricht der Messagebox hinzufügen
 			}

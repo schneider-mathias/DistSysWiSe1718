@@ -323,6 +323,7 @@ int getAuctionState(unsigned long auctionNumber)
 		}
 	}
 	LeaveCriticalSection(critSecWrapper.getInstance());
+	return 0;
 }
 
 // Fügt ein Gebot zur Auktion hinzu
@@ -348,6 +349,7 @@ BOOL addBidToAuction(unsigned long auctionNumber, double bidVal, wstring user)
 				(*it).BidderList.push_back(newBid);	// Gebot der Liste der Gebote hinzufügen
 				(*it).highestBid = bidVal;
 				(*it).highestBidder = user;
+				BOOL addToIntUsList = addUserToInterestedUserList(user, auctionNumber);
 			}
 			break;
 		}
@@ -539,7 +541,8 @@ int countMessages(wstring user)
 wstring serializeMessage(vector<wstring> newMessage)
 {
 	wstring serStr = L"";
-	newMessage.erase(newMessage.begin());	// erster Wert wird entfernt, da nicht mehr interessant für wen die Nachricht ist
+	newMessage.erase(newMessage.begin());	// erster und zweiter Wert wird entfernt, da nicht mehr interessant für wen die Nachricht ist
+	newMessage.erase(newMessage.begin());
 	for (std::vector<wstring>::iterator it = newMessage.begin(); it != newMessage.end(); it++)
 	{
 		serStr += (*it);
@@ -571,8 +574,8 @@ void addNewBidToMessages(unsigned long auctionNumber, double bidVal, wstring use
 				else
 					newMessage.push_back(L"");												// (2) Name des Bieters wird nur dem Auktionator angezeigt
 				newMessage.push_back((*it).articleName);									// (3) Artikelname
-				newMessage.push_back(to_wstring(bidVal););											// (4) Gebot
-				newMessage.push_back(L"0");													// (5) Auktionsstatus
+				newMessage.push_back(to_wstring(bidVal));									// (4) Gebot
+				newMessage.push_back(to_wstring((*it).auctionStatus));						// (5) Auktionsstatus
 
 				Messages.push_back(newMessage);												// Nachricht der Messagebox hinzufügen
 			}
@@ -688,9 +691,11 @@ wstring serializeAuctions(vector<auction> interestingAuctions)
 		serStr += PLACEHOLDER_FOR_SERIALISATION_DESERIALISATION;	// Platzhalter 
 		serStr += (*it).articleName;								// (1) Artikelname
 		serStr += PLACEHOLDER_FOR_SERIALISATION_DESERIALISATION;	// Platzhalter 
-		serStr += to_wstring((*it).BidderList.size());				// (2) Zahl der aktuellen Gebote
+		serStr += highestBidCut;									// (2) Höchstgebot
 		serStr += PLACEHOLDER_FOR_SERIALISATION_DESERIALISATION;	// Platzhalter 
-		serStr += highestBidCut;									// (3) Höchstgebot
+		serStr += to_wstring((*it).auctionStatus);					// (3) Auktionsstatus
+		serStr += PLACEHOLDER_FOR_SERIALISATION_DESERIALISATION;	// Platzhalter 
+		serStr += to_wstring((*it).BidderList.size());				// (4) Zahl der aktuellen Gebote
 		serStr += PLACEHOLDER_FOR_SERIALISATION_DESERIALISATION;	// Platzhalter 
 	}
 	LeaveCriticalSection(critSecWrapper.getInstance());
@@ -733,8 +738,8 @@ void addEndAuctionMessage(wstring user, unsigned long auctionNumber, int warning
 		{
 			for (std::vector<wstring>::iterator it2 = (*it).interestedUserList.begin(); it2 != (*it).interestedUserList.end(); ++it2)
 			{
-				wstring highestBid = to_wstring((*it).highestBid);
-				wstring highestBidCut = highestBid.substr(0, highestBid.size() - 4);
+				//wstring highestBid = to_wstring((*it).highestBid);
+				wstring highestBidCut = to_wstring((*it).highestBid);
 				vector<wstring> newMessage;
 				unsigned long messageType = 1;						// MessageType = 1 => kurz vor Auktionsende-Message
 				newMessage.push_back((*it2));						// (0) Name des interessierten Users, der die Nachricht erhalten soll	
@@ -762,8 +767,8 @@ void endAuction(unsigned long auctionNumber)
 			(*it).auctionStatus = 2;								// Auktionsstatus wird auf "Beendet" geändert
 			for (std::vector<wstring>::iterator it2 = (*it).interestedUserList.begin(); it2 != (*it).interestedUserList.end(); ++it2)
 			{
-				wstring highestBid = to_wstring((*it).highestBid);
-				wstring highestBidCut = highestBid.substr(0, highestBid.size() - 4);
+				//wstring highestBid = to_wstring((*it).highestBid);
+				wstring highestBidCut = to_wstring((*it).highestBid);
 				// Message, dass Auktion beendet wurde	
 				vector<wstring> newMessage;
 				unsigned long messageType = 2;							// MessageType = 2 => Auktion beendet
