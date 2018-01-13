@@ -460,9 +460,9 @@ wstring serializeAuctionDetails(unsigned long auctionNumber)
 
 				// Gebot
 				wstring tempBidStr3 = to_wstring((*it2).bid);
-				wstring tempBidStrCut = tempBidStr3.substr(0, tempBidStr3.size() - 4);				// da double 6 Nachkommastellen hat, werden die letzten 4 Nachkommastellen abgeschnitten
-				tempBidStrCut = tempBidStrCut + PLACEHOLDER_FOR_SERIALISATION_DESERIALISATION;		// Platzhalter um Parsen beim Client zu ermöglichen												
-				serStr += tempBidStrCut;		
+				//wstring tempBidStrCut = tempBidStr3.substr(0, tempBidStr3.size() - 4);				// da double 6 Nachkommastellen hat, werden die letzten 4 Nachkommastellen abgeschnitten
+				tempBidStr3 = tempBidStr3 + PLACEHOLDER_FOR_SERIALISATION_DESERIALISATION;		// Platzhalter um Parsen beim Client zu ermöglichen												
+				serStr += tempBidStr3;
 			}
 		}
 	}
@@ -561,8 +561,8 @@ void addNewBidToMessages(unsigned long auctionNumber, double bidVal, wstring use
 				// neue Nachricht erstellen
 				vector<wstring> newMessage;
 				int messageType = 0;
-				wstring tmpBidVal = to_wstring(bidVal);
-				wstring bidValCut = tmpBidVal.substr(0, tmpBidVal.size() - 4);
+				//wstring tmpBidVal = to_wstring(bidVal);
+				//wstring bidValCut = tmpBidVal.substr(0, tmpBidVal.size() - 4);
 
 				newMessage.push_back((*it2));												// (0) Name des interessierten Users
 				newMessage.push_back(to_wstring(messageType));								// (1) MessageType
@@ -571,7 +571,7 @@ void addNewBidToMessages(unsigned long auctionNumber, double bidVal, wstring use
 				else
 					newMessage.push_back(L"");												// (2) Name des Bieters wird nur dem Auktionator angezeigt
 				newMessage.push_back((*it).articleName);									// (3) Artikelname
-				newMessage.push_back(bidValCut);											// (4) Gebot
+				newMessage.push_back(to_wstring(bidVal););											// (4) Gebot
 				newMessage.push_back(L"0");													// (5) Auktionsstatus
 
 				Messages.push_back(newMessage);												// Nachricht der Messagebox hinzufügen
@@ -681,8 +681,8 @@ wstring serializeAuctions(vector<auction> interestingAuctions)
 	EnterCriticalSection(critSecWrapper.getInstance());
 	for (std::vector<auction>::iterator it = interestingAuctions.begin(); it != interestingAuctions.end(); it++)
 	{
-		wstring highestBid = to_wstring((*it).highestBid);
-		wstring highestBidCut = highestBid.substr(0, highestBid.size() - 4);
+		//wstring highestBid = to_wstring((*it).highestBid);
+		wstring highestBidCut = to_wstring((*it).highestBid);
 		// Gebot zum String hinzufügen
 		serStr += to_wstring((*it).auctionNumber);					// (0) Auktionsnummer
 		serStr += PLACEHOLDER_FOR_SERIALISATION_DESERIALISATION;	// Platzhalter 

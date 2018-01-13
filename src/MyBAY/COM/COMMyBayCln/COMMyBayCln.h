@@ -24,10 +24,16 @@ using namespace std;
 //static void Bind(void);
 //static void UnBind(void);
 //static void rpcCalls(void);
-void readConsole(ICOMMyBay *p_ICOMMyBaySrv);
+void readConsole(ICOMMyBay *p_ICOMMyBaySrv, COSERVERINFO srvInfo);
 void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::vector<std::wstring> args, boolean *threadAllow);
 
 std::vector<std::wstring> args;					// Eingabeargumente
+
+struct pullMessageParam {
+	LPVOID lpvParameter;
+	unsigned long *sessionID;
+	boolean *threadAllow;
+};
 
 // Deserialisiert einen char*, dessen Wörter mit Leerzeichen getrennt sind
 std::vector<wstring> deserialize(unsigned char *inStr, unsigned long len)
@@ -88,7 +94,7 @@ void printMessage(vector<wstring> messageVec, unsigned long messageType)
 		wcout << "Artikelname: " << messageVec.at(2) << endl;
 		if (messageVec.at(1) != L"")
 			wcout << "Bieter: " << messageVec.at(1) << endl;
-		wcout << "Gebot: " << messageVec.at(3) << endl;
+		wcout << "Gebot: " << messageVec.at(3).substr(0, messageVec.at(3).size() - 4) << endl;			// nur die ersten 2 Nachkommastellen
 		wcout << "Auktionsstatus: ";
 		if (messageVec.at(4) == L"0")
 			wcout << "offen" << endl;
@@ -100,19 +106,19 @@ void printMessage(vector<wstring> messageVec, unsigned long messageType)
 	}
 	else if (messageType == 1)
 	{
-		wcout << "------------------------------------- Auktion endet bald --------------------------------------" << endl;
+		wcout << "------------------------------------- Auktion endet bald -------------------------------" << endl;
 		wcout << "Die Auktion " << messageVec.at(3) << " endet bald." << endl;
 		wcout << "Artikelname: " << messageVec.at(2) << endl;
-		wcout << "Hoechstgebot: " << messageVec.at(4) << endl;
+		wcout << "Hoechstgebot: " << messageVec.at(4).substr(0, messageVec.at(4).size() - 4) << endl;
 		wcout << "Nr. Warnung: " << messageVec.at(1) << endl;
 		wcout << "----------------------------------------------------------------------------------------" << endl;
 	}
 	else if (messageType == 2)
 	{
-		wcout << "------------------------------------- Auktion beendet --------------------------------------" << endl;
+		wcout << "------------------------------------- Auktion beendet ----------------------------------" << endl;
 		wcout << "Artikel: " << messageVec.at(2) << endl;
 		wcout << "Kaeufer: " << messageVec.at(1) << endl;
-		wcout << "Preis: " << messageVec.at(3) << endl;
+		wcout << "Preis: " << messageVec.at(3).substr(0, messageVec.at(3).size() - 4) << endl;
 		wcout << "Auktionsstatus: ";
 		if (messageVec.at(4) == L"0")
 			wcout << "offen" << endl;
@@ -140,43 +146,57 @@ void printMessage(vector<wstring> messageVec, unsigned long messageType)
 
 // Funktion wird von Thread MessagesThread ausgeführt
 // Pullt alle neuen Nachrichten, die auf dem Server für den Client bereitliegen und gibt diese auf der Console aus
-void pullMessages(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, boolean *threadAllow)
+void pullMessages(unsigned long* sessionID, boolean* threadAllow, COSERVERINFO srvInfo)
 {
+	CoInitialize(NULL);
 	BOOL messageAvailable = TRUE;
 	unsigned long messageType = 0;
 	SAFEARRAY_VAR message;
 
-	while (*threadAllow == TRUE)
+	ICOMMyBay *p_ICOMMyBaySrv2 = NULL;
+	HRESULT hr;
+	IID IID_tmpICOMMyBay = IID_ICOMMyBay;
+	LPWSTR lpwstr_SrvName = 0;
+	// Verbindungsaufbau auf COM Objekt, da die Interface Instanzen zwischen Threads nur schwer geshared werden können
+	MULTI_QI multiQi = { &IID_tmpICOMMyBay, 0, 0 };
+	hr = CoCreateInstanceEx(CLSID_COMMyBay, NULL, CLSCTX_REMOTE_SERVER,
+		&srvInfo, 1, &multiQi);
+
+	p_ICOMMyBaySrv2 = (ICOMMyBay*)multiQi.pItf;
+
+	if (p_ICOMMyBaySrv2)
 	{
-		Sleep(1000);	// millisekundne
-						//std::this_thread::sleep_for(1s);
-						// User ist eingeloggt
-		if (*sessionID != 0)
+		while (*threadAllow == TRUE)
 		{
-			HRESULT hr;
-			// Pull solange Nachrichten verfügbar
-			do
+			Sleep(1000);	// millisekundne
+			// User ist eingeloggt
+			if (*sessionID != 0)
 			{
-				// neue Nachricht für Client abholen
-				hr = p_ICOMMyBaySrv->getMessage(*sessionID, &messageAvailable, &messageType, &message);
-				if (hr == S_OK)
+				HRESULT hrMethod;
+				// Pull solange Nachrichten verfügbar
+				do
 				{
-					CComSafeArray<VARIANT> newMessage(message);
-					vector<wstring> messageVec;
-					// Alle Elemente im SAFEARRAY werden in einen Vector übertragen
-					for (int i = 0; i < newMessage.GetCount(); i++)
+					// neue Nachricht für Client abholen
+					hrMethod = p_ICOMMyBaySrv2->getMessage(*sessionID, &messageAvailable, &messageType, &message);
+					if (hrMethod == S_OK && message != NULL)
 					{
-						messageVec.push_back(bstr_to_wstr(*newMessage[i].pbstrVal));
+						CComSafeArray<VARIANT> newMessage(message);
+						vector<wstring> messageVec;
+						// Alle Elemente im SAFEARRAY werden in einen Vector übertragen
+						for (int i = 0; i < newMessage.GetCount(); i++)
+						{
+							messageVec.push_back(bstr_to_wstr(newMessage[i].bstrVal));
+						}
+						if (messageVec.size() > 0)
+						{
+							// Ausgabe der Nachricht, abhängig vom Nachrichtentyp
+							printMessage(messageVec, messageType);
+						}
+
 					}
-					if (messageVec.size() > 0)
-					{
-						// Ausgabe der Nachricht, abhängig vom Nachrichtentyp
-						printMessage(messageVec, messageType);
-					}
-					
-				}
-			} while (messageAvailable == TRUE);
+				} while (messageAvailable == TRUE);
+			}
 		}
+		//std::terminate();
 	}
-	//std::terminate();
 }

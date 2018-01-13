@@ -15,20 +15,21 @@ namespace MyCasinoWSPhoneClient
 {
     public partial class LoginPage : PhoneApplicationPage
     {
-        private MyCasinoWSServer.MyCasinoWSServerSoapClient myCasinoSvcLogin;
-        public MyCasinoWSServer.MyCasinoWSServerSoapClient MyCasinoSvcLogin
+
+        /// <summary>
+        /// Field to save data between page change
+        /// </summary>
+        private TransportData myCasinoSvcLogin = new TransportData();
+        public TransportData MyCasinoSvcLogin
         {
             get { return myCasinoSvcLogin; }
             set { myCasinoSvcLogin = value; }
         }
-
-            public int _sessionId;
-            public int _type;
-          
+                   
         public LoginPage()
         {
             //create new webservice
-            MyCasinoSvcLogin = new MyCasinoWSServer.MyCasinoWSServerSoapClient();
+            myCasinoSvcLogin.MyCasinoSvc = new MyCasinoWSServer.MyCasinoWSServerSoapClient();
             InitializeComponent();
         }
 
@@ -157,16 +158,16 @@ namespace MyCasinoWSPhoneClient
             try
             {
                 //add endpointaddress to webservice
-                MyCasinoSvcLogin.Endpoint.Address = new EndpointAddress("http://" + ipAddress + ":7193/MyCasinoWSServer.asmx");
+                MyCasinoSvcLogin.MyCasinoSvc.Endpoint.Address = new EndpointAddress("http://" + ipAddress + ":7193/MyCasinoWSServer.asmx");
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Fehler beim anlegen der EndpunktAddresse!" + ex);
             }
             //add eventhandler
-            MyCasinoSvcLogin.loginCompleted += myCasinoSvc_loginCompleted;
+            MyCasinoSvcLogin.MyCasinoSvc.loginCompleted += myCasinoSvc_loginCompleted;
             //call login function
-            MyCasinoSvcLogin.loginAsync(tbxUsername.Text, pwbPassword.Password);
+            MyCasinoSvcLogin.MyCasinoSvc.loginAsync(tbxUsername.Text, pwbPassword.Password);
         }
         private void myCasinoSvc_loginCompleted(object sender, MyCasinoWSServer.loginCompletedEventArgs e)
         {
@@ -176,15 +177,15 @@ namespace MyCasinoWSPhoneClient
 
                 if (errMsg == "S_OK")
                 {
-                    _sessionId = e.sessionId;
-                    
-
+                    myCasinoSvcLogin.SessionId = e.sessionId;
+                    myCasinoSvcLogin.UserName = tbxUsername.Text;
+                    myCasinoSvcLogin.UserType = e.userType;
                     this.ShowNewDialog<GamingPage>(
-                    cp => { cp.MyCasinoSvcGamingPage = MyCasinoSvcLogin; },
+                    cp => { cp.MyCasinoSvcGaming = myCasinoSvcLogin; },
                     //cp => { MyCasinoSvcLogin = cp.MyCasinoSvcGamingPage; });
                     cp => { });
 
-                    MyCasinoSvcLogin.loginCompleted -= myCasinoSvc_loginCompleted;
+                    MyCasinoSvcLogin.MyCasinoSvc.loginCompleted -= myCasinoSvc_loginCompleted;
                 }
                 if (errMsg == "WRONG_USERNAME_OR_PASSWORD")
                 {

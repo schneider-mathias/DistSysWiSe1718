@@ -4,6 +4,7 @@
 #include <Windows.h>
 #include <map>
 #include <vector>
+#include <math.h>
 #include "MyBayDefines.h"
 #include "CritSectionWrapper.h"
 #include "CharStringConverter.h"
@@ -150,7 +151,7 @@ void readAuctionsFromFile()
 				size_t delimPos = fline.find(delimiter);
 				rauction.articleName = fline.substr(0, delimPos);									// Artikelname
 				fline.erase(0, delimPos + delimiter.length());
-
+				// TODO: wstring_to_char ausbauen -> wstring.c_str() verwenden
 				delimPos = fline.find(delimiter);
 				char * tmp = wstring_to_char(fline.substr(0, delimPos));
 				rauction.auctionNumber = strtoul(tmp, NULL, 0);										// Auktionsnummer
@@ -174,6 +175,7 @@ void readAuctionsFromFile()
 				fline.erase(0, delimPos + delimiter.length());
 
 				line++;
+				delete[] tmp;
 			}
 			// alle an der Auktion Interessierten
 			else if (line == 1)
@@ -461,6 +463,7 @@ unsigned long countBidsOfAuction(unsigned long auctionNumber)
 vector<wstring> getAllBids(ULONG auctionNumber)
 {
 	vector<wstring> bidsStr;
+	int bidNmbr = 0;
 	EnterCriticalSection(critSecWrapper.getInstance());
 	for (std::vector<auction>::iterator it = AuctionList.begin(); it != AuctionList.end(); ++it)
 	{
@@ -468,8 +471,9 @@ vector<wstring> getAllBids(ULONG auctionNumber)
 		{
 			for (std::vector<bidder>::iterator it2 = (*it).BidderList.begin(); it2 != (*it).BidderList.end(); ++it2)
 			{
-				bidsStr.push_back(to_wstring((*it2).bid));				// Gebot
+				bidsStr.push_back(to_wstring(bidNmbr++));				// Gebotsnummer	
 				bidsStr.push_back((*it2).userName);						// Username
+				bidsStr.push_back(to_wstring((*it2).bid));				// Gebot
 			}
 		}
 	}
@@ -507,9 +511,9 @@ wstring serializeAuctionDetails(unsigned long auctionNumber)
 
 				// Gebot
 				wstring tempBidStr3 = to_wstring((*it2).bid);
-				wstring tempBidStrCut = tempBidStr3.substr(0, tempBidStr3.size() - 4);				// da double 6 Nachkommastellen hat, werden die letzten 4 Nachkommastellen abgeschnitten
-				tempBidStrCut = tempBidStrCut + PLACEHOLDER_FOR_SERIALISATION_DESERIALISATION;		// Platzhalter um Parsen beim Client zu ermöglichen												
-				serStr += tempBidStrCut;
+				//wstring tempBidStrCut = to_wstring((*it2).bid);				
+				tempBidStr3 = tempBidStr3 + PLACEHOLDER_FOR_SERIALISATION_DESERIALISATION;		// Platzhalter um Parsen beim Client zu ermöglichen												
+				serStr += tempBidStr3;
 			}
 		}
 	}
@@ -542,8 +546,6 @@ BOOL endAuction(wstring user, unsigned long auctionNumber)
 	LeaveCriticalSection(critSecWrapper.getInstance());
 	return FALSE;
 }
-
-
 
 // sucht ob für den User eine Nachricht verfügbar ist
 vector<wstring> searchForMessage(wstring user)
@@ -608,8 +610,8 @@ void addNewBidToMessages(unsigned long auctionNumber, double bidVal, wstring use
 				// neue Nachricht erstellen
 				vector<wstring> newMessage;
 				int messageType = 0;
-				wstring tmpBidVal = to_wstring(bidVal);
-				wstring bidValCut = tmpBidVal.substr(0, tmpBidVal.size() - 4);
+				//wstring tmpBidVal = to_wstring(bidVal);
+				//wstring bidValCut = to_wstring(bidVal);
 
 				newMessage.push_back((*it2));												// (0) Name des interessierten Users
 				newMessage.push_back(to_wstring(messageType));								// (1) MessageType
@@ -618,7 +620,7 @@ void addNewBidToMessages(unsigned long auctionNumber, double bidVal, wstring use
 				else
 					newMessage.push_back(L"");												// (2) Name des Bieters wird nur dem Auktionator angezeigt
 				newMessage.push_back((*it).articleName);									// (3) Artikelname
-				newMessage.push_back(bidValCut);											// (4) Gebot
+				newMessage.push_back(to_wstring(bidVal));											// (4) Gebot
 				newMessage.push_back(L"0");													// (5) Auktionsstatus
 
 				Messages.push_back(newMessage);												// Nachricht der Messagebox hinzufügen
@@ -811,8 +813,8 @@ void addEndAuctionMessage(wstring user, unsigned long auctionNumber, int warning
 		{
 			for (std::vector<wstring>::iterator it2 = (*it).interestedUserList.begin(); it2 != (*it).interestedUserList.end(); ++it2)
 			{
-				wstring highestBid = to_wstring((*it).highestBid);
-				wstring highestBidCut = highestBid.substr(0, highestBid.size() - 4);
+				//wstring highestBid = to_wstring((*it).highestBid);
+				wstring highestBidCut = to_wstring((*it).highestBid);
 				vector<wstring> newMessage;
 				unsigned long messageType = 1;						// MessageType = 1 => kurz vor Auktionsende-Message
 				newMessage.push_back((*it2));						// (0) Name des interessierten Users, der die Nachricht erhalten soll	
@@ -840,8 +842,8 @@ void endAuction(unsigned long auctionNumber)
 			(*it).auctionStatus = 2;								// Auktionsstatus wird auf "Beendet" geändert
 			for (std::vector<wstring>::iterator it2 = (*it).interestedUserList.begin(); it2 != (*it).interestedUserList.end(); ++it2)
 			{
-				wstring highestBid = to_wstring((*it).highestBid);
-				wstring highestBidCut = highestBid.substr(0, highestBid.size() - 4);
+				//wstring highestBid = to_wstring((*it).highestBid);
+				wstring highestBidCut = to_wstring((*it).highestBid);
 				// Message, dass Auktion beendet wurde	
 				vector<wstring> newMessage;
 				unsigned long messageType = 2;							// MessageType = 2 => Auktion beendet

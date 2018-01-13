@@ -47,7 +47,7 @@ int main(int argc, char**argv)
 
 	p_ICOMMyBaySrv = (ICOMMyBay*)multiQi.pItf;
 
-	readConsole(p_ICOMMyBaySrv);
+	readConsole(p_ICOMMyBaySrv, srvInfo);
 
 	p_ICOMMyBaySrv->Release();
 	CoUninitialize();
@@ -57,7 +57,7 @@ int main(int argc, char**argv)
 }
 
 // Liest die Eingaben der Console
-void readConsole(ICOMMyBay *p_ICOMMyBaySrv)
+void readConsole(ICOMMyBay *p_ICOMMyBaySrv, COSERVERINFO srvInfo)
 {
 	std::cout << "----------------------------------------------------------------" << std::endl;
 	std::cout << "-		Herzlich Willkommen bei MyBay - Ihrem Auktionshaus		 -" << std::endl;
@@ -69,7 +69,7 @@ void readConsole(ICOMMyBay *p_ICOMMyBaySrv)
 	unsigned long sessionID = 0;
 	boolean threadAllow = TRUE;
 
-	std::thread MessageThread(pullMessages, p_ICOMMyBaySrv, &sessionID, &threadAllow);
+	std::thread MessageThread(pullMessages, &sessionID, &threadAllow, srvInfo);
 
 	while (true)
 	{
@@ -198,10 +198,8 @@ void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 			{
 				cout << "----------------------------------------------------------------------------------------" << endl;
 				cout << "Die Auktion wurde gestartet." << endl;
-				cout << "Das Startgebot lautet: " << startBid << endl;
-				cout << "Deine Auktion hat die Auktionsnummer: " << auctionNumber << endl;
+				cout << "Ihre Auktion hat die Auktionsnummer: " << auctionNumber << endl;
 				cout << "----------------------------------------------------------------------------------------" << endl;
-				//MyAuctions.push_back(auctionNumber);		// fügt die Auktionsnummer zur Liste der eigenen Auktionen hinzu
 			}
 			else if (hr == ERROR_USER_NOT_LOGGED_IN)
 				cout << "Fehler: Bitte zuerst einloggen!" << endl;
@@ -314,7 +312,9 @@ void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 			// Alle Elemente im SAFEARRAY werden in einen Vector übertragen
 			for (int i = 0; i < retAuctions.GetCount(); i++)
 			{
-				allAuctVec.push_back(bstr_to_wstr(*retAuctions[i].pbstrVal));
+				//BSTR vari = retAuctions[i].bstrVal;
+				//wstring tmp = bstr_to_wstr(retAuctions[i].bstrVal);
+				allAuctVec.push_back(bstr_to_wstr(retAuctions[i].bstrVal));
 			}
 
 			// Ausgabe der Auktionen
@@ -352,7 +352,7 @@ void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 
 				else if (cnt == 3)
 				{
-					std::cout.width(15); std::cout << left << wstring_to_char((*it));
+					std::cout.width(15); std::cout << left << wstring_to_char((*it).substr(0, (*it).size() - 4));
 					cnt = 0;
 					wcout << endl;
 				}
@@ -501,7 +501,7 @@ void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 					// Alle Elemente im SAFEARRAY werden in einen Vector übertragen
 					for (int i = 0; i < retAllBids.GetCount(); i++)
 					{
-						allBidsVec.push_back(bstr_to_wstr(*retAllBids[i].pbstrVal));
+						allBidsVec.push_back(bstr_to_wstr(retAllBids[i].bstrVal));
 					}
 
 					// Ausgabe aller Gebote
@@ -514,13 +514,13 @@ void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 					for (int i = 0; i < allBidsVec.size() - 2; i += 3)
 					{
 						wcout << allBidsVec[i];						// Gebotsnummer
-						wcout << "  ";
+						wcout << "    ";
 						wcout << allBidsVec[i + 1];					// Bietername
 						for (int k = 0; k < columnLengthBidder - allBidsVec[i + 1].size(); k++)
 						{
 							wcout << " ";
 						}
-						wcout << "|" << allBidsVec[i + 2] << endl;	// Gebot
+						wcout << "|" << allBidsVec[i + 2].substr(0, allBidsVec[i + 2].size() - 4) << endl;	// Gebot mit nur 2 Nachkommastellen
 					}
 					cout << "----------------------------------------------------------------------------------------" << endl;
 					cout << endl;
