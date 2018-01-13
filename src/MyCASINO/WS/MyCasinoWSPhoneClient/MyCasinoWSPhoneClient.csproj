@@ -107,6 +107,7 @@
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MyCasinoWSServerSoapClientExtention.cs" />
     <Compile Include="PayInPage.xaml.cs">
       <DependentUpon>PayInPage.xaml</DependentUpon>
     </Compile>

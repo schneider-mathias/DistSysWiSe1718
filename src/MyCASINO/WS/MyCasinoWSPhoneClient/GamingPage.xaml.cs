@@ -652,7 +652,7 @@ namespace MyCasinoWSPhoneClient
             btnBet.IsEnabled = false;
 
             //Refresh showbets
-            btnRefresh_Click(new object(), new RoutedEventArgs());
+            //btnRefresh_Click(new object(), new RoutedEventArgs());
             myCasinoSvcGaming.MyCasinoSvc.betCompleted -= MyCasinoSvc_betCompleted;
 
         }
@@ -701,6 +701,8 @@ namespace MyCasinoWSPhoneClient
                 MessageBox.Show("Ungültige ID!");
             }
             count = e.count;
+            //TODO: posi
+            myCasinoSvcGaming.MyCasinoSvc.showbetsCompleted -= MyCasinoSvc_showbetsCompleted;
             
             for (int i = 0; i < count; i++)
             {
@@ -712,7 +714,6 @@ namespace MyCasinoWSPhoneClient
                 lbFirstNumberList.Items.Add(e.firstNumber.ElementAt(i).ToString());
                 lbSecondNumberList.Items.Add(e.secondNumber.ElementAt(i).ToString());
             }
-            myCasinoSvcGaming.MyCasinoSvc.showbetsCompleted -= MyCasinoSvc_showbetsCompleted;
         }
 
         private void MyCasinoSvc_calculateProfitCompleted(object sender, MyCasinoWSServer.calculateProfitCompletedEventArgs e)
@@ -733,49 +734,44 @@ namespace MyCasinoWSPhoneClient
 
         private void btnDraw_Click(object sender, RoutedEventArgs e)
         {
+            myCasinoSvcGaming.MyCasinoSvc.drawCompleted += MyCasinoSvc_drawCompleted;
+            myCasinoSvcGaming.MyCasinoSvc.drawAsync(myCasinoSvcGaming.SessionId);
+        }
+
+        private void MyCasinoSvc_drawCompleted(object sender, MyCasinoWSServer.drawCompletedEventArgs e)
+        {
             //init
             string errMsg = null;
-            try
-            {
-                //_RemSrvMyCasino.draw(SessionId, out firstNumber, out secondNumber, out errMsg);
+            errMsg = e.errMsg;
                 if (errMsg == "INVALID_SESSION_ID")
                 {
-                    MessageBox.Show("Ungültige ID!");
+                    MessageBox.Show("Ungültige ID!", "Web service Fehler", MessageBoxButton.OK);
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Fehler beim Ziehen: " + ex.ToString());
-            }
+                else if(errMsg!=null)
+                {
+                    MessageBox.Show("Fehler beim Ziehen!", "Web service Fehler", MessageBoxButton.OK);
+                }
+            
 
             //set numbers that have been drawn
             //tblDrawnNumberOne.Text = firstNumber.ToString();
             //tblDrawnNumberTwo.Text = secondNumber.ToString();
 
             //Refresh showbets
+            myCasinoSvcGaming.MyCasinoSvc.drawCompleted -= MyCasinoSvc_drawCompleted;
             btnRefresh_Click(new object(), new RoutedEventArgs());
         }
 
         private void btnDrawNumbers_Click(object sender, RoutedEventArgs e)
         {
             //init
-            string errMsg = null;
             firstNumber = NumberOne;
             secondNumber = NumberTwo;
 
-            try
-            {
-                //_RemSrvMyCasino.drawtest(SessionId, firstNumber, secondNumber, out errMsg);
-                if (errMsg == "ERROR_MY_CASINO_BET_INVALID_NUMBER") MessageBox.Show("Zahlen auswählen!");
-                else if (errMsg == "INVALID_SESSION_ID")
-                {
-                    MessageBox.Show("Ungültige ID!");
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Fehler beim Ziehen: " + ex.ToString());
-            }
+            myCasinoSvcGaming.MyCasinoSvc.drawtestCompleted += MyCasinoSvc_drawtestCompleted;
+            myCasinoSvcGaming.MyCasinoSvc.drawtestAsync(myCasinoSvcGaming.SessionId, firstNumber, secondNumber);
+
+           
 
             //set numbers that have been drawn
             //tblDrawnNumberOne.Text = firstNumber.ToString();
@@ -805,6 +801,29 @@ namespace MyCasinoWSPhoneClient
             btnRowOneNumberThree.IsChecked = false;
             btnRowOneNumberFour.IsChecked = false;
             btnRowOneNumberFive.IsChecked = false;
+
+            
+        }
+
+        private void MyCasinoSvc_drawtestCompleted(object sender, MyCasinoWSServer.drawtestCompletedEventArgs e)
+        {
+            //init
+            string errMsg=null;
+            errMsg = e.errMsg;
+
+            //remove event
+            myCasinoSvcGaming.MyCasinoSvc.drawtestCompleted -= MyCasinoSvc_drawtestCompleted;
+
+            //check errors
+            if (errMsg == "ERROR_MY_CASINO_BET_INVALID_NUMBER") MessageBox.Show("Zahlen auswählen!");
+            else if (errMsg == "INVALID_SESSION_ID")
+            {
+                MessageBox.Show("Ungültige ID!");
+            }
+            else if (errMsg != null)
+            {
+                MessageBox.Show("Fehler beim Ziehen");
+            }
 
             //Refresh showbets
             btnRefresh_Click(new object(), new RoutedEventArgs());

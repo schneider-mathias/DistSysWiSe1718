@@ -87,7 +87,6 @@ namespace MyCasinoWSPhoneClient
 
         private void btnPayIn_Click(object sender, RoutedEventArgs e)
         {
-            string errMsg = null;
             double amount;
             double.TryParse(tbxPayInAmount.Text, out amount);
 

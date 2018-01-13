@@ -8,6 +8,7 @@ using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using DialogExtensions;
+using System.Threading.Tasks;
 
 namespace MyCasinoWSPhoneClient
 {
@@ -22,6 +23,8 @@ namespace MyCasinoWSPhoneClient
         public HistoryPage()
         {
             InitializeComponent();
+            lbBetAmountList.Items.Add("stringtest");
+            lbPayInList.SelectedItem=("test");
         }
 
         #region Page buttons
@@ -77,5 +80,144 @@ namespace MyCasinoWSPhoneClient
             }
         }
         #endregion
+
+        #region Fill listbox
+
+
+        #endregion
+
+
+
+
+
+        private async void BtnRefresh_Click(object sender, RoutedEventArgs e)
+        {
+            bool isFinished=false;
+            double opMoney = 0;
+            try
+            {
+                do
+                {
+
+                    var result = await myCasinoSvcHistory.MyCasinoSvc.GetTransactionAsyncTask(myCasinoSvcHistory.SessionId);
+                    isFinished = result.isFinished;
+                    if (result.errMsg == "INVALID_SESSION_ID")
+                    {
+                        MessageBox.Show("Ungültige ID!");
+                    }
+                    //transaction is deposit
+                    if (result.isFinished == true) break;
+                    if (result.transactionType == 0)
+                    {
+                        if (MyCasinoSvcHistory.UserType == 0)
+                        {
+                            double opMoneyTmp = 0;
+                            if (opMoney == 0)
+                            {
+                                double.TryParse(result.transaction.ElementAt(1), out opMoneyTmp);
+                            }
+                            else
+                            {
+                                double.TryParse(result.transaction.ElementAt(2), out opMoneyTmp);
+                            }
+                            opMoney += opMoneyTmp;
+                            lbBalanceList.Items.Add(opMoney);
+                        }
+                        else
+                        {
+                            lbBalanceList.Items.Add(result.transaction.ElementAt(1));
+                        }
+                        lbPayInList.Items.Add(result.transaction.ElementAt(2));
+                        lbBetAmountList.Items.Add("");
+                        lbFirstNumberPerRollList.Items.Add("");
+                        lbSecondNumberPerRollList.Items.Add("");
+                        lbWinLossList.Items.Add("");
+
+                    }
+                    //transaction is win
+                    else if (result.transactionType == 4)
+                    {
+                        int idTrans;
+                        int.TryParse(result.transaction.ElementAt(0), out idTrans);
+                        var resultTransInfo = await myCasinoSvcHistory.MyCasinoSvc.GetTransactionInformationAsyncTask(myCasinoSvcHistory.SessionId, idTrans);
+                        if (resultTransInfo.errMsg == "INVALID_SESSION_ID")
+                        {
+                            MessageBox.Show("Ungültige ID!");
+                        }
+                        else if (resultTransInfo.errMsg != null)
+                        {
+                            MessageBox.Show("Fehler beim abholen der Informationen für die Transaktionen: ");
+                        }
+                        if (MyCasinoSvcHistory.UserType == 1)
+                        {
+                            lbBetAmountList.Items.Add(resultTransInfo.information.ElementAt(3));
+                            lbFirstNumberPerRollList.Items.Add(resultTransInfo.information.ElementAt(1));
+                            lbSecondNumberPerRollList.Items.Add(resultTransInfo.information.ElementAt(2));
+                            lbWinLossList.Items.Add(resultTransInfo.information.ElementAt(6));
+                            lbPayInList.Items.Add("");
+                            lbBalanceList.Items.Add(result.transaction.ElementAt(1));
+                        }
+                        else if (MyCasinoSvcHistory.UserType == 0)
+                        {
+                            int amount;
+                            int.TryParse((resultTransInfo.information.ElementAt(6)), out amount);
+                            opMoney = opMoney - amount;
+                            lbBetAmountList.Items.Add(resultTransInfo.information.ElementAt(3));
+                            lbFirstNumberPerRollList.Items.Add(resultTransInfo.information.ElementAt(1));
+                            lbSecondNumberPerRollList.Items.Add(resultTransInfo.information.ElementAt(2));
+                            lbWinLossList.Items.Add(((amount * (-1)).ToString()));
+                            lbPayInList.Items.Add("");
+                            lbBalanceList.Items.Add(opMoney);
+                        }
+                    }
+                    //transaction is loss
+                    else if (result.transactionType == 5)
+                    {
+                        int idTrans;
+                        int.TryParse(result.transaction.ElementAt(0), out idTrans);
+                        var resultTransInfo = await myCasinoSvcHistory.MyCasinoSvc.GetTransactionInformationAsyncTask(myCasinoSvcHistory.SessionId, idTrans);
+                        if (resultTransInfo.errMsg == "INVALID_SESSION_ID")
+                        {
+                            MessageBox.Show("Ungültige ID!");
+                        }
+                        else if (resultTransInfo.errMsg != null)
+                        {
+                            MessageBox.Show("Fehler beim abholen der Informationen für die Transaktionen: ");
+                        }
+
+                        if (MyCasinoSvcHistory.UserType == 0)
+                        {
+                            int amount;
+                            int.TryParse((resultTransInfo.information.ElementAt(3)), out amount);
+                            lbBetAmountList.Items.Add(resultTransInfo.information.ElementAt(3));
+                            lbFirstNumberPerRollList.Items.Add(resultTransInfo.information.ElementAt(1));
+                            lbSecondNumberPerRollList.Items.Add(resultTransInfo.information.ElementAt(2));
+                            lbWinLossList.Items.Add((amount * (-1)).ToString());
+                            lbPayInList.Items.Add("");
+                            lbBalanceList.Items.Add(result.transaction.ElementAt(1));
+                        }
+                        else if (MyCasinoSvcHistory.UserType == 0)
+                        {
+                            int amount;
+                            int.TryParse((resultTransInfo.information.ElementAt(3)), out amount);
+                            opMoney = opMoney + amount;
+                            lbBetAmountList.Items.Add(resultTransInfo.information.ElementAt(3));
+                            lbFirstNumberPerRollList.Items.Add(resultTransInfo.information.ElementAt(1));
+                            lbSecondNumberPerRollList.Items.Add(resultTransInfo.information.ElementAt(2));
+                            lbWinLossList.Items.Add((amount).ToString());
+                            lbPayInList.Items.Add("");
+                            lbBalanceList.Items.Add(opMoney);
+                        }
+                    }
+                }
+                while (isFinished != true);
+                opMoney = 0;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Fehler beim abholen der Transaktionen: " + ex);
+            }
+        }
+             
     }
 }

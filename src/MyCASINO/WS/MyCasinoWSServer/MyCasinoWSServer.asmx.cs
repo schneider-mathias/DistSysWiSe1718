@@ -35,7 +35,7 @@ namespace MyCasinoWSServer
         /// <summary>
         /// dictonary for all bets
         /// </summary>
-        Dictionary<Transaction, Draw> dictTransDraw = new Dictionary<Transaction, Draw>();
+        public static Dictionary<Transaction, Draw> dictTransDraw = new Dictionary<Transaction, Draw>();
 
         [WebMethod]
         public bool login(string username, string password, out int sessionId, out int userType, out string errMsg)
@@ -743,6 +743,7 @@ namespace MyCasinoWSServer
                     }
                 }
             }
+           
             return true;
         }
         [WebMethod]
