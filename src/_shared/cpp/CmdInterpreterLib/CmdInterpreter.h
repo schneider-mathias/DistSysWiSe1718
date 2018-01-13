@@ -24,10 +24,10 @@ enum CmdModes
 class CmdInterpreter
 {
 public:
-	CmdInterpreter();
+	CmdInterpreter(std::wstring defaultSuccessMsg = L"", std::wstring defaultErrorMsg = L"");
 	~CmdInterpreter();
 
-	bool registerCmdDispatcher(ICommandLineInterface* m_dispatcherObj, dispatcherMemFunc func);
+	bool registerCmdDispatcher(ICommandLineInterface* dispatcherObj, dispatcherMemFunc func);
 	void init();
 	void run();
 	bool execute(std::wstring command);
@@ -39,6 +39,8 @@ private:
 	std::atomic<CmdModes> m_mode;
 	std::stringstream m_outBuffer;
 	std::streambuf* m_previousBuffer;
-	ICommandLineInterface* m_dispatcherObj;
+	ICommandLineInterface* m_pDispatcherObj;
 	dispatcherMemFunc m_dispatcherFunc;
+	std::wstring m_defaultSuccessMsg;
+	std::wstring m_defaultErrorMsg;
 };

@@ -2,10 +2,12 @@
 #include "CmdInterpreter.h"
 
 
-CmdInterpreter::CmdInterpreter()
+CmdInterpreter::CmdInterpreter(std::wstring defaultSuccessMsg, std::wstring defaultErrorMsg)
 	: m_previousBuffer(NULL),
 	m_dispatcherFunc(NULL),
-	m_mode(CmdModes::Reading)
+	m_mode(CmdModes::Reading),
+	m_defaultSuccessMsg(defaultSuccessMsg),
+	m_defaultErrorMsg(defaultErrorMsg)
 {
 }
 
@@ -16,7 +18,7 @@ CmdInterpreter::~CmdInterpreter()
 
 bool CmdInterpreter::registerCmdDispatcher(ICommandLineInterface* dispatcherObj, dispatcherMemFunc func)
 {
-	m_dispatcherObj = dispatcherObj;
+	m_pDispatcherObj = dispatcherObj;
 	m_dispatcherFunc = func;
 	return false;
 }
@@ -107,10 +109,15 @@ bool CmdInterpreter::execute(std::wstring command)
 
 		if (commandArguments.size() > 0)
 		{
-			if (NULL != m_dispatcherFunc && !CALL_MEMBER_FN(*m_dispatcherObj, m_dispatcherFunc)(commandArguments))
+			if (NULL != m_dispatcherFunc && !CALL_MEMBER_FN(*m_pDispatcherObj, m_dispatcherFunc)(commandArguments))
 			{
+				if (!m_defaultErrorMsg.empty())
+					std::wcout << m_defaultErrorMsg << std::endl;
 				return false;
 			}
+			if (!m_defaultSuccessMsg.empty())
+				std::wcout << m_defaultSuccessMsg << std::endl;
+			
 		}
 		return true;
 	}
