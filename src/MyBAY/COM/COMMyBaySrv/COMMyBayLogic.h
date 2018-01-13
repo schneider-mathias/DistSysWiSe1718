@@ -375,6 +375,7 @@ BOOL addBidToAuction(unsigned long auctionNumber, double bidVal, wstring user)
 				(*it).BidderList.push_back(newBid);	// Gebot der Liste der Gebote hinzufügen
 				(*it).highestBid = bidVal;
 				(*it).highestBidder = user;
+				BOOL addToIntUsList = addUserToInterestedUserList(user, auctionNumber);
 			}
 			break;
 		}
@@ -729,11 +730,12 @@ vector<wstring> filterInterestingInfos(vector<auction> interestingAuctions)
 	vector<wstring> retStr;
 	for (std::vector<auction>::iterator it = interestingAuctions.begin(); it != interestingAuctions.end(); it++)
 	{
-		retStr.push_back(to_wstring((*it).auctionNumber));
-		retStr.push_back((*it).articleName);
-		retStr.push_back(to_wstring((*it).highestBid));
-		retStr.push_back(to_wstring((*it).auctionStatus));
-		retStr.push_back(to_wstring((*it).BidderList.size()));
+
+		retStr.push_back(to_wstring((*it).auctionNumber));			// Auktionsnummer
+		retStr.push_back((*it).articleName);						// Artikelname
+		retStr.push_back(to_wstring((*it).highestBid));				// Höchstgebot
+		retStr.push_back(to_wstring((*it).auctionStatus));			// Auktionsstatus
+		retStr.push_back(to_wstring((*it).BidderList.size()));		// Anzahl der Gebote
 	}
 	return retStr;
 }
@@ -789,15 +791,15 @@ int numberOfElements(wstring serStr)
 void auctionEndProcess(wstring user, unsigned long auctionNumber)
 {
 	// Message hinzufügen, die sagt, dass in 15 Sekunden die Auktion endet
-	addEndAuctionMessage(user, auctionNumber, 0);
-	Sleep(5000);
-
-	// Message hinzufügen, die sagt, dass in 10 Sekunden die Auktion endet
 	addEndAuctionMessage(user, auctionNumber, 1);
 	Sleep(5000);
 
-	// Message hinzufügen, die sagt, dass in 5 Sekunden die Auktion endet
+	// Message hinzufügen, die sagt, dass in 10 Sekunden die Auktion endet
 	addEndAuctionMessage(user, auctionNumber, 2);
+	Sleep(5000);
+
+	// Message hinzufügen, die sagt, dass in 5 Sekunden die Auktion endet
+	addEndAuctionMessage(user, auctionNumber, 3);
 	Sleep(5000);
 
 	// Auktion beenden

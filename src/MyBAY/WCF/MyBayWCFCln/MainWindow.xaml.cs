@@ -67,6 +67,9 @@ namespace MyBayWCFCln
                 case 0xA0110010: // ERROR_ARTICLENAME_IS_EMPTY
                     retString = "Der Artikelname darf nicht leer sein";
                     break;
+                case 0xA0110014: // ERROR_VALUE_NEGATIVE
+                    retString = "Das Startgebot darf nicht negativ sein";
+                    break;
                 // getAuctions
                 case 0xA0110011: // ERROR_NO_AUCTIONS_AVAILABLE
                     retString = "Es sind keine Auktionen verfügbar";

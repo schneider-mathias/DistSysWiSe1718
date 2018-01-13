@@ -99,7 +99,11 @@ STDMETHODIMP CCOMMyBay::offer(ULONG sessionId, BSTR articleName, DOUBLE startBid
 	{
 		return ERROR_ARTICLENAME_IS_EMPTY;
 	}
-
+	// auf negatives Startgebot prüfen
+	if (startBid < 0)
+	{
+		return ERROR_VALUE_NEGATIVE;
+	}
 	// neue Auktion erzeugen
 	unsigned long newAuctNumb = addNewAuction(sarticleName, startBid);
 	// User der Liste der interessierten User für diese Auktion hinzufügen
@@ -130,7 +134,7 @@ STDMETHODIMP CCOMMyBay::interested(ULONG sessionId, ULONG auctionNumber)
 		return ERROR_AUCTIONNUMBER_NOT_AVAILABLE;
 	}
 	BOOL userAdded = addUserToInterestedUserList(user, auctionNumber);
-	if (userAdded == FALSE)								// bereits interessiert
+	if (userAdded == FALSE)								// User bereits interessiert
 	{
 		return ERROR_USER_ALREADY_INTERESTED;
 	}
