@@ -1,3 +1,15 @@
+/**--------------------------------------------------------------------------------------------------
+// project:	MyCasinoLib
+// file:	MyCasinoUser.h
+//
+// summary:	Declares my casino user class
+//
+//			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
+//
+//			Date		Developer			Change
+//			13.01.2018	Mathias Schneider	Created
+ *-----------------------------------------------------------------------------------------------**/
+
 #pragma once
 #include <windows.h>
 #include "IAuthServiceUser.h"

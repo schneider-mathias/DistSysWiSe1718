@@ -1,3 +1,15 @@
+/**--------------------------------------------------------------------------------------------------
+// project:	MyCasinoClnLib
+// file:	MyCasinoCommandLineInterface.h
+//
+// summary:	Declares my casino command line interface class
+//
+//			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
+//
+//			Date		Developer			Change
+//			13.01.2018	Mathias Schneider	Created
+ *-----------------------------------------------------------------------------------------------**/
+
 #pragma once
 #include <type_traits>
 

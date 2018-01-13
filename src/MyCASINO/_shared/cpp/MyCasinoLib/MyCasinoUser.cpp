@@ -1,14 +1,34 @@
+/**--------------------------------------------------------------------------------------------------
+// project:	MyCasinoLib
+// file:	MyCasinoUser.cpp
+//
+// summary:	Implements my casino user class
+//
+//			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
+//
+//			Date		Developer			Change
+//			13.01.2018	Mathias Schneider	Created
+ *-----------------------------------------------------------------------------------------------**/
+
 #include "MyCasinoUser.h"
 #include <vector>
 #include <sstream>
 
+/** <summary>	Default constructor. </summary> */
 MyCasinoUser::MyCasinoUser()
 {
 }
 
+/** <summary>	Destructor. </summary> */
 MyCasinoUser::~MyCasinoUser()
 {
 }
+
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Serialize this object to the given stream. </summary>
+ *
+ * <returns>	A std::wstring. </returns>
+ *-----------------------------------------------------------------------------------------------**/
 
 std::wstring MyCasinoUser::Serialize()
 {
@@ -22,6 +42,14 @@ std::wstring MyCasinoUser::Serialize()
 	serialized.append(std::to_wstring(m_userType));
 	return serialized;
 }
+
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Deserialize this object to the given stream. </summary>
+ *
+ * <param name="in">	The in. </param>
+ *
+ * <returns>	True if it succeeds, false if it fails. </returns>
+ *-----------------------------------------------------------------------------------------------**/
 
 BOOL MyCasinoUser::Deserialize(std::wstring in)
 {
@@ -59,21 +87,44 @@ BOOL MyCasinoUser::Deserialize(std::wstring in)
 	return TRUE;
 }
 
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Gets user type. </summary>
+ *
+ * <returns>	The user type. </returns>
+ *-----------------------------------------------------------------------------------------------**/
+
 MyCasinoUserTypes MyCasinoUser::GetUserType()
 {
 	return m_userType;
 }
+
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Query if 'userType' is user type. </summary>
+ *
+ * <param name="userType">	Type of the user. </param>
+ *
+ * <returns>	True if user type, false if not. </returns>
+ *-----------------------------------------------------------------------------------------------**/
 
 BOOL MyCasinoUser::IsUserType(MyCasinoUserTypes userType)
 {
 	return userType == m_userType;
 }
 
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Equality operator. </summary>
+ *
+ * <param name="ref">	The reference. </param>
+ *
+ * <returns>	True if the parameters are considered equivalent. </returns>
+ *-----------------------------------------------------------------------------------------------**/
+
 bool MyCasinoUser::operator==(const MyCasinoUser& ref) const
 {
 	return ref.m_id == m_id;
 }
 
+ /** <summary>	. </summary> */
 bool MyCasinoUser::operator<(const MyCasinoUser& ref) const
 {
 	return ref.m_id < m_id;

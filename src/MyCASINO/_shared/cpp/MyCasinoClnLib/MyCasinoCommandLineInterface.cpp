@@ -1,7 +1,26 @@
+/**--------------------------------------------------------------------------------------------------
+// project:	MyCasinoClnLib
+// file:	MyCasinoCommandLineInterface.cpp
+//
+// summary:	Implements my casino command line interface class
+//
+//			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
+//
+//			Date		Developer			Change
+//			13.01.2018	Mathias Schneider	Created
+ *-----------------------------------------------------------------------------------------------**/
+
 #include "MyCasinoCommandLineInterface.h"
 #include "MyCasinoDefines.h"
 #include <iostream>
 #include "comdef.h"
+
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Constructor. </summary>
+ *
+ * <param name="interpreter">	[in,out] If non-null, the command line 
+ * 								interpreter. </param>
+ *-----------------------------------------------------------------------------------------------**/
 
 MyCasinoCommandLineInterface::MyCasinoCommandLineInterface(CmdInterpreter* interpreter)
 	:m_pSessionId(NULL),
@@ -10,6 +29,8 @@ MyCasinoCommandLineInterface::MyCasinoCommandLineInterface(CmdInterpreter* inter
 {
 }
 
+
+/** <summary>	Destructor. </summary> */
 MyCasinoCommandLineInterface::~MyCasinoCommandLineInterface()
 {
 	if (NULL != m_pSessionId)
@@ -19,6 +40,14 @@ MyCasinoCommandLineInterface::~MyCasinoCommandLineInterface()
 
 	m_pInterpreter = NULL;
 }
+
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Handler, called when the result. </summary>
+ *
+ * <param name="additionalInformation">	Information describing the additional. </param>
+ * <param name="code">				   	The code. </param>
+ * <param name="msg">				   	[in,out] The message. </param>
+ *-----------------------------------------------------------------------------------------------**/
 
 void MyCasinoCommandLineInterface::resultHandler(std::string additionalInformation, int code, std::string& msg)
 {
@@ -44,6 +73,14 @@ void MyCasinoCommandLineInterface::resultHandler(std::string additionalInformati
 			std::cerr << "[ERROR] " << additionalInformation << ": " << msg  << std::endl;
 	}
 }
+
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Process the command described by arguments. </summary>
+ *
+ * <param name="arguments">	The arguments. </param>
+ *
+ * <returns>	True if it succeeds, false if it fails. </returns>
+ *-----------------------------------------------------------------------------------------------**/
 
 bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> arguments)
 {
@@ -184,6 +221,13 @@ bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> argu
 	return false;
 }
 
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Check call prerequisites. </summary>
+ *
+ * <param name="minRequiredUserType">	Type of the minimum required user. </param>
+ *
+ * <returns>	True if it succeeds, false if it fails. </returns>
+ *-----------------------------------------------------------------------------------------------**/
 
 bool MyCasinoCommandLineInterface::checkCallPrerequisites(short minRequiredUserType)
 {
@@ -201,10 +245,24 @@ bool MyCasinoCommandLineInterface::checkCallPrerequisites(short minRequiredUserT
 	return true;
 }
 
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Query if this object is logged in. </summary>
+ *
+ * <returns>	True if logged in, false if not. </returns>
+ *-----------------------------------------------------------------------------------------------**/
+
 bool MyCasinoCommandLineInterface::isLoggedIn()
 {
 	return NULL != m_pSessionId;
 }
+
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Fullfills permission level. </summary>
+ *
+ * <param name="minRequiredUserType">	Type of the minimum required user. </param>
+ *
+ * <returns>	True if it succeeds, false if it fails. </returns>
+ *-----------------------------------------------------------------------------------------------**/
 
 bool MyCasinoCommandLineInterface::fullfillsPermissionLevel(short minRequiredUserType)
 {
