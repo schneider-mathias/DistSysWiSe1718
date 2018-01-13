@@ -165,13 +165,7 @@ namespace MyCasinoWCFClient.Pages
             try
             {
                 _ComSrv.logout(SessionId, out errMsg);
-                // Close Client Connection
-                if (_ComSrv != null)
-                {
-                    ((IClientChannel)_ComSrv).Close();
-                    ((IDisposable)_ComSrv).Dispose();
-                    _ComSrv = null;
-                }
+
                 System.Windows.Application.Current.Shutdown();
             }
             catch (Exception ex)
