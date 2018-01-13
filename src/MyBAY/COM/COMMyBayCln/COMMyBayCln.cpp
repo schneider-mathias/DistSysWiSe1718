@@ -325,8 +325,9 @@ void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 			int i = 10;
 			std::cout.width(15); std::cout << left << "Auktionsnummer";
 			std::cout.width(20); std::cout << left << "Artikelname";
-			std::cout.width(15); std::cout << left << "Anzahl Gebote";
-			std::cout.width(15); std::cout << left << "Hoechstgebot" << endl;
+			std::cout.width(15); std::cout << left << "Hoechstgebot";
+			std::cout.width(15); std::cout << left << "Auktionsstatus";
+			std::cout.width(15); std::cout << left << "Anzahl Gebote" << endl;
 			std::cout << "----------------------------------------------------------------------------------------" << endl;
 			/* End Testprint */
 
@@ -334,25 +335,29 @@ void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 			{
 				if (cnt == 0)
 				{
-					std::cout.width(15); std::cout << left << wstring_to_char((*it));
+					std::wcout.width(15); std::wcout << left << (*it);
 					cnt++;
 				}
 
 				else if (cnt == 1)
 				{
-					std::cout.width(20); std::cout << left << wstring_to_char((*it));
+					std::wcout.width(20); std::wcout << left << (*it);
 					cnt++;
 				}
 
 				else if (cnt == 2)
 				{
-					std::cout.width(15); std::cout << left << wstring_to_char((*it));
+					std::wcout.width(15); std::wcout << left << (*it).substr(0, (*it).size() - 4);
 					cnt++;
 				}
-
 				else if (cnt == 3)
 				{
-					std::cout.width(15); std::cout << left << wstring_to_char((*it).substr(0, (*it).size() - 4));
+					std::wcout.width(15); std::wcout << left << (*it);
+					cnt++;
+				}
+				else if (cnt == 4)
+				{
+					std::wcout.width(15); std::wcout << left << (*it).substr(0, (*it).size() - 4);
 					cnt = 0;
 					wcout << endl;
 				}
