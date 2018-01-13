@@ -75,6 +75,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
       <AdditionalIncludeDirectories>../COMMyCasinoCln;../../../_shared/cpp/bprinter-1.0.0/include;../../_shared/cpp/IncPub/;../../../_shared/cpp/CmdInterpreterLib;../../_shared/cpp/MyCasinoClnLib;../../../_shared/cpp/AuthServiceLib;../../$(Configuration);../../../_shared/cpp/HelperLib</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_MYCASINO_TEST_CLIENT_;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>bprinter.lib;MyCasinoClnLib.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -96,6 +97,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>false</SDLCheck>
       <AdditionalIncludeDirectories>../COMMyCasinoCln;../../../_shared/cpp/bprinter-1.0.0/include;../../_shared/cpp/IncPub/;../../../_shared/cpp/CmdInterpreterLib;../../_shared/cpp/MyCasinoClnLib;../../../_shared/cpp/AuthServiceLib;../../$(Configuration);../../../_shared/cpp/HelperLib</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_MYCASINO_TEST_CLIENT_;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>

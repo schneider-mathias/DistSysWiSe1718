@@ -19,6 +19,15 @@ RPCMyCasinoCommandLineInterface::~RPCMyCasinoCommandLineInterface()
 
 bool RPCMyCasinoCommandLineInterface::user(std::wstring user, std::wstring password)
 {
+
+#ifndef _MYCASINO_TEST_CLIENT_
+	if (NULL != m_pSessionId)
+	{
+		std::cout << "[ERROR]: Already logged in with user" << std::endl;
+		return false;
+	}
+#endif
+
 	if (NULL != m_pSessionId)
 	{
 		delete m_pSessionId;
