@@ -1,4 +1,14 @@
-// COMMyCasino.h : Declaration of the CCOMMyCasino
+/**--------------------------------------------------------------------------------------------------
+// project:	COMMyCasinoSrv
+// file:	COMMyCasino.h
+//
+// summary:	Declaration of the CCOMMyCasino
+//
+//			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
+//
+//			Date		Developer			Change
+//			13.01.2018	Mathias Schneider	Created
+ *-----------------------------------------------------------------------------------------------**/
 
 #pragma once
 #include "resource.h"       // main symbols
