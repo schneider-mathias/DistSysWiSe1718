@@ -76,7 +76,7 @@ bool RPCMyCasinoCommandLineInterface::payin(std::wstring user, double amount)
 
 	delete userCStr;
 
-	return false;
+	return true;
 }
 
 bool RPCMyCasinoCommandLineInterface::bet(double setAmount, unsigned short firstNumber, unsigned short secondNumber)
