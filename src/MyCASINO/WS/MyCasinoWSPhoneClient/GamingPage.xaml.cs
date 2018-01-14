@@ -730,7 +730,6 @@ namespace MyCasinoWSPhoneClient
                 MessageBox.Show("Betreiber darf Ziehen!", "Webservices Fehler", MessageBoxButton.OK);
                 return;
             }
-
             //init
             string errMsg = null;
             var result = await myCasinoSvcGaming.MyCasinoSvc.DrawAsyncTask(MyCasinoSvcGaming.SessionId);

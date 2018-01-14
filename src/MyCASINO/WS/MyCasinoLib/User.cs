@@ -194,7 +194,7 @@ namespace MyCasinoLib
         public string Logout(int sessionId)
         {
             //save all current amounts for all users
-            using (StreamWriter sw = new StreamWriter(@"d:\StdArbVS\trunk\src\MyCASINO\WCF\MyCasinoData\UserBalance.txt", false))
+            using (StreamWriter sw = new StreamWriter(Environment.GetEnvironmentVariable("SystemDrive") + "\\_myCasinoData\\UserBalance.txt", false))
             {
                 lock (thisLockUserList)
                 {
