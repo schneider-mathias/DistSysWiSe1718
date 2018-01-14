@@ -7,6 +7,7 @@ using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using MyBayWSPhoneCln.Resources;
+using PortForwardLib;
 
 namespace MyBayWSPhoneCln
 {
@@ -17,6 +18,8 @@ namespace MyBayWSPhoneCln
         /// </summary>
         /// <returns>Der Stammframe der Phone-Anwendung.</returns>
         public static PhoneApplicationFrame RootFrame { get; private set; }
+
+        PortForwarderWP pfWebSvc, pfWCFSvc;
 
         public static DataObject MyDataObject;
 
@@ -58,6 +61,9 @@ namespace MyBayWSPhoneCln
             }
 
             App.MyDataObject = new DataObject();
+
+            pfWebSvc = new PortForwarderWP(3333, 3332);
+
         }
 
         // Code zur Ausführung bei der Rückgabe einer Vertragsaktivierung wie z. B. einem "Auswahlvertrag zum Öffnen von Dateien" oder einer Dateispeicherauswahl 
@@ -70,6 +76,8 @@ namespace MyBayWSPhoneCln
         // Dieser Code wird beim Reaktivieren der Anwendung nicht ausgeführt
         private void Application_Launching(object sender, LaunchingEventArgs e)
         {
+            pfWebSvc.Run();
+
         }
 
         // Code, der ausgeführt werden soll, wenn die Anwendung aktiviert wird (in den Vordergrund gebracht wird)
@@ -88,6 +96,8 @@ namespace MyBayWSPhoneCln
         // Dieser Code wird beim Deaktivieren der Anwendung nicht ausgeführt
         private void Application_Closing(object sender, ClosingEventArgs e)
         {
+            pfWebSvc.Stop();
+
         }
 
         // Code, der bei einem Navigationsfehler ausgeführt wird
