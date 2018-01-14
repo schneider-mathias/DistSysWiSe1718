@@ -92,7 +92,7 @@ namespace MyCasinoLib
             try
             {
                 //Read UserList.txt line by line
-                using (FileStream fs = File.OpenRead(@"d:\StdArbVS\trunk\src\MyCASINO\WCF\MyCasinoData\UserList.txt"))
+                using (FileStream fs = File.OpenRead(Environment.GetEnvironmentVariable("SystemDrive") + "\\_myCasinoData\\UserList.txt"))
                 using (StreamReader sr = new StreamReader(fs))
                 {
 
@@ -110,7 +110,7 @@ namespace MyCasinoLib
                     }
                 }
                 //Get initial money
-                using (FileStream fsBal = File.OpenRead(@"d:\StdArbVS\trunk\src\MyCASINO\WCF\MyCasinoData\UserBalance.txt"))
+                using (FileStream fsBal = File.OpenRead(Environment.GetEnvironmentVariable("SystemDrive") + "\\_myCasinoData\\UserBalance.txt"))
                 using (StreamReader srBal = new StreamReader(fsBal))
                 {
                     string line;

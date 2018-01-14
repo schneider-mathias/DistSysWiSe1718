@@ -54,21 +54,21 @@
                 Background="OrangeRed" FontSize="20" Width="150" Margin="0 0 5 0"/>
             <Button x:Name="BtnPayIn" Click="BtnPayIn_Click" Content="Einzahlen" Grid.Row="1" Grid.Column="3" 
                 Background="OrangeRed" FontSize="20" Width="150" Margin="0 0 5 0"/>
-            <!--User-->
-            <!--TextBlock Text="Angemeldet als:" VerticalAlignment="Center" Grid.Row="2" Grid.Column="1" FontSize="20"/-->
-            <!--TextBlock x:Name="tblUsername" Text="Name" VerticalAlignment="Center" Grid.Row="2" Grid.Column="2" Foreground="OrangeRed" FontSize="20" IsHitTestVisible="False"/-->
+            
             <!--Logout-->
             <Button x:Name="btnLogout" Click="btnLogout_Click" Content="Logout" Background="OrangeRed" Grid.Row="2" Grid.Column="3"  FontSize="20"/>
 
             <!--Username-->
             <TextBlock Text="Username:" Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" FontSize="15"/>
-            <ComboBox x:Name="cbxPayInUsername" Grid.RowSpan="2" Background="White" SelectionChanged="cbxPayInUsername_SelectionChanged" Grid.Row="4" Grid.Column="1" FontSize="15"/>
+            <ComboBox x:Name="cbxPayInUsername" MaxWidth="155" Grid.RowSpan="2" Background="White" SelectionChanged="cbxPayInUsername_SelectionChanged" Grid.Row="4" Grid.Column="1" FontSize="15"/>
             <!--Money to pay in-->
             <TextBlock Text="Geldbetrag:" VerticalAlignment="Center" Grid.Row="3" Grid.Column="2" FontSize="15"/>
-            <TextBox x:Name="tbxPayInAmount" KeyDown="tbxPayInAmount_KeyDown" Text="" Grid.Row="4" Grid.Column="2"   FontSize="15"/>
+            <TextBox x:Name="tbxPayInAmount" MaxWidth="155" KeyDown="tbxPayInAmount_KeyDown" Text="" Grid.Row="4" Grid.Column="2"   FontSize="15"/>
             <!--Submit button-->
             <Button x:Name="btnPayIn" IsEnabled="False" Content="Einzahlen" Click="btnPayIn_Click" Grid.Row="3" Grid.Column="3"  FontSize="15"/>
-            <TextBlock x:Name="tblPayInSuccessful" Visibility="Collapsed" Text="Einzahlung Erfolgreich" Grid.Row="4" Grid.Column="3"  FontSize="15"/>
+            <TextBlock x:Name="tblPayInSuccessful" VerticalAlignment="Center" Visibility="Collapsed" Text="Einzahlung Erfolgreich" Grid.Row="4" Grid.Column="3"  FontSize="15"/>
+
+            
         </Grid>
     </Grid>
 </phone:PhoneApplicationPage>

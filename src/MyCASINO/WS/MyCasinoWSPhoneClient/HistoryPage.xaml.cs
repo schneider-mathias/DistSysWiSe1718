@@ -14,18 +14,23 @@ namespace MyCasinoWSPhoneClient
 {
     public partial class HistoryPage : PhoneApplicationPage
     {
+        #region Data
         private TransportData myCasinoSvcHistory = new TransportData();
         public TransportData MyCasinoSvcHistory
         {
             get { return myCasinoSvcHistory; }
             set { myCasinoSvcHistory = value; }
         }
+
+        #endregion
+
+        #region Constructor
         public HistoryPage()
         {
             InitializeComponent();
-            lbBetAmountList.Items.Add("stringtest");
-            lbPayInList.SelectedItem=("test");
         }
+
+        #endregion
 
         #region Page buttons
         private void BtnPlay_Click(object sender, RoutedEventArgs e)
@@ -49,63 +54,57 @@ namespace MyCasinoWSPhoneClient
                     //cp => { MyCasinoSvcLogin = cp.MyCasinoSvcGamingPage; });
                     cp => { });
         }
-        private void btnLogout_Click(object sender, RoutedEventArgs e)
+
+        private async void btnLogout_Click(object sender, RoutedEventArgs e)
         {
-            try
+            var result = await myCasinoSvcHistory.MyCasinoSvc.LogoutAsyncTask(myCasinoSvcHistory.SessionId);
+
+            if (result.errMsg == "S_OK")
             {
-                //if (_RemSrvMyCasino.logout(SessionId, out errMsg))
-                //{
-                //    // Close Client Connection
-                //    if (_RemSrvMyCasino != null)
-                //    {
-                //        ((IClientChannel)_RemSrvMyCasino).Close();
-                //        ((IDisposable)_RemSrvMyCasino).Dispose();
-                //        _RemSrvMyCasino = null;
-                //    }
-                //    //TODO: go to login page 
-                //    //System.Windows.Application.Current.Shutdown();
-                //this.ShowNewDialog<LoginPage>(
-                //    cp => { cp.MyCasinoSvcLogin = myCasinoSvcHistory; },
-                //    //cp => { MyCasinoSvcLogin = cp.MyCasinoSvcGamingPage; });
-                //    cp => { });
-                //}
-                //if (errMsg == "INVALID_SESSION_ID")
-                //{
-                //    MessageBox.Show("Ungültige ID!");
-                //}
+                this.ShowNewDialog<LoginPage>(
+                  cp => { cp.MyCasinoSvcLogin = myCasinoSvcHistory; },
+                  //cp => { MyCasinoSvcLogin = cp.MyCasinoSvcGamingPage; });
+                  cp => { });
             }
-            catch (Exception ex)
+            else if (result.errMsg == "INVALID_SESSION_ID")
             {
-                MessageBox.Show("Fehler beim Logout: " + ex.ToString());
+                MessageBox.Show("Ungültige ID!");
             }
+            else if (result.errMsg != null)
+            {
+                MessageBox.Show("Fehler beim Logout");
+            }
+            
         }
+
         #endregion
 
         #region Fill listbox
 
-
-        #endregion
-
-
-
-
-
         private async void BtnRefresh_Click(object sender, RoutedEventArgs e)
         {
-            bool isFinished=false;
+            //clear listboxes
+            lbBetAmountList.Items.Clear();
+            lbFirstNumberPerRollList.Items.Clear();
+            lbSecondNumberPerRollList.Items.Clear();
+            lbWinLossList.Items.Clear();
+            lbPayInList.Items.Clear();
+            lbBalanceList.Items.Clear();
+
+            bool isFinished = false;
             double opMoney = 0;
             try
             {
                 do
                 {
-
+                    //make asynchron call to GetTransaction, but wait till it is synchronized
                     var result = await myCasinoSvcHistory.MyCasinoSvc.GetTransactionAsyncTask(myCasinoSvcHistory.SessionId);
                     isFinished = result.isFinished;
                     if (result.errMsg == "INVALID_SESSION_ID")
                     {
                         MessageBox.Show("Ungültige ID!");
                     }
-                    //transaction is deposit
+                    //transaction is deposit -> save all elements for listboxes
                     if (result.isFinished == true) break;
                     if (result.transactionType == 0)
                     {
@@ -114,31 +113,34 @@ namespace MyCasinoWSPhoneClient
                             double opMoneyTmp = 0;
                             if (opMoney == 0)
                             {
-                                double.TryParse(result.transaction.ElementAt(1), out opMoneyTmp);
+                                
+                                double.TryParse(result.transaction.ElementAt(1).Replace(',', '.'), out opMoneyTmp);
+                                //double.TryParse(result.transaction.ElementAt(1), out opMoneyTmp);
                             }
                             else
                             {
-                                double.TryParse(result.transaction.ElementAt(2), out opMoneyTmp);
+                                double.TryParse(result.transaction.ElementAt(2).Replace(',', '.'), out opMoneyTmp);
+                                //double.TryParse(result.transaction.ElementAt(2), out opMoneyTmp);
                             }
                             opMoney += opMoneyTmp;
-                            lbBalanceList.Items.Add(opMoney);
+                            lbBalanceList.Items.Add(string.Format("{0:N2}", opMoney));
                         }
                         else
                         {
                             lbBalanceList.Items.Add(result.transaction.ElementAt(1));
                         }
-                        lbPayInList.Items.Add(result.transaction.ElementAt(2));
+                        lbPayInList.Items.Add(result.transaction.ElementAt(2).Replace(',', '.'));
                         lbBetAmountList.Items.Add("");
                         lbFirstNumberPerRollList.Items.Add("");
                         lbSecondNumberPerRollList.Items.Add("");
                         lbWinLossList.Items.Add("");
-
                     }
-                    //transaction is win
+                    //transaction is win -> save all elements for listboxes
                     else if (result.transactionType == 4)
                     {
                         int idTrans;
                         int.TryParse(result.transaction.ElementAt(0), out idTrans);
+                        //make asynchron call to GetTransactionInformation, but wait till it is synchronized
                         var resultTransInfo = await myCasinoSvcHistory.MyCasinoSvc.GetTransactionInformationAsyncTask(myCasinoSvcHistory.SessionId, idTrans);
                         if (resultTransInfo.errMsg == "INVALID_SESSION_ID")
                         {
@@ -148,6 +150,7 @@ namespace MyCasinoWSPhoneClient
                         {
                             MessageBox.Show("Fehler beim abholen der Informationen für die Transaktionen: ");
                         }
+                        //save all transaction information to the listboxes for gamer
                         if (MyCasinoSvcHistory.UserType == 1)
                         {
                             lbBetAmountList.Items.Add(resultTransInfo.information.ElementAt(3));
@@ -157,6 +160,7 @@ namespace MyCasinoWSPhoneClient
                             lbPayInList.Items.Add("");
                             lbBalanceList.Items.Add(result.transaction.ElementAt(1));
                         }
+                        //save all transaction information to the listboxes for operator
                         else if (MyCasinoSvcHistory.UserType == 0)
                         {
                             int amount;
@@ -175,6 +179,7 @@ namespace MyCasinoWSPhoneClient
                     {
                         int idTrans;
                         int.TryParse(result.transaction.ElementAt(0), out idTrans);
+                        //make asynchron call to GetTransactionInformation, but wait till it is synchronized
                         var resultTransInfo = await myCasinoSvcHistory.MyCasinoSvc.GetTransactionInformationAsyncTask(myCasinoSvcHistory.SessionId, idTrans);
                         if (resultTransInfo.errMsg == "INVALID_SESSION_ID")
                         {
@@ -184,7 +189,7 @@ namespace MyCasinoWSPhoneClient
                         {
                             MessageBox.Show("Fehler beim abholen der Informationen für die Transaktionen: ");
                         }
-
+                        //save all transaction information to the listboxes for gamer
                         if (MyCasinoSvcHistory.UserType == 0)
                         {
                             int amount;
@@ -196,6 +201,7 @@ namespace MyCasinoWSPhoneClient
                             lbPayInList.Items.Add("");
                             lbBalanceList.Items.Add(result.transaction.ElementAt(1));
                         }
+                        //save all transaction information to the listboxes for operator
                         else if (MyCasinoSvcHistory.UserType == 0)
                         {
                             int amount;
@@ -218,6 +224,9 @@ namespace MyCasinoWSPhoneClient
                 MessageBox.Show("Fehler beim abholen der Transaktionen: " + ex);
             }
         }
-             
+
+        #endregion
+
+        
     }
 }

@@ -39,7 +39,8 @@ namespace MyCasinoLib
             try
             {
                 //Read UserBalance.txt line by line
-                using (FileStream fs = File.OpenRead(@"d:\StdArbVS\trunk\src\MyCASINO\WCF\MyCasinoData\UserBalance.txt"))
+                //using (FileStream fs = File.OpenRead(@"d:\StdArbVS\trunk\src\MyCASINO\WCF\MyCasinoData\UserBalance.txt"))
+                using (FileStream fs = File.OpenRead(Environment.GetEnvironmentVariable("SystemDrive")+"\\_myCasinoData\\UserBalance.txt"))
                 using (StreamReader sr = new StreamReader(fs))
                 {
                         string line;

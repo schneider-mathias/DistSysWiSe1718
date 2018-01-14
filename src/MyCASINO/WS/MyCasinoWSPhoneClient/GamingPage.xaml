@@ -56,9 +56,7 @@
                 Background="OrangeRed" FontSize="20" Width="150" Margin="0 0 0 0"/>
             <Button x:Name="BtnPayIn" Click="BtnPayIn_Click" Content="Einzahlen" Grid.Row="1" Grid.Column="3" 
                 Background="OrangeRed" FontSize="20" Width="150" Margin="0 0 0 0"/>
-            <!--User-->
-            <!--TextBlock Text="Angemeldet als:" VerticalAlignment="Center" Grid.Row="2" Grid.Column="1" FontSize="20"/-->
-            <!--TextBlock x:Name="tblUsername" Text="{Binding MyCasinoSvcGaming.UserName}" VerticalAlignment="Center" Grid.Row="2" Grid.Column="2" Foreground="OrangeRed" FontSize="20" IsHitTestVisible="False"/-->
+            
             <!--Logout-->
             <Button x:Name="btnLogout" Click="btnLogout_Click" Content="Logout" Background="OrangeRed" Grid.Row="2" Grid.Column="3" FontSize="20"/>
 
@@ -135,11 +133,8 @@
                     <StackPanel>
                         <TextBox Text="User" FontSize="15" MinWidth="100" BorderThickness="0 0 0 1" Margin="0 0 0 0"
                              BorderBrush="CornflowerBlue" IsHitTestVisible="False" />
-
-                        <ListBox Name="lbNameList" BorderThickness="0 0 0 0" HorizontalContentAlignment="Stretch" IsHitTestVisible="False">
-
+                        <ListBox Name="lbNameList" Foreground="Black" FontSize="15" HorizontalAlignment="Center" BorderThickness="0 0 0 0" HorizontalContentAlignment="Stretch" IsHitTestVisible="False">
                         </ListBox>
-
                     </StackPanel>
                 </Border>
                 <!--Number1-->
@@ -148,11 +143,8 @@
                     <StackPanel>
                         <TextBox Text="Erste Zahl" FontSize="15" MinWidth="100" BorderThickness="0 0 0 1" Margin="0 0 0 0"
                              BorderBrush="CornflowerBlue" IsHitTestVisible="False"/>
-
-                        <ListBox Name="lbFirstNumberList" BorderThickness="0 0 0 0" HorizontalContentAlignment="Stretch" IsHitTestVisible="False">
-
+                        <ListBox Name="lbFirstNumberList" Foreground="Black" FontSize="15" HorizontalAlignment="Center" BorderThickness="0 0 0 0" HorizontalContentAlignment="Stretch" IsHitTestVisible="False">
                         </ListBox>
-
                     </StackPanel>
                 </Border>
                 <!--Number2-->
@@ -161,9 +153,7 @@
                     <StackPanel>
                         <TextBox Text="Zweite Zahl" FontSize="15" MinWidth="100" BorderThickness="0 0 0 1" Margin="0 0 0 0"
                              BorderBrush="CornflowerBlue" IsHitTestVisible="False"/>
-
-                        <ListBox Name="lbSecondNumberList" BorderThickness="0 0 0 0" HorizontalContentAlignment="Stretch" IsHitTestVisible="False">
-
+                        <ListBox Name="lbSecondNumberList" Foreground="Black" FontSize="15" HorizontalAlignment="Center" BorderThickness="0 0 0 0" HorizontalContentAlignment="Stretch" IsHitTestVisible="False">
                         </ListBox>
                     </StackPanel>
                 </Border>
@@ -175,9 +165,7 @@
                     <StackPanel>
                         <TextBox Text="Möglicher Gewinn" FontSize="15" MinWidth="100" BorderThickness="0 0 0 1" Margin="0 0 0 0"
                              BorderBrush="CornflowerBlue" IsHitTestVisible="False"/>
-
-                        <ListBox Name="lbAmountWinList" BorderThickness="0 0 0 0" HorizontalContentAlignment="Stretch" IsHitTestVisible="False">
-
+                        <ListBox Name="lbAmountWinList" Foreground="Black" FontSize="15" HorizontalAlignment="Center" BorderThickness="0 0 0 0" HorizontalContentAlignment="Stretch" IsHitTestVisible="False">
                         </ListBox>
                     </StackPanel>
                 </Border>

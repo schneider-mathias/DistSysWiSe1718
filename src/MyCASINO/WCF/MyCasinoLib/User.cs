@@ -92,7 +92,7 @@ namespace MyCasinoLib
             try
             {
                 //Read UserList.txt line by line
-                using (FileStream fs = File.OpenRead(@"d:\StdArbVS\trunk\src\MyCASINO\WCF\MyCasinoData\UserList.txt"))
+                using (FileStream fs = File.OpenRead(Environment.GetEnvironmentVariable("SystemDrive") + "\\_myCasinoData\\UserList.txt"))
                 using (StreamReader sr = new StreamReader(fs))
                 {
 
@@ -110,7 +110,7 @@ namespace MyCasinoLib
                     }
                 }
                 //Get initial money
-                using (FileStream fsBal = File.OpenRead(@"d:\StdArbVS\trunk\src\MyCASINO\WCF\MyCasinoData\UserBalance.txt"))
+                using (FileStream fsBal = File.OpenRead(Environment.GetEnvironmentVariable("SystemDrive") + "\\_myCasinoData\\UserBalance.txt"))
                 using (StreamReader srBal = new StreamReader(fsBal))
                 {
                     string line;
@@ -159,8 +159,6 @@ namespace MyCasinoLib
                         }
                         //Read transaction information
                         user.account.ReadUserTransaction(user.username, dictTransDraw);
-
-                        //user.SessionId = unchecked(Convert.ToInt32(GenerateId()));
                         user.SessionId = Math.Abs(unchecked(GenerateId()));
                         sessionId = user.SessionId;
                         type = user.UserType;
@@ -194,7 +192,7 @@ namespace MyCasinoLib
         public string Logout(int sessionId)
         {
             //save all current amounts for all users
-            using (StreamWriter sw = new StreamWriter(@"d:\StdArbVS\trunk\src\MyCASINO\WCF\MyCasinoData\UserBalance.txt", false))
+            using (StreamWriter sw = new StreamWriter(Environment.GetEnvironmentVariable("SystemDrive") + "\\_myCasinoData\\UserBalance.txt", false))
             {
                 lock (thisLockUserList)
                 {

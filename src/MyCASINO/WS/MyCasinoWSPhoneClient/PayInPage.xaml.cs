@@ -51,35 +51,26 @@ namespace MyCasinoWSPhoneClient
                     //cp => { MyCasinoSvcLogin = cp.MyCasinoSvcGamingPage; });
                     cp => { });
         }
-        private void btnLogout_Click(object sender, RoutedEventArgs e)
+        private async void btnLogout_Click(object sender, RoutedEventArgs e)
         {
-            try
+            var result = await myCasinoSvcPayIn.MyCasinoSvc.LogoutAsyncTask(myCasinoSvcPayIn.SessionId);
+
+            if (result.errMsg == "S_OK")
             {
-                //if (_RemSrvMyCasino.logout(SessionId, out errMsg))
-                //{
-                //    // Close Client Connection
-                //    if (_RemSrvMyCasino != null)
-                //    {
-                //        ((IClientChannel)_RemSrvMyCasino).Close();
-                //        ((IDisposable)_RemSrvMyCasino).Dispose();
-                //        _RemSrvMyCasino = null;
-                //    }
-                //    //TODO: go to login page 
-                //    //System.Windows.Application.Current.Shutdown();
-                //this.ShowNewDialog<LoginPage>(
-                //    cp => { cp.MyCasinoSvcLogin = myCasinoSvcPayIn; },
-                //    //cp => { MyCasinoSvcLogin = cp.MyCasinoSvcGamingPage; });
-                //    cp => { });
-                //}
-                //if (errMsg == "INVALID_SESSION_ID")
-                //{
-                //    MessageBox.Show("Ungültige ID!");
-                //}
+                this.ShowNewDialog<LoginPage>(
+                  cp => { cp.MyCasinoSvcLogin = myCasinoSvcPayIn; },
+                  //cp => { MyCasinoSvcLogin = cp.MyCasinoSvcGamingPage; });
+                  cp => { });
             }
-            catch (Exception ex)
+            else if (result.errMsg == "INVALID_SESSION_ID")
             {
-                MessageBox.Show("Fehler beim Logout: " + ex.ToString());
+                MessageBox.Show("Ungültige ID!");
             }
+            else if (result.errMsg != null)
+            {
+                MessageBox.Show("Fehler beim Logout");
+            }
+
         }
         #endregion
 
@@ -87,6 +78,31 @@ namespace MyCasinoWSPhoneClient
 
         private void btnPayIn_Click(object sender, RoutedEventArgs e)
         {
+            //check if valid bet format
+            int dotcount=0;
+            for (int i = 0; i < tbxPayInAmount.Text.Length; i++)
+            {
+                char test;
+                test=tbxPayInAmount.Text.ElementAt(i);
+                if ((test == '1') || (test == '2') || (test == '3') || (test == '4') ||
+                    (test == '5') || (test == '6') || (test == '7') || (test == '8') ||
+                    (test == '9') || (test == '0') || (test == '.'))
+                {
+                    //only numbers and one dot dot allowed in string
+                    if (test == ',') dotcount++;
+                    if(dotcount>1)
+                    {
+                        MessageBox.Show("Gültiges Geldformat eingeben!");
+                        return;
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Gültiges Geldformat eingeben!");
+                    return;
+                }
+            }
+
             double amount;
             double.TryParse(tbxPayInAmount.Text, out amount);
 
@@ -94,9 +110,6 @@ namespace MyCasinoWSPhoneClient
             myCasinoSvcPayIn.MyCasinoSvc.depositCompleted += MyCasinoSvc_depositCompleted;
             //call servicefunction
             myCasinoSvcPayIn.MyCasinoSvc.depositAsync(MyCasinoSvcPayIn.SessionId, cbxPayInUsername.SelectedItem.ToString(), amount);
-
-            //_RemSrvMyCasino.deposit(SessionId, cbxPayInUsername.Text, amount, out errMsg);
-          
         }
 
         private void MyCasinoSvc_depositCompleted(object sender, MyCasinoWSServer.depositCompletedEventArgs e)
@@ -130,22 +143,9 @@ namespace MyCasinoWSPhoneClient
 
         private void tbxPayInAmount_KeyDown(object sender, KeyEventArgs e)
         {
-            e.Handled = !(e.Key >= Key.D0 && e.Key <= Key.D9 ||
-               e.Key >= Key.NumPad0 && e.Key <= Key.NumPad9 ||
-               e.Key == Key.Back || e.Key == Key.Decimal
-               );
-
+            
             tblPayInSuccessful.Visibility = Visibility.Collapsed;
             btnPayIn.IsEnabled = true;
-            //Only one period is allowed
-            if (e.Key == Key.Decimal)
-            {
-                if (((TextBox)sender).Text.ToString().Contains('.'))
-                {
-                    e.Handled = true;
-                    return;
-                }
-            }
 
             //Set money format
             if (((TextBox)sender).Text.ToString().Contains('.'))

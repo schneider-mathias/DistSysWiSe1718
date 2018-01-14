@@ -203,45 +203,6 @@ namespace MyCasinoWSPhoneClient
             {
                 MessageBox.Show("Fehler beim Login: Server nicht gefunden", "Webservices Fehler", MessageBoxButton.OK);
             }
-
-
-
         }
-        //private void myCasinoSvc_loginCompleted(object sender, MyCasinoWSServer.loginCompletedEventArgs e)
-        //{
-            //try
-            //{
-            //    String errMsg = e.errMsg;
-
-            //    if (errMsg == "S_OK")
-            //    {
-            //        myCasinoSvcLogin.SessionId = e.sessionId;
-            //        myCasinoSvcLogin.UserName = tbxUsername.Text;
-            //        myCasinoSvcLogin.UserType = e.userType;
-            //        this.ShowNewDialog<GamingPage>(
-            //        cp => { cp.MyCasinoSvcGaming = myCasinoSvcLogin; },
-            //        //cp => { MyCasinoSvcLogin = cp.MyCasinoSvcGamingPage; });
-            //        cp => { });
-
-            //        MyCasinoSvcLogin.MyCasinoSvc.loginCompleted -= myCasinoSvc_loginCompleted;
-            //    }
-            //    if (errMsg == "WRONG_USERNAME_OR_PASSWORD")
-            //    {
-            //        tblAuthentificationFailed.Text = "Falscher Benutzername oder Passwort";
-            //    }
-            //    else if (errMsg == "OPERATOR_ALREADY_LOGGED_IN")
-            //    {
-            //        tblAuthentificationFailed.Text = "Es ist bereits ein Betreiber eingeloggt";
-            //    }
-            //    else if (errMsg == "ALREADY_LOGGED_IN")
-            //    {
-            //        tblAuthentificationFailed.Text = "User ist bereits angemeldet";
-            //    }
-            //}
-            //catch
-            //{
-            //    MessageBox.Show("Fehler beim Login: Server nicht gefunden", "Webservices Fehler", MessageBoxButton.OK);
-            //}
-        //}
     }
 }
