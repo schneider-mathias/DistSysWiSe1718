@@ -68,7 +68,11 @@ namespace MyCasinoWSPhoneClient
             }
             else if (result.errMsg == "INVALID_SESSION_ID")
             {
-                MessageBox.Show("Ungültige ID!");
+                MessageBox.Show("Ungültige ID! Schließe App");
+                this.ShowNewDialog<LoginPage>(
+                  cp => { cp.MyCasinoSvcLogin = myCasinoSvcHistory; },
+                  //cp => { MyCasinoSvcLogin = cp.MyCasinoSvcGamingPage; });
+                  cp => { });
             }
             else if (result.errMsg != null)
             {
@@ -113,14 +117,11 @@ namespace MyCasinoWSPhoneClient
                             double opMoneyTmp = 0;
                             if (opMoney == 0)
                             {
-                                
                                 double.TryParse(result.transaction.ElementAt(1).Replace(',', '.'), out opMoneyTmp);
-                                //double.TryParse(result.transaction.ElementAt(1), out opMoneyTmp);
                             }
                             else
                             {
                                 double.TryParse(result.transaction.ElementAt(2).Replace(',', '.'), out opMoneyTmp);
-                                //double.TryParse(result.transaction.ElementAt(2), out opMoneyTmp);
                             }
                             opMoney += opMoneyTmp;
                             lbBalanceList.Items.Add(string.Format("{0:N2}", opMoney));
@@ -153,18 +154,18 @@ namespace MyCasinoWSPhoneClient
                         //save all transaction information to the listboxes for gamer
                         if (MyCasinoSvcHistory.UserType == 1)
                         {
-                            lbBetAmountList.Items.Add(resultTransInfo.information.ElementAt(3));
+                            lbBetAmountList.Items.Add(resultTransInfo.information.ElementAt(3).Replace(',', '.'));
                             lbFirstNumberPerRollList.Items.Add(resultTransInfo.information.ElementAt(1));
                             lbSecondNumberPerRollList.Items.Add(resultTransInfo.information.ElementAt(2));
-                            lbWinLossList.Items.Add(resultTransInfo.information.ElementAt(6));
+                            lbWinLossList.Items.Add(resultTransInfo.information.ElementAt(6).Replace(',', '.'));
                             lbPayInList.Items.Add("");
-                            lbBalanceList.Items.Add(result.transaction.ElementAt(1));
+                            lbBalanceList.Items.Add(result.transaction.ElementAt(1).Replace(',', '.'));
                         }
                         //save all transaction information to the listboxes for operator
                         else if (MyCasinoSvcHistory.UserType == 0)
                         {
                             int amount;
-                            int.TryParse((resultTransInfo.information.ElementAt(6)), out amount);
+                            int.TryParse((resultTransInfo.information.ElementAt(6).Replace(',', '.')), out amount);
                             opMoney = opMoney - amount;
                             lbBetAmountList.Items.Add(resultTransInfo.information.ElementAt(3));
                             lbFirstNumberPerRollList.Items.Add(resultTransInfo.information.ElementAt(1));

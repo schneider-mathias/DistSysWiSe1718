@@ -97,7 +97,11 @@ namespace MyCasinoWSPhoneClient
             }
             else if (result.errMsg == "INVALID_SESSION_ID")
             {
-                MessageBox.Show("Ungültige ID!");
+                MessageBox.Show("Ungültige ID! Schließe App");
+                this.ShowNewDialog<LoginPage>(
+                  cp => { cp.MyCasinoSvcLogin = myCasinoSvcGaming; },
+                  //cp => { MyCasinoSvcLogin = cp.MyCasinoSvcGamingPage; });
+                  cp => { });
             }
             else if (result.errMsg != null)
             {
@@ -701,8 +705,8 @@ namespace MyCasinoWSPhoneClient
                 lbNameList.Items.Add(result.names.ElementAt(i));
                 lbFirstNumberList.Items.Add(result.firstNumber.ElementAt(i).ToString());
                 lbSecondNumberList.Items.Add(result.secondNumber.ElementAt(i).ToString());
-                lbAmountWinList.Items.Add("Eine richtige: " + resultCalculateProfit.profitForOneMatch.ToString() +
-                    "   Zwei richtige: " + resultCalculateProfit.profitForTwoMatches.ToString());
+                lbAmountWinList.Items.Add("1x: " + resultCalculateProfit.profitForOneMatch.ToString() +
+                    "   2x: " + resultCalculateProfit.profitForTwoMatches.ToString());
             }
 
         }

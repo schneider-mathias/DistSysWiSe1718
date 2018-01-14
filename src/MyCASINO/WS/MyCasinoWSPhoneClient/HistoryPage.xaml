@@ -133,7 +133,7 @@
                     <!--Balance-->
                     <Border Grid.Row="1" Grid.RowSpan="5" Grid.Column="8" BorderThickness="1 2 2 2"
                     BorderBrush="CornflowerBlue" Margin="0 0 0 0" VerticalAlignment="Top" MinHeight="615" 
-                    HorizontalAlignment="Left" >
+                     >
                         <StackPanel>
                             <TextBox Text="Guthaben" FontSize="10"  BorderThickness="0 0 0 1" Margin="0 0 0 0"
                              BorderBrush="CornflowerBlue" IsHitTestVisible="False"/>
