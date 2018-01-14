@@ -182,7 +182,8 @@ bool RPCMyCasinoCommandLineInterface::showbets()
 		tp << bets[i].name.str << bets[i].firstNumber << bets[i].secondNumber << bets[i].wager << profitForOne << profitForTwo;
 	}
 
-	tp.PrintFooter();
+	if (count > 0)
+		tp.PrintFooter();
 
 	// free memory
 	for (int i = 0; i < count; i++)

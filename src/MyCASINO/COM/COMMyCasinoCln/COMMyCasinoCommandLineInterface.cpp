@@ -196,7 +196,8 @@ bool COMMyCasinoCommandLineInterface::showbets()
 		}
 	}
 
-	tp.PrintFooter();
+	if (betCount > 0)
+		tp.PrintFooter();
 
 	if (FAILED(SafeArrayDestroy(bets)))
 	{
@@ -359,6 +360,7 @@ bool COMMyCasinoCommandLineInterface::showstatus()
 			return false;
 		}
 	}
+
 
 	tp.PrintFooter();
 
