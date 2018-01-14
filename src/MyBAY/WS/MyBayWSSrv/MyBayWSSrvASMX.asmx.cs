@@ -27,13 +27,12 @@ namespace MyBayWSSrv
     [System.ComponentModel.ToolboxItem(false)]
     public class MyBayWSSrvASMX : System.Web.Services.WebService
     {
-        private List<Auction> listAuctions;
+        private static List<Auction> listAuctions = new List<Auction>();
 
         #region C'Tors
         public MyBayWSSrvASMX()
         {
             AuthService.initializeAuthService();
-            this.listAuctions = new List<Auction>();
         }
         #endregion
 
@@ -72,8 +71,10 @@ namespace MyBayWSSrv
             Auction newAuction = new Auction(artName, startBid, auctioneerIndex);
             auctionNumber = newAuction.AuctionNumber;
 
-            this.listAuctions.Add(newAuction);
-
+            lock (MyBayWSSrvASMX.listAuctions)
+            {
+                MyBayWSSrvASMX.listAuctions.Add(newAuction);
+            }
             return "OK";
         }
 
@@ -82,12 +83,12 @@ namespace MyBayWSSrv
         {
             if (!AuthenticationService.AuthService.isLoggedIn(sessionID)) return "Die angegebene SessionID ist nicht registriert, loggen Sie sich erneut ein";
 
-            lock (this.listAuctions)
+            lock (MyBayWSSrvASMX.listAuctions)
             {
                 Auction auctionTemp;
                 try
                 {
-                    auctionTemp = this.listAuctions.Find(x => x.AuctionNumber == auctionNumber);
+                    auctionTemp = MyBayWSSrvASMX.listAuctions.Find(x => x.AuctionNumber == auctionNumber);
                 }
                 catch (Exception)
                 {
@@ -112,22 +113,22 @@ namespace MyBayWSSrv
             switch (flags)
             {
                 case 0: // Get all auctions where User is Interested in and which are not closed
-                    lock (this.listAuctions)
+                    lock (MyBayWSSrvASMX.listAuctions)
                     {
                         // ConvertAll Method is being used, because Method creates a deepcopy of the Object with creating new Objects -> that listAuctions is not blocked too long
-                        personalizedAuctionList = this.listAuctions.FindAll(w => (w.BidderInterested.Contains(userIndex) && w.AuctionState != 2)).ConvertAll(item => new Auction(item));
+                        personalizedAuctionList = MyBayWSSrvASMX.listAuctions.FindAll(w => (w.BidderInterested.Contains(userIndex) && w.AuctionState != 2)).ConvertAll(item => new Auction(item));
                     }
                     break;
                 case 1: // Get all auctions which are open
-                    lock (this.listAuctions)
+                    lock (MyBayWSSrvASMX.listAuctions)
                     {
-                        personalizedAuctionList = this.listAuctions.FindAll(w => w.AuctionState != 2).ConvertAll(item => new Auction(item));
+                        personalizedAuctionList = MyBayWSSrvASMX.listAuctions.FindAll(w => w.AuctionState != 2).ConvertAll(item => new Auction(item));
                     }
                     break;
                 case 2: // Get all auctions
-                    lock (this.listAuctions)
+                    lock (MyBayWSSrvASMX.listAuctions)
                     {
-                        personalizedAuctionList = this.listAuctions.ConvertAll(item => new Auction(item));
+                        personalizedAuctionList = MyBayWSSrvASMX.listAuctions.ConvertAll(item => new Auction(item));
                     }
                     break;
                 default:
@@ -172,11 +173,11 @@ namespace MyBayWSSrv
             if (!AuthenticationService.AuthService.isLoggedIn(sessionID)) return "Die angegebene SessionID ist nicht registriert, loggen Sie sich erneut ein";
 
             Auction auctionTemp;
-            lock (this.listAuctions)
+            lock (MyBayWSSrvASMX.listAuctions)
             {
                 try
                 {
-                    auctionTemp = this.listAuctions.Find(x => x.AuctionNumber == auctionNumber);
+                    auctionTemp = MyBayWSSrvASMX.listAuctions.Find(x => x.AuctionNumber == auctionNumber);
                 }
                 catch (Exception)
                 {
@@ -195,11 +196,11 @@ namespace MyBayWSSrv
             if (!AuthenticationService.AuthService.isLoggedIn(sessionID)) return "Die angegebene SessionID ist nicht registriert, loggen Sie sich erneut ein";
 
             List<Bid> copyBids;
-            lock (this.listAuctions)
+            lock (MyBayWSSrvASMX.listAuctions)
             {
                 try
                 {
-                    Auction tempAuction = this.listAuctions.Find(x => x.AuctionNumber == auctionNumber);
+                    Auction tempAuction = MyBayWSSrvASMX.listAuctions.Find(x => x.AuctionNumber == auctionNumber);
                     if (tempAuction.Auctioneer != AuthenticationService.AuthService.getIndexBySessionID(sessionID))
                     {
                         return "Nur der Ersteller der Auktion kann sich die Details anzeigen lassen";
@@ -230,12 +231,12 @@ namespace MyBayWSSrv
         {
             if (!AuthenticationService.AuthService.isLoggedIn(sessionID)) return "Die angegebene SessionID ist nicht registriert, loggen Sie sich erneut ein";
 
-            lock (this.listAuctions)
+            lock (MyBayWSSrvASMX.listAuctions)
             {
                 Auction tempAuction;
                 try
                 {
-                    tempAuction = this.listAuctions.FirstOrDefault(x => x.AuctionNumber == auctionNumber);
+                    tempAuction = MyBayWSSrvASMX.listAuctions.FirstOrDefault(x => x.AuctionNumber == auctionNumber);
                     if (tempAuction == default(Auction))
                     {
                         return "Auktion mit der Auktionsnummer: " + auctionNumber + " wurde nicht gefunden";

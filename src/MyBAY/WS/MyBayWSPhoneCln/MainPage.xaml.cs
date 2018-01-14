@@ -94,5 +94,17 @@ namespace MyBayWSPhoneCln
 
             this.ShowNewDialog<newAuction>();
         }
+
+        private void btn_showAuctions_Click(object sender, RoutedEventArgs e)
+        {
+            // Check, if user is logged in
+            if (App.MyDataObject.SessionID == 0)
+            {
+                MessageBox.Show("Sie sind nicht angemeldet, melden Sie sich bitte an", "Fehler", MessageBoxButton.OK);
+                return;
+            }
+
+            this.ShowNewDialog<showAuctions>();
+        }
     }
 }

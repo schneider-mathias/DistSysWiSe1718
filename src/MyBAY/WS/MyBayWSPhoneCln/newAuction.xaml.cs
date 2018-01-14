@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
+using System.Globalization;
 
 namespace MyBayWSPhoneCln
 {
@@ -22,7 +23,7 @@ namespace MyBayWSPhoneCln
             try
             {
                 Double tempStartBid;
-                if (!Double.TryParse(this.txtBox_startBid.Text, out tempStartBid))
+                if (!Double.TryParse(this.txtBox_startBid.Text, NumberStyles.Any, new CultureInfo("en-US"), out tempStartBid))
                 {
                     MessageBox.Show("Bitte geben Sie einen gültigen Wert für das Startgebot an", "Warnung", MessageBoxButton.OK);
                 }

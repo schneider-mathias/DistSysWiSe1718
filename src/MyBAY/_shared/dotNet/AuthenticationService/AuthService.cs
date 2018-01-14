@@ -19,29 +19,34 @@ namespace AuthenticationService
     public static class AuthService
     {
         private static List<User> _allUsers = new List<User>();
+        private static bool isInitialized = false;
 
         public static void initializeAuthService()
         {
-            string tempPath = Path.GetPathRoot(Environment.SystemDirectory);
-
-            tempPath += "_MyBayData\\mybay_user.txt";
-            string[] allLines;
-
-            try
+            if (!isInitialized)
             {
-                allLines = System.IO.File.ReadAllLines(tempPath);
-                foreach (string str in allLines)
+                string tempPath = Path.GetPathRoot(Environment.SystemDirectory);
+
+                tempPath += "_MyBayData\\mybay_user.txt";
+                string[] allLines;
+
+                try
                 {
-                    String[] substrings = str.Split(' ');
-                    User newUser = new User(Convert.ToUInt32(substrings[0]), substrings[1], substrings[2]);
+                    allLines = System.IO.File.ReadAllLines(tempPath);
+                    foreach (string str in allLines)
+                    {
+                        String[] substrings = str.Split(' ');
+                        User newUser = new User(Convert.ToUInt32(substrings[0]), substrings[1], substrings[2]);
 
-                    _allUsers.Add(newUser);
+                        _allUsers.Add(newUser);
+                    }
+                    isInitialized = true;
                 }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Fehler beim Einlesen der LoginDaten: " + e.Message);
-                throw;
+                catch (Exception e)
+                {
+                    Console.WriteLine("Fehler beim Einlesen der LoginDaten: " + e.Message);
+                    throw;
+                }
             }
         }
 

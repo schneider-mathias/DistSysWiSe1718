@@ -28,17 +28,10 @@
         <!--ContentPanel - zusätzliche Inhalte hier platzieren-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
             <TextBox x:Name="txtBox_articleName" HorizontalAlignment="Left" Height="72" Margin="77,223,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="351" TextAlignment="Center"/>
-            <TextBox x:Name="txtBox_startBid" HorizontalAlignment="Left" Height="72" Margin="77,323,0,0" TextWrapping="Wrap" Text="1,00" VerticalAlignment="Top" Width="351" TextAlignment="Center"/>
+            <TextBox x:Name="txtBox_startBid" HorizontalAlignment="Left" Height="72" Margin="77,323,0,0" TextWrapping="Wrap" Text="1.00" VerticalAlignment="Top" Width="351" TextAlignment="Center"/>
             <TextBlock x:Name="tblock_articleName" HorizontalAlignment="Left" Margin="77,201,0,0" TextWrapping="Wrap" Text="Artikelbezeichnung" VerticalAlignment="Top"/>
             <TextBlock x:Name="tblock_startBid" HorizontalAlignment="Left" Margin="77,301,0,0" TextWrapping="Wrap" Text="Startgebot" VerticalAlignment="Top" RenderTransformOrigin="0.485,3.544"/>
             <Button x:Name="btn_NewAuction" Content="Neue Auktion Erstellen" HorizontalAlignment="Center" Margin="77,434,93,0" VerticalAlignment="Top" Click="btn_NewAuction_Click"/>
-
-
-            <!--<Button x:Name="btn_NewAuction" Content="Neue Auktion Erstellen" HorizontalAlignment="Left" Margin="66,162,0,0" VerticalAlignment="Top" Width="195" Height="29" ScrollViewer.VerticalScrollBarVisibility="Disabled" FontSize="16" TextOptions.TextFormattingMode="Display" Padding="0,0,0,3" VerticalContentAlignment="Center" Click="btn_NewAuction_Click" IsEnabled="False" RenderTransformOrigin="0.35,0.444"/>
-            <TextBox x:Name="txtBox_articleName" HorizontalAlignment="Left" Height="23" Margin="141,106,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" TextAlignment="Center"/>
-            <TextBox x:Name="txtBox_startBid" HorizontalAlignment="Left" Height="23" Margin="141,134,0,0" TextWrapping="Wrap" Text="1,00" VerticalAlignment="Top" Width="120" TextAlignment="Center"/>
-            <TextBlock x:Name="lbl_articleName" Text="Artikelbezeichnung" HorizontalAlignment="Left" Margin="21,106,0,0" VerticalAlignment="Top" Width="115"/>
-            <TextBlock x:Name="lbl_startBid" Text="Startgebot" HorizontalAlignment="Left" Margin="21,131,0,0" VerticalAlignment="Top" Width="115"/>-->
         </Grid>
     </Grid>
 

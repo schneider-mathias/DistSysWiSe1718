@@ -1,0 +1,48 @@
+﻿<phone:PhoneApplicationPage
+    x:Class="MyBayWSPhoneCln.showAuctions"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    FontFamily="{StaticResource PhoneFontFamilyNormal}"
+    FontSize="{StaticResource PhoneFontSizeNormal}"
+    Foreground="{StaticResource PhoneForegroundBrush}"
+    SupportedOrientations="Portrait" Orientation="Portrait"
+    mc:Ignorable="d"
+    shell:SystemTray.IsVisible="True">
+
+    <!--LayoutRoot ist das Stammraster, in dem alle anderen Seiteninhalte platziert werden-->
+    <Grid x:Name="LayoutRoot" Background="Transparent">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Text="Alle Auktionen" Style="{StaticResource PhoneTextNormalStyle}"/>
+        <RadioButton x:Name="radioBtn_interested" Content="Interessiert" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" Height="77" IsChecked="True"/>
+        <RadioButton x:Name="radioBtn_allOpen" Content="Offene Auktionen" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Grid.Row="2" Grid.Column="1" Height="77"/>
+        <RadioButton x:Name="radioBtn_all" Content="Alle Auktionen" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Grid.Row="3" Grid.Column="1" Height="77"/>
+        <TextBlock x:Name="txtBlock_search" HorizontalAlignment="Left" Margin="10,0,0,0" Grid.Row="1" TextWrapping="Wrap" Text="Suche" VerticalAlignment="Bottom"/>
+        <TextBox x:Name="txtBox_search" Grid.ColumnSpan="1" HorizontalAlignment="Stretch" Margin="0,0,0,0" Grid.Row="2" Grid.RowSpan="1" TextWrapping="Wrap" Text="" VerticalAlignment="Stretch" VerticalScrollBarVisibility="Disabled" TextAlignment="Center"/>
+        <Button x:Name="btn_getAuctions" Content="Aktualisiere Auktionen" HorizontalAlignment="Left" Margin="0" Grid.Row="3" Grid.RowSpan="1" VerticalAlignment="Center" FontSize="18" Click="btn_getAuctions_Click"/>
+        <ScrollViewer Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Margin="0" Grid.Row="4" VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <!--<Grid x:Name="gridAuctions" ScrollViewer.ManipulationMode="Control">
+
+            </Grid>-->
+            <StackPanel x:Name="stackPanelAuctions" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            </StackPanel>
+        </ScrollViewer>
+
+
+    </Grid>
+</phone:PhoneApplicationPage>

@@ -32,7 +32,7 @@
             <TextBlock x:Name="txtBlock_username" HorizontalAlignment="Left" Margin="10,83,0,0" TextWrapping="Wrap" Text="Username" VerticalAlignment="Top"/>
             <TextBlock x:Name="txtBlock_password" HorizontalAlignment="Left" Margin="10,182,0,0" TextWrapping="Wrap" Text="Password" VerticalAlignment="Top"/>
             <TextBlock x:Name="txtBlock_serverip" HorizontalAlignment="Left" Margin="10,281,0,0" TextWrapping="Wrap" Text="ServerIP" VerticalAlignment="Top" RenderTransformOrigin="0.71,7.217"/>
-            <PasswordBox x:Name="passBox_password" HorizontalAlignment="Left" Margin="0,204,0,0" VerticalAlignment="Top" Width="456"/>
+            <PasswordBox x:Name="passBox_password" HorizontalAlignment="Center" Margin="0,204,0,0" VerticalAlignment="Top" Width="456"/>
             <Button x:Name="btn_login" Content="Login" HorizontalAlignment="Center" Margin="0,450,0,0" VerticalAlignment="Top" Click="btn_login_Click"/>
 
         </Grid>
