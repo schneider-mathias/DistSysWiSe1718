@@ -65,5 +65,8 @@ namespace MyBayLib
         public UInt32 MessageIntValue { get; set; }
 
         public UInt32 MessageIntValue2 { get; set; }
+
+        // This variable is just needed for the WebServer, the WCF Server doesnt use it
+        public UInt32 MessageType { get; set; }
     }
 }

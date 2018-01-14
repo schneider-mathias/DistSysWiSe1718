@@ -255,11 +255,10 @@ namespace MyBayWSSrv
         }
 
         [WebMethod]
-        public String getMessage(UInt32 sessionID, out Boolean messageAvailable, out UInt32 messageType, out MessageTransfer message)
+        public String getMessage(UInt32 sessionID, out Boolean messageAvailable, out List<MessageTransfer> message)
         {
-            messageType = 0;
             messageAvailable = false;
-            message = new MessageTransfer();
+            message = new List<MessageTransfer>();
             if (!AuthenticationService.AuthService.isLoggedIn(sessionID)) return "Die angegebene SessionID ist nicht registriert, loggen Sie sich erneut ein";
 
             Message tempMessage;
@@ -274,36 +273,40 @@ namespace MyBayWSSrv
                     ConcurrentBag<Message> tempBag;
                     Auction.messageBucket.TryGetValue(userIndex, out tempBag);
 
-                    tempBag.TryTake(out tempMessage);
-                    if (tempMessage != null)
+                    while (tempBag.TryTake(out tempMessage))
                     {
-                        message.MessageDoubleValue = tempMessage.MessageDoubleValue;
-                        message.MessageIntValue = tempMessage.MessageIntValue;
-                        message.MessageIntValue2 = tempMessage.MessageIntValue2;
-                        message.MessageText = tempMessage.MessageText;
-                        message.MessageText2 = tempMessage.MessageText2;
-
-                        switch (tempMessage.Type)
+                        if (tempMessage != null)
                         {
-                            case MessageType.NewBid:
-                                messageType = 0;
-                                break;
-                            case MessageType.AuctionEndStart:
-                                messageType = 1;
-                                break;
-                            case MessageType.EndOfAuction:
-                                messageType = 2;
-                                break;
+                            MessageTransfer tempTransferMessage = new MessageTransfer();
+                            tempTransferMessage.MessageDoubleValue = tempMessage.MessageDoubleValue;
+                            tempTransferMessage.MessageIntValue = tempMessage.MessageIntValue;
+                            tempTransferMessage.MessageIntValue2 = tempMessage.MessageIntValue2;
+                            tempTransferMessage.MessageText = tempMessage.MessageText;
+                            tempTransferMessage.MessageText2 = tempMessage.MessageText2;
+
+                            switch (tempMessage.Type)
+                            {
+                                case MessageType.NewBid:
+                                    tempTransferMessage.MessageType = 0;
+                                    break;
+                                case MessageType.AuctionEndStart:
+                                    tempTransferMessage.MessageType = 1;
+                                    break;
+                                case MessageType.EndOfAuction:
+                                    tempTransferMessage.MessageType = 2;
+                                    break;
+                            }
+
+                            message.Add(tempTransferMessage);
                         }
-                    }
-                    else
-                    {
-                        return "NoMessage";
-                    }
-                    if (tempBag.Count > 0) messageAvailable = true;
+
+                        else
+                        {
+                            return "NoMessage";
+                        }
+                    }                    
                 }
                 else return "NoMessage";
-
             }
             catch (Exception e)
             {
