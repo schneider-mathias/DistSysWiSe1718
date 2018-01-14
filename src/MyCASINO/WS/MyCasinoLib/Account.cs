@@ -39,11 +39,14 @@ namespace MyCasinoLib
             try
             {
                 //Read UserBalance.txt line by line
-                //using (FileStream fs = File.OpenRead(@"d:\StdArbVS\trunk\src\MyCASINO\WCF\MyCasinoData\UserBalance.txt"))
-                using (FileStream fs = File.OpenRead(Environment.GetEnvironmentVariable("SystemDrive")+"\\_myCasinoData\\UserBalance.txt"))
+#if _IIS_DEPLOY_ // is set for Release configuration
+                using (FileStream fs = File.OpenRead("C:\\inetpub\\wwwroot\\UserBalance.txt"))
+#else
+                using (FileStream fs = File.OpenRead(Environment.GetEnvironmentVariable("SystemDrive") + "\\_MyCasinoData\\UserBalance.txt"))
+#endif
                 using (StreamReader sr = new StreamReader(fs))
                 {
-                        string line;
+                    string line;
                     while ((line = sr.ReadLine()) != null)
                     {
                         int money = 0;
@@ -70,7 +73,7 @@ namespace MyCasinoLib
                             dictTransDraw.Add(readFileTransaction, null);
                         }
                     }
-                 }
+                }
             }
             catch (IOException ex)
             {

@@ -92,7 +92,13 @@ namespace MyCasinoLib
             try
             {
                 //Read UserList.txt line by line
-                using (FileStream fs = File.OpenRead(Environment.GetEnvironmentVariable("SystemDrive") + "\\_myCasinoData\\UserList.txt"))
+
+#if _IIS_DEPLOY_ // is set for Release configuration
+                using (FileStream fs = File.OpenRead("C:\\inetpub\\wwwroot\\UserList.txt"))
+#else
+                using (FileStream fs = File.OpenRead(Environment.GetEnvironmentVariable("SystemDrive") + "\\_MyCasinoData\\UserList.txt"))
+#endif
+                
                 using (StreamReader sr = new StreamReader(fs))
                 {
 
@@ -110,7 +116,11 @@ namespace MyCasinoLib
                     }
                 }
                 //Get initial money
-                using (FileStream fsBal = File.OpenRead(Environment.GetEnvironmentVariable("SystemDrive") + "\\_myCasinoData\\UserBalance.txt"))
+#if _IIS_DEPLOY_ // is set for Release configuration
+                using (FileStream fsBal = File.OpenRead("C:\\inetpub\\wwwroot\\UserBalance.txt"))
+#else
+                using (FileStream fsBal = File.OpenRead(Environment.GetEnvironmentVariable("SystemDrive") + "\\_MyCasinoData\\UserBalance.txt"))
+#endif
                 using (StreamReader srBal = new StreamReader(fsBal))
                 {
                     string line;
@@ -194,7 +204,11 @@ namespace MyCasinoLib
         public string Logout(int sessionId)
         {
             //save all current amounts for all users
-            using (StreamWriter sw = new StreamWriter(Environment.GetEnvironmentVariable("SystemDrive") + "\\_myCasinoData\\UserBalance.txt", false))
+#if _IIS_DEPLOY_
+            using (StreamWriter sw = new StreamWriter("C:\\inetpub\\wwwroot\\UserBalance.txt", false))
+#else
+            using (StreamWriter sw = new StreamWriter(Environment.GetEnvironmentVariable("SystemDrive") + "\\_MyCasinoData\\UserBalance.txt", false))
+#endif
             {
                 lock (thisLockUserList)
                 {
