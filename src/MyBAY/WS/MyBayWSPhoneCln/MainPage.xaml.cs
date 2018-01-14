@@ -13,52 +13,86 @@ namespace MyBayWSPhoneCln
 {
     public partial class MainPage : PhoneApplicationPage
     {
-        private DataObject _myDataObjectMain = new DataObject();
-
-        public DataObject MyDataObjectMain
-        {
-            get { return _myDataObjectMain; }
-            set { _myDataObjectMain = value; }
-        }
-
-
         // Konstruktor
         public MainPage()
         {
-           // this._myDataObject = new DataObject();
             InitializeComponent();
 
-            _myDataObjectMain.RemoteSrvMyBay = new MyBayWSSrv.MyBayWSSrvASMXSoapClient();
-            // MyBayWSSrv.MyBayWSSrvASMXSoapClient _remoteSrvMyBay = new MyBayWSSrv.MyBayWSSrvASMXSoapClient();
+            // Need to check if it already exists, so not everytime the mainpage is created, the object is created new
+            if (App.MyDataObject.RemoteSrvMyBay == null)
+            {
+                App.MyDataObject.RemoteSrvMyBay = new MyBayWSSrv.MyBayWSSrvASMXSoapClient();
+            }
 
-            // Beispielcode zur Lokalisierung der ApplicationBar
-            //BuildLocalizedApplicationBar();
+            // If User is logged in, change Button to Logout Button and register other event for logout function
+
+            if (App.MyDataObject.SessionID > 0)
+            {
+                this.btn_login.Content = "Logout";
+
+                this.btn_login.Click -= btn_login_Click;
+                this.btn_login.Click += btn_logout_Click;
+            }
         }
 
         private void btn_login_Click(object sender, RoutedEventArgs e)
         {
-            this.ShowNewDialog<LoginPage>(
-                cp => { cp.MyDataObject = _myDataObjectMain; },
-                cp =>
-                {
-                    MyDataObjectMain = cp.MyDataObject;
-                });
+            //this.ShowNewDialog<LoginPage>(
+            //    cp => { cp.MyDataObject = _myDataObjectMain; },
+            //    cp => { MyDataObjectMain = cp.MyDataObject; });
+            this.ShowNewDialog<LoginPage>();
         }
 
-        // Beispielcode zur Erstellung einer lokalisierten ApplicationBar
-        //private void BuildLocalizedApplicationBar()
-        //{
-        //    // ApplicationBar der Seite einer neuen Instanz von ApplicationBar zuweisen
-        //    ApplicationBar = new ApplicationBar();
+        private void btn_logout_Click(object sender, RoutedEventArgs e)
+        {
+            App.MyDataObject.RemoteSrvMyBay.logoutCompleted += myBaySvc_logout_completed;
 
-        //    // Eine neue Schaltfläche erstellen und als Text die lokalisierte Zeichenfolge aus AppResources zuweisen.
-        //    ApplicationBarIconButton appBarButton = new ApplicationBarIconButton(new Uri("/Assets/AppBar/appbar.add.rest.png", UriKind.Relative));
-        //    appBarButton.Text = AppResources.AppBarButtonText;
-        //    ApplicationBar.Buttons.Add(appBarButton);
+            App.MyDataObject.RemoteSrvMyBay.logoutAsync(App.MyDataObject.SessionID);
+        }
 
-        //    // Ein neues Menüelement mit der lokalisierten Zeichenfolge aus AppResources erstellen
-        //    ApplicationBarMenuItem appBarMenuItem = new ApplicationBarMenuItem(AppResources.AppBarMenuItemText);
-        //    ApplicationBar.MenuItems.Add(appBarMenuItem);
-        //}
+        private void myBaySvc_logout_completed(object sender, MyBayWSSrv.logoutCompletedEventArgs args)
+        {
+            try
+            {
+                String errText = args.Result;
+
+                if (!errText.Contains("OK"))
+                {
+                    MessageBox.Show(errText, "Warnung", MessageBoxButton.OK);
+                    return;
+                }
+
+                else
+                {
+                    App.MyDataObject.SessionID = 0;
+                    this.btn_login.Content = "Login";
+
+                    this.btn_login.Click -= btn_logout_Click;
+                    this.btn_login.Click += btn_login_Click;
+                    MessageBox.Show("User wurde erfolgreich abgemeldet", "Hinweis", MessageBoxButton.OK);
+                }
+            }
+            catch (Exception except)
+            {
+                MessageBox.Show("Fehler beim Verbinden zum Server, haben Sie die richtige Adresse eingegeben? " + except.Message, "Warnung", MessageBoxButton.OK);
+            }
+            finally
+            {
+                // Event im Eventhandler abmelden
+                App.MyDataObject.RemoteSrvMyBay.logoutCompleted -= myBaySvc_logout_completed;
+            }
+        }
+
+        private void btn_NewAuction_Click(object sender, RoutedEventArgs e)
+        {
+            // Check, if user is logged in
+            if (App.MyDataObject.SessionID == 0)
+            {
+                MessageBox.Show("Sie sind nicht angemeldet, melden Sie sich bitte an", "Fehler", MessageBoxButton.OK);
+                return;
+            }
+
+            this.ShowNewDialog<newAuction>();
+        }
     }
 }

@@ -54,13 +54,13 @@ namespace MyBayWSPhoneCln
                 return;
             }
 
-            _myDataObject.RemoteSrvMyBay.Endpoint.Address = new EndpointAddress(srvAddress);
+            App.MyDataObject.RemoteSrvMyBay.Endpoint.Address = new EndpointAddress(srvAddress);
 
 
-            _myDataObject.RemoteSrvMyBay.loginCompleted += myBaySvc_login_completed;
+            App.MyDataObject.RemoteSrvMyBay.loginCompleted += myBaySvc_login_completed;
 
 
-            _myDataObject.RemoteSrvMyBay.loginAsync(txtBox_username.Text, passBox_password.Password);
+            App.MyDataObject.RemoteSrvMyBay.loginAsync(txtBox_username.Text, passBox_password.Password);
         }
 
         private void myBaySvc_login_completed(object sender, MyBayWSSrv.loginCompletedEventArgs args)
@@ -77,11 +77,12 @@ namespace MyBayWSPhoneCln
 
                 else
                 {
-                    _myDataObject.SessionID = args.sessionID;
-                    MessageBox.Show("Sie wurden erfolgreich mit der Session ID: " + _myDataObject.SessionID + " angemeldet", "Hinweis", MessageBoxButton.OK);
-                    this.ShowNewDialog<MainPage>(
-                        cp => { cp.MyDataObjectMain = _myDataObject; },
-                        cp => { MyDataObject = cp.MyDataObjectMain; });
+                    App.MyDataObject.SessionID = args.sessionID;
+                    MessageBox.Show("Sie wurden erfolgreich mit der Session ID: " + App.MyDataObject.SessionID + " angemeldet", "Hinweis", MessageBoxButton.OK);
+                    //this.ShowNewDialog<MainPage>(
+                    //    cp => { cp.MyDataObjectMain = _myDataObject; },
+                    //    cp => { MyDataObject = cp.MyDataObjectMain; });
+                    this.ShowNewDialog<MainPage>();
                 }
             }
             catch (Exception except)
@@ -91,7 +92,7 @@ namespace MyBayWSPhoneCln
             finally
             {
                 // Event im Eventhandler abmelden
-                MyDataObject.RemoteSrvMyBay.loginCompleted -= myBaySvc_login_completed;
+                App.MyDataObject.RemoteSrvMyBay.loginCompleted -= myBaySvc_login_completed;
             }
         }
 

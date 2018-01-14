@@ -50,6 +50,7 @@
                 <Run/>
             </TextBlock>
             <Button x:Name="btn_login" Content="Login" Click="btn_login_Click"/>
+            <Button x:Name="btn_NewAuction" Content="Neue Auktion" Click="btn_NewAuction_Click"/>
         </StackPanel>
 
         <!--ContentPanel - zusätzliche Inhalte hier platzieren-->

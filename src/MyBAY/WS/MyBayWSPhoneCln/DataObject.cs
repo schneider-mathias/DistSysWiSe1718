@@ -9,7 +9,7 @@ namespace MyBayWSPhoneCln
     /// <summary>
     /// This struct is needed for the communication between the different Phone pages
     /// </summary>
-    public struct DataObject
+    public class DataObject
     {
         /// <summary>
         /// The current session ID of the client
@@ -29,6 +29,14 @@ namespace MyBayWSPhoneCln
         {
             get { return _remoteSrvMyBay; }
             set { _remoteSrvMyBay = value; }
+        }
+
+        /// <summary>
+        /// Conctructor of the DataObject
+        /// </summary>
+        public DataObject()
+        {
+            this._sessionID = 0;
         }
     }
 }

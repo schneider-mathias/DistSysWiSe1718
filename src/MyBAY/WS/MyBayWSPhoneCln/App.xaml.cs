@@ -18,6 +18,8 @@ namespace MyBayWSPhoneCln
         /// <returns>Der Stammframe der Phone-Anwendung.</returns>
         public static PhoneApplicationFrame RootFrame { get; private set; }
 
+        public static DataObject MyDataObject;
+
         /// <summary>
         /// Konstruktor für das Application-Objekt.
         /// </summary>
@@ -54,6 +56,8 @@ namespace MyBayWSPhoneCln
                 // und verbraucht auch dann Akkuenergie, wenn der Benutzer das Telefon nicht verwendet.
                 PhoneApplicationService.Current.UserIdleDetectionMode = IdleDetectionMode.Disabled;
             }
+
+            App.MyDataObject = new DataObject();
         }
 
         // Code zur Ausführung bei der Rückgabe einer Vertragsaktivierung wie z. B. einem "Auswahlvertrag zum Öffnen von Dateien" oder einer Dateispeicherauswahl 
