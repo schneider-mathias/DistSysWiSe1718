@@ -363,7 +363,7 @@ void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 
 				else if (cnt == 2)
 				{
-					std::wcout.width(15); std::wcout << left << (*it).substr(0, (*it).size() - 4) << "€";
+					std::wcout.width(15); std::wcout << left << (*it).substr(0, (*it).size() - 4);
 					cnt++;
 				}
 				else if (cnt == 3)
@@ -547,7 +547,7 @@ void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 						{
 							wcout << " ";
 						}
-						wcout << "|" << allBidsVec[i + 2].substr(0, allBidsVec[i + 2].size() - 4) << "€" << endl;	// Gebot mit nur 2 Nachkommastellen
+						wcout << "|" << allBidsVec[i + 2].substr(0, allBidsVec[i + 2].size() - 4) << endl;	// Gebot mit nur 2 Nachkommastellen
 					}
 					cout << "----------------------------------------------------------------------------------------" << endl;
 					cout << endl;
