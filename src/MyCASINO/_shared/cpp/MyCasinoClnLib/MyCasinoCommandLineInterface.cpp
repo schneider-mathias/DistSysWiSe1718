@@ -166,14 +166,14 @@ bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> argu
 			&& safeArgumentCast<unsigned short>(arguments, 2, secondNumberPtrHolder, 
 				&(numberLowerBound = (NULL != (*firstNumberPtrHolder))? ((int)(**firstNumberPtrHolder) + 1):0),
 				&numberUpperBound)
-			&& draw(*firstNumberPtrHolder, *secondNumberPtrHolder);
+			&& draw(firstNumberPtrHolder, secondNumberPtrHolder);
 
 
 		if(retVal)
 			std::cout << "First number: " << **firstNumberPtrHolder << ", second number: " << **secondNumberPtrHolder << std::endl;
 
-		delete firstNumberPtr;
-		delete secondNumberPtr;
+		delete *firstNumberPtrHolder;
+		delete *secondNumberPtrHolder;
 
 		return retVal;
 	}

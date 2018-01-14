@@ -29,7 +29,7 @@ public:
 	virtual bool payin(std::wstring user, double amount) = 0;
 	virtual bool bet(double setAmount, unsigned short firstNumber, unsigned short secondNumber) = 0;
 	virtual bool showbets() = 0;
-	virtual bool draw(unsigned short* firstNumberTest = nullptr, unsigned short* secondNumberTest = nullptr) = 0;
+	virtual bool draw(unsigned short** firstNumberTest = nullptr, unsigned short** secondNumberTest = nullptr) = 0;
 	virtual bool showstatus() = 0;
 	virtual bool bye() = 0;
 

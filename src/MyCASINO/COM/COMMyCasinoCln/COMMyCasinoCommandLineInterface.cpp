@@ -217,17 +217,17 @@ bool COMMyCasinoCommandLineInterface::showbets()
  * <returns>	True if it succeeds, false if it fails. </returns>
  *-----------------------------------------------------------------------------------------------**/
 
-bool COMMyCasinoCommandLineInterface::draw(unsigned short* firstNumberTest, unsigned short* secondNumberTest)
+bool COMMyCasinoCommandLineInterface::draw(unsigned short** firstNumberTest, unsigned short** secondNumberTest)
 {
 	BSTR errMsg;
 	HRESULT hr;
 
 	// check if only one test number is set is done in ProcessCommands method  
-	if (NULL != firstNumberTest && NULL != secondNumberTest)
+	if (NULL != *firstNumberTest && NULL != *secondNumberTest)
 	{
 		//Test
 		
-		HRESULT hr = m_pICOMMyCasinoSrv->drawTest(*m_pSessionId, *firstNumberTest, *secondNumberTest, &errMsg);
+		HRESULT hr = m_pICOMMyCasinoSrv->drawTest(*m_pSessionId, **firstNumberTest, **secondNumberTest, &errMsg);
 		if (FAILED(hr))
 		{
 			resultHandler("drawTest", hr, bstr_to_str(errMsg));
@@ -235,7 +235,7 @@ bool COMMyCasinoCommandLineInterface::draw(unsigned short* firstNumberTest, unsi
 		}
 
 	}
-	else if (NULL == firstNumberTest && NULL == secondNumberTest)
+	else if (NULL == *firstNumberTest && NULL == *secondNumberTest)
 	{
 		SHORT firstNumber;
 		SHORT secondNumber;
@@ -245,6 +245,9 @@ bool COMMyCasinoCommandLineInterface::draw(unsigned short* firstNumberTest, unsi
 			resultHandler("draw", hr, bstr_to_str(errMsg));
 			return false;
 		}
+
+		*firstNumberTest = new unsigned short(firstNumber);
+		*secondNumberTest = new unsigned short(secondNumber);
 	}
 	else 
 	{

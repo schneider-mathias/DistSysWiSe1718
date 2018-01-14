@@ -27,7 +27,7 @@ public:
 	bool payin(std::wstring user, double amount);
 	bool bet(double setAmount, unsigned short firstNumber, unsigned short secondNumber);
 	bool showbets();
-	bool draw(unsigned short* firstNumberTest, unsigned short* secondNumberTest);
+	bool draw(unsigned short** firstNumberTest, unsigned short** secondNumberTest);
 	bool showstatus();
 	bool bye();
 private:

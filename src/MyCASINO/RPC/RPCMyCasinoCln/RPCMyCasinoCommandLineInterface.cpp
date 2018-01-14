@@ -207,23 +207,23 @@ bool RPCMyCasinoCommandLineInterface::showbets()
  * <returns>	True if it succeeds, false if it fails. </returns>
  *-----------------------------------------------------------------------------------------------**/
 
-bool RPCMyCasinoCommandLineInterface::draw(unsigned short* firstNumberTest, unsigned short* secondNumberTest)
+bool RPCMyCasinoCommandLineInterface::draw(unsigned short** firstNumberTest, unsigned short** secondNumberTest)
 {
 	error_status_t hr;
 	std::wstring errCode;
 
 	// check if only one test number is set is done in ProcessCommands method  
-	if (NULL != firstNumberTest && NULL != secondNumberTest)
+	if (NULL != *firstNumberTest && NULL != *secondNumberTest)
 	{
 		//Test
-		hr = ::drawTest(*m_pSessionId, *firstNumberTest, *secondNumberTest);
+		hr = ::drawTest(*m_pSessionId, **firstNumberTest, **secondNumberTest);
 		if (FAILED(hr))
 		{		
 			TRANSLATE_MYCASINO_CODE(errCode, hr);
 			resultHandler("drawTest", hr, wstring_to_string(errCode));
 		}
 	}
-	else if (NULL == firstNumberTest && NULL == secondNumberTest)
+	else if (NULL == *firstNumberTest && NULL == *secondNumberTest)
 	{
 		short firstNumber = 0;
 		short secondNumber = 0;
@@ -234,6 +234,9 @@ bool RPCMyCasinoCommandLineInterface::draw(unsigned short* firstNumberTest, unsi
 			resultHandler("draw", hr, wstring_to_string(errCode));
 			return false;
 		}
+
+		*firstNumberTest = new unsigned short(firstNumber);
+		*secondNumberTest = new unsigned short(secondNumber);
 	}
 	else
 	{
