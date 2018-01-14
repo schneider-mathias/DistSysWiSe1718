@@ -202,9 +202,25 @@ void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 				cout << "----------------------------------------------------------------------------------------" << endl;
 			}
 			else if (hr == ERROR_USER_NOT_LOGGED_IN)
+			{
+				cout << "----------------------------------------------------------------------------------------" << endl;
 				cout << "Fehler: Bitte zuerst einloggen!" << endl;
+				cout << "----------------------------------------------------------------------------------------" << endl;
+			}
+
 			else if (hr == ERROR_ARTICLENAME_IS_EMPTY)
+			{
+				cout << "----------------------------------------------------------------------------------------" << endl;
 				cout << "Fehler: Artikelname muss angegeben sein." << endl;
+				cout << "----------------------------------------------------------------------------------------" << endl;
+
+			}
+			else if (hr == ERROR_VALUE_NEGATIVE)
+			{
+				cout << "----------------------------------------------------------------------------------------" << endl;
+				cout << "Fehler: Startgebot darf nicht negativ sein." << endl;
+				cout << "----------------------------------------------------------------------------------------" << endl;
+			}
 		}
 	}
 
@@ -512,7 +528,7 @@ void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 					// Ausgabe aller Gebote
 					int columnLengthBidder = 20;
 					cout << "----------------------------------------------------------------------------------------" << endl;
-					wcout << "Folgende Gebote wurden fuer die Auktion " << auctionNumber << "bisher abgegeben:" << endl;
+					wcout << "Folgende Gebote wurden fuer die Auktion " << auctionNumber << " bisher abgegeben:" << endl;
 					cout << endl;
 					wcout << "Nr	" << "Bieter           " << "Gebot" << endl;		// 17 
 					wcout << "______________________________________________" << endl;

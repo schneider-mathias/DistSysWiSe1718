@@ -169,6 +169,10 @@ void readConsole()
 		{
 			if (i != 0)
 			{
+				/*if (size_t pos = scommand.find_first_of(L'ö') != wstring::npos)
+				{
+					scommand.replace(pos, 1, L"oe");
+				}*/
 				args.push_back(scommand.substr(0, i));									// Argument bis zum nächsten Leerzeichen zur Argumenten-Liste hinzufügen
 				scommand = scommand.substr(i + 1, scommand.length());					// Argument vom String entfernen
 			}
@@ -288,9 +292,25 @@ void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, 
 				//MyAuctions.push_back(auctionNumber);		// fügt die Auktionsnummer zur Liste der eigenen Auktionen hinzu
 			}
 			else if (hr == ERROR_USER_NOT_LOGGED_IN)
+			{
+				cout << "----------------------------------------------------------------------------------------" << endl;
 				cout << "Fehler: Bitte zuerst einloggen!" << endl;
+				cout << "----------------------------------------------------------------------------------------" << endl;
+			}
+				
 			else if (hr == ERROR_ARTICLENAME_IS_EMPTY)
+			{
+				cout << "----------------------------------------------------------------------------------------" << endl;
 				cout << "Fehler: Artikelname muss angegeben sein." << endl;
+				cout << "----------------------------------------------------------------------------------------" << endl;
+
+			}
+			else if (hr == ERROR_VALUE_NEGATIVE)
+			{
+				cout << "----------------------------------------------------------------------------------------" << endl;
+				cout << "Fehler: Startgebot darf nicht negativ sein." << endl;
+				cout << "----------------------------------------------------------------------------------------" << endl;
+			}	
 		}
 	}
 	
@@ -321,7 +341,9 @@ void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, 
 			}
 			catch (invalid_argument e)
 			{
+				cout << "----------------------------------------------------------------------------------------" << endl;
 				cout << "Falscher Parameter - das Startgebot muss eine Zahl sein!" << endl;
+				cout << "----------------------------------------------------------------------------------------" << endl;
 				return;
 			}
 			hr = interested(*sessionID, auctionNumber);
@@ -429,7 +451,14 @@ void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, 
 				}
 				else if (cnt == 3)
 				{
-					std::wcout.width(15); std::wcout << left << (*it);
+					std::wcout.width(15);
+					if ((*it) == L"0")
+						wcout << left << "offen" ;
+					if ((*it) == L"1")
+						wcout << left << "kurz vor Ende";
+					if ((*it) == L"2")
+						wcout << left << "Beendet";
+					 //std::wcout << left << (*it);
 					cnt++;
 				}
 				else if (cnt == 4)
@@ -585,7 +614,7 @@ void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, 
 					// Ausgabe aller Gebote
 					int columnLengthBidder = 20;
 					cout << "----------------------------------------------------------------------------------------" << endl;
-					wcout << "Folgende Gebote wurden fuer die Auktion " << auctionNumber << "bisher abgegeben:" << endl;
+					wcout << "Folgende Gebote wurden fuer die Auktion " << auctionNumber << " bisher abgegeben:" << endl;
 					cout << endl;
 					wcout << "Nr	" << "Bieter           " << "Gebot" << endl;		// 17 
 					wcout << "______________________________________________" << endl;
