@@ -64,7 +64,11 @@ namespace MyCasinoWSPhoneClient
             }
             else if (result.errMsg == "INVALID_SESSION_ID")
             {
-                MessageBox.Show("Ungültige ID!");
+                MessageBox.Show("Ungültige ID! Schließe App");
+                this.ShowNewDialog<LoginPage>(
+                 cp => { cp.MyCasinoSvcLogin = myCasinoSvcPayIn; },
+                 //cp => { MyCasinoSvcLogin = cp.MyCasinoSvcGamingPage; });
+                 cp => { });
             }
             else if (result.errMsg != null)
             {

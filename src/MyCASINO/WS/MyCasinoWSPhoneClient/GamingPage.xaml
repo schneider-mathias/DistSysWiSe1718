@@ -26,12 +26,6 @@
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="5"/>
             </Grid.ColumnDefinitions>
@@ -87,7 +81,7 @@
             <ToggleButton x:Name="btnRowOneNumberTwo" Click="btnRowOneNumberTwo_Click" Content="2" Grid.Row="1" Grid.Column="2" FontSize="20"  Width="80" Height="80" Background="OrangeRed" Foreground="White"/>
             <ToggleButton x:Name="btnRowOneNumberThree" Click="btnRowOneNumberThree_Click" Content="3" Grid.Row="1" Grid.Column="3" FontSize="20" Width="80" Height="80" Background="OrangeRed" Foreground="White"/>
             <ToggleButton x:Name="btnRowOneNumberFour" Click="btnRowOneNumberFour_Click" Content="4" Grid.Row="1" Grid.Column="4" FontSize="20" Width="80" Height="80" Background="OrangeRed" Foreground="White"/>
-            <ToggleButton x:Name="btnRowOneNumberFive" Click="btnRowOneNumberFive_Click" Content="5" Grid.Row="1" Grid.Column="5" FontSize="20" Width="80" Height="80" Background="OrangeRed" Foreground="White"/>
+            <ToggleButton x:Name="btnRowOneNumberFive" Click="btnRowOneNumberFive_Click" Content="5" Grid.Row="1" Grid.Column="5" FontSize="20" Width="80" Height="80" Background="OrangeRed" Foreground="White" IsEnabled="False"/>
 
             <!--Number2 used to bet-->
             <ToggleButton x:Name="btnRowTwoNumberOne" Margin="25 0 0 0" Click="btnRowTwoNumberOne_Click" Content="1" IsEnabled="False" Grid.Row="2" Grid.Column="1" FontSize="20"  Width="80" Height="80" Background="OrangeRed" Foreground="White"/>
@@ -111,10 +105,9 @@
             <Button x:Name="btnRefresh" Content="Refresh" Click="btnRefresh_Click" Grid.Row="5" Grid.Column="3" FontSize="20" Grid.ColumnSpan="1"
                      Background="CornflowerBlue" Foreground="White"/>
 
-            <Grid Background="White" Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="3">
+            <Grid Background="White" Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="4">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1"/>
-                    <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="auto"/>
@@ -141,7 +134,7 @@
                 <Border Grid.Row="1" Grid.RowSpan="1" Grid.Column="2" BorderThickness="1 2 1 2"
                     BorderBrush="CornflowerBlue" Margin="0 0 0 0" VerticalAlignment="Top" MinHeight="380">
                     <StackPanel>
-                        <TextBox Text="Erste Zahl" FontSize="15" MinWidth="100" BorderThickness="0 0 0 1" Margin="0 0 0 0"
+                        <TextBox Text="Z1" FontSize="15" MinWidth="30" BorderThickness="0 0 0 1" Margin="0 0 0 0"
                              BorderBrush="CornflowerBlue" IsHitTestVisible="False"/>
                         <ListBox Name="lbFirstNumberList" Foreground="Black" FontSize="15" HorizontalAlignment="Center" BorderThickness="0 0 0 0" HorizontalContentAlignment="Stretch" IsHitTestVisible="False">
                         </ListBox>
@@ -151,7 +144,7 @@
                 <Border Grid.Row="1" Grid.RowSpan="1" Grid.Column="3" BorderThickness="1 2 1 2"
                     BorderBrush="CornflowerBlue" Margin="0 0 0 0" VerticalAlignment="Top" MinHeight="380">
                     <StackPanel>
-                        <TextBox Text="Zweite Zahl" FontSize="15" MinWidth="100" BorderThickness="0 0 0 1" Margin="0 0 0 0"
+                        <TextBox Text="Z2" FontSize="15" MinWidth="30" BorderThickness="0 0 0 1" Margin="0 0 0 0"
                              BorderBrush="CornflowerBlue" IsHitTestVisible="False"/>
                         <ListBox Name="lbSecondNumberList" Foreground="Black" FontSize="15" HorizontalAlignment="Center" BorderThickness="0 0 0 0" HorizontalContentAlignment="Stretch" IsHitTestVisible="False">
                         </ListBox>
@@ -159,11 +152,11 @@
                 </Border>
 
                 <!--Possible amount to be won-->
-                <Border Grid.Row="1" Grid.RowSpan="1" Grid.Column="4" BorderThickness="1 2 2 2"
-                    BorderBrush="CornflowerBlue" Margin="0 0 0 0" VerticalAlignment="Top" MinHeight="380" 
-                    HorizontalAlignment="Left" MinWidth="150">
+                <Border Grid.Row="1" Grid.RowSpan="1" Grid.ColumnSpan="2" Grid.Column="4" BorderThickness="1 2 2 2"
+                    BorderBrush="CornflowerBlue" Margin="0 0 2 0" VerticalAlignment="Top" MinHeight="380" 
+                     >
                     <StackPanel>
-                        <TextBox Text="Möglicher Gewinn" FontSize="15" MinWidth="100" BorderThickness="0 0 0 1" Margin="0 0 0 0"
+                        <TextBox Text="Möglicher Gewinn" FontSize="15"  BorderThickness="0 0 0 1" Margin="0 0 0 0"
                              BorderBrush="CornflowerBlue" IsHitTestVisible="False"/>
                         <ListBox Name="lbAmountWinList" Foreground="Black" FontSize="15" HorizontalAlignment="Center" BorderThickness="0 0 0 0" HorizontalContentAlignment="Stretch" IsHitTestVisible="False">
                         </ListBox>
