@@ -69,8 +69,8 @@ bool RPCMyCasinoCommandLineInterface::user(std::wstring user, std::wstring passw
 	m_pSessionId = new unsigned long();
 	m_pUserType = new short();
 
-	unsigned char* userCStr = (unsigned char*)wstring_to_string(user).c_str();
-	unsigned char* passwordCStr = (unsigned char*)wstring_to_string(password).c_str();
+	unsigned char* userCStr = (unsigned char*)wstring_to_char(user);
+	unsigned char* passwordCStr = (unsigned char*)wstring_to_char(password);
 
 	error_status_t hr = ::login(m_pSessionId, userCStr, passwordCStr, m_pUserType);
 	if (FAILED(hr))
@@ -98,7 +98,7 @@ bool RPCMyCasinoCommandLineInterface::user(std::wstring user, std::wstring passw
 
 bool RPCMyCasinoCommandLineInterface::payin(std::wstring user, double amount)
 {
-	unsigned char* userCStr = (unsigned char*)wstring_to_string(user).c_str();
+	unsigned char* userCStr = (unsigned char*)wstring_to_char(user);
 
 	error_status_t hr = ::deposit(*m_pSessionId, userCStr, amount);
 	if (FAILED(hr))
@@ -108,6 +108,8 @@ bool RPCMyCasinoCommandLineInterface::payin(std::wstring user, double amount)
 		resultHandler("payin", hr, wstring_to_string(errCode));
 		return false;
 	}
+
+	delete[] userCStr;
 
 	return true;
 }
