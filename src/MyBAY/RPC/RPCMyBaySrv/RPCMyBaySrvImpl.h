@@ -66,7 +66,7 @@ void endAuction(unsigned long auctionNumber);
 /********************************************************************/
 
 // Prüfe ob User bereits eingeloggt ist
-BOOL loginCheck(unsigned long sessionId)
+BOOL loggedInCheck(unsigned long sessionId)
 {
 	std::map<std::wstring, unsigned long>::iterator it;
 	for (it = users.begin(); it != users.end(); ++it)
@@ -91,16 +91,19 @@ BOOL loginCheck(unsigned long sessionId)
 //}
 
 // Prüfe ob User bereits eingeloggt ist #####TEST#####
-ULONG loginCheck(unsigned char username)
+ULONG loginCheck(unsigned char* username)
 {
 	std::map<std::wstring, unsigned long>::iterator it;
 	for (it = users.begin(); it != users.end(); ++it)
 	{
 		if (it->first == char_to_wstring((const char*)username) && it->second != 0)
 		{
-			return it->second;
+			unsigned long tmp = it->second;
+			unsigned long tmp2 = (*it).second;
+			return (*it).second;
 		}
 	}
+	return 0;
 }
 
 // Usernamen zur zugehörigen SessionId ermitteln
@@ -122,7 +125,7 @@ wstring getUserName(unsigned long sessionId)
 void readAuctionsFromFile()
 {
 	std::wifstream auctionsFile;
-	auctionsFile.open(L"..\\_data\\MyBayAuctions.csv", std::ios::in);
+	auctionsFile.open(L"C:/_MyBayData/MyBayAuctions.csv", std::ios::in);
 	// Öffnen der Datei
 	if (auctionsFile.is_open())
 	{
@@ -254,7 +257,7 @@ void writeAuctionsToFile()
 		listOfAuctions.push_back(auctionBidder);
 	}
 
-	auctionsFile.open(L"..\\_data\\MyBayAuctions.csv", std::ios::out);
+	auctionsFile.open(L"C:/_MyBayData/MyBayAuctions.csv", std::ios::out);
 	if (auctionsFile.is_open())
 	{
 		// Schreibe alle Auktionen in die Datei
@@ -726,15 +729,15 @@ wstring serializeAuctions(vector<auction> interestingAuctions)
 void auctionEndProcess(wstring user, unsigned long auctionNumber)
 {
 	// Message hinzufügen, die sagt, dass in 15 Sekunden die Auktion endet
-	addEndAuctionMessage(user, auctionNumber, 0);
-	Sleep(5000);
-
-	// Message hinzufügen, die sagt, dass in 10 Sekunden die Auktion endet
 	addEndAuctionMessage(user, auctionNumber, 1);
 	Sleep(5000);
 
-	// Message hinzufügen, die sagt, dass in 5 Sekunden die Auktion endet
+	// Message hinzufügen, die sagt, dass in 10 Sekunden die Auktion endet
 	addEndAuctionMessage(user, auctionNumber, 2);
+	Sleep(5000);
+
+	// Message hinzufügen, die sagt, dass in 5 Sekunden die Auktion endet
+	addEndAuctionMessage(user, auctionNumber, 3);
 	Sleep(5000);
 
 	// Auktion beenden
@@ -767,6 +770,7 @@ void addEndAuctionMessage(wstring user, unsigned long auctionNumber, int warning
 		}
 	}
 	LeaveCriticalSection(critSecWrapper.getInstance());
+	writeAuctionsToFile();
 }
 
 // beendet die Auktion TODO: Auktionsende an alle Interessierten
@@ -780,7 +784,6 @@ void endAuction(unsigned long auctionNumber)
 			(*it).auctionStatus = 2;								// Auktionsstatus wird auf "Beendet" geändert
 			for (std::vector<wstring>::iterator it2 = (*it).interestedUserList.begin(); it2 != (*it).interestedUserList.end(); ++it2)
 			{
-				//wstring highestBid = to_wstring((*it).highestBid);
 				wstring highestBidCut = to_wstring((*it).highestBid);
 				// Message, dass Auktion beendet wurde	
 				vector<wstring> newMessage;
@@ -793,7 +796,9 @@ void endAuction(unsigned long auctionNumber)
 				newMessage.push_back(to_wstring((*it).auctionStatus));	// (5) Auktionsstatus
 				Messages.push_back(newMessage);							// neue Nachricht der Messagebox hinzufügen
 			}
+			(*it).interestedUserList.clear();							// Liste aller Interessierten User löschen
 		}
 	}
 	LeaveCriticalSection(critSecWrapper.getInstance());
+	writeAuctionsToFile();
 }

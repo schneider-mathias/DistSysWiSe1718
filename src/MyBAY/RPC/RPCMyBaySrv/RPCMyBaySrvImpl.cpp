@@ -39,20 +39,15 @@ error_status_t login(unsigned char *username, unsigned char *password, unsigned 
 		readAuctionsFromFile();
 	}
 
-	// TODO funktioniert noch nicht 
-	if (unsigned long existSessionId = loginCheck(*username) != 0)
+	// Prüfen ob User bereits eingeloggt ist. Return sessionId falls User bereits eingeloggt ist, sonst 0
+	unsigned long existSessionId = loginCheck(username);
+	if (existSessionId != 0)
 	{
 		*sessionId = existSessionId;
 		return RPC_S_OK;
 	}
-	/* Abfrage ob User schon eingeloggt ist.*/
-	//if (BOOL isLoggedIn = loginCheck(*username) == TRUE)
-	//{
-	//	//cout << "Sie sind bereits angemeldet" << endl;
-	//	return ERROR_ALREADY_LOGGED_IN;
-	//}
 	
-	csvread.open("..\\_data\\user.csv", ios::in);
+	csvread.open("C:/_MyBayData/user.csv", ios::in);
 	if (csvread) {
 		wstring fline, fname, fpassword;
 		wstring suser = char_to_wstring((char*)username);
@@ -100,7 +95,7 @@ error_status_t logout(unsigned long sessionId)
 error_status_t offer(unsigned long sessionId, unsigned char *articleName, double startBid, unsigned long* auctionNumber)
 {
 	// Prüfen ob User eingeloggt ist
-	if (BOOL isLoggedIn = loginCheck(sessionId) == FALSE)
+	if (BOOL isLoggedIn = loggedInCheck(sessionId) == FALSE)
 	{
 		return ERROR_USER_NOT_LOGGED_IN;
 	}
@@ -133,7 +128,7 @@ error_status_t offer(unsigned long sessionId, unsigned char *articleName, double
 error_status_t interested(unsigned long sessionId, unsigned long auctionNumber)
 {
 	// Prüfen ob User eingeloggt ist
-	if (BOOL isLoggedIn = loginCheck(sessionId) == FALSE)
+	if (BOOL isLoggedIn = loggedInCheck(sessionId) == FALSE)
 	{
 		return ERROR_USER_NOT_LOGGED_IN;
 	}
@@ -160,7 +155,7 @@ error_status_t interested(unsigned long sessionId, unsigned long auctionNumber)
 error_status_t getAuctions(unsigned long sessionId, unsigned long flags, unsigned char *articleName, unsigned long* countAuctions, String_t* auctions)
 {
 	// Prüfen ob User eingeloggt ist
-	if (BOOL isLoggedIn = loginCheck(sessionId) == FALSE)
+	if (BOOL isLoggedIn = loggedInCheck(sessionId) == FALSE)
 	{
 		return ERROR_USER_NOT_LOGGED_IN;
 	}
@@ -192,7 +187,7 @@ error_status_t getAuctions(unsigned long sessionId, unsigned long flags, unsigne
 error_status_t bid(unsigned long sessionId, unsigned long auctionNumber, double bidVal)
 {
 	// Prüfen ob User eingeloggt ist
-	if (BOOL isLoggedIn = loginCheck(sessionId) == FALSE)
+	if (BOOL isLoggedIn = loggedInCheck(sessionId) == FALSE)
 	{
 		return ERROR_USER_NOT_LOGGED_IN;
 	}
@@ -228,7 +223,7 @@ error_status_t bid(unsigned long sessionId, unsigned long auctionNumber, double 
 error_status_t details(unsigned long sessionId, unsigned long auctionNumber, String_t *allBids, unsigned long* countBids)
 {
 	// Prüfen ob User eingeloggt ist
-	if (BOOL isLoggedIn = loginCheck(sessionId) == FALSE)
+	if (BOOL isLoggedIn = loggedInCheck(sessionId) == FALSE)
 	{
 		return ERROR_USER_NOT_LOGGED_IN;
 	}
@@ -261,7 +256,7 @@ error_status_t details(unsigned long sessionId, unsigned long auctionNumber, Str
 error_status_t endauction(unsigned long sessionId, unsigned long auctionNumber)
 {
 	// Prüfen ob User eingeloggt ist
-	if (BOOL isLoggedIn = loginCheck(sessionId) == FALSE)
+	if (BOOL isLoggedIn = loggedInCheck(sessionId) == FALSE)
 	{
 		return ERROR_USER_NOT_LOGGED_IN;
 	}
@@ -283,7 +278,7 @@ error_status_t endauction(unsigned long sessionId, unsigned long auctionNumber)
 error_status_t getMessage(unsigned long sessionId, boolean* messageAvailable, unsigned long* messageType, String_t* message)
 {
 	// Prüfen ob User eingeloggt ist
-	if (BOOL isLoggedIn = loginCheck(sessionId) == FALSE)
+	if (BOOL isLoggedIn = loggedInCheck(sessionId) == FALSE)
 	{
 		return ERROR_USER_NOT_LOGGED_IN;
 	}

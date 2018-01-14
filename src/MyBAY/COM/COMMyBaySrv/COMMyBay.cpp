@@ -28,16 +28,15 @@ STDMETHODIMP CCOMMyBay::login(BSTR username, BSTR password, ULONG* sessionId)
 		readAuctionsFromFile();
 	}
 
-	/* Abfrage ob User nicht schon eingeloggt ist.*/
-	wstring tmp = bstr_to_wstr(username);
-	BOOL isLoggedIn = loginCheck((unsigned char)tmp.c_str());
-	if (isLoggedIn == TRUE)
+	// Prüfen ob User bereits eingeloggt ist. Return sessionId falls User bereits eingeloggt ist, sonst 0
+	unsigned long existSessionId = loginCheck((unsigned char *)bstr_to_str(username).c_str());
+	if (existSessionId != 0)
 	{
-		//cout << "Sie sind bereits angemeldet" << endl;
-		return ERROR_ALREADY_LOGGED_IN;
+		*sessionId = existSessionId;
+		return S_OK;
 	}
+
 	wstring userDataPath = getUserDataPath();
-	//csvread.open("C:\/_MyBayData/\user.csv", ios::in);
 	csvread.open("C:/_MyBayData/user.csv", ios::in);
 	if (csvread) {
 		wstring fline, fname, fpassword;
@@ -88,7 +87,7 @@ STDMETHODIMP CCOMMyBay::logout(ULONG sessionId)
 STDMETHODIMP CCOMMyBay::offer(ULONG sessionId, BSTR articleName, DOUBLE startBid, ULONG* auctionNumber)
 {
 	// Prüfen ob User eingeloggt ist
-	if (BOOL isLoggedIn = loginCheck(sessionId) == FALSE)
+	if (BOOL isLoggedIn = loggedInCheck(sessionId) == FALSE)
 	{
 		return ERROR_USER_NOT_LOGGED_IN;
 	}
@@ -121,7 +120,7 @@ STDMETHODIMP CCOMMyBay::offer(ULONG sessionId, BSTR articleName, DOUBLE startBid
 STDMETHODIMP CCOMMyBay::interested(ULONG sessionId, ULONG auctionNumber)
 {
 	// Prüfen ob User eingeloggt ist
-	if (BOOL isLoggedIn = loginCheck(sessionId) == FALSE)
+	if (BOOL isLoggedIn = loggedInCheck(sessionId) == FALSE)
 	{
 		return ERROR_USER_NOT_LOGGED_IN;
 	}
@@ -148,7 +147,7 @@ STDMETHODIMP CCOMMyBay::interested(ULONG sessionId, ULONG auctionNumber)
 STDMETHODIMP CCOMMyBay::getAuctions(ULONG sessionId, ULONG flags, BSTR articleName, ULONG* countAuctions, SAFEARRAY_VAR* auctions)
 {
 	// Prüfen ob User eingeloggt ist
-	if (BOOL isLoggedIn = loginCheck(sessionId) == FALSE)
+	if (BOOL isLoggedIn = loggedInCheck(sessionId) == FALSE)
 	{
 		return ERROR_USER_NOT_LOGGED_IN;
 	}
@@ -180,7 +179,7 @@ STDMETHODIMP CCOMMyBay::getAuctions(ULONG sessionId, ULONG flags, BSTR articleNa
 STDMETHODIMP CCOMMyBay::bid(ULONG sessionId, ULONG auctionNumber, DOUBLE bidValue)
 {
 	// Prüfen ob User eingeloggt ist
-	if (BOOL isLoggedIn = loginCheck(sessionId) == FALSE)
+	if (BOOL isLoggedIn = loggedInCheck(sessionId) == FALSE)
 	{
 		return ERROR_USER_NOT_LOGGED_IN;
 	}
@@ -216,7 +215,7 @@ STDMETHODIMP CCOMMyBay::bid(ULONG sessionId, ULONG auctionNumber, DOUBLE bidValu
 STDMETHODIMP CCOMMyBay::details(ULONG sessionId, ULONG auctionNumber, SAFEARRAY_VAR * allBids, ULONG * countBids)
 {
 	// Prüfen ob User eingeloggt ist
-	if (BOOL isLoggedIn = loginCheck(sessionId) == FALSE)
+	if (BOOL isLoggedIn = loggedInCheck(sessionId) == FALSE)
 	{
 		return ERROR_USER_NOT_LOGGED_IN;
 	}
@@ -253,7 +252,7 @@ STDMETHODIMP CCOMMyBay::details(ULONG sessionId, ULONG auctionNumber, SAFEARRAY_
 STDMETHODIMP CCOMMyBay::endauction(ULONG sessionId, ULONG auctionNumber)
 {
 	// Prüfen ob User eingeloggt ist
-	if (BOOL isLoggedIn = loginCheck(sessionId) == FALSE)
+	if (BOOL isLoggedIn = loggedInCheck(sessionId) == FALSE)
 	{
 		return ERROR_USER_NOT_LOGGED_IN;
 	}
@@ -275,7 +274,7 @@ STDMETHODIMP CCOMMyBay::endauction(ULONG sessionId, ULONG auctionNumber)
 STDMETHODIMP CCOMMyBay::getMessage(ULONG sessionId, BOOL * messageAvailable, ULONG * messageType, SAFEARRAY_VAR * message)
 {
 	// Prüfen ob User eingeloggt ist
-	if (BOOL isLoggedIn = loginCheck(sessionId) == FALSE)
+	if (BOOL isLoggedIn = loggedInCheck(sessionId) == FALSE)
 	{
 		return ERROR_USER_NOT_LOGGED_IN;
 	}

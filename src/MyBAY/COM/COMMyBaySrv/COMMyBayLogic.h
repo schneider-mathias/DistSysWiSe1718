@@ -45,7 +45,7 @@ std::vector<thread> myThreads;
 /*							Hilfsfunktionen							*/
 /********************************************************************/
 
-BOOL loginCheck(unsigned long sessionId);
+BOOL loggedInCheck(unsigned long sessionId);
 BOOL loginCheck(unsigned char username);
 wstring getUserName(unsigned long sessionId);
 wstring getUserDataPath();
@@ -80,7 +80,7 @@ void endAuction(unsigned long auctionNumber);
 
 
 // Prüfe ob User bereits eingeloggt ist
-BOOL loginCheck(unsigned long sessionId)
+BOOL loggedInCheck(unsigned long sessionId)
 {
 	std::map<std::wstring, unsigned long>::iterator it;
 	for (it = users.begin(); it != users.end(); ++it)
@@ -93,16 +93,22 @@ BOOL loginCheck(unsigned long sessionId)
 	return FALSE;
 }
 
-// Prüfe ob User bereits eingeloggt ist
-BOOL loginCheck(unsigned char username)
+// Prüfe ob User bereits eingeloggt ist #####TEST#####
+ULONG loginCheck(unsigned char* username)
 {
-	if (users.find(to_wstring(username)) == users.end())
+	std::map<std::wstring, unsigned long>::iterator it;
+	for (it = users.begin(); it != users.end(); ++it)
 	{
-		return FALSE;
+		if (it->first == char_to_wstring((const char*)username) && it->second != 0)
+		{
+			unsigned long tmp = it->second;
+			unsigned long tmp2 = (*it).second;
+			return (*it).second;
+		}
 	}
-	else
-		return TRUE;
+	return 0;
 }
+
 
 // Usernamen zur zugehörigen SessionId ermitteln
 wstring getUserName(unsigned long sessionId)
@@ -858,6 +864,7 @@ void endAuction(unsigned long auctionNumber)
 				newMessage.push_back(to_wstring((*it).auctionStatus));	// (5) Auktionsstatus
 				Messages.push_back(newMessage);							// neue Nachricht der Messagebox hinzufügen
 			}
+			(*it).interestedUserList.clear();							// Liste aller Interessierten User löschen
 		}
 	}
 	LeaveCriticalSection(critSecWrapper.getInstance());

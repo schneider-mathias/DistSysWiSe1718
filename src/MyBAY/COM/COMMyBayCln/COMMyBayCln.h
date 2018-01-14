@@ -94,7 +94,7 @@ void printMessage(vector<wstring> messageVec, unsigned long messageType)
 		wcout << "Artikelname: " << messageVec.at(1) << endl;
 		if (messageVec.at(1) != L"")
 			wcout << "Bieter: " << messageVec.at(0) << endl;
-		wcout << "Gebot: " << messageVec.at(2).substr(0, messageVec.at(2).size() - 4) << endl;			// nur die ersten 2 Nachkommastellen
+		wcout << "Gebot: " << messageVec.at(2).substr(0, messageVec.at(2).size() - 4) << "€" << endl;			// nur die ersten 2 Nachkommastellen
 		wcout << "Auktionsstatus: ";
 		if (messageVec.at(3) == L"0")
 			wcout << "offen" << endl;
@@ -109,7 +109,7 @@ void printMessage(vector<wstring> messageVec, unsigned long messageType)
 		wcout << "------------------------------------- Auktion endet bald -------------------------------" << endl;
 		wcout << "Die Auktion " << messageVec.at(2) << " endet bald." << endl;
 		wcout << "Artikelname: " << messageVec.at(1) << endl;
-		wcout << "Hoechstgebot: " << messageVec.at(3).substr(0, messageVec.at(3).size() - 4) << endl;
+		wcout << "Hoechstgebot: " << messageVec.at(3).substr(0, messageVec.at(3).size() - 4) << "€" << endl;
 		wcout << "Nr. Warnung: " << messageVec.at(0) << endl;
 		wcout << "----------------------------------------------------------------------------------------" << endl;
 	}
@@ -118,7 +118,7 @@ void printMessage(vector<wstring> messageVec, unsigned long messageType)
 		wcout << "------------------------------------- Auktion beendet ----------------------------------" << endl;
 		wcout << "Artikel: " << messageVec.at(1) << endl;
 		wcout << "Kaeufer: " << messageVec.at(0) << endl;
-		wcout << "Preis: " << messageVec.at(2).substr(0, messageVec.at(2).size() - 4) << endl;
+		wcout << "Preis: " << messageVec.at(2).substr(0, messageVec.at(2).size() - 4) << "€" << endl;
 		wcout << "Auktionsstatus: Beendet" << endl;
 		wcout << "----------------------------------------------------------------------------------------" << endl;
 	}

@@ -425,7 +425,7 @@ void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, 
 			std::cout.width(15); std::cout << left << "Auktionsnummer";
 			std::cout.width(20); std::cout << left << "Artikelname";
 			std::cout.width(15); std::cout << left << "Hoechstgebot";
-			std::cout.width(15); std::cout << left << "Auktionsstatus";
+			std::cout.width(15); std::cout << left << "Status";
 			std::cout.width(15); std::cout << left << "Anzahl Gebote" << endl;
 			std::cout << "----------------------------------------------------------------------------------------" << endl;
 			/* End Testprint */
@@ -458,7 +458,6 @@ void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, 
 						wcout << left << "kurz vor Ende";
 					if ((*it) == L"2")
 						wcout << left << "Beendet";
-					 //std::wcout << left << (*it);
 					cnt++;
 				}
 				else if (cnt == 4)
@@ -716,8 +715,8 @@ void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, 
 	else if (args.at(0) == L"help")
 	{
 		cout << "******************** MyBAY ********************" << endl;
-		cout << "login <Username> <Passwort>" << endl;
-		cout << "logout" << endl;
+		cout << "user <Username> <Passwort>" << endl;
+		cout << "bye" << endl;
 		cout << "offer <Artikelname> <Mindestgebot>" << endl;
 		cout << "interested <Auktionsnummer>" << endl;
 		cout << "listauctions [-a][-A] [<Artikelnameteil]" << endl;

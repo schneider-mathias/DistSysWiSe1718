@@ -363,12 +363,18 @@ void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 
 				else if (cnt == 2)
 				{
-					std::wcout.width(15); std::wcout << left << (*it).substr(0, (*it).size() - 4);
+					std::wcout.width(15); std::wcout << left << (*it).substr(0, (*it).size() - 4) << "€";
 					cnt++;
 				}
 				else if (cnt == 3)
 				{
-					std::wcout.width(15); std::wcout << left << (*it);
+					std::wcout.width(15);
+					if ((*it) == L"0")
+						wcout << left << "offen";
+					if ((*it) == L"1")
+						wcout << left << "kurz vor Ende";
+					if ((*it) == L"2")
+						wcout << left << "Beendet";
 					cnt++;
 				}
 				else if (cnt == 4)
@@ -541,7 +547,7 @@ void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 						{
 							wcout << " ";
 						}
-						wcout << "|" << allBidsVec[i + 2].substr(0, allBidsVec[i + 2].size() - 4) << endl;	// Gebot mit nur 2 Nachkommastellen
+						wcout << "|" << allBidsVec[i + 2].substr(0, allBidsVec[i + 2].size() - 4) << "€" << endl;	// Gebot mit nur 2 Nachkommastellen
 					}
 					cout << "----------------------------------------------------------------------------------------" << endl;
 					cout << endl;
@@ -627,8 +633,8 @@ void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 	else if (args.at(0) == L"help")
 	{
 		cout << "******************** MyBAY ********************" << endl;
-		cout << "login <Username> <Passwort>" << endl;
-		cout << "logout" << endl;
+		cout << "user <Username> <Passwort>" << endl;
+		cout << "bye" << endl;
 		cout << "offer <Artikelname> <Mindestgebot>" << endl;
 		cout << "interested <Auktionsnummer>" << endl;
 		cout << "listauctions [-a][-A] [<Artikelnameteil]" << endl;
