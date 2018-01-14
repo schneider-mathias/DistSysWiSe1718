@@ -16,11 +16,12 @@
     <!--LayoutRoot ist das Stammraster, in dem alle anderen Seiteninhalte platziert werden-->
     <Grid x:Name="LayoutRoot" Background="Transparent">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="1"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="130"/>
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
@@ -28,10 +29,10 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
-        <TextBlock Text="Alle Auktionen" Style="{StaticResource PhoneTextNormalStyle}"/>
-        <RadioButton x:Name="radioBtn_interested" Content="Interessiert" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" Height="77" IsChecked="True"/>
-        <RadioButton x:Name="radioBtn_allOpen" Content="Offene Auktionen" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Grid.Row="2" Grid.Column="1" Height="77"/>
-        <RadioButton x:Name="radioBtn_all" Content="Alle Auktionen" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Grid.Row="3" Grid.Column="1" Height="77"/>
+        <TextBlock Text="Alle Auktionen" Grid.RowSpan="2" Style="{StaticResource PhoneTextNormalStyle}"/>
+        <RadioButton x:Name="radioBtn_interested" Content="Interessiert" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" Height="71" IsChecked="True"/>
+        <RadioButton x:Name="radioBtn_allOpen" Content="Offene Auktionen" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Grid.Row="2" Grid.Column="1" Height="71"/>
+        <RadioButton x:Name="radioBtn_all" Content="Alle Auktionen" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Grid.Row="3" Grid.Column="1" Height="71"/>
         <TextBlock x:Name="txtBlock_search" HorizontalAlignment="Left" Margin="10,0,0,0" Grid.Row="1" TextWrapping="Wrap" Text="Suche" VerticalAlignment="Bottom"/>
         <TextBox x:Name="txtBox_search" Grid.ColumnSpan="1" HorizontalAlignment="Stretch" Margin="0,0,0,0" Grid.Row="2" Grid.RowSpan="1" TextWrapping="Wrap" Text="" VerticalAlignment="Stretch" VerticalScrollBarVisibility="Disabled" TextAlignment="Center"/>
         <Button x:Name="btn_getAuctions" Content="Aktualisiere Auktionen" HorizontalAlignment="Left" Margin="0" Grid.Row="3" Grid.RowSpan="1" VerticalAlignment="Center" FontSize="18" Click="btn_getAuctions_Click"/>
@@ -40,6 +41,10 @@
 
             </Grid>-->
             <StackPanel x:Name="stackPanelAuctions" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            </StackPanel>
+        </ScrollViewer>
+        <ScrollViewer Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Margin="0" Grid.Row="5" VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <StackPanel x:Name="stackPanelMessages" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
             </StackPanel>
         </ScrollViewer>
 

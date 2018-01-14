@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MyBayWSPhoneCln.MyBayWSSrvASMXSoapService;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,8 +25,8 @@ namespace MyBayWSPhoneCln
         /// <summary>
         /// This object represents the instance of the MyBay WebService
         /// </summary>
-        private MyBayWSSrv.MyBayWSSrvASMXSoapClient _remoteSrvMyBay;
-        public MyBayWSSrv.MyBayWSSrvASMXSoapClient RemoteSrvMyBay
+        private MyBayWSSrvASMXSoapClient _remoteSrvMyBay;
+        public MyBayWSSrvASMXSoapClient RemoteSrvMyBay
         {
             get { return _remoteSrvMyBay; }
             set { _remoteSrvMyBay = value; }

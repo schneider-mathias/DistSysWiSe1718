@@ -8,6 +8,7 @@ using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using System.Globalization;
+using MyBayWSPhoneCln.MyBayWSSrvASMXSoapService;
 
 namespace MyBayWSPhoneCln
 {
@@ -37,7 +38,7 @@ namespace MyBayWSPhoneCln
                 MessageBox.Show(except.Message, "Fehler", MessageBoxButton.OK);
             }
         }
-        private void myBaySvc_offer_completed(object sender, MyBayWSSrv.offerCompletedEventArgs args)
+        private void myBaySvc_offer_completed(object sender, offerCompletedEventArgs args)
         {
             try
             {

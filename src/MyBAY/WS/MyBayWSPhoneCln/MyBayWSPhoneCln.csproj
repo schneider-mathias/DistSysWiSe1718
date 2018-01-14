@@ -116,7 +116,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>AppResources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Service References\MyBayWSSrv\Reference.cs">
+    <Compile Include="Service References\MyBayWSSrvASMXSoapService\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.svcmap</DependentUpon>
@@ -165,35 +165,44 @@
     <None Include="Properties\WMAppManifest.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Service References\MyBayWSSrv\MyBayWSPhoneCln.MyBayWSSrv.bidResponse.datasource">
+    <None Include="Service References\MyBayWSSrvASMXSoapService\MyBayWSPhoneCln.MyBayWSSrvASMXSoapService.bidResponse.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
-    <None Include="Service References\MyBayWSSrv\MyBayWSPhoneCln.MyBayWSSrv.detailsResponse.datasource">
+    <None Include="Service References\MyBayWSSrvASMXSoapService\MyBayWSPhoneCln.MyBayWSSrvASMXSoapService.detailsResponse.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
-    <None Include="Service References\MyBayWSSrv\MyBayWSPhoneCln.MyBayWSSrv.endauctionResponse.datasource">
+    <None Include="Service References\MyBayWSSrvASMXSoapService\MyBayWSPhoneCln.MyBayWSSrvASMXSoapService.endauctionResponse.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
-    <None Include="Service References\MyBayWSSrv\MyBayWSPhoneCln.MyBayWSSrv.getAuctionsResponse.datasource">
+    <None Include="Service References\MyBayWSSrvASMXSoapService\MyBayWSPhoneCln.MyBayWSSrvASMXSoapService.getAuctionsResponse.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
-    <None Include="Service References\MyBayWSSrv\MyBayWSPhoneCln.MyBayWSSrv.getMessageResponse.datasource">
+    <None Include="Service References\MyBayWSSrvASMXSoapService\MyBayWSPhoneCln.MyBayWSSrvASMXSoapService.getMessageResponse.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
-    <None Include="Service References\MyBayWSSrv\MyBayWSPhoneCln.MyBayWSSrv.interestedResponse.datasource">
+    <None Include="Service References\MyBayWSSrvASMXSoapService\MyBayWSPhoneCln.MyBayWSSrvASMXSoapService.interestedResponse.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
-    <None Include="Service References\MyBayWSSrv\MyBayWSPhoneCln.MyBayWSSrv.loginResponse.datasource">
+    <None Include="Service References\MyBayWSSrvASMXSoapService\MyBayWSPhoneCln.MyBayWSSrvASMXSoapService.loginResponse.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
-    <None Include="Service References\MyBayWSSrv\MyBayWSPhoneCln.MyBayWSSrv.logoutResponse.datasource">
+    <None Include="Service References\MyBayWSSrvASMXSoapService\MyBayWSPhoneCln.MyBayWSSrvASMXSoapService.logoutResponse.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
-    <None Include="Service References\MyBayWSSrv\MyBayWSPhoneCln.MyBayWSSrv.offerResponse.datasource">
+    <None Include="Service References\MyBayWSSrvASMXSoapService\MyBayWSPhoneCln.MyBayWSSrvASMXSoapService.offerResponse.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
-    <None Include="Service References\MyBayWSSrv\MyBayWSSrvASMX.wsdl" />
-    <Content Include="ServiceReferences.ClientConfig" />
+    <None Include="Service References\MyBayWSSrvASMXSoapService\MyBayWSSrvASMX.disco" />
+    <None Include="Service References\MyBayWSSrvASMXSoapService\configuration91.svcinfo" />
+    <None Include="Service References\MyBayWSSrvASMXSoapService\configuration.svcinfo" />
+    <None Include="Service References\MyBayWSSrvASMXSoapService\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <Content Include="ServiceReferences.ClientConfig">
+      <SubType>Designer</SubType>
+    </Content>
+    <None Include="Service References\MyBayWSSrvASMXSoapService\MyBayWSSrvASMX.wsdl" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\AlignmentGrid.png" />
@@ -222,13 +231,6 @@
     <Content Include="Assets\Tiles\IconicTileSmall.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="Service References\MyBayWSSrv\Reference.svcmap">
-      <Generator>WCF Proxy Generator</Generator>
-      <LastGenOutput>Reference.cs</LastGenOutput>
-    </None>
-    <None Include="Service References\MyBayWSSrv\configuration.svcinfo" />
-    <None Include="Service References\MyBayWSSrv\configuration91.svcinfo" />
-    <None Include="Service References\MyBayWSSrv\MyBayWSSrvASMX.disco" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\AppResources.resx">
@@ -240,12 +242,12 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <WCFMetadataStorage Include="Service References\MyBayWSSrv\" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="PortForwardLibWP">
       <HintPath>..\..\_shared\dotNet\PortForwardLibWP.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Service References\MyBayWSSrvASMXSoapService\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).$(TargetFrameworkVersion).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).CSharp.targets" />

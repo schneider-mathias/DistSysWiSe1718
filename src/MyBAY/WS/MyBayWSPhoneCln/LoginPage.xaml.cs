@@ -10,6 +10,7 @@ using Microsoft.Phone.Shell;
 using Windows.UI.Popups;
 using Windows.UI.Notifications;
 using System.ServiceModel;
+using MyBayWSPhoneCln.MyBayWSSrvASMXSoapService;
 
 namespace MyBayWSPhoneCln
 {
@@ -63,7 +64,7 @@ namespace MyBayWSPhoneCln
             App.MyDataObject.RemoteSrvMyBay.loginAsync(txtBox_username.Text, passBox_password.Password);
         }
 
-        private void myBaySvc_login_completed(object sender, MyBayWSSrv.loginCompletedEventArgs args)
+        private void myBaySvc_login_completed(object sender, loginCompletedEventArgs args)
         {
             try
             {

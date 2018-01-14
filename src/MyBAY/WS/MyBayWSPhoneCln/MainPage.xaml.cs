@@ -9,6 +9,7 @@ using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using MyBayWSPhoneCln.Resources;
 using PortForwardLib;
+using MyBayWSPhoneCln.MyBayWSSrvASMXSoapService;
 
 namespace MyBayWSPhoneCln
 {
@@ -22,7 +23,7 @@ namespace MyBayWSPhoneCln
             // Need to check if it already exists, so not everytime the mainpage is created, the object is created new
             if (App.MyDataObject.RemoteSrvMyBay == null)
             {
-                App.MyDataObject.RemoteSrvMyBay = new MyBayWSSrv.MyBayWSSrvASMXSoapClient();
+                App.MyDataObject.RemoteSrvMyBay = new MyBayWSSrvASMXSoapClient();
             }
 
             // If User is logged in, change Button to Logout Button and register other event for logout function
@@ -51,7 +52,7 @@ namespace MyBayWSPhoneCln
             App.MyDataObject.RemoteSrvMyBay.logoutAsync(App.MyDataObject.SessionID);
         }
 
-        private void myBaySvc_logout_completed(object sender, MyBayWSSrv.logoutCompletedEventArgs args)
+        private void myBaySvc_logout_completed(object sender, logoutCompletedEventArgs args)
         {
             try
             {
