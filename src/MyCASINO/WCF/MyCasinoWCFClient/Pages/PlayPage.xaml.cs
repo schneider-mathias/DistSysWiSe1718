@@ -744,6 +744,10 @@ namespace MyCasinoWCFClient.Pages
                 {
                     MessageBox.Show("Einsatz zu hoch!");
                 }
+                else if ("NOT_ENOUGH_MONEY_CASINO" == errMsg)
+                {
+                    MessageBox.Show("Das Casino besitzt nicht genügend Geld!");
+                }
                 else if (errMsg == "INVALID_SESSION_ID")
                 {
                     MessageBox.Show("Ungültige ID!");

@@ -197,29 +197,56 @@ namespace MyCasinoWCFServer
                 User userOperatorCheck = userListLoggedOn.Find(item => item.UserType == MyCasinoUserTypes.Operator);
                 if (userOperatorCheck != null)
                 {
+                    double profitForOneMatch = 0, profitForTwoMatches = 0;
                     //init
                     MyCasinoTransactionTypes transType;
-                    double profitForOneMatch = 0, profitForTwoMatches = 0;
-                    double profitForOneMatchTmp = 0, profitForTwoMatchesTmp = 0;
+                    double  profitForTwoMatchesTmp = 0;
                     double moneyAmountLeftChange = userOperatorCheck.account.MoneyAmountLeft;
                     List<Bet> betsProfit = new List<Bet>();
                     //calculate how much money the operator will have after bet
-                    foreach (User userCalcProfit in userListLoggedOn)
+
+                        List<Bet> betsTmp = new List<Bet>();
+                    User userNameTmpBet = userListLoggedOn.Find(item => item.SessionId == sessionId);
+
+                    foreach (User user in userListLoggedOn)
                     {
-                        double amount = 0, max = 0;
-                        userCalcProfit.account.getBetList(out betsProfit);
-                        for (int i = 0; i < betsProfit.Count; i++)
+                        user.account.getBetList(out betsTmp);
+                        if(userNameTmpBet.SessionId==sessionId)
                         {
-                            amount = betsProfit.ElementAt(i).M_setAmount;
-                            if (max < amount) max = amount;
+                            betsTmp.Add(new Bet(userNameTmpBet.Username, firstNumber, secondNumber, amountMoney));
                         }
-                        userCalcProfit.account.CalculateProfit(max, out profitForOneMatchTmp, out profitForTwoMatchesTmp);
-                        userCalcProfit.account.CalculateProfit(amountMoney, out profitForOneMatch, out profitForTwoMatches);
-                        if (profitForTwoMatches < profitForTwoMatchesTmp) moneyAmountLeftChange -= profitForTwoMatchesTmp;
-                        else { moneyAmountLeftChange -= profitForTwoMatches; }
+                        for (int i = 0; i < betsTmp.Count; i++)
+                        {
+                            if (betsTmp.ElementAt(i).M_firstNumber == firstNumber && betsTmp.ElementAt(i).M_secondNumber == secondNumber)
+                            {
+                                user.account.CalculateProfit(amountMoney, out profitForOneMatch, out profitForTwoMatches);
+
+                                if (user.SessionId == sessionId)
+                                {
+                                    profitForTwoMatches = profitForTwoMatches - amountMoney;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                    betsTmp.Remove(new Bet(userNameTmpBet.Username, firstNumber, secondNumber, amountMoney));
                     }
+
+                    foreach (User userProfit in userListLoggedOn)
+                    {
+                        List<Bet> betlist = new List<Bet>();
+                        userProfit.account.getBetList(out betlist);
+                        for (int k = 0; k < betlist.Count; k++)
+                        {
+                            profitForTwoMatchesTmp += betlist.ElementAt(k).M_setAmount;
+                        }
+                    }
+
+                    //profitForTwoMatchesTmp += amountMoney;
+                    profitForTwoMatches += profitForTwoMatchesTmp;
                     //check if operator has enough money to support this bet
-                    if (moneyAmountLeftChange + amountMoney > 0)
+                    if (moneyAmountLeftChange  >= profitForTwoMatches || amountMoney==0)
+                    //if (moneyAmountLeftChange + amountMoney >= profitForTwoMatchesTmp || amountMoney==0)
                     {
                         //check if money of user is enough
                         User useraccountmoney = userListLoggedOn.Find(item => item.SessionId == sessionId);
@@ -246,8 +273,28 @@ namespace MyCasinoWCFServer
                             }
                         }
                         //add the additional bet funds to casino
-                        userOperatorCheck.account.MoneyAmountLeft += amountMoney;
-                        useraccountmoney.account.MoneyAmountLeft -= amountMoney;
+                        if (amountMoney != 0)
+                        {
+                            userOperatorCheck.account.MoneyAmountLeft += amountMoney;
+                            useraccountmoney.account.MoneyAmountLeft -= amountMoney;
+                        }
+                        else
+                        {
+                            foreach (User userAmountLeft in userListLoggedOn)
+                            {
+                                List<Bet> bets = new List<Bet>();
+                                userAmountLeft.account.getBetList(out bets);
+                                bets.Add(new Bet(userAmountLeft.Username, firstNumber, secondNumber, amountMoney));
+                                for (int i = 0; i < bets.Count; i++)
+                                {
+                                    if (bets.ElementAt(i).M_firstNumber == firstNumber && bets.ElementAt(i).M_secondNumber == secondNumber)
+                                    {
+                                        userOperatorCheck.account.MoneyAmountLeft += bets.ElementAt(i).M_setAmount;
+                                        useraccountmoney.account.MoneyAmountLeft -= bets.ElementAt(i).M_setAmount;
+                                    }
+                                }
+                            }
+                        }
                         //setup for bet
                         bool overridden;
                         bool delOverriddenBet;
@@ -362,6 +409,16 @@ namespace MyCasinoWCFServer
                         if (bets.ElementAt(i).M_firstNumber == firstNumber && bets.ElementAt(i).M_secondNumber == secondNumber)
                         {
                             user.account.CalculateProfit(amountMoney, out profitForOneMatch, out profitForTwoMatches);
+                            foreach(User userProfit in userListLoggedOn)
+                            {
+                                    List<Bet> betlist = new List<Bet>();
+                                    userProfit.account.getBetList(out betlist);
+                                    for (int k = 0; k < betlist.Count; k++)
+                                    {
+                                        profitForTwoMatches += betlist.ElementAt(k).M_setAmount; 
+                                    }
+                            }
+                            profitForTwoMatches=profitForTwoMatches - amountMoney;
                         }
                     }
                 }
@@ -401,6 +458,7 @@ namespace MyCasinoWCFServer
                     for (int i = 0; i < betsUser.Count; i++)
                     {
                         //set values for the data that has to be sent to the client
+
                         names.Add(betsUser.ElementAt(i).M_name.ToString());
                         firstNumber.Add(betsUser.ElementAt(i).M_firstNumber);
                         secondNumber.Add(betsUser.ElementAt(i).M_secondNumber);
