@@ -10,6 +10,7 @@ using Microsoft.Phone.Shell;
 using System.ServiceModel;
 using System.Windows.Media;
 using DialogExtensions;
+using System.Threading.Tasks;
 
 namespace MyCasinoWSPhoneClient
 {
@@ -25,7 +26,7 @@ namespace MyCasinoWSPhoneClient
             get { return myCasinoSvcLogin; }
             set { myCasinoSvcLogin = value; }
         }
-                   
+
         public LoginPage()
         {
             //create new webservice
@@ -164,14 +165,22 @@ namespace MyCasinoWSPhoneClient
             {
                 MessageBox.Show("Fehler beim anlegen der EndpunktAddresse!" + ex);
             }
-            //add eventhandler
-            //MyCasinoSvcLogin.MyCasinoSvc.loginCompleted += myCasinoSvc_loginCompleted;
-            //call login function
-            //MyCasinoSvcLogin.MyCasinoSvc.loginAsync(tbxUsername.Text, pwbPassword.Password);
 
-            var result = await myCasinoSvcLogin.MyCasinoSvc.GetLoginAsyncTask(tbxUsername.Text, pwbPassword.Password);
+            //send async call to server
+            MyCasinoWSServer.loginCompletedEventArgs result;
             try
             {
+                result = await myCasinoSvcLogin.MyCasinoSvc.GetLoginAsyncTask(tbxUsername.Text, pwbPassword.Password);
+
+            }
+            catch
+            {
+                MessageBox.Show("Fehler beim Login: Server nicht gefunden", "Webservices Fehler", MessageBoxButton.OK);
+                return;
+            }
+            try
+            {
+
                 String errMsg = result.errMsg;
 
                 if (errMsg == "S_OK")

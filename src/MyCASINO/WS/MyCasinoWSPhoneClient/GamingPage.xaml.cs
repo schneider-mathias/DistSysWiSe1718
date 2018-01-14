@@ -59,23 +59,7 @@ namespace MyCasinoWSPhoneClient
         public GamingPage()
         {
             InitializeComponent();
-            //tblUsername.Text = MyCasinoSvcGaming.UserName;
 
-            ////disable gamer-only content
-            //if (MyCasinoSvcGaming.UserType == 0)
-            //{
-            //    btnDraw.Visibility = Visibility.Collapsed;
-            //    btnDrawNumbers.Visibility = Visibility.Collapsed;
-            //    //tblLastDrawing.Visibility = Visibility.Collapsed;
-            //}
-            ////disable operator-only content
-            //if (MyCasinoSvcGaming.UserType == 1)
-            //{
-            //    tbxBetSum.Visibility = Visibility.Collapsed;
-            //    btnBet.Visibility = Visibility.Collapsed;
-            //    tblSetAmount.Visibility = Visibility.Collapsed;
-            //    BtnPayIn.Visibility = Visibility.Collapsed;
-            //}
         }
 
         #region Page buttons
@@ -621,6 +605,10 @@ namespace MyCasinoWSPhoneClient
             else if ("BET_AMOUNT_TOO_HIGH" == errMsg)
             {
                 MessageBox.Show("Einsatz zu hoch!");
+            }
+            else if ("NOT_ENOUGH_MONEY_CASINO" == errMsg)
+            {
+                MessageBox.Show("Casino hat nicht genug Geld");
             }
             else if (errMsg == "INVALID_SESSION_ID")
             {
