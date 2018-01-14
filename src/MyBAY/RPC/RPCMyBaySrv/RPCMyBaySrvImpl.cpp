@@ -39,14 +39,20 @@ error_status_t login(unsigned char *username, unsigned char *password, unsigned 
 		readAuctionsFromFile();
 	}
 
-	/* Abfrage ob User nicht schon eingeloggt ist.*/
-	if (BOOL isLoggedIn = loginCheck(*username) == TRUE)
+	// TODO funktioniert noch nicht 
+	if (unsigned long existSessionId = loginCheck(*username) != 0)
 	{
-		//cout << "Sie sind bereits angemeldet" << endl;
-		return ERROR_ALREADY_LOGGED_IN;
+		*sessionId = existSessionId;
+		return RPC_S_OK;
 	}
+	/* Abfrage ob User schon eingeloggt ist.*/
+	//if (BOOL isLoggedIn = loginCheck(*username) == TRUE)
+	//{
+	//	//cout << "Sie sind bereits angemeldet" << endl;
+	//	return ERROR_ALREADY_LOGGED_IN;
+	//}
 	
-	csvread.open("..\\..\\_data\\user.csv", ios::in);
+	csvread.open("..\\_data\\user.csv", ios::in);
 	if (csvread) {
 		wstring fline, fname, fpassword;
 		wstring suser = char_to_wstring((char*)username);

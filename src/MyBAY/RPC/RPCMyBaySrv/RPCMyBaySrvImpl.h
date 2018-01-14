@@ -80,14 +80,27 @@ BOOL loginCheck(unsigned long sessionId)
 }
 
 // Prüfe ob User bereits eingeloggt ist
-BOOL loginCheck(unsigned char username)
+//BOOL loginCheck(unsigned char username)
+//{
+//	if (users.find(to_wstring(username)) == users.end())
+//	{
+//		return FALSE;
+//	}
+//	else
+//		return TRUE;
+//}
+
+// Prüfe ob User bereits eingeloggt ist #####TEST#####
+ULONG loginCheck(unsigned char username)
 {
-	if (users.find(to_wstring(username)) == users.end())
+	std::map<std::wstring, unsigned long>::iterator it;
+	for (it = users.begin(); it != users.end(); ++it)
 	{
-		return FALSE;
+		if (it->first == char_to_wstring((const char*)username) && it->second != 0)
+		{
+			return it->second;
+		}
 	}
-	else
-		return TRUE;
 }
 
 // Usernamen zur zugehörigen SessionId ermitteln
@@ -109,7 +122,7 @@ wstring getUserName(unsigned long sessionId)
 void readAuctionsFromFile()
 {
 	std::wifstream auctionsFile;
-	auctionsFile.open(L"..\\..\\_data\\MyBayAuctions.csv", std::ios::in);
+	auctionsFile.open(L"..\\_data\\MyBayAuctions.csv", std::ios::in);
 	// Öffnen der Datei
 	if (auctionsFile.is_open())
 	{
@@ -241,7 +254,7 @@ void writeAuctionsToFile()
 		listOfAuctions.push_back(auctionBidder);
 	}
 
-	auctionsFile.open(L"..\\..\\_data\\MyBayAuctions.csv", std::ios::out);
+	auctionsFile.open(L"..\\_data\\MyBayAuctions.csv", std::ios::out);
 	if (auctionsFile.is_open())
 	{
 		// Schreibe alle Auktionen in die Datei
