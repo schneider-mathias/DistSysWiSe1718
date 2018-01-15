@@ -245,11 +245,16 @@ namespace MyCasinoWCFClient.Pages
             catch (Exception ex)
             {
                 if (ex is COMException)
-                    _errMsg = Codes.ResolveCode((ex as COMException).ErrorCode);
+                    errMsg = Codes.ResolveCode((ex as COMException).ErrorCode);
                 else
-                    _errMsg = "Unknown";
+                    errMsg = "Unknown";
 
                 tblAuthentificationFailed.Text = _errMsg;
+
+                if(ex.HResult == -2147023174)
+                {
+                    System.Windows.Application.Current.Shutdown();
+                }
             }
 #else
             try

@@ -109,7 +109,11 @@ namespace MyCasinoWCFClient.Pages
                     errMsg = "Unknown";
 
                 MessageBox.Show(errMsg);
-                return;
+
+                if(ex.HResult == -2147023174)
+                {
+                    System.Windows.Application.Current.Shutdown();
+                }
             }
 #else
             try
