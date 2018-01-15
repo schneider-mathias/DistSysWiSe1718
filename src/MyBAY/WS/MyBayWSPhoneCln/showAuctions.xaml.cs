@@ -23,16 +23,41 @@ namespace MyBayWSPhoneCln
         // Bool for making sure, that no new async getMessages request is started before the response of the earlier request arrives
         private bool messagesProceeded = true;
 
+        /// <summary>
+        /// Constructor of showAuctions page
+        /// </summary>
         public showAuctions()
         {
             InitializeComponent();
-            getMessageTimer = new System.Windows.Threading.DispatcherTimer();
-            getMessageTimer.Tick += new EventHandler(dispatcherTimer_Tick);
-            getMessageTimer.Interval = new TimeSpan(0, 0, 0, 0, 500);
-            getMessageTimer.Start();
+
+            if (getMessageTimer == null)
+            {
+                getMessageTimer = new System.Windows.Threading.DispatcherTimer();
+                getMessageTimer.Tick += new EventHandler(getmessageTimer_Tick);
+                getMessageTimer.Interval = new TimeSpan(0, 0, 0, 0, 500);
+                getMessageTimer.Start();
+            }
+
+            // If Timer is already created but was stopped because of going back to the main page
+            if (!getMessageTimer.IsEnabled) getMessageTimer.Start();
         }
 
-        private void dispatcherTimer_Tick(object sender, EventArgs e)
+        /// <summary>
+        /// Overwritten Method from base for stopping the timer when leaving the showAuctions Page
+        /// </summary>
+        /// <param name="e"></param>                
+        protected override void OnBackKeyPress(System.ComponentModel.CancelEventArgs e)
+        {
+            getMessageTimer.Stop();
+            base.OnBackKeyPress(e);
+        }
+
+        /// <summary>
+        /// This method is called by the getMessageTimer every 500 ms to ask for new messages from the server
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void getmessageTimer_Tick(object sender, EventArgs e)
         {
             if (App.MyDataObject.SessionID == 0) return;
 
@@ -52,8 +77,13 @@ namespace MyBayWSPhoneCln
             }
         }
 
+        /// <summary>
+        /// Callback function of Async getMessages event (response from the webserver)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private void myBaySvc_getMessages_completed(object sender,getMessageCompletedEventArgs args)
-        {
+        {         
             try
             {
                 String errText = args.Result;
@@ -79,9 +109,10 @@ namespace MyBayWSPhoneCln
                                         msg.Inlines.Add("Neues Gebot - Artikel: "
                                                                 + messageT.MessageText2
                                                                 + " - Gebot: "
-                                                                + messageT.MessageDoubleValue.ToString("C"));
+                                                                + String.Format(new CultureInfo("en-US"), "{0:C}", messageT.MessageDoubleValue));
+                                                                //+ messageT.MessageDoubleValue.ToString("C"));
                                         msg.Inlines.Add(new LineBreak());
-                                        msg.Inlines.Add(" - Auktionsstatus: "
+                                        msg.Inlines.Add("Auktionsstatus: "
                                                                 + messageT.MessageIntValue.ToString()
                                                                 + " - Bieter: "
                                                                 + messageT.MessageText);
@@ -96,9 +127,7 @@ namespace MyBayWSPhoneCln
                                         msg.Text = "Neues Gebot - Artikel: "
                                                                     + messageT.MessageText
                                                                     + " - Gebot: "
-                                                                    + messageT.MessageDoubleValue.ToString("C");
-                                                                    //+ " - Auktionsstatus: "
-                                                                    //+ messageT.MessageIntValue.ToString();
+                                                                    + String.Format(new CultureInfo("en-US"), "{0:C}", messageT.MessageDoubleValue);
                                         msg.HorizontalAlignment = HorizontalAlignment.Stretch;
                                         msg.VerticalAlignment = VerticalAlignment.Top;
 
@@ -106,8 +135,7 @@ namespace MyBayWSPhoneCln
                                     }
                                     break;
                                 case 1:
-                                        msg.Text = "Auktion: "
-                                                                    + messageT.MessageText
+                                        msg.Text = "Auktion: "      + messageT.MessageText
                                                                     + " endet bald, dies ist die "
                                                                     + messageT.MessageIntValue.ToString()
                                                                     + ". Warnung";
@@ -117,10 +145,10 @@ namespace MyBayWSPhoneCln
                                         stackPanelMessages.Children.Insert(0,msg);
                                     break;
                                 case 2:
-                                        msg.Inlines.Add("Auktion beendet. Käufer: "
-                                       + messageT.MessageText
-                                       + " Preis: "
-                                       + messageT.MessageDoubleValue.ToString("C"));
+                                    msg.Inlines.Add("Auktion beendet. Käufer: "
+                                   + messageT.MessageText
+                                   + " Preis: "
+                                   + messageT.MessageDoubleValue.ToString("C"));
                                         msg.Inlines.Add(new LineBreak());
                                         msg.Inlines.Add("Artikel: "
                                        + messageT.MessageText2.ToString());
@@ -145,6 +173,8 @@ namespace MyBayWSPhoneCln
             {
                 // Event im Eventhandler abmelden
                 App.MyDataObject.RemoteSrvMyBay.getMessageCompleted -= myBaySvc_getMessages_completed;
+
+                // Client is not asking for new Messages as long as the old messages didnt arrive
                 messagesProceeded = true;
             }
         }
