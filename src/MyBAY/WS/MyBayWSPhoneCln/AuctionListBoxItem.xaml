@@ -12,16 +12,16 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*"/>
             <ColumnDefinition Width="0.8*"/>
-            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1.5*"/>
             <ColumnDefinition Width="1.5*"/>
             <!--<ColumnDefinition Width="*" />-->
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <TextBox IsReadOnly="True" Grid.Row="0" Grid.Column="0" x:Name="lblAuctionName" Text="" HorizontalAlignment="Stretch" Margin="0,1,0,1" VerticalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Disabled" Background="White" HorizontalContentAlignment="Stretch" FontSize="14" TextAlignment="Left"/>
-        <TextBox IsReadOnly="True" Grid.Row="0" Grid.Column="1" x:Name="lbl_AuctionNumber" Text="" HorizontalAlignment="Stretch" Margin="1,1,1,1" VerticalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Disabled" Background="White" HorizontalContentAlignment="Stretch" FontSize="14" TextAlignment="Center"/>
-        <TextBox IsReadOnly="True" Grid.Row="0" Grid.Column="2" x:Name="lbl_HighestBid" Text="" HorizontalAlignment="Stretch" Margin="0,1,0,1" VerticalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Disabled" Background="White" HorizontalContentAlignment="Stretch" FontSize="14" TextAlignment="Center"/>
-        <TextBox IsReadOnly="True"  Grid.Row="0" Grid.Column="3" x:Name="lbl_CountBids" Text="" HorizontalAlignment="Stretch" Margin="1,1,1,1" VerticalAlignment="Stretch"  ScrollViewer.VerticalScrollBarVisibility="Disabled" Background="White" HorizontalContentAlignment="Stretch" FontSize="14" TextAlignment="Center"/>
+        <TextBox IsReadOnly="True" Grid.Row="0" Grid.Column="0" x:Name="lblAuctionName" Text="" HorizontalAlignment="Stretch" Margin="0,1,0,1" VerticalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Disabled" Background="White" HorizontalContentAlignment="Stretch" FontSize="14" TextAlignment="Left" Padding="0"/>
+        <TextBox IsReadOnly="True" Grid.Row="0" Grid.Column="1" x:Name="lbl_AuctionNumber" Text="" HorizontalAlignment="Stretch" Margin="1,1,1,1" VerticalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Disabled" Background="White" HorizontalContentAlignment="Stretch" FontSize="14" TextAlignment="Center" Padding="0"/>
+        <TextBox IsReadOnly="True" Grid.Row="0" Grid.Column="2" x:Name="lbl_HighestBid" Text="" HorizontalAlignment="Stretch" Margin="0,1,0,1" VerticalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Disabled" Background="White" HorizontalContentAlignment="Stretch" FontSize="14" TextAlignment="Center" Padding="0"/>
+        <TextBox IsReadOnly="True"  Grid.Row="0" Grid.Column="3" x:Name="lbl_CountBids" Text="" HorizontalAlignment="Stretch" Margin="1,1,1,1" VerticalAlignment="Stretch"  ScrollViewer.VerticalScrollBarVisibility="Disabled" Background="White" HorizontalContentAlignment="Stretch" FontSize="14" TextAlignment="Center" Padding="0"/>
     </Grid>
 </UserControl>

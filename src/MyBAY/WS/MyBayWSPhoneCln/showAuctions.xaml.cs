@@ -20,12 +20,15 @@ namespace MyBayWSPhoneCln
     {
         private DispatcherTimer getMessageTimer;
 
+        // Bool for making sure, that no new async getMessages request is started before the response of the earlier request arrives
+        private bool messagesProceeded = true;
+
         public showAuctions()
         {
             InitializeComponent();
             getMessageTimer = new System.Windows.Threading.DispatcherTimer();
             getMessageTimer.Tick += new EventHandler(dispatcherTimer_Tick);
-            getMessageTimer.Interval = new TimeSpan(0, 0, 0, 1);
+            getMessageTimer.Interval = new TimeSpan(0, 0, 0, 0, 500);
             getMessageTimer.Start();
         }
 
@@ -35,12 +38,15 @@ namespace MyBayWSPhoneCln
 
             try
             {
-                App.MyDataObject.RemoteSrvMyBay.getMessageCompleted += myBaySvc_getMessages_completed;
+                if (messagesProceeded)
+                {
+                    App.MyDataObject.RemoteSrvMyBay.getMessageCompleted += myBaySvc_getMessages_completed;
 
-                App.MyDataObject.RemoteSrvMyBay.getMessageAsync(App.MyDataObject.SessionID);
-      
+                    App.MyDataObject.RemoteSrvMyBay.getMessageAsync(App.MyDataObject.SessionID);
+                    messagesProceeded = false;
+                }
             }
-            catch (Exception except)
+            catch (Exception)
             {
                 MessageBoxResult result = MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
             }
@@ -63,53 +69,43 @@ namespace MyBayWSPhoneCln
                     {
                         foreach(MessageTransfer messageT in args.message)
                         {
+                            TextBlock msg = new TextBlock();
+
                             switch (messageT.MessageType)
                             {
                                 case 0: // New Bid
                                     if (!String.IsNullOrEmpty(messageT.MessageText2))
                                     {
-                                        Dispatcher.BeginInvoke(new Action(delegate ()
-                                        {
-                                            TextBlock msg = new TextBlock();
-                                            msg.Inlines.Add("Neues Gebot - Artikel: "
-                                                                    + messageT.MessageText2
-                                                                    + " - Gebot: "
-                                                                    + messageT.MessageDoubleValue.ToString("C"));
-                                            msg.Inlines.Add(new LineBreak());
-                                            msg.Inlines.Add(" - Auktionsstatus: "
-                                                                    + messageT.MessageIntValue.ToString()
-                                                                    + " - Bieter: "
-                                                                    + messageT.MessageText);
+                                        msg.Inlines.Add("Neues Gebot - Artikel: "
+                                                                + messageT.MessageText2
+                                                                + " - Gebot: "
+                                                                + messageT.MessageDoubleValue.ToString("C"));
+                                        msg.Inlines.Add(new LineBreak());
+                                        msg.Inlines.Add(" - Auktionsstatus: "
+                                                                + messageT.MessageIntValue.ToString()
+                                                                + " - Bieter: "
+                                                                + messageT.MessageText);
                                             
-                                            msg.HorizontalAlignment = HorizontalAlignment.Stretch;
-                                            msg.VerticalAlignment = VerticalAlignment.Top;
+                                        msg.HorizontalAlignment = HorizontalAlignment.Stretch;
+                                        msg.VerticalAlignment = VerticalAlignment.Top;
 
-                                            stackPanelMessages.Children.Insert(0,msg);
-                                        }));
+                                        stackPanelMessages.Children.Insert(0,msg);
                                     }
                                     else
                                     {
-                                        Dispatcher.BeginInvoke(new Action(delegate ()
-                                        {
-                                            TextBlock msg = new TextBlock();
-                                            msg.Text = "Neues Gebot - Artikel: "
-                                                                        + messageT.MessageText
-                                                                        + " - Gebot: "
-                                                                        + messageT.MessageDoubleValue.ToString("C");
-                                                                        //+ " - Auktionsstatus: "
-                                                                        //+ messageT.MessageIntValue.ToString();
-                                            msg.HorizontalAlignment = HorizontalAlignment.Stretch;
-                                            msg.VerticalAlignment = VerticalAlignment.Top;
+                                        msg.Text = "Neues Gebot - Artikel: "
+                                                                    + messageT.MessageText
+                                                                    + " - Gebot: "
+                                                                    + messageT.MessageDoubleValue.ToString("C");
+                                                                    //+ " - Auktionsstatus: "
+                                                                    //+ messageT.MessageIntValue.ToString();
+                                        msg.HorizontalAlignment = HorizontalAlignment.Stretch;
+                                        msg.VerticalAlignment = VerticalAlignment.Top;
 
-                                            stackPanelMessages.Children.Insert(0,msg);
-                                        }));
-                                        
+                                        stackPanelMessages.Children.Insert(0, msg);                                        
                                     }
                                     break;
                                 case 1:
-                                    Dispatcher.BeginInvoke(new Action(delegate ()
-                                    {
-                                        TextBlock msg = new TextBlock();
                                         msg.Text = "Auktion: "
                                                                     + messageT.MessageText
                                                                     + " endet bald, dies ist die "
@@ -119,12 +115,8 @@ namespace MyBayWSPhoneCln
                                         msg.VerticalAlignment = VerticalAlignment.Top;
 
                                         stackPanelMessages.Children.Insert(0,msg);
-                                    }));
                                     break;
                                 case 2:
-                                    Dispatcher.BeginInvoke(new Action(delegate ()
-                                    {
-                                        TextBlock msg = new TextBlock();
                                         msg.Inlines.Add("Auktion beendet. Käufer: "
                                        + messageT.MessageText
                                        + " Preis: "
@@ -137,7 +129,6 @@ namespace MyBayWSPhoneCln
                                         msg.VerticalAlignment = VerticalAlignment.Top;
 
                                         stackPanelMessages.Children.Insert(0,msg);
-                                    }));
                                     break;
                                 default:
                                     break;
@@ -146,14 +137,15 @@ namespace MyBayWSPhoneCln
                     }
                 }
             }
-            catch (Exception except)
+            catch (Exception)
             {
-                MessageBox.Show(except.Message, "Fehler", MessageBoxButton.OK);
+                MessageBox.Show("Fehler beim Verarbeiten der Messages auf Clientseite", "Fehler", MessageBoxButton.OK);
             }
             finally
             {
                 // Event im Eventhandler abmelden
                 App.MyDataObject.RemoteSrvMyBay.getMessageCompleted -= myBaySvc_getMessages_completed;
+                messagesProceeded = true;
             }
         }
 
@@ -492,7 +484,15 @@ namespace MyBayWSPhoneCln
                         if (!Double.TryParse(sourceTapElement.txtBox_bid.Text,NumberStyles.Any,new CultureInfo("en-US"), out bidValue))
                         {
                             MessageBox.Show("Bitte geben Sie einen gültigen Wert für das Gebot an", "Warnung", MessageBoxButton.OK);
+                            return;
                         }
+                        // Check if bid is higher than 9999999.99, because otherwise it cannot be displayed in List of auctions anymore
+                        if (bidValue < 0.0 || bidValue > 9999999.99)
+                        {
+                            MessageBox.Show("Bitte geben Sie einen gültigen Wert für das Gebot an", "Warnung", MessageBoxButton.OK);
+                            return;
+                        }
+
                         App.MyDataObject.RemoteSrvMyBay.bidCompleted += myBaySvc_bid_completed;
                         App.MyDataObject.RemoteSrvMyBay.bidAsync(App.MyDataObject.SessionID, auctionNumber, bidValue);
 
