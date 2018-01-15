@@ -40,9 +40,18 @@ namespace MyCasinoWCFServer
                 lock (thisLockUserListLoggedOn)
                 {
                     if (currUser != null) userListLoggedOn.Add(currUser);
+                    foreach (User user in userListLoggedOn)
+                    {
+                        if (user.UserType == MyCasinoUserTypes.Operator)
+                        {
+                            Console.WriteLine(username + ": logged in");
+                            return true;
+                        }
+                    }
+                    errMsg = "OPERATOR_NOT_LOGGED_IN";
+                    Console.WriteLine(username + ": logged in. No operator logged in!");
+                    return false;
                 }
-                Console.WriteLine(username + ": logged in");
-                return true;
             }
             //Login unsuccessful 
             Console.WriteLine("ERROR: " + errMsg);
@@ -428,6 +437,17 @@ namespace MyCasinoWCFServer
 
         public bool showbets(int sessionId, out List<string> names, out List<int> firstNumber, out List<int> secondNumber, out List<double> amount, out int count, out string errMsg)
         {
+            //check if operator is logged in
+            errMsg = "OPERATOR_NOT_LOGGED_IN";
+            foreach (User user in userListLoggedOn)
+            {
+                if (user.UserType == MyCasinoUserTypes.Operator)
+                {
+                    errMsg = null;
+                    Console.WriteLine("Showbets: no operator logged in");
+                }
+            }
+
             //Initialization of out params
             List<Bet> betsUser = new List<Bet>();
             names = null;
@@ -467,7 +487,6 @@ namespace MyCasinoWCFServer
                     }
                 }
 
-                errMsg = null;
                 return true;
             }
         }
@@ -703,11 +722,23 @@ namespace MyCasinoWCFServer
 
         public bool getTransactions(int sessionId, out bool isFinished, out List<string> transaction, out int transactionType, out string errMsg)
         {
+            //check if operator is logged in
+            errMsg = "OPERATOR_NOT_LOGGED_IN";
+            foreach (User user in userListLoggedOn)
+            {
+                if (user.UserType == MyCasinoUserTypes.Operator)
+                {
+                    errMsg = null;
+                    Console.WriteLine("Transaction: no operator logged in");
+                }
+            }
+            
+
             //init
             transaction = new List<string>(); ;
             transactionType = 0;
             isFinished = false;
-            errMsg = null;
+            //errMsg = null;
             //Check for valid sessionId
             if (!m_authService.SessionIdCheck(sessionId))
             {

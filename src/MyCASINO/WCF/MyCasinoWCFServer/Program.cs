@@ -20,7 +20,6 @@ namespace MyCasinoWCFServer
             MyCasinoWCFServerImplementation myCasinoSrv = new MyCasinoWCFServerImplementation();
 
             ServiceHost svh = new ServiceHost(myCasinoSrv, new Uri("http://localhost:1200/MyCasinoWCF"));
-            //ServiceHost svh = new ServiceHost(myCasinoSrv, new Uri("http://192.168.52.216:1200/MyCasinoWCF"));
 
             //Set properties for a Singleton with more than one Client
             ServiceBehaviorAttribute sba = svh.Description.Behaviors.Find<ServiceBehaviorAttribute>();

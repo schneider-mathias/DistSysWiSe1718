@@ -202,6 +202,7 @@ namespace MyCasinoWCFClient.Pages
             int transactionType;
             string errMsg="";
             double opMoney=0;
+            bool operatorLogged = true;
             try
             {
                 do
@@ -210,6 +211,11 @@ namespace MyCasinoWCFClient.Pages
                     if (errMsg == "INVALID_SESSION_ID")
                     {
                         MessageBox.Show("Ungültige ID!");
+                    }
+                    else if (errMsg == "OPERATOR_NOT_LOGGED_IN")
+                    {
+                        operatorLogged = false;
+                        
                     }
                     //transaction is deposit
                     if (isFinished == true) break;
@@ -257,7 +263,7 @@ namespace MyCasinoWCFClient.Pages
                         }
                         catch(Exception ex)
                         {
-                            MessageBox.Show("Fehler beim abholen der Informationen für die Transaktionen: "+ ex);
+                            MessageBox.Show("Fehler beim abholen der Informationen für die Transaktionen: Server nicht gefunden");
                         }
                         if (typeTmp == MyCasinoUserTypes.Gamer)
                         {
@@ -300,7 +306,7 @@ namespace MyCasinoWCFClient.Pages
                         }
                         catch(Exception ex)
                         {
-                            MessageBox.Show("Fehler beim abholen der Informationen für die Transaktionen: " + ex);
+                            MessageBox.Show("Fehler beim abholen der Informationen für die Transaktionen: Server nicht gefunden!");
                         }
                         if (typeTmp == MyCasinoUserTypes.Gamer)
                         {
@@ -333,10 +339,14 @@ namespace MyCasinoWCFClient.Pages
                 }
                 while (isFinished != true);
                 opMoney = 0;
+                if(operatorLogged == false)
+                {
+                    MessageBox.Show("Betreiber nicht angemeldet!");
+                }
             }
             catch(Exception ex)
             {
-                MessageBox.Show("Fehler beim abholen der Transaktionen: " + ex);
+                MessageBox.Show("Fehler beim abholen der Transaktionen: Server nicht gefunden");
             }
         }
 #endif

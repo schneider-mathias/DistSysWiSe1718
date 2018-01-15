@@ -196,7 +196,7 @@ namespace MyCasinoWCFClient.Pages
             }
             catch(Exception ex)
             {
-                MessageBox.Show("Fehler beim Logout: " + ex.ToString());
+                MessageBox.Show("Fehler beim Logout: Server nicht gefunden!");
             }
 #endif
         }

@@ -738,7 +738,8 @@ namespace MyCasinoWCFClient.Pages
                 }
                 else if ("NO_OPERATOR_LOGGED_IN" == errMsg)
                 {
-                    MessageBox.Show("Kein Betreiber eingeloggt!");
+                    //already checked in showbets, not needed
+                    //MessageBox.Show("Kein Betreiber eingeloggt!");
                 }
                 else if ("BET_AMOUNT_TOO_HIGH" == errMsg)
                 {
@@ -753,9 +754,9 @@ namespace MyCasinoWCFClient.Pages
                     MessageBox.Show("Ungültige ID!");
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                MessageBox.Show("Fehler beim Anzeigen der Wetten: " + ex.ToString());
+                MessageBox.Show("Fehler beim Anzeigen der Wetten: Server nicht gefunden!");
             }
 #endif
             //Disable all row2 buttons
@@ -839,10 +840,14 @@ namespace MyCasinoWCFClient.Pages
                 {
                     MessageBox.Show("Ungültige ID!");
                 }
+                else if (errMsg == "OPERATOR_NOT_LOGGED_IN")
+                {
+                    MessageBox.Show("Betreiber nicht eingeloggt!");
+                }
             }
             catch(Exception ex)
             {
-                MessageBox.Show("Fehler beim Anzeigen der Wetten: " + ex.ToString());
+                MessageBox.Show("Fehler beim Anzeigen der Wetten: Kein Server gefunden!");
             }
 #endif
 
@@ -879,7 +884,7 @@ namespace MyCasinoWCFClient.Pages
                 }
                 catch(Exception ex)
                 {
-                    MessageBox.Show("Fehler bei Transactionen: " + ex.ToString());
+                    MessageBox.Show("Fehler bei Transactionen: Kein Server gefunden!");
                 }
                 lbNameList.Items.Add(names.ElementAt(i));
                 lbFirstNumberList.Items.Add(firstNumberBetList.ElementAt(i).ToString());
@@ -916,7 +921,7 @@ namespace MyCasinoWCFClient.Pages
             }
             catch(Exception ex)
             {
-                MessageBox.Show("Fehler beim Ziehen: " + ex.ToString());
+                MessageBox.Show("Fehler beim Ziehen: Kein Server gefunden!");
             }
 #endif
             //set numbers that have been drawn
@@ -957,7 +962,7 @@ namespace MyCasinoWCFClient.Pages
             }
             catch(Exception ex)
             {
-                MessageBox.Show("Fehler beim Ziehen: " + ex.ToString());
+                MessageBox.Show("Fehler beim Ziehen: Kein Server gefunden");
             }
 #endif
             //set numbers that have been drawn

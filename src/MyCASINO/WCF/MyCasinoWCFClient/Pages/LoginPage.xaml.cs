@@ -227,7 +227,7 @@ namespace MyCasinoWCFClient.Pages
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Fehler beim erstellen der Channel Factory!" + ex);
+                MessageBox.Show("Fehler beim erstellen der Channel Factory!");
             }
 #endif
 
@@ -271,6 +271,12 @@ namespace MyCasinoWCFClient.Pages
                 else if (_errMsg == "ALREADY_LOGGED_IN")
                 {
                     tblAuthentificationFailed.Text = "User ist bereits angemeldet";
+                }
+                else if (_errMsg == "OPERATOR_NOT_LOGGED_IN")
+                {
+                    MessageBox.Show("Betreiber nicht eingeloggt!");
+                    this.NavigationService.Navigate(new GamingPage(_RemSrvMyCasinoLogin, tbxUsername.Text, _sessionId, _userType));
+                    return;
                 }
             }
             catch (EndpointNotFoundException)
