@@ -52,6 +52,7 @@ private:
 	std::atomic<ULONG> m_transactionIdCounter;
 	int m_currentTransactionIterator;
 	std::vector<MyCasinoTransaction*> m_transactions;
+	std::vector<MyCasinoTransaction*> m_sortedTransactions;
 	std::mutex transactionsMutex;
 	std::mutex balanceMutex;
 

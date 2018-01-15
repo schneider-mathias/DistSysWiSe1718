@@ -396,6 +396,84 @@ BOOL testcase_close_casino(CmdInterpreter& interpreter)
 }
 
 /**--------------------------------------------------------------------------------------------------
+* <summary>	Testcase close casino. </summary>
+*
+* <param name="interpreter">	[in,out] The interpreter. </param>
+*
+* <returns>	True if it succeeds, false if it fails. </returns>
+*-----------------------------------------------------------------------------------------------**/
+
+BOOL testcase_transaction_order_casino(CmdInterpreter& interpreter)
+{
+	if (!runCommand(interpreter, L"user Gamer Passwort"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"user Gamer_2 Passwort"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"user Casino Passwort"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"payin Gamer_2 5000"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"user Gamer_2 Passwort"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"bet 1 2 4"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"bet 1 1 3"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"user Gamer Passwort"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"bet 1 3 4"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"bet 1 4 5"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"user Gamer_2 Passwort"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"bet 2 1 4"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"bet 3 2 5"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"user Casino Passwort"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"draw 2 4"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"payin Casino 5000"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"showstatus"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"showstatus"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"user Gamer Passwort"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"showstatus"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"user Gamer_2 Passwort"))
+		return E_FAIL;
+
+	if (!runCommand(interpreter, L"showstatus"))
+		return E_FAIL;
+
+}
+
+/**--------------------------------------------------------------------------------------------------
  * <summary>	Main entry-point for this application. </summary>
  *
  * <param name="argc">	The number of command-line arguments provided. </param>
@@ -481,6 +559,9 @@ int main(int argc, char**argv)
 	// TEST CASE: close casino (logout operator)
 	testcase_close_casino(interpreter);
 	
+	// TEST CASE: check showstatus transaction order
+	testcase_transaction_order_casino(interpreter);
+
 	std::cin.get();
 
 	p_ICOMMyCasinoSrv->Release();

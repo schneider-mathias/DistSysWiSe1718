@@ -421,12 +421,60 @@ BOOL MyCasinoAccount::GetNextTransaction(MyCasinoTransaction** nextTransaction)
 {
 	SCOPED_LOCK(transactionsMutex);
 
-	for (auto it = m_transactions.begin() + m_currentTransactionIterator; it < m_transactions.end();)
+
+	// Create a sorted list (respective to balance and not to history)
+	// in order to do so iterate the transaction list and check whether current
+	// items balance added with a potential next transaction creates the 
+	// next transactions resulting balance.
+	if (m_currentTransactionIterator == 0 && m_transactions.size() > 0)
+	{
+		m_sortedTransactions.clear();
+
+		std::vector<MyCasinoTransaction*> tmpTransactionList = m_transactions;
+
+		// init with first and remorve it from temp list
+		m_sortedTransactions.push_back(tmpTransactionList.at(0));
+		tmpTransactionList.erase(tmpTransactionList.begin());
+
+		MyCasinoTransaction* nextTransactionForSort;
+		while (tmpTransactionList.size() > 0)
+		{
+			for (auto it = tmpTransactionList.begin(); it < tmpTransactionList.end();)
+			{
+				nextTransactionForSort = (*it);
+
+				if (nextTransactionForSort->GetTransactionType() == MyCasinoTransactionsTypes::CANCELED
+					|| nextTransactionForSort->GetTransactionType() == MyCasinoTransactionsTypes::BET_WAGER)
+				{
+					it = tmpTransactionList.erase(it);
+					continue;
+				}
+
+				double currentBalance = (*(m_sortedTransactions.end() - 1))->GetResultBalance();
+				double nextChange = nextTransactionForSort->GetChangeAmount();
+				double nextBalance = nextTransactionForSort->GetResultBalance();
+
+				if ((currentBalance + nextChange) - nextBalance < 0.001 )
+				{
+					it = tmpTransactionList.erase(it);
+					break;
+				}
+				else
+				{
+					it++;
+				}
+			}
+
+			m_sortedTransactions.push_back(nextTransactionForSort);
+		}
+	}
+
+	for (auto it = m_sortedTransactions.begin() + m_currentTransactionIterator; it < m_sortedTransactions.end();)
 	{
 		*nextTransaction = (*it);
 		m_currentTransactionIterator++;
 		it++;
-		bool isFinished = (it == m_transactions.end());
+		bool isFinished = (it == m_sortedTransactions.end());
 
 		// reset iterator for getting transactions
 		if (isFinished)
