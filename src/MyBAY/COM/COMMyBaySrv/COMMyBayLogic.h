@@ -837,6 +837,8 @@ void addEndAuctionMessage(wstring user, unsigned long auctionNumber, int warning
 			(*it).auctionStatus = 1;								// Auktionsstatus wird auf "kurz vor Schluss" geändert
 		}
 	}
+	// aktualisiert die MyBayAuctions.txt
+	writeAuctionsToFile();
 	LeaveCriticalSection(critSecWrapper.getInstance());
 }
 
@@ -867,5 +869,7 @@ void endAuction(unsigned long auctionNumber)
 			(*it).interestedUserList.clear();							// Liste aller Interessierten User löschen
 		}
 	}
+	// aktualisiert die MyBayAuctions.txt
+	writeAuctionsToFile();
 	LeaveCriticalSection(critSecWrapper.getInstance());
 }
