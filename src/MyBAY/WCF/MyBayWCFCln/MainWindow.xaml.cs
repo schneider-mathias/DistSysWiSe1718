@@ -317,6 +317,7 @@ namespace MyBayWCFCln
 #endif
                 }
             }
+            // When logout button is clicked (same button, different functionality
             else
             {
                 try
@@ -356,6 +357,8 @@ namespace MyBayWCFCln
                     this.btn_getDetails.IsEnabled = false;
                     this.btn_endAuction.IsEnabled = false;
 
+                    // Empty AuctionList
+                    this.listBox_auctions.Items.Clear();
                     // Empty Messagelist
                     this.listBox_messages.Items.Clear();
                 }

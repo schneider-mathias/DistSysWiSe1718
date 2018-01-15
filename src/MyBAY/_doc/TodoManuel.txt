@@ -1,7 +1,7 @@
 WCF
-Fehlermeldung keine exception texts
-gebot zu niedrig meldung bei falscher eingabe wcf (2 Meldungen)
-bei logout auktionen fenster leeren
+done, needs to be tested  		Fehlermeldung keine exception texts
+done, needs to be tested		gebot zu niedrig meldung bei falscher eingabe wcf (2 Meldungen)
+done, needs to be tested 		bei logout auktionen fenster leeren
 
 WP8
 phone client preis gebot feld vergrößern und begrenzen
