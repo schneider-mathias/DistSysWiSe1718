@@ -14,7 +14,7 @@ namespace MyBayWSSrv
 
         protected void Application_Start(object sender, EventArgs e)
         {
-            pf.Run();
+            //pf.Run();
 
         }
 
@@ -45,7 +45,7 @@ namespace MyBayWSSrv
 
         protected void Application_End(object sender, EventArgs e)
         {
-            pf.Stop();
+            //pf.Stop();
 
         }
     }

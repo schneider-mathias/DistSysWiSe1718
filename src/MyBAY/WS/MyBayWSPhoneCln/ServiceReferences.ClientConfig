@@ -9,9 +9,9 @@
             </basicHttpBinding>
         </bindings>
         <client>
-            <endpoint address="http://localhost:7777/MyBayWSSrvASMX.asmx"
+            <endpoint address="http://localhost:3333/MyBayWSSrvASMX.asmx"
                 binding="basicHttpBinding" bindingConfiguration="MyBayWSSrvASMXSoap"
-                contract="MyBayWSSrv.MyBayWSSrvASMXSoap" name="MyBayWSSrvASMXSoap" />
+                contract="MyBayWSSrvASMXSoapService.MyBayWSSrvASMXSoap" name="MyBayWSSrvASMXSoap" />
         </client>
     </system.serviceModel>
 </configuration>

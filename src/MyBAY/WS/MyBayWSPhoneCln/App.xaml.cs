@@ -62,7 +62,7 @@ namespace MyBayWSPhoneCln
 
             App.MyDataObject = new DataObject();
 
-            pfWebSvc = new PortForwarderWP(7776 , 7777);
+            //pfWebSvc = new PortForwarderWP(7776 , 7777);
 
         }
 
@@ -76,7 +76,7 @@ namespace MyBayWSPhoneCln
         // Dieser Code wird beim Reaktivieren der Anwendung nicht ausgeführt
         private void Application_Launching(object sender, LaunchingEventArgs e)
         {
-            pfWebSvc.Run();
+            //pfWebSvc.Run();
 
         }
 
@@ -97,7 +97,7 @@ namespace MyBayWSPhoneCln
         private void Application_Closing(object sender, ClosingEventArgs e)
         {
        
-            pfWebSvc.Stop();
+            //pfWebSvc.Stop();
 
         }
 

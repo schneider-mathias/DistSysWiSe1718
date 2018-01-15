@@ -71,14 +71,16 @@ namespace MyBayWSPhoneCln
                                         Dispatcher.BeginInvoke(new Action(delegate ()
                                         {
                                             TextBlock msg = new TextBlock();
-                                            msg.Text = "- Neues Gebot - Artikel: "
+                                            msg.Inlines.Add("Neues Gebot - Artikel: "
                                                                     + messageT.MessageText2
                                                                     + " - Gebot: "
-                                                                    + messageT.MessageDoubleValue.ToString("C")
-                                                                    + " - Auktionsstatus: "
+                                                                    + messageT.MessageDoubleValue.ToString("C"));
+                                            msg.Inlines.Add(new LineBreak());
+                                            msg.Inlines.Add(" - Auktionsstatus: "
                                                                     + messageT.MessageIntValue.ToString()
                                                                     + " - Bieter: "
-                                                                    + messageT.MessageText;
+                                                                    + messageT.MessageText);
+                                            
                                             msg.HorizontalAlignment = HorizontalAlignment.Stretch;
                                             msg.VerticalAlignment = VerticalAlignment.Top;
 

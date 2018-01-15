@@ -248,11 +248,13 @@ namespace MyBayWCFCln
 #endif
 
         }
-            catch (Exception except)
+            catch (Exception)
             {
 #if COM
-                MessageBoxResult result = MessageBox.Show(comError.convertException(except), "Fehler", MessageBoxButton.OK);
+                this.getMessageTimer.Stop();
+                MessageBoxResult result = MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
 #else
+                this.getMessageTimer.Stop();
                 MessageBoxResult result = MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
 #endif
             }

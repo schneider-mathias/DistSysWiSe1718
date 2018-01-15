@@ -117,7 +117,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>2664</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:7776/</IISUrl>
+          <IISUrl>http://localhost:3333/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
