@@ -112,6 +112,9 @@ inline std::wstring translate_error_message(unsigned long errorcode)
 		return std::wstring(L"Invalid operator user wants to interact.");
 	case E_MY_CASINO_INTERNAL_LOGOUT_ERROR:
 		return std::wstring(L"Internal server error during logout.");
+	// COM Errors
+	case 0x800706BAL:
+		return std::wstring(L"Server not available anymore.");
 	default:
 		return std::wstring(L"Unknow error: ").append(std::to_wstring(errorcode));
 	}
