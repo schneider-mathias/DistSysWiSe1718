@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://MyBayServer.org/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://MyBayServer.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://MyBayServer.org/">
+      <s:element name="login">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="userName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="password" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="loginResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="loginResult" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="sessionID" type="s:unsignedInt" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="logout">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="sessionID" type="s:unsignedInt" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="logoutResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="logoutResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="offer">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="sessionID" type="s:unsignedInt" />
+            <s:element minOccurs="0" maxOccurs="1" name="artName" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="startBid" type="s:double" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="offerResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="offerResult" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="auctionNumber" type="s:unsignedInt" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="interested">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="sessionID" type="s:unsignedInt" />
+            <s:element minOccurs="1" maxOccurs="1" name="auctionNumber" type="s:unsignedInt" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="interestedResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="interestedResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="getAuctions">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="sessionID" type="s:unsignedInt" />
+            <s:element minOccurs="1" maxOccurs="1" name="flags" type="s:unsignedInt" />
+            <s:element minOccurs="0" maxOccurs="1" name="artName" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="getAuctionsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="getAuctionsResult" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="countAuctions" type="s:unsignedInt" />
+            <s:element minOccurs="0" maxOccurs="1" name="auctions" type="tns:ArrayOfAuctionTransfer" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfAuctionTransfer">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="AuctionTransfer" nillable="true" type="tns:AuctionTransfer" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="AuctionTransfer">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="AuctNumber" type="s:unsignedInt" />
+          <s:element minOccurs="0" maxOccurs="1" name="ArtName" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="HighestBid" type="s:double" />
+          <s:element minOccurs="1" maxOccurs="1" name="AuctionState" type="s:unsignedInt" />
+          <s:element minOccurs="1" maxOccurs="1" name="CountBids" type="s:unsignedInt" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="bid">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="sessionID" type="s:unsignedInt" />
+            <s:element minOccurs="1" maxOccurs="1" name="auctionNumber" type="s:unsignedInt" />
+            <s:element minOccurs="1" maxOccurs="1" name="bidVal" type="s:double" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="bidResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="bidResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="details">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="sessionID" type="s:unsignedInt" />
+            <s:element minOccurs="1" maxOccurs="1" name="auctionNumber" type="s:unsignedInt" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="detailsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="detailsResult" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="countBids" type="s:unsignedInt" />
+            <s:element minOccurs="0" maxOccurs="1" name="allBids" type="tns:ArrayOfBidTransfer" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfBidTransfer">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="BidTransfer" nillable="true" type="tns:BidTransfer" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="BidTransfer">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="BidNumber" type="s:unsignedInt" />
+          <s:element minOccurs="0" maxOccurs="1" name="Bidder" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="BidValue" type="s:double" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="endauction">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="sessionID" type="s:unsignedInt" />
+            <s:element minOccurs="1" maxOccurs="1" name="auctionNumber" type="s:unsignedInt" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="endauctionResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="endauctionResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="getMessage">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="sessionID" type="s:unsignedInt" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="getMessageResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="getMessageResult" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="messageAvailable" type="s:boolean" />
+            <s:element minOccurs="0" maxOccurs="1" name="message" type="tns:ArrayOfMessageTransfer" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfMessageTransfer">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="MessageTransfer" nillable="true" type="tns:MessageTransfer" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="MessageTransfer">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="MessageText" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="MessageText2" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="MessageDoubleValue" type="s:double" />
+          <s:element minOccurs="1" maxOccurs="1" name="MessageIntValue" type="s:unsignedInt" />
+          <s:element minOccurs="1" maxOccurs="1" name="MessageIntValue2" type="s:unsignedInt" />
+          <s:element minOccurs="1" maxOccurs="1" name="MessageType" type="s:unsignedInt" />
+        </s:sequence>
+      </s:complexType>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="loginSoapIn">
+    <wsdl:part name="parameters" element="tns:login" />
+  </wsdl:message>
+  <wsdl:message name="loginSoapOut">
+    <wsdl:part name="parameters" element="tns:loginResponse" />
+  </wsdl:message>
+  <wsdl:message name="logoutSoapIn">
+    <wsdl:part name="parameters" element="tns:logout" />
+  </wsdl:message>
+  <wsdl:message name="logoutSoapOut">
+    <wsdl:part name="parameters" element="tns:logoutResponse" />
+  </wsdl:message>
+  <wsdl:message name="offerSoapIn">
+    <wsdl:part name="parameters" element="tns:offer" />
+  </wsdl:message>
+  <wsdl:message name="offerSoapOut">
+    <wsdl:part name="parameters" element="tns:offerResponse" />
+  </wsdl:message>
+  <wsdl:message name="interestedSoapIn">
+    <wsdl:part name="parameters" element="tns:interested" />
+  </wsdl:message>
+  <wsdl:message name="interestedSoapOut">
+    <wsdl:part name="parameters" element="tns:interestedResponse" />
+  </wsdl:message>
+  <wsdl:message name="getAuctionsSoapIn">
+    <wsdl:part name="parameters" element="tns:getAuctions" />
+  </wsdl:message>
+  <wsdl:message name="getAuctionsSoapOut">
+    <wsdl:part name="parameters" element="tns:getAuctionsResponse" />
+  </wsdl:message>
+  <wsdl:message name="bidSoapIn">
+    <wsdl:part name="parameters" element="tns:bid" />
+  </wsdl:message>
+  <wsdl:message name="bidSoapOut">
+    <wsdl:part name="parameters" element="tns:bidResponse" />
+  </wsdl:message>
+  <wsdl:message name="detailsSoapIn">
+    <wsdl:part name="parameters" element="tns:details" />
+  </wsdl:message>
+  <wsdl:message name="detailsSoapOut">
+    <wsdl:part name="parameters" element="tns:detailsResponse" />
+  </wsdl:message>
+  <wsdl:message name="endauctionSoapIn">
+    <wsdl:part name="parameters" element="tns:endauction" />
+  </wsdl:message>
+  <wsdl:message name="endauctionSoapOut">
+    <wsdl:part name="parameters" element="tns:endauctionResponse" />
+  </wsdl:message>
+  <wsdl:message name="getMessageSoapIn">
+    <wsdl:part name="parameters" element="tns:getMessage" />
+  </wsdl:message>
+  <wsdl:message name="getMessageSoapOut">
+    <wsdl:part name="parameters" element="tns:getMessageResponse" />
+  </wsdl:message>
+  <wsdl:portType name="MyBayWSSrvASMXSoap">
+    <wsdl:operation name="login">
+      <wsdl:input message="tns:loginSoapIn" />
+      <wsdl:output message="tns:loginSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="logout">
+      <wsdl:input message="tns:logoutSoapIn" />
+      <wsdl:output message="tns:logoutSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="offer">
+      <wsdl:input message="tns:offerSoapIn" />
+      <wsdl:output message="tns:offerSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="interested">
+      <wsdl:input message="tns:interestedSoapIn" />
+      <wsdl:output message="tns:interestedSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="getAuctions">
+      <wsdl:input message="tns:getAuctionsSoapIn" />
+      <wsdl:output message="tns:getAuctionsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="bid">
+      <wsdl:input message="tns:bidSoapIn" />
+      <wsdl:output message="tns:bidSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="details">
+      <wsdl:input message="tns:detailsSoapIn" />
+      <wsdl:output message="tns:detailsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="endauction">
+      <wsdl:input message="tns:endauctionSoapIn" />
+      <wsdl:output message="tns:endauctionSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="getMessage">
+      <wsdl:input message="tns:getMessageSoapIn" />
+      <wsdl:output message="tns:getMessageSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="MyBayWSSrvASMXSoap" type="tns:MyBayWSSrvASMXSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="login">
+      <soap:operation soapAction="http://MyBayServer.org/login" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="logout">
+      <soap:operation soapAction="http://MyBayServer.org/logout" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="offer">
+      <soap:operation soapAction="http://MyBayServer.org/offer" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="interested">
+      <soap:operation soapAction="http://MyBayServer.org/interested" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getAuctions">
+      <soap:operation soapAction="http://MyBayServer.org/getAuctions" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="bid">
+      <soap:operation soapAction="http://MyBayServer.org/bid" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="details">
+      <soap:operation soapAction="http://MyBayServer.org/details" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="endauction">
+      <soap:operation soapAction="http://MyBayServer.org/endauction" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getMessage">
+      <soap:operation soapAction="http://MyBayServer.org/getMessage" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="MyBayWSSrvASMXSoap12" type="tns:MyBayWSSrvASMXSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="login">
+      <soap12:operation soapAction="http://MyBayServer.org/login" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="logout">
+      <soap12:operation soapAction="http://MyBayServer.org/logout" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="offer">
+      <soap12:operation soapAction="http://MyBayServer.org/offer" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="interested">
+      <soap12:operation soapAction="http://MyBayServer.org/interested" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getAuctions">
+      <soap12:operation soapAction="http://MyBayServer.org/getAuctions" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="bid">
+      <soap12:operation soapAction="http://MyBayServer.org/bid" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="details">
+      <soap12:operation soapAction="http://MyBayServer.org/details" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="endauction">
+      <soap12:operation soapAction="http://MyBayServer.org/endauction" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getMessage">
+      <soap12:operation soapAction="http://MyBayServer.org/getMessage" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="MyBayWSSrvASMX">
+    <wsdl:port name="MyBayWSSrvASMXSoap" binding="tns:MyBayWSSrvASMXSoap">
+      <soap:address location="http://localhost:3333/MyBayWSSrvASMX.asmx" />
+    </wsdl:port>
+    <wsdl:port name="MyBayWSSrvASMXSoap12" binding="tns:MyBayWSSrvASMXSoap12">
+      <soap12:address location="http://localhost:3333/MyBayWSSrvASMX.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

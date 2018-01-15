@@ -1,0 +1,41 @@
+﻿<phone:PhoneApplicationPage
+    x:Class="MyBayWP8Cln.LoginPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    FontFamily="{StaticResource PhoneFontFamilyNormal}"
+    FontSize="{StaticResource PhoneFontSizeNormal}"
+    Foreground="{StaticResource PhoneForegroundBrush}"
+    SupportedOrientations="Portrait" Orientation="Portrait"
+    mc:Ignorable="d"
+    shell:SystemTray.IsVisible="True">
+
+    <!--LayoutRoot ist das Stammraster, in dem alle anderen Seiteninhalte platziert werden-->
+    <Grid x:Name="LayoutRoot" Background="Transparent">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!--TitlePanel enthält den Namen der Anwendung und den Seitentitel-->
+        <StackPanel Grid.Row="0" Margin="12,17,0,28">
+            <TextBlock Text="Login" Style="{StaticResource PhoneTextNormalStyle}"/>
+        </StackPanel>
+
+        <!--ContentPanel - zusätzliche Inhalte hier platzieren-->
+        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="14,0,10,0">
+            <TextBox x:Name="txtBox_username" HorizontalAlignment="Center" Height="72" Margin="0,105,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="456" VerticalScrollBarVisibility="Disabled" TextAlignment="Center"/>
+            <TextBox x:Name="txtBox_serverip" HorizontalAlignment="Center" Height="72" Margin="0,303,0,0" TextWrapping="Wrap" Text="localhost" VerticalAlignment="Top" Width="456" VerticalScrollBarVisibility="Disabled" TextAlignment="Center"/>
+            <TextBlock x:Name="txtBlock_username" HorizontalAlignment="Left" Margin="10,83,0,0" TextWrapping="Wrap" Text="Username" VerticalAlignment="Top"/>
+            <TextBlock x:Name="txtBlock_password" HorizontalAlignment="Left" Margin="10,182,0,0" TextWrapping="Wrap" Text="Password" VerticalAlignment="Top"/>
+            <TextBlock x:Name="txtBlock_serverip" HorizontalAlignment="Left" Margin="10,281,0,0" TextWrapping="Wrap" Text="ServerIP" VerticalAlignment="Top" RenderTransformOrigin="0.71,7.217"/>
+            <PasswordBox x:Name="passBox_password" HorizontalAlignment="Center" Margin="0,204,0,0" VerticalAlignment="Top" Width="456"/>
+            <Button x:Name="btn_login" Content="Login" HorizontalAlignment="Center" Margin="0,450,0,0" VerticalAlignment="Top" Click="btn_login_Click"/>
+
+        </Grid>
+    </Grid>
+
+</phone:PhoneApplicationPage>
