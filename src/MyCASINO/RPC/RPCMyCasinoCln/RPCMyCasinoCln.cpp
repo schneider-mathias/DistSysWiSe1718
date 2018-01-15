@@ -66,7 +66,7 @@ void main(int argc, char**argv)
 	{
 		if (e.GetStatus() == RPC_S_SERVER_UNAVAILABLE)
 		{
-			printf("\t[Error]: Lost server connection. Stop client.\n");
+			printf("\t[Error]: No server connection. Stop client.\n");
 		}
 		else
 		{

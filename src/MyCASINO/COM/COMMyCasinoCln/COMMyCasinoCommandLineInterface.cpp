@@ -145,14 +145,19 @@ bool COMMyCasinoCommandLineInterface::showbets()
 	if (FAILED(hr))
 		return false;
 	
-	bprinter::TablePrinter tp(&std::cout,"|",2);
-	tp.AddColumn("User", 15);
-	tp.AddColumn("First number", 15);
-	tp.AddColumn("Second number", 15);
-	tp.AddColumn("Wager", 10);
-	tp.AddColumn("Price for one", 15);
-	tp.AddColumn("Price for two", 15);
-	tp.PrintHeader();
+	bprinter::TablePrinter tp(&std::cout, "|", 2);
+	if (betCount > 0)
+	{
+		tp.AddColumn("User", 15);
+		tp.AddColumn("First number", 15);
+		tp.AddColumn("Second number", 15);
+		tp.AddColumn("Wager", 10);
+		tp.AddColumn("Price for one", 15);
+		tp.AddColumn("Price for two", 15);
+		tp.PrintHeader();
+	}
+	else
+		std::cout << "No bets" << std::endl;
 
 	CComSafeArray<VARIANT> betsResult(bets);
 	
