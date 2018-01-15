@@ -34,7 +34,7 @@ namespace MyBayWSPhoneCln
         private void btn_login_Click(object sender, RoutedEventArgs e)
         {
             IPAddress srvAddressIP;
-            string srvAddress = "http://localhost:3333/MyBayWSSrvASMX.asmx";
+            string srvAddress = "http://localhost:7776/MyBayWSSrvASMX.asmx";
 
             if (String.IsNullOrEmpty(this.txtBox_serverip.Text))
             {

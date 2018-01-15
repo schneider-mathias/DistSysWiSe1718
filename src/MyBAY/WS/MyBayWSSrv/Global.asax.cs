@@ -10,7 +10,7 @@ namespace MyBayWSSrv
 {
     public class Global : System.Web.HttpApplication
     {
-        PortForwarder pf = new PortForwarder(3333, 3332);
+        PortForwarder pf = new PortForwarder(7776, 7777);
 
         protected void Application_Start(object sender, EventArgs e)
         {
