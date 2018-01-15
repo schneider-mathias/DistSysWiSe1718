@@ -7,7 +7,8 @@
 //			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
 //
 //			Date		Developer			Change
-//			13.01.2018	Mathias Schneider	Created
+//			21.12.2017	Mathias Schneider	Created
+//			XXXXXXXXXX  Mathias Schneider	Changed
  *-----------------------------------------------------------------------------------------------**/
 
 #include "AuthServiceDefaultUser.h"
@@ -15,9 +16,9 @@
 #include <sstream>
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Serialize this object to the given stream. </summary>
+ * <summary>	Serialize this object to a string. </summary>
  *
- * <returns>	A std::wstring. </returns>
+ * <returns>	A wstring containing the erialized object information. </returns>
  *-----------------------------------------------------------------------------------------------**/
 
 std::wstring AuthServiceDefaultUser::Serialize()
@@ -30,9 +31,9 @@ std::wstring AuthServiceDefaultUser::Serialize()
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Deserialize this object to the given stream. </summary>
+ * <summary>	Deserialize string and apply data to this object. </summary>
  *
- * <param name="in">	The in. </param>
+ * <param name="in">	Serialized input string. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
  *-----------------------------------------------------------------------------------------------**/
