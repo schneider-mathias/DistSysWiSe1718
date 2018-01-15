@@ -50,13 +50,13 @@ MyCasinoCommandLineInterface::~MyCasinoCommandLineInterface()
  * <param name="msg">				   	[in,out] The message. </param>
  *-----------------------------------------------------------------------------------------------**/
 
-void MyCasinoCommandLineInterface::resultHandler(std::string additionalInformation, int code, std::string& msg)
+void MyCasinoCommandLineInterface::resultHandler(std::string additionalInformation, long code, std::string& msg)
 {
 	if (code > 0)
 	{
 		std::cout << "[INFO] " << msg << std::endl;
 	}
-	else if (code == 0x800706BA) // COM error 
+	else if ((long)(code) == 0x800706BA) // COM error 
 	{
 		std::cerr << "[ERROR] " << "Lost server connection. Stop client." << std::endl;
 		m_pInterpreter->stop();

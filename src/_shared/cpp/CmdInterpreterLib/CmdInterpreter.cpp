@@ -177,6 +177,8 @@ bool CmdInterpreter::execute(std::wstring command)
 /** <summary>	Stops this object. </summary> */
 void CmdInterpreter::stop()
 {
+	cout();
+
 	//reset stream buffer
 	if (NULL != m_previousBufferOut)
 	{
