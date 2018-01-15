@@ -1,0 +1,17 @@
+WCF
+Fehlermeldung keine exception texts
+gebot zu niedrig meldung bei falscher eingabe wcf (2 Meldungen)
+bei logout auktionen fenster leeren
+
+WP8
+phone client preis gebot feld vergrößern und begrenzen
+euro dollar zeichen
+
+messages snychronisieren - manche nachrichten werden verschluckt
+server abbruch - meldung
+
+
+com anmeldung fehler - Text
+com exception bei laufendem gebot das beendet wird
+- details
+beenden details, beenden details - exception
