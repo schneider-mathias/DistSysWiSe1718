@@ -329,8 +329,10 @@ bool RPCMyCasinoCommandLineInterface::showstatus()
 
 				// finalize output message with parsed json
 				Json::Value defaultValue("<Not found>");
+				parsedTransactionInformation.append("S: ");
 				parsedTransactionInformation.append(informationJson[1].get("value", defaultValue).asString()).append(" ");
 				parsedTransactionInformation.append(informationJson[2].get("value", defaultValue).asString()).append(" ");
+				parsedTransactionInformation.append("D: ");
 				parsedTransactionInformation.append(informationJson[4].get("value", defaultValue).asString()).append(" ");
 				parsedTransactionInformation.append(informationJson[5].get("value", defaultValue).asString()).append(" ");
 

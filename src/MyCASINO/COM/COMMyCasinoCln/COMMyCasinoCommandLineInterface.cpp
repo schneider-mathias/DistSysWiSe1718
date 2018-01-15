@@ -335,9 +335,14 @@ bool COMMyCasinoCommandLineInterface::showstatus()
 				BOOL isDrawn = false;
 				if (informationType == MyCasinoTransactionsInformationTypes::Bet)
 				{
-
+					transactionInformationDetails.append(L"S:");
 					for (int i = 0; i < BET_FULL_DETAILS_PROPTERY_COUNT; i++)
 					{
+						if (i % BET_FULL_DETAILS_PROPTERY_COUNT == 4)
+						{
+							transactionInformationDetails.append(L" D:");
+						}
+
 						if (i % BET_FULL_DETAILS_PROPTERY_COUNT == 1
 							|| i % BET_FULL_DETAILS_PROPTERY_COUNT == 2
 							|| i % BET_FULL_DETAILS_PROPTERY_COUNT == 4
