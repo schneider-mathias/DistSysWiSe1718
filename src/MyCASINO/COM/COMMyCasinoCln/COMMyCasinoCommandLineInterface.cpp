@@ -74,14 +74,13 @@ bool COMMyCasinoCommandLineInterface::user(std::wstring user, std::wstring passw
 
 	BSTR errMsg;
 	HRESULT hr = m_pICOMMyCasinoSrv->login(wstr_to_bstr(user), wstr_to_bstr(password), m_pSessionId, m_pUserType, &errMsg);
+	resultHandler("Could not log in to server", hr, bstr_to_str(errMsg));
 	if (FAILED(hr))
 	{
 		delete m_pSessionId;
 		m_pSessionId = NULL;
 		delete m_pUserType;
 		m_pUserType = NULL;
-
-		resultHandler("Could not log in to server", hr, bstr_to_str(errMsg));
 		return false;
 	}
 

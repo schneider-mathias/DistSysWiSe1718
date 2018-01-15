@@ -73,16 +73,16 @@ bool RPCMyCasinoCommandLineInterface::user(std::wstring user, std::wstring passw
 	unsigned char* passwordCStr = (unsigned char*)wstring_to_char(password);
 
 	error_status_t hr = ::login(m_pSessionId, userCStr, passwordCStr, m_pUserType);
+	
+	std::wstring errCode;
+	TRANSLATE_MYCASINO_CODE(errCode, hr);
+	resultHandler("Could not log in to server", hr, wstring_to_string(errCode));
 	if (FAILED(hr))
 	{
 		delete m_pSessionId;
 		m_pSessionId = NULL;
 		delete m_pUserType;
 		m_pUserType = NULL;
-
-		std::wstring errCode;
-		TRANSLATE_MYCASINO_CODE(errCode, hr);
-		resultHandler("Could not log in to server", hr, wstring_to_string(errCode));
 		return false;
 	}
 	
