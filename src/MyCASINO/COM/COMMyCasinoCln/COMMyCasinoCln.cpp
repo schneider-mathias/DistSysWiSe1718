@@ -40,57 +40,56 @@ int main(int argc, char**argv)
 	CoInitialize(NULL);
 	IClassFactory *pCF = NULL;
 	
-	ICOMMyCasino *p_ICOMMyCasinoSrv = NULL;
+	ICOMMyCasino *pICOMMyCasinoSrv = NULL;
 	HRESULT hr;
 
-	IID IID_tmpICOMMyINVENT = IID_ICOMMyCasino;
-
-	// Erzeugung auf anderem Rechner (auch mit Rechernamen)
+	// Create COM object (remotely if IP is provided)
 	COSERVERINFO srvInfo = { 0, L"127.0.0.1", 0, 0 };
-	LPWSTR lpwstr_SrvName = NULL;
+	LPWSTR lpwstrSrvName = NULL;
 	
 	if (argc > 1)
 	{
-		std::wstring wstr_SrvName(argv[1], argv[1] + strlen(argv[1]) + 1);
-		if (!validateIpAddress(wstr_SrvName))
+		std::wstring wstrSrvName(argv[1], argv[1] + strlen(argv[1]) + 1);
+		if (!validateIpAddress(wstrSrvName))
 		{
-			std::wcerr << "Invalid format for IP address parameter: " << wstr_SrvName << std::endl;
+			std::wcerr << "[ERROR] Invalid format for IP address parameter: " << wstrSrvName << std::endl;
 			return FALSE;
 		}
 
-		lpwstr_SrvName = new WCHAR[wstr_SrvName.length()];
-		StrCpyNW(lpwstr_SrvName, wstr_SrvName.c_str(), wstr_SrvName.length());
-		std::copy(argv[1], argv[1] + strlen(argv[1]), lpwstr_SrvName);
+		lpwstrSrvName = new WCHAR[wstrSrvName.length()];
+		StrCpyNW(lpwstrSrvName, wstrSrvName.c_str(), wstrSrvName.length());
+		std::copy(argv[1], argv[1] + strlen(argv[1]), lpwstrSrvName);
 
-		srvInfo.pwszName = lpwstr_SrvName;
+		srvInfo.pwszName = lpwstrSrvName;
 	}
 	
-	MULTI_QI multiQi = { &IID_tmpICOMMyINVENT, 0, 0 };
+	MULTI_QI multiQi = { &IID_ICOMMyCasino, 0, 0 };
 
 	hr = CoCreateInstanceEx(CLSID_COMMyCasino, NULL, CLSCTX_REMOTE_SERVER,
 		&srvInfo, 1, &multiQi);
 
 	if (FAILED(hr))
 	{
-		std::cout << "Failure: CoCreateInstanceEx - " << std::hex << hr << std::endl;
+		std::cout << "[ERROR] CoCreateInstanceEx - " << std::hex << hr << std::endl;
 		return FALSE;
 	}
 
-	p_ICOMMyCasinoSrv = (ICOMMyCasino*)multiQi.pItf;
+	pICOMMyCasinoSrv = (ICOMMyCasino*)multiQi.pItf;
 
 	std::cout << "--- MY CASINO ---" << std::endl;
 
+	// start MyCasino commandline interpreter
 	CmdInterpreter interpreter;
-	COMMyCasinoCommandLineInterface myCasinoCLI(&interpreter, p_ICOMMyCasinoSrv);
+	COMMyCasinoCommandLineInterface myCasinoCLI(&interpreter, pICOMMyCasinoSrv);
 	dispatcherMemFunc p = &(ICommandLineInterface::ProcessCommand);
 	interpreter.registerCmdDispatcher(&myCasinoCLI, p);
 	interpreter.run();
 
-	p_ICOMMyCasinoSrv->Release();
+	pICOMMyCasinoSrv->Release();
 	CoUninitialize();
 
-	if (NULL != lpwstr_SrvName)
-		delete[] lpwstr_SrvName;
+	if (NULL != lpwstrSrvName)
+		delete[] lpwstrSrvName;
 
 	return S_OK;
 }
