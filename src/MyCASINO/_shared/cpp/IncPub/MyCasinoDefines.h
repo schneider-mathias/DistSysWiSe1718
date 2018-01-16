@@ -8,7 +8,8 @@
 //			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
 //
 //			Date		Developer			Change
-//			13.01.2018	Mathias Schneider	Created
+//			30.12.2018	Mathias Schneider	Created
+//			XXXXXXXXXX  Mathias Schneider	Changed
  *-----------------------------------------------------------------------------------------------**/
 
 #pragma once
@@ -18,7 +19,8 @@
 // Define conform custom HRESULT code for HRESULT format, 
 // for more information refer to 
 // https://msdn.microsoft.com/de-de/library/windows/desktop/ms690088(v=vs.85).aspx
-
+// Formore information about the define itsself refer to translate_error_message
+// and translate_info_message
 #define E_MY_CASINO_USER_NOT_LOGGED_IN 0xA0010001L
 #define E_MY_CASINO_USER_PERMISSION_DENIED 0xA0010002L
 #define E_MY_CASINO_USER_FOR_DEPOSIT_NOT_LOGGED_IN 0xA0010003L
@@ -195,7 +197,7 @@ enum MyCasinoTransactionsTypes
 };
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Resolve transaction type. </summary>
+ * <summary>	Resolve transaction type to string. </summary>
  *
  * <param name="type">	The type as enum </param>
  *
