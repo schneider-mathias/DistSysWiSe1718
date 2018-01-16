@@ -1,4 +1,4 @@
-﻿#define PORTFWDLIBACTIVE
+﻿//#define PORTFWDLIBACTIVE
 
 using System;
 using System.Diagnostics;
@@ -24,6 +24,27 @@ namespace MyBayWSPhoneCln
         PortForwarderWP pfWebSvc;
 #endif
         public static DataObject MyDataObject;
+
+        /// <summary>
+        /// This function handles every connection error with the server, it shows a message box and shuts the application down
+        /// </summary>
+        /// <param name="args"></param>
+        public static void handleConnectionError(System.ComponentModel.AsyncCompletedEventArgs args)
+        {
+            if (args.Error != null)
+            {
+                if (args.Error.GetType() == typeof(System.ServiceModel.CommunicationException))
+                {
+                    MessageBox.Show("Die Verbindung zum Server ist unterbrochen, die App wird geschlossen", "Fehler", MessageBoxButton.OK);
+                    Application.Current.Terminate();
+                }
+                else
+                {
+                    MessageBox.Show("Unerwarteter Fehler bei der Serververbindung, die App wird geschlossen", "Fehler", MessageBoxButton.OK);
+                    Application.Current.Terminate();
+                }
+            }
+        }
 
         /// <summary>
         /// Konstruktor für das Application-Objekt.

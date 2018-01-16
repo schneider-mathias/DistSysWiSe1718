@@ -1,4 +1,4 @@
-﻿#define PORTFWDLIBACTIVE
+﻿//#define PORTFWDLIBACTIVE
 
 using System;
 using System.Collections.Generic;
@@ -72,6 +72,9 @@ namespace MyBayWSPhoneCln
         {
             try
             {
+                // Handle connection error
+                if (args != null) App.handleConnectionError(args);
+
                 String errText = args.Result;
 
                 if (!errText.Contains("OK"))
@@ -87,9 +90,9 @@ namespace MyBayWSPhoneCln
                     this.ShowNewDialog<MainPage>();
                 }
             }
-            catch (Exception except)
+            catch (Exception)
             {
-                MessageBox.Show("Fehler beim Verbinden zum Server, haben Sie die richtige Adresse eingegeben? " + except.Message, "Warnung", MessageBoxButton.OK);
+                MessageBox.Show("Fehler beim Verbinden zum Server, haben Sie die richtige Adresse eingegeben?", "Warnung", MessageBoxButton.OK);
             }
             finally
             {

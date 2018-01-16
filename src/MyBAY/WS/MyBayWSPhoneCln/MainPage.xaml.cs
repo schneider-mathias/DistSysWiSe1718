@@ -13,9 +13,14 @@ using MyBayWSPhoneCln.MyBayWSSrvASMXSoapService;
 
 namespace MyBayWSPhoneCln
 {
+    /// <summary>
+    /// Mainpage of the Windows Phone 8 Application
+    /// </summary>
     public partial class MainPage : PhoneApplicationPage
     {
-        // Konstruktor
+        /// <summary>
+        /// Constructor of the MainPage
+        /// </summary>
         public MainPage()
         {
             InitializeComponent();
@@ -26,8 +31,7 @@ namespace MyBayWSPhoneCln
                 App.MyDataObject.RemoteSrvMyBay = new MyBayWSSrvASMXSoapClient();
             }
 
-            // If User is logged in, change Button to Logout Button and register other event for logout function
-
+            // If user is logged in, change button content to Logout and register other method for click event
             if (App.MyDataObject.SessionID > 0)
             {
                 this.btn_login.Content = "Logout";
@@ -37,25 +41,45 @@ namespace MyBayWSPhoneCln
             }
         }
 
+        /// <summary>
+        /// Method handles the click event of the Login button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btn_login_Click(object sender, RoutedEventArgs e)
         {
-            //this.ShowNewDialog<LoginPage>(
-            //    cp => { cp.MyDataObject = _myDataObjectMain; },
-            //    cp => { MyDataObjectMain = cp.MyDataObject; });
+            if (App.MyDataObject.SessionID != 0)
+            {
+                MessageBox.Show("Sie sind bereits eingeloggt", "Fehler", MessageBoxButton.OK);
+                return;
+            }
             this.ShowNewDialog<LoginPage>();
         }
 
+        /// <summary>
+        /// Method handles the click event of the Logout button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btn_logout_Click(object sender, RoutedEventArgs e)
         {
             App.MyDataObject.RemoteSrvMyBay.logoutCompleted += myBaySvc_logout_completed;
-
             App.MyDataObject.RemoteSrvMyBay.logoutAsync(App.MyDataObject.SessionID);
         }
 
+
+        /// <summary>
+        /// Method which handles the logoutCompleted event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private void myBaySvc_logout_completed(object sender, logoutCompletedEventArgs args)
         {
             try
             {
+                // Handle connection error
+                if (args != null) App.handleConnectionError(args);
+
                 String errText = args.Result;
 
                 if (!errText.Contains("OK"))
@@ -74,9 +98,9 @@ namespace MyBayWSPhoneCln
                     MessageBox.Show("User wurde erfolgreich abgemeldet", "Hinweis", MessageBoxButton.OK);
                 }
             }
-            catch (Exception except)
+            catch (Exception)
             {
-                MessageBox.Show("Fehler beim Verbinden zum Server, haben Sie die richtige Adresse eingegeben? " + except.Message, "Warnung", MessageBoxButton.OK);
+                MessageBox.Show("Unerwarteter Fehler bei der Durchführung des Logout", "Warnung", MessageBoxButton.OK);
             }
             finally
             {
@@ -85,6 +109,11 @@ namespace MyBayWSPhoneCln
             }
         }
 
+        /// <summary>
+        /// Method handles the click event of the NewAuction Button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btn_NewAuction_Click(object sender, RoutedEventArgs e)
         {
             // Check, if user is logged in
@@ -93,10 +122,14 @@ namespace MyBayWSPhoneCln
                 MessageBox.Show("Sie sind nicht angemeldet, melden Sie sich bitte an", "Fehler", MessageBoxButton.OK);
                 return;
             }
-
             this.ShowNewDialog<newAuction>();
         }
 
+        /// <summary>
+        /// Method handles the click event of the showAuctions Button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btn_showAuctions_Click(object sender, RoutedEventArgs e)
         {
             // Check, if user is logged in
@@ -105,7 +138,6 @@ namespace MyBayWSPhoneCln
                 MessageBox.Show("Sie sind nicht angemeldet, melden Sie sich bitte an", "Fehler", MessageBoxButton.OK);
                 return;
             }
-
             this.ShowNewDialog<showAuctions>();
         }
     }

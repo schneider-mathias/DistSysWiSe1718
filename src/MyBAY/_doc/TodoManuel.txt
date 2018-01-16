@@ -5,13 +5,13 @@ done, needs to be tested 		bei logout auktionen fenster leeren
 
 WP8
 done, needs to be tested 		phone client preis gebot feld vergrößern und begrenzen
-euro dollar zeichen
+done, needs to be tested		euro dollar zeichen
 
-messages snychronisieren - manche nachrichten werden verschluckt
-server abbruch - meldung
+done, needs to be tested		messages snychronisieren - manche nachrichten werden verschluckt
+done, needs to be tested		server abbruch - meldung
 
 
-com anmeldung fehler - Text
+done, needs to be tested		com anmeldung fehler - Text
 com exception bei laufendem gebot das beendet wird
 - details
 beenden details, beenden details - exception

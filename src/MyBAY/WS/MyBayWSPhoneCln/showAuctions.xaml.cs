@@ -73,7 +73,7 @@ namespace MyBayWSPhoneCln
             }
             catch (Exception)
             {
-                MessageBoxResult result = MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
+                MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
             }
         }
 
@@ -86,11 +86,13 @@ namespace MyBayWSPhoneCln
         {         
             try
             {
+                // Handle connection error
+                if (args != null) App.handleConnectionError(args);
+
                 String errText = args.Result;
 
                 if (!errText.Contains("OK"))
                 {
-                    //MessageBox.Show(errText, "Warnung", MessageBoxButton.OK);
                     return;
                 }
                 else
@@ -179,6 +181,7 @@ namespace MyBayWSPhoneCln
             }
         }
 
+
         #region GETAUCTIONS
         private void btn_getAuctions_Click(object sender, RoutedEventArgs e)
         {
@@ -207,14 +210,17 @@ namespace MyBayWSPhoneCln
                 }
                 else App.MyDataObject.RemoteSrvMyBay.getAuctionsAsync(App.MyDataObject.SessionID, flags, this.txtBox_search.Text);
             }
-            catch (Exception except)
+            catch (Exception)
             {
-                MessageBox.Show(except.Message, "Fehler", MessageBoxButton.OK);
+                MessageBox.Show("Unerwarteter Fehler bei Benutzung der aktualisiere Auktionen Funktion", "Fehler", MessageBoxButton.OK);
             }
         }
 
         private void myBaySvc_getAuctions_completed(object sender, getAuctionsCompletedEventArgs args)
         {
+            // Handle connection error
+            if (args != null) App.handleConnectionError(args);
+
             List<AuctionTransfer> newListAuctions;
             this.stackPanelAuctions.Children.Clear();
 
@@ -241,9 +247,9 @@ namespace MyBayWSPhoneCln
                     }
                 }
             }
-            catch (Exception except)
+            catch (Exception)
             {
-                MessageBox.Show(except.Message, "Fehler", MessageBoxButton.OK);
+                MessageBox.Show("Unerwarteter Fehler bei Benutzung der aktualisiere Auktionen Funktion", "Fehler", MessageBoxButton.OK);
             }
             finally
             {
@@ -301,13 +307,16 @@ namespace MyBayWSPhoneCln
                 }
 
             }
-            catch (Exception except)
+            catch (Exception)
             {
-                MessageBox.Show(except.Message, "Fehler", MessageBoxButton.OK);
+                MessageBox.Show("Unerwarteter Fehler bei Benutzung der Details Funktion", "Fehler", MessageBoxButton.OK);
             }
         }
         private void myBaySvc_details_completed(object sender, detailsCompletedEventArgs args)
         {
+            // Handle connection error
+            if (args != null) App.handleConnectionError(args);
+
             try
             {
                 String errText = args.Result;
@@ -355,9 +364,9 @@ namespace MyBayWSPhoneCln
                     }
                 }
             }
-            catch (Exception except)
+            catch (Exception)
             {
-                MessageBox.Show(except.Message, "Fehler", MessageBoxButton.OK);
+                MessageBox.Show("Unerwarteter Fehler bei Benutzung der Details Funktion", "Fehler", MessageBoxButton.OK);
             }
             finally
             {
@@ -396,13 +405,16 @@ namespace MyBayWSPhoneCln
                 }
 
             }
-            catch (Exception except)
+            catch (Exception)
             {
-                MessageBox.Show(except.Message, "Fehler", MessageBoxButton.OK);
+                MessageBox.Show("Unerwarteter Fehler bei Benutzung der Auktion Folgen Funktion", "Fehler", MessageBoxButton.OK);
             }
         }
         private void myBaySvc_interested_completed(object sender, interestedCompletedEventArgs args)
         {
+            // Handle connection error
+            if (args != null) App.handleConnectionError(args);
+
             try
             {
                 String errText = args.Result;
@@ -417,9 +429,9 @@ namespace MyBayWSPhoneCln
                     MessageBox.Show("Sie folgen dieser Auktion jetzt", "Hinweis", MessageBoxButton.OK);
                 }
             }
-            catch (Exception except)
+            catch (Exception)
             {
-                MessageBox.Show(except.Message, "Fehler", MessageBoxButton.OK);
+                MessageBox.Show("Unerwarteter Fehler bei Benutzung der Auktion Folgen Funktion", "Fehler", MessageBoxButton.OK);
             }
             finally
             {
@@ -458,13 +470,16 @@ namespace MyBayWSPhoneCln
                 }
 
             }
-            catch (Exception except)
+            catch (Exception)
             {
-                MessageBox.Show(except.Message, "Fehler", MessageBoxButton.OK);
+                MessageBox.Show("Unerwarteter Fehler bei Benutzung der Auktion Beenden Funktion", "Fehler", MessageBoxButton.OK);
             }
         }
         private void myBaySvc_endauction_completed(object sender, endauctionCompletedEventArgs args)
         {
+            // Handle connection error
+            if (args != null) App.handleConnectionError(args);
+
             try
             {
                 String errText = args.Result;
@@ -479,9 +494,9 @@ namespace MyBayWSPhoneCln
                     MessageBox.Show("Auktion wird beendet", "Hinweis", MessageBoxButton.OK);
                 }
             }
-            catch (Exception except)
+            catch (Exception)
             {
-                MessageBox.Show(except.Message, "Fehler", MessageBoxButton.OK);
+                MessageBox.Show("Unerwarteter Fehler bei Benutzung der Auktion Beenden Funktion", "Fehler", MessageBoxButton.OK);
             }
             finally
             {
@@ -532,13 +547,16 @@ namespace MyBayWSPhoneCln
                 }
 
             }
-            catch (Exception except)
+            catch (Exception)
             {
-                MessageBox.Show(except.Message, "Fehler", MessageBoxButton.OK);
+                MessageBox.Show("Unerwarteter Fehler bei Benutzung der Bieten Funktion", "Fehler", MessageBoxButton.OK);
             }
         }
         private void myBaySvc_bid_completed(object sender, bidCompletedEventArgs args)
         {
+            // Handle connection error
+            if (args != null) App.handleConnectionError(args);
+
             try
             {
                 String errText = args.Result;
@@ -553,9 +571,9 @@ namespace MyBayWSPhoneCln
                     MessageBox.Show("Gebot Abgegeben", "Hinweis", MessageBoxButton.OK);
                 }
             }
-            catch (Exception except)
+            catch (Exception)
             {
-                MessageBox.Show(except.Message, "Fehler", MessageBoxButton.OK);
+                MessageBox.Show("Unerwarteter Fehler bei Benutzung der Bieten Funktion", "Fehler", MessageBoxButton.OK);
             }
             finally
             {
@@ -593,9 +611,9 @@ namespace MyBayWSPhoneCln
                     current = VisualTreeHelper.GetParent(current);
                 }
             }
-            catch (Exception except)
+            catch (Exception)
             {
-                MessageBox.Show(except.Message, "Fehler", MessageBoxButton.OK);
+                MessageBox.Show("Unerwarteter Fehler bei Betätigung des Cancel Buttons", "Fehler", MessageBoxButton.OK);
             }
         }
     }

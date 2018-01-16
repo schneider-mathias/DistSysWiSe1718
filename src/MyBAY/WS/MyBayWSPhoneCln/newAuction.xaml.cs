@@ -42,6 +42,9 @@ namespace MyBayWSPhoneCln
         {
             try
             {
+                // Handle connection error
+                if (args != null) App.handleConnectionError(args);
+
                 String errText = args.Result;
 
                 if (!errText.Contains("OK"))
