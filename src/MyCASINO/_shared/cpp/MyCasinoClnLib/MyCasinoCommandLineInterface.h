@@ -7,7 +7,8 @@
 //			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
 //
 //			Date		Developer			Change
-//			13.01.2018	Mathias Schneider	Created
+//			29.12.2018	Mathias Schneider	Created
+//			XXXXXXXXXX  Mathias Schneider	Changed
  *-----------------------------------------------------------------------------------------------**/
 
 #pragma once
@@ -42,6 +43,6 @@ protected:
 	void resultHandler(std::string additionalInformation, long code, std::string& msg);
 	unsigned long* m_pSessionId;
 	short* m_pUserType;
-	CmdInterpreter* m_pInterpreter;
+	CmdInterpreter* m_pCmdInterpreter;
 };
 

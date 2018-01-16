@@ -7,7 +7,8 @@
 //			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
 //
 //			Date		Developer			Change
-//			13.01.2018	Mathias Schneider	Created
+//			29.12.2018	Mathias Schneider	Created
+//			XXXXXXXXXX  Mathias Schneider	Changed
  *-----------------------------------------------------------------------------------------------**/
 
 #include "MyCasinoCommandLineInterface.h"
@@ -26,7 +27,7 @@
 MyCasinoCommandLineInterface::MyCasinoCommandLineInterface(CmdInterpreter* interpreter)
 	:m_pSessionId(NULL),
 	m_pUserType(NULL),
-	m_pInterpreter(interpreter)
+	m_pCmdInterpreter(interpreter)
 {
 }
 
@@ -39,14 +40,16 @@ MyCasinoCommandLineInterface::~MyCasinoCommandLineInterface()
 	if (NULL != m_pUserType)
 		delete m_pUserType;
 
-	m_pInterpreter = NULL;
+	m_pCmdInterpreter = NULL;
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Handler, called when the result. </summary>
+ * <summary>	Handler, called after a command was executed in order to 
+ * 				evaluate the return code and display the corresponding message. </summary>
  *
- * <param name="additionalInformation">	Information describing the additional. </param>
- * <param name="code">				   	The code. </param>
+ * <param name="additionalInformation">	Additional information for the displaying 
+ * 										the output. </param>
+ * <param name="code">				   	The return code. </param>
  * <param name="msg">				   	[in,out] The message. </param>
  *-----------------------------------------------------------------------------------------------**/
 
@@ -59,7 +62,7 @@ void MyCasinoCommandLineInterface::resultHandler(std::string additionalInformati
 	else if ((long)(code) == 0x800706BA) // COM error 
 	{
 		std::cerr << "[ERROR] " << "No server connection. Stop client." << std::endl;
-		m_pInterpreter->stop();
+		m_pCmdInterpreter->stop();
 	}
 	else if(FAILED(code))
 	{
@@ -76,7 +79,10 @@ void MyCasinoCommandLineInterface::resultHandler(std::string additionalInformati
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Process the command described by arguments. </summary>
+ * <summary>	Dispatcher method in order to process the command described by 
+ * 				arguments as defined by the MyCasino specication. Before running 
+ * 				the commands which will be implemented in child class, all arguments 
+ * 				checks are performed. Also user type is checked. </summary>
  *
  * <param name="arguments">	The arguments. </param>
  *
@@ -86,8 +92,6 @@ void MyCasinoCommandLineInterface::resultHandler(std::string additionalInformati
 bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> arguments)
 {
 	std::wstring command(arguments.at(0));
-
-	// using std::invoke would be cool but does not work because arguments have to match the interface types
 
 	if (command.compare(L"user") == 0)
 	{
@@ -209,7 +213,7 @@ bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> argu
 		}
 
 		// shutdown interpreter
-		m_pInterpreter->stop();
+		m_pCmdInterpreter->stop();
 
 		return retVal;
 	}
@@ -241,7 +245,7 @@ bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> argu
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Check call prerequisites. </summary>
+ * <summary>	Check call prerequisites (logged in and permission level of user type). </summary>
  *
  * <param name="minRequiredUserType">	Type of the minimum required user. </param>
  *
@@ -265,7 +269,7 @@ bool MyCasinoCommandLineInterface::checkCallPrerequisites(short minRequiredUserT
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Query if this object is logged in. </summary>
+ * <summary>	Query if a client is already logged in. </summary>
  *
  * <returns>	True if logged in, false if not. </returns>
  *-----------------------------------------------------------------------------------------------**/
@@ -276,7 +280,7 @@ bool MyCasinoCommandLineInterface::isLoggedIn()
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Fullfills permission level. </summary>
+ * <summary>	Check whether the user fullfills permission level. </summary>
  *
  * <param name="minRequiredUserType">	Type of the minimum required user. </param>
  *
