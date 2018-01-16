@@ -7,7 +7,9 @@ using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using MyCasinoWSPhoneClient.Resources;
-
+#if !EMULATOR
+using PortForwardLib;
+#endif
 namespace MyCasinoWSPhoneClient
 {
     public partial class App : Application
@@ -17,6 +19,10 @@ namespace MyCasinoWSPhoneClient
         /// </summary>
         /// <returns>Der Stammframe der Phone-Anwendung.</returns>
         public static PhoneApplicationFrame RootFrame { get; private set; }
+
+#if !EMULATOR
+        PortForwarderWP pfWebSvc;
+#endif
 
         /// <summary>
         /// Konstruktor für das Application-Objekt.
@@ -54,13 +60,18 @@ namespace MyCasinoWSPhoneClient
                 // und verbraucht auch dann Akkuenergie, wenn der Benutzer das Telefon nicht verwendet.
                 PhoneApplicationService.Current.UserIdleDetectionMode = IdleDetectionMode.Disabled;
             }
-
+#if !EMULATOR
+            pfWebSvc = new PortForwarderWP(7193, 7777);
+#endif
         }
 
         // Code, der beim Starten der Anwendung ausgeführt werden soll (z. B. über "Start")
         // Dieser Code wird beim Reaktivieren der Anwendung nicht ausgeführt
         private void Application_Launching(object sender, LaunchingEventArgs e)
         {
+#if !EMULATOR
+            pfWebSvc.Run();
+#endif
         }
 
         // Code, der ausgeführt werden soll, wenn die Anwendung aktiviert wird (in den Vordergrund gebracht wird)
@@ -79,6 +90,9 @@ namespace MyCasinoWSPhoneClient
         // Dieser Code wird beim Deaktivieren der Anwendung nicht ausgeführt
         private void Application_Closing(object sender, ClosingEventArgs e)
         {
+#if !EMULATOR
+            pfWebSvc.Stop();
+#endif
         }
 
         // Code, der bei einem Navigationsfehler ausgeführt wird
@@ -101,7 +115,7 @@ namespace MyCasinoWSPhoneClient
             }
         }
 
-        #region Initialisierung der Phone-Anwendung
+#region Initialisierung der Phone-Anwendung
 
         // Doppelte Initialisierung vermeiden
         private bool phoneApplicationInitialized = false;
@@ -162,7 +176,7 @@ namespace MyCasinoWSPhoneClient
             }
         }
 
-        #endregion
+#endregion
 
         // Initialisieren Sie die Schriftart und Flussrichtung der App wie in den lokalisierten Ressourcenzeichenfolgen angegeben.
         //

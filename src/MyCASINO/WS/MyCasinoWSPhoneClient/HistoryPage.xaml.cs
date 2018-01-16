@@ -191,7 +191,7 @@ namespace MyCasinoWSPhoneClient
                             MessageBox.Show("Fehler beim abholen der Informationen für die Transaktionen: ");
                         }
                         //save all transaction information to the listboxes for gamer
-                        if (MyCasinoSvcHistory.UserType == 0)
+                        if (MyCasinoSvcHistory.UserType == 1)
                         {
                             int amount;
                             int.TryParse((resultTransInfo.information.ElementAt(3)), out amount);
