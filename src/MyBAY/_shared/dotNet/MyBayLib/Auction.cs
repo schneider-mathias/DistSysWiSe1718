@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using AuthenticationService;
 using System.Collections.Concurrent;
+using System.Globalization;
 
 namespace MyBayLib
 {
@@ -160,7 +161,7 @@ namespace MyBayLib
                 }
                 else
                 {
-                    return "Gebot ist zu niedrig, bieten Sie mehr als: " + this._highestBid.BidValue.ToString("C");
+                    return "Gebot ist zu niedrig, bieten Sie mehr als: " + String.Format(new CultureInfo("en-US"), "{0:C}", this._highestBid.BidValue);
                 }
             }
             informBidders(bidValue, bidderIndex);

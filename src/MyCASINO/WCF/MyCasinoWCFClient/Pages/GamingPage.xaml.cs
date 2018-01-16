@@ -168,12 +168,19 @@ namespace MyCasinoWCFClient.Pages
 
                 System.Windows.Application.Current.Shutdown();
             }
-            catch (Exception ex)
+           catch (Exception ex)
             {
                 if (ex is COMException)
                     errMsg = Codes.ResolveCode((ex as COMException).ErrorCode);
                 else
                     errMsg = "Unknown";
+
+                MessageBox.Show(errMsg);
+
+                if(ex.HResult == -2147023174)
+                {
+                    System.Windows.Application.Current.Shutdown();
+                }
             }
 #else
             try

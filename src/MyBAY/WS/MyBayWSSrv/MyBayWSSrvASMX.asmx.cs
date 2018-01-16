@@ -309,9 +309,8 @@ namespace MyBayWSSrv
                 }
                 else return "NoMessage";
             }
-            catch (Exception e)
+            catch (Exception)
             {
-
                 return "Fehler bei der Verarbeitung der Messages im Server";
             }
             return "OK";

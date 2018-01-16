@@ -108,6 +108,13 @@ namespace MyCasinoWCFClient.Pages
                                 errMsg = Codes.ResolveCode((ex as COMException).ErrorCode);
                             else
                                 errMsg = "Unknown";
+
+                            MessageBox.Show(errMsg);
+
+                            if(ex.HResult == -2147023174)
+                            {
+                                System.Windows.Application.Current.Shutdown();
+                            }
                         }
                         if (typeTmp == 1)
                         {

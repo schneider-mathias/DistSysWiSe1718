@@ -26,9 +26,9 @@ namespace MyBayWCFCln
 {
     static class comError
     {
-        static public string convertException(Exception ex)
+        static public bool convertException(Exception ex, out string retString)
         {
-            string retString = "";
+            retString = "";
             switch ((UInt32)ex.HResult)
             {
                 case 0xA0110001: // ERROR_AUCTIONNUMBER_NOT_AVAILABLE
@@ -79,10 +79,12 @@ namespace MyBayWCFCln
                     retString = "Der angemeldete Benutzer ist nicht der Auktionator dieser Auktion";
                     break;
                 default:
-                    retString = "Unbekannte COM Exception" + ex.Message;
-                    break;
+                    retString = "Unbekannte COM Exception";
+                    // the return value is false, if the convert function doesnt know the exception, to write a different message text for each 
+                    // catch, where an exception is catched
+                    return false;
             }
-            return retString;
+            return true;
         }
     }
 
@@ -301,12 +303,21 @@ namespace MyBayWCFCln
                 catch (Exception except)
                 {
 #if COM
-                    MessageBoxResult result = MessageBox.Show(comError.convertException(except), "Fehler", MessageBoxButton.OK);
+                    string retvalue;
+                    if (comError.convertException(except, out retvalue))
+                    {
+                        MessageBoxResult result = MessageBox.Show(retvalue, "Fehler", MessageBoxButton.OK);
+                    }
+                    else
+                    {
+                        MessageBoxResult result = MessageBox.Show("Fehler beim Verbinden zum Server, haben Sie die richtige Adresse eingegeben?", "Fehler", MessageBoxButton.OK);
+                    }    
 #else
-                    MessageBox.Show("Fehler beim Verbinden zum Server, haben Sie die richtige Adresse eingegeben? " + except.Message, "Warnung", MessageBoxButton.OK);
+                    MessageBox.Show("Fehler beim Verbinden zum Server, haben Sie die richtige Adresse eingegeben?", "Warnung", MessageBoxButton.OK);
 #endif
                 }
             }
+            // When logout button is clicked (same button, different functionality
             else
             {
                 try
@@ -346,13 +357,23 @@ namespace MyBayWCFCln
                     this.btn_getDetails.IsEnabled = false;
                     this.btn_endAuction.IsEnabled = false;
 
+                    // Empty AuctionList
+                    this.listBox_auctions.Items.Clear();
                     // Empty Messagelist
                     this.listBox_messages.Items.Clear();
                 }
                 catch (Exception except)
                 {
 #if COM
-                    MessageBoxResult result = MessageBox.Show(comError.convertException(except), "Fehler", MessageBoxButton.OK);
+                    string retvalue;
+                    if (comError.convertException(except, out retvalue))
+                    {
+                        MessageBoxResult result = MessageBox.Show(retvalue, "Fehler", MessageBoxButton.OK);
+                    }
+                    else
+                    {
+                        MessageBoxResult result = MessageBox.Show("Fehler beim Verbinden zum Server", "Fehler", MessageBoxButton.OK);
+                    }
 #else
                     MessageBoxResult result = MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
 #endif
@@ -388,7 +409,15 @@ namespace MyBayWCFCln
             catch (Exception except)
             {
 #if COM
-                MessageBoxResult result = MessageBox.Show(comError.convertException(except), "Fehler", MessageBoxButton.OK);
+                string retvalue;
+                if (comError.convertException(except, out retvalue))
+                {
+                    MessageBoxResult result = MessageBox.Show(retvalue, "Fehler", MessageBoxButton.OK);
+                }
+                else
+                {
+                    MessageBoxResult result = MessageBox.Show("Fehler beim Verbinden zum Server", "Fehler", MessageBoxButton.OK);
+                }
 #else
                 MessageBoxResult result = MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
 #endif
@@ -412,6 +441,7 @@ namespace MyBayWCFCln
                 if (!Double.TryParse(this.txtBox_bid.Text, out bidValue))
                 {
                     MessageBox.Show("Bitte geben Sie einen gültigen Wert für das Gebot an", "Warnung", MessageBoxButton.OK);
+                    return;
                 }
 
 #if COM
@@ -429,7 +459,15 @@ namespace MyBayWCFCln
             catch (Exception except)
             {
 #if COM
-                MessageBoxResult result = MessageBox.Show(comError.convertException(except), "Fehler", MessageBoxButton.OK);
+                string retvalue;
+                if (comError.convertException(except, out retvalue))
+                {
+                    MessageBoxResult result = MessageBox.Show(retvalue, "Fehler", MessageBoxButton.OK);
+                }
+                else
+                {
+                    MessageBoxResult result = MessageBox.Show("Fehler beim Verbinden zum Server", "Fehler", MessageBoxButton.OK);
+                }
 #else
                 MessageBoxResult result = MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
 #endif
@@ -465,7 +503,15 @@ namespace MyBayWCFCln
             catch (Exception except)
             {
 #if COM
-                MessageBoxResult result = MessageBox.Show(comError.convertException(except), "Fehler", MessageBoxButton.OK);
+                string retvalue;
+                if (comError.convertException(except, out retvalue))
+                {
+                    MessageBoxResult result = MessageBox.Show(retvalue, "Fehler", MessageBoxButton.OK);
+                }
+                else
+                {
+                    MessageBoxResult result = MessageBox.Show("Fehler beim Verbinden zum Server", "Fehler", MessageBoxButton.OK);
+                }
 #else
                 MessageBoxResult result = MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
 #endif
@@ -501,7 +547,15 @@ namespace MyBayWCFCln
             catch (Exception except)
             {
 #if COM
-                MessageBoxResult result = MessageBox.Show(comError.convertException(except), "Fehler", MessageBoxButton.OK);
+                string retvalue;
+                if (comError.convertException(except, out retvalue))
+                {
+                    MessageBoxResult result = MessageBox.Show(retvalue, "Fehler", MessageBoxButton.OK);
+                }
+                else
+                {
+                    MessageBoxResult result = MessageBox.Show("Fehler beim Verbinden zum Server", "Fehler", MessageBoxButton.OK);
+                }
 #else
                 MessageBoxResult result = MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
 #endif
@@ -587,7 +641,15 @@ namespace MyBayWCFCln
             catch (Exception except)
             {
 #if COM
-                MessageBoxResult result = MessageBox.Show(comError.convertException(except), "Fehler", MessageBoxButton.OK);
+                string retvalue;
+                if (comError.convertException(except, out retvalue))
+                {
+                    MessageBoxResult result = MessageBox.Show(retvalue, "Fehler", MessageBoxButton.OK);
+                }
+                else
+                {
+                    MessageBoxResult result = MessageBox.Show("Fehler beim Verbinden zum Server", "Fehler", MessageBoxButton.OK);
+                }
 #else
                 MessageBoxResult result = MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
 #endif
@@ -663,7 +725,15 @@ namespace MyBayWCFCln
             catch (Exception except)
             {
 #if COM
-                MessageBoxResult result = MessageBox.Show(comError.convertException(except), "Fehler", MessageBoxButton.OK);
+                string retvalue;
+                if (comError.convertException(except, out retvalue))
+                {
+                    MessageBoxResult result = MessageBox.Show(retvalue, "Fehler", MessageBoxButton.OK);
+                }
+                else
+                {
+                    MessageBoxResult result = MessageBox.Show("Fehler beim Verbinden zum Server", "Fehler", MessageBoxButton.OK);
+                }
 #else
                 MessageBoxResult result = MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
 #endif
