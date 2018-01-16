@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define PORTFWDLIBACTIVE
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -27,8 +29,6 @@ namespace MyBayWSPhoneCln
         public LoginPage()
         {
             InitializeComponent();
-
-            //_myDataObject.RemoteSrvMyBay = new MyBayWSSrv.MyBayWSSrvASMXSoapClient();
         }
 
         private void btn_login_Click(object sender, RoutedEventArgs e)
@@ -42,21 +42,25 @@ namespace MyBayWSPhoneCln
                 return;
             }
 
-            if (txtBox_serverip.Text.Contains("localhost")) {
-                // Do nothing
-            }
-            else if (IPAddress.TryParse(txtBox_serverip.Text, out srvAddressIP))
+            if (!txtBox_serverip.Text.Contains("localhost"))
             {
-                srvAddress = srvAddress.Replace("localhost", srvAddressIP.ToString());
-            }
-            else
-            {
-                MessageBox.Show("Bitte geben Sie eine gültige IP Adresse an","Warnung",MessageBoxButton.OK);       
+#if PORTFWDLIBACTIVE
+                MessageBox.Show("IP-Adresse kann bei Verwendung der PortforwardLib nicht geändert werden", "Warnung", MessageBoxButton.OK);
+                txtBox_serverip.Text = "localhost";
                 return;
+#else
+                if (IPAddress.TryParse(txtBox_serverip.Text, out srvAddressIP))
+                {
+                    srvAddress = srvAddress.Replace("localhost", srvAddressIP.ToString());
+                }
+                else
+                {
+                    MessageBox.Show("Bitte geben Sie eine gültige IP Adresse an", "Warnung", MessageBoxButton.OK);
+                    return;
+                }
+                App.MyDataObject.RemoteSrvMyBay.Endpoint.Address = new EndpointAddress(srvAddress);
+#endif
             }
-
-            App.MyDataObject.RemoteSrvMyBay.Endpoint.Address = new EndpointAddress(srvAddress);
-
 
             App.MyDataObject.RemoteSrvMyBay.loginCompleted += myBaySvc_login_completed;
 
@@ -80,9 +84,6 @@ namespace MyBayWSPhoneCln
                 {
                     App.MyDataObject.SessionID = args.sessionID;
                     MessageBox.Show("Sie wurden erfolgreich mit der Session ID: " + App.MyDataObject.SessionID + " angemeldet", "Hinweis", MessageBoxButton.OK);
-                    //this.ShowNewDialog<MainPage>(
-                    //    cp => { cp.MyDataObjectMain = _myDataObject; },
-                    //    cp => { MyDataObject = cp.MyDataObjectMain; });
                     this.ShowNewDialog<MainPage>();
                 }
             }

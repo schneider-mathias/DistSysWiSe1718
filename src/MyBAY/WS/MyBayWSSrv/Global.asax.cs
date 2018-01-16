@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define PORTFWDLIBACTIVE
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -10,12 +12,14 @@ namespace MyBayWSSrv
 {
     public class Global : System.Web.HttpApplication
     {
-        PortForwarder pf = new PortForwarder(7776, 7777);
-
+#if PORTFWDLIBACTIVE
+        PortForwarder pf = new PortForwarder(3333, 3332);
+#endif
         protected void Application_Start(object sender, EventArgs e)
         {
-            //pf.Run();
-
+#if PORTFWDLIBACTIVE
+            pf.Run();
+#endif
         }
 
         protected void Session_Start(object sender, EventArgs e)
@@ -45,8 +49,9 @@ namespace MyBayWSSrv
 
         protected void Application_End(object sender, EventArgs e)
         {
-            //pf.Stop();
-
+#if PORTFWDLIBACTIVE
+            pf.Stop();
+#endif
         }
     }
 }

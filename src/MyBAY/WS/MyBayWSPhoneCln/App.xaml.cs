@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define PORTFWDLIBACTIVE
+
+using System;
 using System.Diagnostics;
 using System.Resources;
 using System.Windows;
@@ -18,9 +20,9 @@ namespace MyBayWSPhoneCln
         /// </summary>
         /// <returns>Der Stammframe der Phone-Anwendung.</returns>
         public static PhoneApplicationFrame RootFrame { get; private set; }
-
-        PortForwarderWP pfWebSvc, pfWCFSvc;
-
+#if PORTFWDLIBACTIVE
+        PortForwarderWP pfWebSvc;
+#endif
         public static DataObject MyDataObject;
 
         /// <summary>
@@ -62,8 +64,9 @@ namespace MyBayWSPhoneCln
 
             App.MyDataObject = new DataObject();
 
-            //pfWebSvc = new PortForwarderWP(7776 , 7777);
-
+#if PORTFWDLIBACTIVE
+            pfWebSvc = new PortForwarderWP(3333, 3332);
+#endif
         }
 
         // Code zur Ausführung bei der Rückgabe einer Vertragsaktivierung wie z. B. einem "Auswahlvertrag zum Öffnen von Dateien" oder einer Dateispeicherauswahl 
@@ -76,8 +79,9 @@ namespace MyBayWSPhoneCln
         // Dieser Code wird beim Reaktivieren der Anwendung nicht ausgeführt
         private void Application_Launching(object sender, LaunchingEventArgs e)
         {
-            //pfWebSvc.Run();
-
+#if PORTFWDLIBACTIVE
+            pfWebSvc.Run();
+#endif
         }
 
         // Code, der ausgeführt werden soll, wenn die Anwendung aktiviert wird (in den Vordergrund gebracht wird)
@@ -96,9 +100,9 @@ namespace MyBayWSPhoneCln
         // Dieser Code wird beim Deaktivieren der Anwendung nicht ausgeführt
         private void Application_Closing(object sender, ClosingEventArgs e)
         {
-       
-            //pfWebSvc.Stop();
-
+#if PORTFWDLIBACTIVE
+            pfWebSvc.Stop();
+#endif
         }
 
         // Code, der bei einem Navigationsfehler ausgeführt wird

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,7 +28,7 @@ namespace MyBayWSPhoneCln
             this.lblAuctionName.Text = auctionName;
             this.lbl_AuctionNumber.Text = auctionNumber.ToString();
             this.auctionNumber = auctionNumber;
-            this.lbl_HighestBid.Text = highestBid.ToString("C");
+            this.lbl_HighestBid.Text = String.Format(new CultureInfo("en-US"), "{0:C}", highestBid);
             this.lbl_CountBids.Text = "Gebote: " + countBids.ToString();
 
             switch (auctionState)

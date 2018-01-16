@@ -148,7 +148,7 @@ namespace MyBayWSPhoneCln
                                     msg.Inlines.Add("Auktion beendet. Käufer: "
                                    + messageT.MessageText
                                    + " Preis: "
-                                   + messageT.MessageDoubleValue.ToString("C"));
+                                   + String.Format(new CultureInfo("en-US"), "{0:C}", messageT.MessageDoubleValue));
                                         msg.Inlines.Add(new LineBreak());
                                         msg.Inlines.Add("Artikel: "
                                        + messageT.MessageText2.ToString());
