@@ -7,7 +7,8 @@
 //			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
 //
 //			Date		Developer			Change
-//			13.01.2018	Mathias Schneider	Created
+//			29.12.2018	Mathias Schneider	Created
+//			XXXXXXXXXX	Mathias Schneider	Changed
  *-----------------------------------------------------------------------------------------------**/
 
 #pragma once
@@ -29,8 +30,28 @@ enum ArgumentType
 
 class ICommandLineInterface {
 public:
-	virtual bool ProcessCommand(std::vector<std::wstring>) = 0;
+
+	/**--------------------------------------------------------------------------------------------------
+	 * <summary>	Process the command described by commandList. </summary>
+	 *
+	 * <param name="commandList">	Command as a vector that should be processed. </param>
+	 *
+	 * <returns>	True if it succeeds, false if it fails. </returns>
+	 *-----------------------------------------------------------------------------------------------**/
+
+	virtual bool ProcessCommand(std::vector<std::wstring> commandList) = 0;
 private:
+
+	/**--------------------------------------------------------------------------------------------------
+	 * <summary>	Check if numeric value is between boundaries. </summary>
+	 *
+	 * <param name="number">  	Number to check. </param>
+	 * <param name="minBound">	[in,out] (Optional) If non-null, the minimum bound. </param>
+	 * <param name="maxBound">	[in,out] (Optional) If non-null, the maximum bound. </param>
+	 *
+	 * <returns>	True if it succeeds, false if it fails. </returns>
+	 *-----------------------------------------------------------------------------------------------**/
+
 	bool checkNumericArgument(int number, double* minBound = nullptr, double* maxBound = nullptr)
 	{
 		if (NULL == minBound && NULL == maxBound)
@@ -43,12 +64,31 @@ private:
 			return number >= *minBound && number <= *maxBound;
 	}
 
+	/**--------------------------------------------------------------------------------------------------
+	 * <summary>	Double to scientific string with precision. </summary>
+	 *
+	 * <param name="value">	   	The value to convert. </param>
+	 * <param name="precision">	(Optional) The precision for the 
+	 * 							double to string conversion. </param>
+	 *
+	 * <returns>	A std::wstring. </returns>
+	 *-----------------------------------------------------------------------------------------------**/
+
 	std::wstring doubleToScientificWString(double value,int precision=2)
 	{
 		std::wstringstream str;
 		str << std::setprecision(precision) << value;
 		return str.str();
 	}
+
+	/**--------------------------------------------------------------------------------------------------
+	 * <summary>	Fill a string which contains information whether 
+	 * 				an argument is within a range. </summary>
+	 *
+	 * <param name="argument">	[in,out] The argument. </param>
+	 * <param name="minBound">	[in,out] If non-null, the minimum bound. </param>
+	 * <param name="maxBound">	[in,out] If non-null, the maximum bound. </param>
+	 *-----------------------------------------------------------------------------------------------**/
 
 	void outputNotInRange(std::wstring& argument, double* minBound, double* maxBound)
 	{
@@ -75,6 +115,17 @@ private:
 	}
 
 protected:
+
+	/**--------------------------------------------------------------------------------------------------
+	 * <summary>	Check if arguments size is valid </summary>
+	 *
+	 * <param name="arguments">			 	[in,out] The arguments. </param>
+	 * <param name="minArgumentsCount">  	Number of minimum arguments. </param>
+	 * <param name="validArgumentsCount">	[in,out] Number of valid arguments. </param>
+	 *
+	 * <returns>	True if it succeeds, false if it fails. </returns>
+	 *-----------------------------------------------------------------------------------------------**/
+
 	bool checkCallArguments(std::vector<std::wstring>& arguments, size_t minArgumentsCount, std::vector<size_t>& validArgumentsCount)
 	{
 		bool argumentCountIsValid = true;
@@ -98,9 +149,10 @@ protected:
 
 		size_t maxSize = 0;
 		for (std::vector<size_t>::iterator it = validArgumentsCount.begin(); it != validArgumentsCount.end(); ++it)
+		{
 			if (maxSize < (*it))
 				maxSize = (*it);
-
+		}
 
 		if (argumentsCountWithoutCommand > maxSize)
 		{
@@ -115,6 +167,19 @@ protected:
 		return argumentCountIsValid;
 	}
 
+	/**--------------------------------------------------------------------------------------------------
+	 * <summary>	Safe argument cast for pointer types. </summary>
+	 *
+	 * <typeparam name="T">	Generic type parameter. </typeparam>
+	 * <param name="arguments">  	[in,out] The arguments. </param>
+	 * <param name="position">   	The position that should be casted. </param>
+	 * <param name="castedValue">	[in,out] If non-null, the casted value. </param>
+	 * <param name="minBound">   	[in,out] (Optional) If non-null, the minimum bound. </param>
+	 * <param name="maxBound">   	[in,out] (Optional) If non-null, the maximum bound. </param>
+	 * <param name="type">		 	(Optional) The detailed type for conversion. </param>
+	 *
+	 * <returns>	True if it succeeds, false if it fails. </returns>
+	 *-----------------------------------------------------------------------------------------------**/
 
 	template< typename T>
 	bool safeArgumentCast(std::vector<std::wstring>& arguments, int position, T** castedValue, double* minBound = nullptr, double* maxBound = nullptr, ArgumentType type = ArgumentType::DEFAULT)
@@ -156,6 +221,19 @@ protected:
 
 	}
 
+	/**--------------------------------------------------------------------------------------------------
+	 * <summary>	Safe argument cast for value types. </summary>
+	 *
+	 * <typeparam name="T">	Generic type parameter. </typeparam>
+	 * <param name="arguments">  	[in,out] The arguments. </param>
+	 * <param name="position">   	The position that should be casted. </param>
+	 * <param name="castedValue">	[in,out] If non-null, the casted value. </param>
+	 * <param name="minBound">   	[in,out] (Optional) If non-null, the minimum bound. </param>
+	 * <param name="maxBound">   	[in,out] (Optional) If non-null, the maximum bound. </param>
+	 * <param name="type">		 	(Optional) The detailed type for conversion. </param>
+	 *
+	 * <returns>	True if it succeeds, false if it fails. </returns>
+	 *-----------------------------------------------------------------------------------------------**/
 
 	template< typename T>
 	bool safeArgumentCast(std::vector<std::wstring>& arguments, int position, T* castedValue, double* minBound = nullptr, double* maxBound = nullptr, ArgumentType type = ArgumentType::DEFAULT)

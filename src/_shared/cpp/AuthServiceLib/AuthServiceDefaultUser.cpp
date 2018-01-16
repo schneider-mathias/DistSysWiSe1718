@@ -2,7 +2,8 @@
 // project:	AuthServiceLib
 // file:	AuthServiceDefaultUser.cpp
 //
-// summary:	Implements the authentication service default user class
+// summary:	Implements the authentication service default user class 
+//			which simply contains a username and a password.
 //
 //			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
 //

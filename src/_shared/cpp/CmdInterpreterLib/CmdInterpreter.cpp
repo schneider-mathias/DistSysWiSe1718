@@ -2,12 +2,16 @@
 // project:	CmdInterpreterLib
 // file:	CmdInterpreter.cpp
 //
-// summary:	Implements the command interpreter class
+// summary:	Implements the command interpreter class. The class gets commands 
+//			from the commandline and passes it to the registered dispatcher method.
+//			It collects the cout and cerr stream into its own stream and displays it
+//			after a command was run in a formatted way.
 //
 //			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
 //
 //			Date		Developer			Change
-//			13.01.2018	Mathias Schneider	Created
+//			29.12.2018	Mathias Schneider	Created
+//			XXXXXXXXXX	Mathias Schneider	Changed
  *-----------------------------------------------------------------------------------------------**/
 
 #include <iostream>
@@ -17,8 +21,9 @@
 /**--------------------------------------------------------------------------------------------------
  * <summary>	Constructor. </summary>
  *
- * <param name="defaultSuccessMsg">	The default success message. </param>
- * <param name="defaultErrorMsg">  	The default error message. </param>
+ * <param name="linePrefix">	   	The line prefix before any output message. </param>
+ * <param name="defaultSuccessMsg">	The default success message after a command succedded. </param>
+ * <param name="defaultErrorMsg">  	The default error message after a command failed. </param>
  *-----------------------------------------------------------------------------------------------**/
 
 CmdInterpreter::CmdInterpreter(std::wstring linePrefix, std::wstring defaultSuccessMsg, std::wstring defaultErrorMsg)
@@ -34,14 +39,16 @@ CmdInterpreter::CmdInterpreter(std::wstring linePrefix, std::wstring defaultSucc
 /** <summary>	Destructor. </summary> */
 CmdInterpreter::~CmdInterpreter()
 {
-	std::cout.rdbuf(m_previousBufferOut); //reset
+	// reset stream
+	std::cout.rdbuf(m_previousBufferOut); 
 }
 
 /**--------------------------------------------------------------------------------------------------
  * <summary>	Registers the command dispatcher. </summary>
  *
- * <param name="dispatcherObj">	[in,out] If non-null, the dispatcher object. </param>
- * <param name="func">		   	The function. </param>
+ * <param name="dispatcherObj">	[in,out] If non-null, the dispatcher object which contains the
+ * 								logic for processing a command string. </param>
+ * <param name="func">		   	The processing member funcion of the dispatcher object. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
  *-----------------------------------------------------------------------------------------------**/
@@ -50,16 +57,17 @@ bool CmdInterpreter::registerCmdDispatcher(ICommandLineInterface* dispatcherObj,
 {
 	m_pDispatcherObj = dispatcherObj;
 	m_dispatcherFunc = func;
-	return false;
+	return true;
 }
 
 /**--------------------------------------------------------------------------------------------------
  * <summary>
- * https://stackoverflow.com/questions/18675364/c-tokenize-a-string-with-spaces-and-quotes.
+ * Splits an command string to its parameters (takes quotes into account). 
+ * Code from https://stackoverflow.com/questions/18675364/c-tokenize-a-string-with-spaces-and-quotes.
  * </summary>
  *
- * <param name="qargs">  	[in,out] The qargs. </param>
- * <param name="command">	The command. </param>
+ * <param name="qargs">  	[in,out] The split arguments. </param>
+ * <param name="command">	The command string that should be split. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
  *-----------------------------------------------------------------------------------------------**/
@@ -108,17 +116,18 @@ bool CmdInterpreter::splitInArgs(std::vector<std::wstring>& qargs, std::wstring 
 	return true;
 }
 
-/** <summary>	Initializes this object. </summary> */
+/** <summary>	Initializes the commandline interpreter. </summary> */
 void CmdInterpreter::init()
 {
 	m_previousBufferOut = std::cout.rdbuf(m_outBuffer.rdbuf());
 }
 
-/** <summary>	Runs this object. </summary> */
+/** <summary>	Runs the commandline interpreter. </summary> */
 void CmdInterpreter::run()
 {
 	m_previousBufferOut = std::cout.rdbuf(m_outBuffer.rdbuf());
 
+	// toggle between reading and writing
 	while (m_mode != CmdModes::Stopped)
 	{
 		if (m_mode == CmdModes::Writing)
@@ -142,7 +151,7 @@ void CmdInterpreter::run()
 /**--------------------------------------------------------------------------------------------------
  * <summary>	Executes the given command. </summary>
  *
- * <param name="command">	The command. </param>
+ * <param name="command">	The command as a string that should be executed. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
  *-----------------------------------------------------------------------------------------------**/
@@ -151,12 +160,15 @@ bool CmdInterpreter::execute(std::wstring command)
 {
 	if (!command.empty())
 	{
+		// split comand to its parts
 		std::vector<std::wstring> commandArguments;
 		if (!splitInArgs(commandArguments, command))
 		{
 			std::cerr << "Command ends with opened quotes" << std::endl;
+			return false;
 		}
 
+		// execute command by passing it to the dispatcher object method for processing the command parameters
 		if (commandArguments.size() > 0)
 		{
 			if (NULL != m_dispatcherFunc && !CALL_MEMBER_FN(*m_pDispatcherObj, m_dispatcherFunc)(commandArguments))
@@ -174,7 +186,7 @@ bool CmdInterpreter::execute(std::wstring command)
 	return false;
 }
 
-/** <summary>	Stops this object. </summary> */
+/** <summary>	Stops this the commandline interpreter. </summary> */
 void CmdInterpreter::stop()
 {
 	cout();
@@ -189,7 +201,7 @@ void CmdInterpreter::stop()
 }
 
 
-/** <summary>	Couts this object. </summary> */
+/** <summary>	Outputs the collected buffer to console in a formatted way. </summary> */
 void CmdInterpreter::cout()
 {
 	if (m_outBuffer.str().empty())
@@ -212,10 +224,11 @@ void CmdInterpreter::cout()
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	https://stackoverflow.com/questions/13172158/c-split-string-by-line. </summary>
+ * <summary>	Split a string by a delimter into a vector.
+ * 				https://stackoverflow.com/questions/13172158/c-split-string-by-line. </summary>
  *
- * <param name="str">	   	The string. </param>
- * <param name="delimiter">	The delimiter. </param>
+ * <param name="str">	   	The string whch should be split. </param>
+ * <param name="delimiter">	The delimiter for splitting. </param>
  *
  * <returns>	A std::vector&lt;std::string&gt; </returns>
  *-----------------------------------------------------------------------------------------------**/
