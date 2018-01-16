@@ -41,7 +41,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>Bin\Release</OutputPath>
-    <DefineConstants>TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
+    <DefineConstants>TRACE;SILVERLIGHT;WINDOWS_PHONE;EMULATOR</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
@@ -191,7 +191,9 @@
     <Content Include="Images\Logo\Casino_Cubes.PNG" />
     <Content Include="Images\Logo\Casino_Icon_Cubes.ico" />
     <Content Include="Images\Logo\Casino_Icon_Cubes_white.PNG" />
-    <Content Include="ServiceReferences.ClientConfig" />
+    <Content Include="ServiceReferences.ClientConfig">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\AlignmentGrid.png" />
