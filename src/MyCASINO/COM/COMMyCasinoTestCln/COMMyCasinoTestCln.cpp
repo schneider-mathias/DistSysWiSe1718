@@ -120,6 +120,8 @@ BOOL testcase_win_two_numbers_bets(CmdInterpreter& interpreter)
 
 	if (!runCommand(interpreter, L"showstatus"))
 		return E_FAIL;
+
+	return S_OK;
 }
 
 /**--------------------------------------------------------------------------------------------------
@@ -471,6 +473,7 @@ BOOL testcase_transaction_order_casino(CmdInterpreter& interpreter)
 	if (!runCommand(interpreter, L"showstatus"))
 		return E_FAIL;
 
+	return S_OK;
 }
 
 /**--------------------------------------------------------------------------------------------------
