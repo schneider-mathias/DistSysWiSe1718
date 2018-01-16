@@ -604,7 +604,8 @@ namespace MyCasinoWSPhoneClient
             }
             else if ("NO_OPERATOR_LOGGED_IN" == errMsg)
             {
-                MessageBox.Show("Kein Betreiber eingeloggt!");
+                //Already checked in refresh!
+                //MessageBox.Show("Kein Betreiber eingeloggt!");
             }
             else if ("BET_AMOUNT_TOO_HIGH" == errMsg)
             {
@@ -683,6 +684,10 @@ namespace MyCasinoWSPhoneClient
             if (errMsgShowBets == "INVALID_SESSION_ID")
             {
                 MessageBox.Show("Ungültige ID!");
+            }
+            else if (result.errMsg == "OPERATOR_NOT_LOGGED_IN")
+            {
+                MessageBox.Show("Kein Betreiber angemeldet");
             }
             else if(errMsgShowBets!=null)
             {
@@ -792,6 +797,27 @@ namespace MyCasinoWSPhoneClient
 
             //Refresh showbets
             btnRefresh_Click(new object(), new RoutedEventArgs());
+        }
+        #endregion
+
+        #region Page loaded
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+
+            btnRefresh_Click(new object(), new RoutedEventArgs());
+            if (MyCasinoSvcGaming.UserType == 1)
+            {
+                btnBet.Visibility = Visibility.Visible;
+                tbxBetSum.Visibility = Visibility.Visible;
+                tblSetAmount.Visibility = Visibility.Visible;
+            }
+            else if (MyCasinoSvcGaming.UserType == 0)
+            {
+                btnDraw.Visibility = Visibility.Visible;
+                btnDrawNumbers.Visibility = Visibility.Visible;
+                BtnPayIn.Visibility = Visibility.Visible;
+                
+            }
         }
         #endregion
     }

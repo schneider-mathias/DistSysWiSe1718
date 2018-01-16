@@ -24,6 +24,8 @@ namespace MyCasinoWSPhoneClient
         PortForwarderWP pfWebSvc;
 #endif
 
+
+
         /// <summary>
         /// Konstruktor für das Application-Objekt.
         /// </summary>
@@ -58,6 +60,7 @@ namespace MyCasinoWSPhoneClient
                 // die Leerlauferkennung der Anwendung deaktiviert wird.
                 // Vorsicht: Nur im Debugmodus verwenden. Eine Anwendung mit deaktivierter Benutzerleerlauferkennung wird weiterhin ausgeführt
                 // und verbraucht auch dann Akkuenergie, wenn der Benutzer das Telefon nicht verwendet.
+
                 PhoneApplicationService.Current.UserIdleDetectionMode = IdleDetectionMode.Disabled;
             }
 #if !EMULATOR

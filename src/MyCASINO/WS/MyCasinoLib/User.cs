@@ -20,7 +20,7 @@ namespace MyCasinoLib
         public int id;
         public string username;
         private string password;
-        private MyCasinoUserTypes userType;
+        private int userType;
         public Account account = new Account();
         private int sessionId;
 
@@ -30,7 +30,7 @@ namespace MyCasinoLib
             set { sessionId = value; }
         }
 
-        public MyCasinoUserTypes UserType
+        public int UserType
         {
             get { return userType; }
             set { userType = value; }
@@ -49,7 +49,7 @@ namespace MyCasinoLib
             set { password = value; }
         }
 
-        public User(int identification, string name, string pw, MyCasinoUserTypes type)
+        public User(int identification, string name, string pw, int type)
         {
             id = identification;
             Username = name;
@@ -57,7 +57,7 @@ namespace MyCasinoLib
             UserType = type;
         }
 
-        public User(string name, int sessionid, MyCasinoUserTypes type)
+        public User(string name, int sessionid, int type)
         {
             Username = name;
             SessionId = sessionId;
@@ -68,7 +68,7 @@ namespace MyCasinoLib
 
     public class AuthService
     {
-        
+
         /// <summary>
         /// lock object for userlist
         /// </summary>
@@ -92,13 +92,7 @@ namespace MyCasinoLib
             try
             {
                 //Read UserList.txt line by line
-
-#if _IIS_DEPLOY_ // is set for Release configuration
-                using (FileStream fs = File.OpenRead("C:\\inetpub\\wwwroot\\UserList.txt"))
-#else
-                using (FileStream fs = File.OpenRead(Environment.GetEnvironmentVariable("SystemDrive") + "\\_MyCasinoData\\UserList.txt"))
-#endif
-                
+                using (FileStream fs = File.OpenRead(Environment.GetEnvironmentVariable("SystemDrive") + "\\_myCasinoData\\UserList.txt"))
                 using (StreamReader sr = new StreamReader(fs))
                 {
 
@@ -111,16 +105,12 @@ namespace MyCasinoLib
                         Int32.TryParse(substring[3], out type);
                         lock (thisLockUserList)
                         {
-                            userList.Add(new User(id, substring[1], substring[2], (MyCasinoUserTypes)type));
+                            userList.Add(new User(id, substring[1], substring[2], (int)type));
                         }
                     }
                 }
                 //Get initial money
-#if _IIS_DEPLOY_ // is set for Release configuration
-                using (FileStream fsBal = File.OpenRead("C:\\inetpub\\wwwroot\\UserBalance.txt"))
-#else
-                using (FileStream fsBal = File.OpenRead(Environment.GetEnvironmentVariable("SystemDrive") + "\\_MyCasinoData\\UserBalance.txt"))
-#endif
+                using (FileStream fsBal = File.OpenRead(Environment.GetEnvironmentVariable("SystemDrive") + "\\_myCasinoData\\UserBalance.txt"))
                 using (StreamReader srBal = new StreamReader(fsBal))
                 {
                     string line;
@@ -140,7 +130,7 @@ namespace MyCasinoLib
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return false;
             }
@@ -154,26 +144,24 @@ namespace MyCasinoLib
                 {
                     if (username == user.username && pw == user.Password && 0 == user.SessionId)
                     {
-                        if (user.UserType == MyCasinoUserTypes.Operator && m_operator == true)
+                        if (user.UserType == 0 && m_operator == true)
                         {
                             user.SessionId = unchecked(Convert.ToInt32(GenerateId()));
                             sessionId = user.SessionId;
-                            type = (int)user.UserType;
+                            type = user.UserType;
                             currUser = user;
                             return "OPERATOR_ALREADY_LOGGED_IN";
                         }
 
-                        if (user.UserType == MyCasinoUserTypes.Operator && m_operator == false)
+                        if (user.UserType == 0 && m_operator == false)
                         {
                             m_operator = true;
                         }
                         //Read transaction information
                         user.account.ReadUserTransaction(user.username, dictTransDraw);
-
-                        //user.SessionId = unchecked(Convert.ToInt32(GenerateId()));
                         user.SessionId = Math.Abs(unchecked(GenerateId()));
                         sessionId = user.SessionId;
-                        type = (int)user.UserType;
+                        type = user.UserType;
                         currUser = user;
                         return "S_OK";
                     }
@@ -181,7 +169,7 @@ namespace MyCasinoLib
                 }
             }
             sessionId = 0;
-            type = 3;
+            type = 2;
             lock (thisLockUserList)
             {
                 foreach (User user in userList)
@@ -204,11 +192,7 @@ namespace MyCasinoLib
         public string Logout(int sessionId)
         {
             //save all current amounts for all users
-#if _IIS_DEPLOY_
-            using (StreamWriter sw = new StreamWriter("C:\\inetpub\\wwwroot\\UserBalance.txt", false))
-#else
-            using (StreamWriter sw = new StreamWriter(Environment.GetEnvironmentVariable("SystemDrive") + "\\_MyCasinoData\\UserBalance.txt", false))
-#endif
+            using (StreamWriter sw = new StreamWriter(Environment.GetEnvironmentVariable("SystemDrive") + "\\_myCasinoData\\UserBalance.txt", false))
             {
                 lock (thisLockUserList)
                 {
@@ -223,7 +207,7 @@ namespace MyCasinoLib
                 foreach (User user in userList)
                 {
 
-                    if (sessionId == user.SessionId && user.UserType == MyCasinoUserTypes.Operator)
+                    if (sessionId == user.SessionId && user.UserType == 0)
                     {
                         m_operator = false;
                         user.SessionId = 0;

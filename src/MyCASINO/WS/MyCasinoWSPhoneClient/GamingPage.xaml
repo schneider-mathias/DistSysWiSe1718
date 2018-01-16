@@ -10,7 +10,7 @@
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
     SupportedOrientations="Portrait" Orientation="Portrait"
-    mc:Ignorable="d"
+    mc:Ignorable="d" Loaded="Page_Loaded"
     shell:SystemTray.IsVisible="True">
 
     <!--LayoutRoot ist das Stammraster, in dem alle anderen Seiteninhalte platziert werden-->
@@ -48,15 +48,15 @@
                 Background="OrangeRed" FontSize="20" Width="150" Margin="0 0 0 0"/>
             <Button x:Name="BtnHistory" Click="BtnHistory_Click" Content="Verlauf" Grid.Row="1" Grid.Column="2"
                 Background="OrangeRed" FontSize="20" Width="150" Margin="0 0 0 0"/>
-            <Button x:Name="BtnPayIn" Click="BtnPayIn_Click" Content="Einzahlen" Grid.Row="1" Grid.Column="3" 
+            <Button x:Name="BtnPayIn" Visibility="Collapsed" Click="BtnPayIn_Click" Content="Einzahlen" Grid.Row="2" Grid.Column="3" 
                 Background="OrangeRed" FontSize="20" Width="150" Margin="0 0 0 0"/>
             
             <!--Logout-->
-            <Button x:Name="btnLogout" Click="btnLogout_Click" Content="Logout" Background="OrangeRed" Grid.Row="2" Grid.Column="3" FontSize="20"/>
+            <Button x:Name="btnLogout" Click="btnLogout_Click" Content="Logout" Background="OrangeRed" Grid.Row="1" Grid.Column="3" FontSize="20"/>
 
             <!--Draw button for casino owner only-->
-            <Button x:Name="btnDraw" Click="btnDraw_Click" Content="Zufall ziehen" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="1" FontSize="15" Background="CornflowerBlue" Foreground="White"/>
-            <Button x:Name="btnDrawNumbers" Click="btnDrawNumbers_Click" Content="Zahlen ziehen" Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="1" FontSize="15" Background="CornflowerBlue" Foreground="White"/>
+            <Button x:Name="btnDraw" Visibility="Collapsed" Click="btnDraw_Click" Content="Zufall ziehen" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="1" FontSize="15" Background="CornflowerBlue" Foreground="White"/>
+            <Button x:Name="btnDrawNumbers" Visibility="Collapsed" Click="btnDrawNumbers_Click" Content="Zahlen ziehen" Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="1" FontSize="15" Background="CornflowerBlue" Foreground="White"/>
 
             <Grid Background="CornflowerBlue" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3">
                 <Grid.ColumnDefinitions>
@@ -92,13 +92,13 @@
             </Grid>
 
             <!--Bet amount-->
-            <TextBlock x:Name="tblSetAmount" Text="Einsatz in €:" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="1" FontSize="20"
+            <TextBlock x:Name="tblSetAmount" Visibility="Collapsed" Text="Einsatz in €:" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="1" FontSize="20"
                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <TextBox x:Name="tbxBetSum" Text="" KeyUp="tbxBetSum_KeyUp" KeyDown="tbxBetSum_KeyDown" TextAlignment="Right" Grid.Row="4" Grid.Column="2" FontSize="20" HorizontalAlignment="Center" 
+            <TextBox x:Name="tbxBetSum" Visibility="Collapsed" Text="" KeyUp="tbxBetSum_KeyUp" KeyDown="tbxBetSum_KeyDown" TextAlignment="Right" Grid.Row="4" Grid.Column="2" FontSize="20" HorizontalAlignment="Center" 
                       Width="150" BorderBrush="CornflowerBlue" BorderThickness="2"  VerticalAlignment="Center"/>
 
             <!--Set bet-->
-            <Button x:Name="btnBet" Content="Wetten" Click="btnBet_Click" IsEnabled="False" Grid.Row="4" Grid.Column="3" FontSize="20"  
+            <Button x:Name="btnBet" Visibility="Collapsed" Content="Wetten" Click="btnBet_Click" IsEnabled="False" Grid.Row="4" Grid.Column="3" FontSize="20"  
                      Background="CornflowerBlue" Foreground="White"/>
 
             <!--Refreshbutton-->

@@ -51,9 +51,18 @@ namespace MyCasinoWSServer
                 lock (thisLockUserListLoggedOn)
                 {
                     if (currUser != null) userListLoggedOn.Add(currUser);
+                    foreach (User user in userListLoggedOn)
+                    {
+                        if (user.UserType == 0)
+                        {
+                            Console.WriteLine(username + ": logged in");
+                            return true;
+                        }
+                    }
+                    errMsg = "OPERATOR_NOT_LOGGED_IN";
+                    Console.WriteLine(username + ": logged in. No operator logged in!");
+                    return false;
                 }
-                Console.WriteLine(username + ": logged in");
-                return true;
             }
             //Login unsuccessful 
             Console.WriteLine("ERROR: " + errMsg);
@@ -75,7 +84,7 @@ namespace MyCasinoWSServer
             //delete user in loggedlist and empty all bets of specific user
             lock (thisLockUserListLoggedOn)
             {
-                User userOperatorCheck = userListLoggedOn.Find(item => item.UserType == MyCasinoUserTypes.Operator);
+                User userOperatorCheck = userListLoggedOn.Find(item => item.UserType == 0);
                 if (userOperatorCheck != null)
                 {
                     if (sessionId == userOperatorCheck.SessionId)
@@ -207,32 +216,59 @@ namespace MyCasinoWSServer
 
             lock (thisLockUserListLoggedOn)
             {
-                User userOperatorCheck = userListLoggedOn.Find(item => item.UserType == MyCasinoUserTypes.Operator);
+                User userOperatorCheck = userListLoggedOn.Find(item => item.UserType == 0);
                 if (userOperatorCheck != null)
                 {
+                    double profitForOneMatch = 0, profitForTwoMatches = 0;
                     //init
                     MyCasinoTransactionTypes transType;
-                    double profitForOneMatch = 0, profitForTwoMatches = 0;
-                    double profitForOneMatchTmp = 0, profitForTwoMatchesTmp = 0;
+                    double profitForTwoMatchesTmp = 0;
                     double moneyAmountLeftChange = userOperatorCheck.account.MoneyAmountLeft;
                     List<Bet> betsProfit = new List<Bet>();
                     //calculate how much money the operator will have after bet
-                    foreach (User userCalcProfit in userListLoggedOn)
+
+                    List<Bet> betsTmp = new List<Bet>();
+                    User userNameTmpBet = userListLoggedOn.Find(item => item.SessionId == sessionId);
+
+                    foreach (User user in userListLoggedOn)
                     {
-                        double amount = 0, max = 0;
-                        userCalcProfit.account.getBetList(out betsProfit);
-                        for (int i = 0; i < betsProfit.Count; i++)
+                        user.account.getBetList(out betsTmp);
+                        if (userNameTmpBet.SessionId == sessionId)
                         {
-                            amount = betsProfit.ElementAt(i).M_setAmount;
-                            if (max < amount) max = amount;
+                            betsTmp.Add(new Bet(userNameTmpBet.Username, firstNumber, secondNumber, amountMoney));
                         }
-                        userCalcProfit.account.CalculateProfit(max, out profitForOneMatchTmp, out profitForTwoMatchesTmp);
-                        userCalcProfit.account.CalculateProfit(amountMoney, out profitForOneMatch, out profitForTwoMatches);
-                        if (profitForTwoMatches < profitForTwoMatchesTmp) moneyAmountLeftChange -= profitForTwoMatchesTmp;
-                        else { moneyAmountLeftChange -= profitForTwoMatches; }
+                        for (int i = 0; i < betsTmp.Count; i++)
+                        {
+                            if (betsTmp.ElementAt(i).M_firstNumber == firstNumber && betsTmp.ElementAt(i).M_secondNumber == secondNumber)
+                            {
+                                user.account.CalculateProfit(amountMoney, out profitForOneMatch, out profitForTwoMatches);
+
+                                if (user.SessionId == sessionId)
+                                {
+                                    profitForTwoMatches = profitForTwoMatches - amountMoney;
+                                    break;
+                                }
+                            }
+                        }
+
+                        betsTmp.Remove(new Bet(userNameTmpBet.Username, firstNumber, secondNumber, amountMoney));
                     }
+
+                    foreach (User userProfit in userListLoggedOn)
+                    {
+                        List<Bet> betlist = new List<Bet>();
+                        userProfit.account.getBetList(out betlist);
+                        for (int k = 0; k < betlist.Count; k++)
+                        {
+                            profitForTwoMatchesTmp += betlist.ElementAt(k).M_setAmount;
+                        }
+                    }
+
+                    //profitForTwoMatchesTmp += amountMoney;
+                    profitForTwoMatches += profitForTwoMatchesTmp;
                     //check if operator has enough money to support this bet
-                    if (moneyAmountLeftChange + amountMoney > 0)
+                    if (moneyAmountLeftChange >= profitForTwoMatches || amountMoney == 0)
+                    //if (moneyAmountLeftChange + amountMoney >= profitForTwoMatchesTmp || amountMoney==0)
                     {
                         //check if money of user is enough
                         User useraccountmoney = userListLoggedOn.Find(item => item.SessionId == sessionId);
@@ -259,8 +295,28 @@ namespace MyCasinoWSServer
                             }
                         }
                         //add the additional bet funds to casino
-                        userOperatorCheck.account.MoneyAmountLeft += amountMoney;
-                        useraccountmoney.account.MoneyAmountLeft -= amountMoney;
+                        if (amountMoney != 0)
+                        {
+                            userOperatorCheck.account.MoneyAmountLeft += amountMoney;
+                            useraccountmoney.account.MoneyAmountLeft -= amountMoney;
+                        }
+                        else
+                        {
+                            foreach (User userAmountLeft in userListLoggedOn)
+                            {
+                                List<Bet> bets = new List<Bet>();
+                                userAmountLeft.account.getBetList(out bets);
+                                bets.Add(new Bet(userAmountLeft.Username, firstNumber, secondNumber, amountMoney));
+                                for (int i = 0; i < bets.Count; i++)
+                                {
+                                    if (bets.ElementAt(i).M_firstNumber == firstNumber && bets.ElementAt(i).M_secondNumber == secondNumber)
+                                    {
+                                        userOperatorCheck.account.MoneyAmountLeft += bets.ElementAt(i).M_setAmount;
+                                        useraccountmoney.account.MoneyAmountLeft -= bets.ElementAt(i).M_setAmount;
+                                    }
+                                }
+                            }
+                        }
                         //setup for bet
                         bool overridden;
                         bool delOverriddenBet;
@@ -376,6 +432,16 @@ namespace MyCasinoWSServer
                         if (bets.ElementAt(i).M_firstNumber == firstNumber && bets.ElementAt(i).M_secondNumber == secondNumber)
                         {
                             user.account.CalculateProfit(amountMoney, out profitForOneMatch, out profitForTwoMatches);
+                            foreach (User userProfit in userListLoggedOn)
+                            {
+                                List<Bet> betlist = new List<Bet>();
+                                userProfit.account.getBetList(out betlist);
+                                for (int k = 0; k < betlist.Count; k++)
+                                {
+                                    profitForTwoMatches += betlist.ElementAt(k).M_setAmount;
+                                }
+                            }
+                            profitForTwoMatches = profitForTwoMatches - amountMoney;
                         }
                     }
                 }
@@ -386,6 +452,17 @@ namespace MyCasinoWSServer
         [WebMethod]
         public bool showbets(int sessionId, out List<string> names, out List<int> firstNumber, out List<int> secondNumber, out List<double> amount, out int count, out string errMsg)
         {
+            //check if operator is logged in
+            errMsg = "OPERATOR_NOT_LOGGED_IN";
+            foreach (User user in userListLoggedOn)
+            {
+                if (user.UserType == 0)
+                {
+                    errMsg = null;
+                    Console.WriteLine("Showbets: no operator logged in");
+                }
+            }
+
             //Initialization of out params
             List<Bet> betsUser = new List<Bet>();
             names = null;
@@ -416,6 +493,7 @@ namespace MyCasinoWSServer
                     for (int i = 0; i < betsUser.Count; i++)
                     {
                         //set values for the data that has to be sent to the client
+
                         names.Add(betsUser.ElementAt(i).M_name.ToString());
                         firstNumber.Add(betsUser.ElementAt(i).M_firstNumber);
                         secondNumber.Add(betsUser.ElementAt(i).M_secondNumber);
@@ -424,125 +502,8 @@ namespace MyCasinoWSServer
                     }
                 }
 
-                errMsg = null;
                 return true;
             }
-        }
-
-        [WebMethod]
-        public bool drawtest(int sessionId, int firstNumberTest, int secondNumberTest, out string errMsg)
-        {
-            //Check for valid sessionId
-            if (!m_authService.SessionIdCheck(sessionId))
-            {
-                errMsg = "INVALID_SESSION_ID";
-                Console.WriteLine(errMsg);
-                return false;
-            }
-            if (firstNumberTest == 0 || secondNumberTest == 0)
-            {
-                errMsg = "ERROR_MY_CASINO_BET_INVALID_NUMBER";
-                Console.WriteLine(errMsg);
-                return false;
-            }
-            //init
-            List<double> profit = null;
-            int count = 0;
-            //save all bets with drawing numbers
-            lock (thisLockUserListLoggedOn)
-            {
-                foreach (User userdrawingbets in userListLoggedOn)
-                {
-                    count = 0;
-                    if (MyCasinoUserTypes.Gamer == userdrawingbets.UserType)
-                    {
-                        //calculate money won
-                        userdrawingbets.account.Profit(firstNumberTest, secondNumberTest, out profit);
-                        //save all bets with drawing numbers and amount won or lost
-                        lock (thisLockDictTransDraw)
-                        {
-                            for (int i = 0; i < dictTransDraw.Count; i++)
-                            {
-                                if (!(dictTransDraw.ElementAt(i).Value == null) &&
-                                    profit.Count > 0 &&
-                                    dictTransDraw.ElementAt(i).Key.Name == userdrawingbets.username)
-                                {
-                                    if (dictTransDraw.ElementAt(i).Key.TransType == MyCasinoTransactionTypes.BET_WAGER)
-                                    {
-                                        dictTransDraw.ElementAt(i).Value.M_drawnFirstNumber = firstNumberTest;
-                                        dictTransDraw.ElementAt(i).Value.M_drawnSecondNumber = secondNumberTest;
-                                        if (profit.ElementAt(count) > 0)
-                                        {
-                                            dictTransDraw.ElementAt(i).Key.TransType = MyCasinoTransactionTypes.BET_WIN;
-                                            dictTransDraw.ElementAt(i).Value.MoneyWon = profit.ElementAt(count);
-                                            dictTransDraw.ElementAt(i).Key.ChangeAmount = profit.ElementAt(count);
-                                            //find the right element in the dictionary, (i-1) is always > than 0
-                                            int index = 1;
-                                            for (int k = 1; k < dictTransDraw.Count + 1; k++)
-                                            {
-                                                if (dictTransDraw.ElementAt(i - k).Key.TransType == MyCasinoTransactionTypes.DEPOSIT &&
-                                                    dictTransDraw.ElementAt(i - k).Key.Name == userdrawingbets.username) break;
-                                                else if (dictTransDraw.ElementAt(i - k).Key.TransType == MyCasinoTransactionTypes.BET_WIN &&
-                                                    dictTransDraw.ElementAt(i - k).Key.Name == userdrawingbets.username) break;
-                                                else if (dictTransDraw.ElementAt(i - k).Key.TransType == MyCasinoTransactionTypes.BET_LOSS &&
-                                                    dictTransDraw.ElementAt(i - k).Key.Name == userdrawingbets.username) break;
-                                                index++;
-
-                                            }
-                                            dictTransDraw.ElementAt(i).Key.CurrentAmount = dictTransDraw.ElementAt(i - index).Key.CurrentAmount + profit.ElementAt(count);
-                                            dictTransDraw.ElementAt(i).Key.CurrentAmount -= dictTransDraw.ElementAt(i).Value.DrawBet.M_setAmount;
-                                            //set casino money
-                                            User userOperatorCheck = userListLoggedOn.Find(item => item.UserType == MyCasinoUserTypes.Operator);
-                                            userOperatorCheck.account.MoneyAmountLeft -= profit.ElementAt(count);
-                                            //set user money
-                                            User userMoney = userListLoggedOn.Find(item => item.Username == dictTransDraw.ElementAt(i).Key.Name);
-                                            userMoney.account.MoneyAmountLeft += profit.ElementAt(count);
-                                        }
-                                        //check if bet was lost and set money values
-                                        if (profit.ElementAt(count) == 0)
-                                        {
-                                            dictTransDraw.ElementAt(i).Key.TransType = MyCasinoTransactionTypes.BET_LOSS;
-                                            dictTransDraw.ElementAt(i).Value.MoneyWon = profit.ElementAt(count);
-                                            dictTransDraw.ElementAt(i).Key.ChangeAmount = profit.ElementAt(count);
-                                            //find the right element in the dictionary, (i-1) is always > than 0
-                                            int index = 1;
-                                            for (int k = 1; k < dictTransDraw.Count + 1; k++)
-                                            {
-                                                if (dictTransDraw.ElementAt(i - k).Key.TransType == MyCasinoTransactionTypes.DEPOSIT &&
-                                                    dictTransDraw.ElementAt(i - k).Key.Name == userdrawingbets.username) break;
-                                                else if (dictTransDraw.ElementAt(i - k).Key.TransType == MyCasinoTransactionTypes.BET_WIN &&
-                                                    dictTransDraw.ElementAt(i - k).Key.Name == userdrawingbets.username) break;
-                                                else if (dictTransDraw.ElementAt(i - k).Key.TransType == MyCasinoTransactionTypes.BET_LOSS &&
-                                                    dictTransDraw.ElementAt(i - k).Key.Name == userdrawingbets.username) break;
-                                                index++;
-                                            }
-                                            //set user money to current situation
-                                            dictTransDraw.ElementAt(i).Key.CurrentAmount = dictTransDraw.ElementAt(i - index).Key.CurrentAmount;
-                                            dictTransDraw.ElementAt(i).Key.CurrentAmount -= dictTransDraw.ElementAt(i).Value.DrawBet.M_setAmount;
-                                        }
-
-                                        count++;
-                                    }
-                                }
-
-                            }
-                        }
-                    }
-                }
-            }
-            //delete all current bets
-            lock (thisLockUserListLoggedOn)
-            {
-                foreach (User userdelbets in userListLoggedOn)
-                {
-                    if (MyCasinoUserTypes.Gamer == userdelbets.UserType)
-                    {
-                        userdelbets.account.DelBets();
-                    }
-                }
-            }
-            errMsg = null;
-            return true;
         }
 
         [WebMethod]
@@ -570,7 +531,7 @@ namespace MyCasinoWSServer
                 foreach (User userdrawingbets in userListLoggedOn)
                 {
                     count = 0;
-                    if (MyCasinoUserTypes.Gamer == userdrawingbets.UserType)
+                    if (1 == userdrawingbets.UserType)
                     {
                         //calculate money won
                         userdrawingbets.account.Profit(firstNumber, secondNumber, out profit);
@@ -608,7 +569,7 @@ namespace MyCasinoWSServer
                                             dictTransDraw.ElementAt(i).Key.CurrentAmount = dictTransDraw.ElementAt(i - index).Key.CurrentAmount + profit.ElementAt(count);
                                             dictTransDraw.ElementAt(i).Key.CurrentAmount -= dictTransDraw.ElementAt(i).Value.DrawBet.M_setAmount;
                                             //set casino money
-                                            User userOperatorCheck = userListLoggedOn.Find(item => item.UserType == MyCasinoUserTypes.Operator);
+                                            User userOperatorCheck = userListLoggedOn.Find(item => item.UserType == 0);
                                             userOperatorCheck.account.MoneyAmountLeft -= profit.ElementAt(count);
                                             //set user money
                                             User userMoney = userListLoggedOn.Find(item => item.Username == dictTransDraw.ElementAt(i).Key.Name);
@@ -650,7 +611,124 @@ namespace MyCasinoWSServer
             {
                 foreach (User userdelbets in userListLoggedOn)
                 {
-                    if (MyCasinoUserTypes.Gamer == userdelbets.UserType)
+                    if (1 == userdelbets.UserType)
+                    {
+                        userdelbets.account.DelBets();
+                    }
+                }
+            }
+            errMsg = null;
+            return true;
+        }
+
+
+        [WebMethod]
+        public bool drawtest(int sessionId, int firstNumberTest, int secondNumberTest, out string errMsg)
+        {
+            //Check for valid sessionId
+            if (!m_authService.SessionIdCheck(sessionId))
+            {
+                errMsg = "INVALID_SESSION_ID";
+                Console.WriteLine(errMsg);
+                return false;
+            }
+            if (firstNumberTest == 0 || secondNumberTest == 0)
+            {
+                errMsg = "ERROR_MY_CASINO_BET_INVALID_NUMBER";
+                Console.WriteLine(errMsg);
+                return false;
+            }
+            //init
+            List<double> profit = null;
+            int count = 0;
+            //save all bets with drawing numbers
+            lock (thisLockUserListLoggedOn)
+            {
+                foreach (User userdrawingbets in userListLoggedOn)
+                {
+                    count = 0;
+                    if (1 == userdrawingbets.UserType)
+                    {
+                        //calculate money won
+                        userdrawingbets.account.Profit(firstNumberTest, secondNumberTest, out profit);
+                        //save all bets with drawing numbers and amount won or lost
+                        lock (thisLockDictTransDraw)
+                        {
+                            for (int i = 0; i < dictTransDraw.Count; i++)
+                            {
+                                if (!(dictTransDraw.ElementAt(i).Value == null) &&
+                                    profit.Count > 0 &&
+                                    dictTransDraw.ElementAt(i).Key.Name == userdrawingbets.username)
+                                {
+                                    if (dictTransDraw.ElementAt(i).Key.TransType == MyCasinoTransactionTypes.BET_WAGER)
+                                    {
+                                        dictTransDraw.ElementAt(i).Value.M_drawnFirstNumber = firstNumberTest;
+                                        dictTransDraw.ElementAt(i).Value.M_drawnSecondNumber = secondNumberTest;
+                                        if (profit.ElementAt(count) > 0)
+                                        {
+                                            dictTransDraw.ElementAt(i).Key.TransType = MyCasinoTransactionTypes.BET_WIN;
+                                            dictTransDraw.ElementAt(i).Value.MoneyWon = profit.ElementAt(count);
+                                            dictTransDraw.ElementAt(i).Key.ChangeAmount = profit.ElementAt(count);
+                                            //find the right element in the dictionary, (i-1) is always > than 0
+                                            int index = 1;
+                                            for (int k = 1; k < dictTransDraw.Count + 1; k++)
+                                            {
+                                                if (dictTransDraw.ElementAt(i - k).Key.TransType == MyCasinoTransactionTypes.DEPOSIT &&
+                                                    dictTransDraw.ElementAt(i - k).Key.Name == userdrawingbets.username) break;
+                                                else if (dictTransDraw.ElementAt(i - k).Key.TransType == MyCasinoTransactionTypes.BET_WIN &&
+                                                    dictTransDraw.ElementAt(i - k).Key.Name == userdrawingbets.username) break;
+                                                else if (dictTransDraw.ElementAt(i - k).Key.TransType == MyCasinoTransactionTypes.BET_LOSS &&
+                                                    dictTransDraw.ElementAt(i - k).Key.Name == userdrawingbets.username) break;
+                                                index++;
+
+                                            }
+                                            dictTransDraw.ElementAt(i).Key.CurrentAmount = dictTransDraw.ElementAt(i - index).Key.CurrentAmount + profit.ElementAt(count);
+                                            dictTransDraw.ElementAt(i).Key.CurrentAmount -= dictTransDraw.ElementAt(i).Value.DrawBet.M_setAmount;
+                                            //set casino money
+                                            User userOperatorCheck = userListLoggedOn.Find(item => item.UserType == 1);
+                                            userOperatorCheck.account.MoneyAmountLeft -= profit.ElementAt(count);
+                                            //set user money
+                                            User userMoney = userListLoggedOn.Find(item => item.Username == dictTransDraw.ElementAt(i).Key.Name);
+                                            userMoney.account.MoneyAmountLeft += profit.ElementAt(count);
+                                        }
+                                        //check if bet was lost and set money values
+                                        if (profit.ElementAt(count) == 0)
+                                        {
+                                            dictTransDraw.ElementAt(i).Key.TransType = MyCasinoTransactionTypes.BET_LOSS;
+                                            dictTransDraw.ElementAt(i).Value.MoneyWon = profit.ElementAt(count);
+                                            dictTransDraw.ElementAt(i).Key.ChangeAmount = profit.ElementAt(count);
+                                            //find the right element in the dictionary, (i-1) is always > than 0
+                                            int index = 1;
+                                            for (int k = 1; k < dictTransDraw.Count + 1; k++)
+                                            {
+                                                if (dictTransDraw.ElementAt(i - k).Key.TransType == MyCasinoTransactionTypes.DEPOSIT &&
+                                                    dictTransDraw.ElementAt(i - k).Key.Name == userdrawingbets.username) break;
+                                                else if (dictTransDraw.ElementAt(i - k).Key.TransType == MyCasinoTransactionTypes.BET_WIN &&
+                                                    dictTransDraw.ElementAt(i - k).Key.Name == userdrawingbets.username) break;
+                                                else if (dictTransDraw.ElementAt(i - k).Key.TransType == MyCasinoTransactionTypes.BET_LOSS &&
+                                                    dictTransDraw.ElementAt(i - k).Key.Name == userdrawingbets.username) break;
+                                                index++;
+                                            }
+                                            //set user money to current situation
+                                            dictTransDraw.ElementAt(i).Key.CurrentAmount = dictTransDraw.ElementAt(i - index).Key.CurrentAmount;
+                                            dictTransDraw.ElementAt(i).Key.CurrentAmount -= dictTransDraw.ElementAt(i).Value.DrawBet.M_setAmount;
+                                        }
+
+                                        count++;
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+            //delete all current bets
+            lock (thisLockUserListLoggedOn)
+            {
+                foreach (User userdelbets in userListLoggedOn)
+                {
+                    if (1 == userdelbets.UserType)
                     {
                         userdelbets.account.DelBets();
                     }
@@ -663,11 +741,23 @@ namespace MyCasinoWSServer
         [WebMethod]
         public bool getTransactions(int sessionId, out bool isFinished, out List<string> transaction, out int transactionType, out string errMsg)
         {
+            //check if operator is logged in
+            errMsg = "OPERATOR_NOT_LOGGED_IN";
+            foreach (User user in userListLoggedOn)
+            {
+                if (user.UserType == 0)
+                {
+                    errMsg = null;
+                    Console.WriteLine("Transaction: no operator logged in");
+                }
+            }
+
+
             //init
             transaction = new List<string>(); ;
             transactionType = 0;
             isFinished = false;
-            errMsg = null;
+            //errMsg = null;
             //Check for valid sessionId
             if (!m_authService.SessionIdCheck(sessionId))
             {
@@ -679,7 +769,7 @@ namespace MyCasinoWSServer
             {
                 User user = userListLoggedOn.Find(item => item.SessionId == sessionId);
                 //prepare string to be transmitted to the client, if the client is a gamer
-                if (user.UserType == MyCasinoUserTypes.Gamer)
+                if (user.UserType == 1)
                 {
                     lock (thisLockDictTransDraw)
                     {
@@ -700,7 +790,7 @@ namespace MyCasinoWSServer
                     }
                 }
                 //prepare string to be transmitted to the client, if the client is a operator
-                else if (user.UserType == MyCasinoUserTypes.Operator)
+                else if (user.UserType == 0)
                 {
                     lock (thisLockDictTransDraw)
                     {
@@ -743,7 +833,6 @@ namespace MyCasinoWSServer
                     }
                 }
             }
-           
             return true;
         }
         [WebMethod]
@@ -764,7 +853,7 @@ namespace MyCasinoWSServer
             lock (thisLockUserListLoggedOn)
             {
                 User user = userListLoggedOn.Find(item => item.SessionId == sessionId);
-                if (user.UserType == MyCasinoUserTypes.Gamer)
+                if (user.UserType == 1)
                 {
                     lock (thisLockDictTransDraw)
                     {
@@ -786,7 +875,7 @@ namespace MyCasinoWSServer
                     return true;
                 }
                 //save all information, that has to be transmitted to the client if the request came form the operator
-                if (user.UserType == MyCasinoUserTypes.Operator)
+                if (user.UserType == 0)
                 {
                     lock (thisLockDictTransDraw)
                     {
@@ -808,6 +897,5 @@ namespace MyCasinoWSServer
             }
             return true;
         }
-
     }
 }

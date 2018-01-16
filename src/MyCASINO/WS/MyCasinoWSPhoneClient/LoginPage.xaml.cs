@@ -159,7 +159,9 @@ namespace MyCasinoWSPhoneClient
             try
             {
                 //add endpointaddress to webservice
+#if !EMULATOR
                 MyCasinoSvcLogin.MyCasinoSvc.Endpoint.Address = new EndpointAddress("http://" + ipAddress + ":7193/MyCasinoWSServer.asmx");
+#endif
             }
             catch (Exception ex)
             {
@@ -183,8 +185,12 @@ namespace MyCasinoWSPhoneClient
 
                 String errMsg = result.errMsg;
 
-                if (errMsg == "S_OK")
+                if (errMsg == "S_OK" || errMsg== "OPERATOR_NOT_LOGGED_IN")
                 {
+                    if (errMsg == "OPERATOR_NOT_LOGGED_IN")
+                    {
+                        MessageBox.Show("Kein Betreiber angemeldet");
+                    }
                     myCasinoSvcLogin.SessionId = result.sessionId;
                     myCasinoSvcLogin.UserName = tbxUsername.Text;
                     myCasinoSvcLogin.UserType = result.userType;

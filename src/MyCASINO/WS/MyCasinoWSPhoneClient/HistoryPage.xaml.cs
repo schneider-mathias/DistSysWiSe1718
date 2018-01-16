@@ -95,6 +95,7 @@ namespace MyCasinoWSPhoneClient
             lbPayInList.Items.Clear();
             lbBalanceList.Items.Clear();
 
+            bool operatorLogged = true;
             bool isFinished = false;
             double opMoney = 0;
             try
@@ -107,6 +108,10 @@ namespace MyCasinoWSPhoneClient
                     if (result.errMsg == "INVALID_SESSION_ID")
                     {
                         MessageBox.Show("Ungültige ID!");
+                    }
+                    else if (result.errMsg == "OPERATOR_NOT_LOGGED_IN")
+                    {
+                        operatorLogged = false;
                     }
                     //transaction is deposit -> save all elements for listboxes
                     if (result.isFinished == true) break;
@@ -149,7 +154,7 @@ namespace MyCasinoWSPhoneClient
                         }
                         else if (resultTransInfo.errMsg != null)
                         {
-                            MessageBox.Show("Fehler beim abholen der Informationen für die Transaktionen: ");
+                            MessageBox.Show("Fehler beim abholen der Informationen für die Transaktionen!");
                         }
                         //save all transaction information to the listboxes for gamer
                         if (MyCasinoSvcHistory.UserType == 1)
@@ -220,14 +225,33 @@ namespace MyCasinoWSPhoneClient
                 while (isFinished != true);
                 opMoney = 0;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                MessageBox.Show("Fehler beim abholen der Transaktionen: " + ex);
+                MessageBox.Show("Fehler beim abholen der Transaktionen: ");
+            }
+            if (operatorLogged == false)
+            {
+                MessageBox.Show("Kein Betreiber angemeldet");
             }
         }
 
+
         #endregion
 
-        
+        #region Page loaded
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            BtnRefresh_Click(new object(), new RoutedEventArgs());
+            if (MyCasinoSvcHistory.UserType == 1)
+            {
+
+            }
+            else if (MyCasinoSvcHistory.UserType == 0)
+            {
+                BtnPayIn.Visibility = Visibility.Visible;
+
+            }
+        }
+        #endregion
     }
 }

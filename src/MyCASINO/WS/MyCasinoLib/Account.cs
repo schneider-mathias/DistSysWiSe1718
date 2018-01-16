@@ -39,11 +39,7 @@ namespace MyCasinoLib
             try
             {
                 //Read UserBalance.txt line by line
-#if _IIS_DEPLOY_ // is set for Release configuration
-                using (FileStream fs = File.OpenRead("C:\\inetpub\\wwwroot\\UserBalance.txt"))
-#else
-                using (FileStream fs = File.OpenRead(Environment.GetEnvironmentVariable("SystemDrive") + "\\_MyCasinoData\\UserBalance.txt"))
-#endif
+                using (FileStream fs = File.OpenRead(Environment.GetEnvironmentVariable("SystemDrive") + "\\_myCasinoData\\UserBalance.txt"))
                 using (StreamReader sr = new StreamReader(fs))
                 {
                     string line;
@@ -88,7 +84,7 @@ namespace MyCasinoLib
             try
             {
                 int index = dictTransDraw.Count - 1;
-                for (int k = dictTransDraw.Count-1; k > 1; k--)
+                for (int k = dictTransDraw.Count - 1; k > 1; k--)
                 {
                     index = k;
                     if (dictTransDraw.ElementAt(k).Key.TransType == MyCasinoTransactionTypes.DEPOSIT &&
@@ -99,8 +95,8 @@ namespace MyCasinoLib
                         dictTransDraw.ElementAt(k).Key.Name == name) break;
                 }
                 //already locked
-                Transaction trans = new Transaction(dictTransDraw.Last().Key.M_id + 1, dictTransDraw.ElementAt(index).Key.CurrentAmount + amountMoney, amountMoney,name,typeTmp);
-                dictTransDraw.Add(trans,null);
+                Transaction trans = new Transaction(dictTransDraw.Last().Key.M_id + 1, dictTransDraw.ElementAt(index).Key.CurrentAmount + amountMoney, amountMoney, name, typeTmp);
+                dictTransDraw.Add(trans, null);
                 moneyAmountLeft += amountMoney;
                 return true;
             }
@@ -110,11 +106,11 @@ namespace MyCasinoLib
             }
         }
 
-        public bool Bet(string nameTmp ,double amountMoneyTmp, int firstNumberTmp, int secondNumberTmp, out  MyCasinoTransactionTypes typetmp, out bool overridden, out bool delOverriddenBet, out bool _betDel)
+        public bool Bet(string nameTmp, double amountMoneyTmp, int firstNumberTmp, int secondNumberTmp, out MyCasinoTransactionTypes typetmp, out bool overridden, out bool delOverriddenBet, out bool _betDel)
         {
-                overridden = true;
-                delOverriddenBet = false;
-                _betDel = false;
+            overridden = true;
+            delOverriddenBet = false;
+            _betDel = false;
             try
             {
                 Bet tmpbet = new Bet(nameTmp, firstNumberTmp, secondNumberTmp, amountMoneyTmp);
@@ -200,6 +196,11 @@ namespace MyCasinoLib
                     {
                         profitForTwoMatches += betList.ElementAt(i).M_setAmount;
                     }
+                    if (betList.Count == 0)
+                    {
+                        profitForTwoMatches += amountMoney;
+                    }
+
                 }
                 return true;
             }

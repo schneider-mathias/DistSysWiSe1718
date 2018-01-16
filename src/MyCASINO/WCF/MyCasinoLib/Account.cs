@@ -45,9 +45,9 @@ namespace MyCasinoLib
                         string line;
                     while ((line = sr.ReadLine()) != null)
                     {
-                        int money = 0;
+                        double money = 0;
                         string[] substring = line.Split();
-                        Int32.TryParse(substring[1], out money);
+                        Double.TryParse(substring[1], out money);
                         if (substring[0] == username)
                         {
                             //read moneyamount from file
