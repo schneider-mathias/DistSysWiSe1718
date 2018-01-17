@@ -244,6 +244,7 @@ namespace MyBayWCFSrv
             messageType = 0;
             messageAvailable = false;
             message = new MessageTransfer();
+
             if (!AuthenticationService.AuthService.isLoggedIn(sessionID)) return "Die angegebene SessionID ist nicht registriert, loggen Sie sich erneut ein";
 
             Message tempMessage;
@@ -286,17 +287,14 @@ namespace MyBayWCFSrv
                     }
                     if(tempBag.Count > 0) messageAvailable = true;                   
                 }
-                else return "NoMessage";
-               
+                else return "NoMessage";             
             }                
-            catch (Exception e)
+            catch (Exception)
             {
-
                 return "Fehler bei der Verarbeitung der Messages im Server";
             }            
             return "OK";            
         }
         #endregion
-
     }
 }

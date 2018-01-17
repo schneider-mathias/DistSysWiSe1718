@@ -3,7 +3,7 @@
 /*    Inhalt:    Program.cs des MyBay WCF-Servers                        */
 /*                                                                       */
 /*    Autor(en): Manuel Schlemelch                                       */
-/*    Stand:     03.01.2018                                              */
+/*    Stand:     08.01.2018                                              */
 /*                                                                       */
 /*************************************************************************/
 
@@ -19,30 +19,30 @@ namespace MyBayWCFSrv
 {
     class Program
     {
+        /// <summary>
+        /// Main method for the WCF server
+        /// </summary>
+        /// <param name="args"></param>
         static void Main(string[] args)
         {
-            // Create myBaySrv - Objekt (Singleton)
+            // Create myBaySrv object (Singleton)
             MyBayWCFSrv myBaySrv = new MyBayWCFSrv();
 
-            // Servicehost zur Objektveröffentlichung anlegen
-
-            //ServiceHost serviceh = new ServiceHost(myBaySrv, new Uri("http://192.168.52.210:3333/MyBayWCF"));
+            // Create service host for publishing object
             ServiceHost serviceh = new ServiceHost(myBaySrv, new Uri("http://localhost:3333/MyBayWCF"));
 
-            // Einstellungen für ein Singleton mit mehreren Clients vornehmen
+            // Setting the settings for a singleton object and multiple clients
             ServiceBehaviorAttribute serviceBehaviourAttrib = serviceh.Description.Behaviors.Find<ServiceBehaviorAttribute>();
-
             serviceBehaviourAttrib.ConcurrencyMode = ConcurrencyMode.Multiple;
-
             serviceBehaviourAttrib.InstanceContextMode = InstanceContextMode.Single;
 
-            // MyBay Server-Objekt veröffentlichen
+            // publish the object
             serviceh.Open();
 
-            // MyBay Server-Objekt ist jetzt nach Außen verfügbar
+            // wait for user input to close the server
             Console.ReadLine();
 
-            // Veröffentlichung des MyBay Server-Objekt rückgängig machen
+            // close the object
             serviceh.Close();
         }
     }
