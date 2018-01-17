@@ -229,7 +229,7 @@ STDMETHODIMP CCOMMyBay::details(ULONG sessionId, ULONG auctionNumber, SAFEARRAY_
 	}
 
 	// Gebote serialisieren
-	wstring serStr = serializeAuctionDetails(auctionNumber);
+	//wstring serStr = serializeAuctionDetails(auctionNumber);
 	vector<wstring> bidsStr = getAllBids(auctionNumber);
 	// Speicher für die Übertragung des String_t allokieren
 	// TODO: SAVEARRAY

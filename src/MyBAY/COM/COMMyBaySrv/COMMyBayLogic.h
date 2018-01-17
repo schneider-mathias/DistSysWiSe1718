@@ -866,7 +866,10 @@ void endAuction(unsigned long auctionNumber)
 				newMessage.push_back(to_wstring((*it).auctionStatus));	// (5) Auktionsstatus
 				Messages.push_back(newMessage);							// neue Nachricht der Messagebox hinzufügen
 			}
-			(*it).interestedUserList.clear();							// Liste aller Interessierten User löschen
+			// Liste aller Interessierten User löschen bis auf 1., da dieser der Auktionator ist
+			wstring auctioneer = (*it).interestedUserList.at(0);
+			(*it).interestedUserList.clear();		
+			(*it).interestedUserList.push_back(auctioneer);
 		}
 	}
 	// aktualisiert die MyBayAuctions.txt
