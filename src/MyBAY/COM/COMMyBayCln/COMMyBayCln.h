@@ -25,7 +25,7 @@ using namespace std;
 //static void UnBind(void);
 //static void rpcCalls(void);
 void readConsole(ICOMMyBay *p_ICOMMyBaySrv, COSERVERINFO srvInfo);
-void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::vector<std::wstring> args, boolean *threadAllow);
+BOOL interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::vector<std::wstring> args, boolean *threadAllow);
 
 std::vector<std::wstring> args;					// Eingabeargumente
 

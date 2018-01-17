@@ -90,9 +90,10 @@ void readConsole(ICOMMyBay *p_ICOMMyBaySrv, COSERVERINFO srvInfo)
 		}
 		// letztes Argument zur Liste der Argumente hinzufügen
 		args.push_back(scommand);
-		interpretCommand(p_ICOMMyBaySrv, &sessionID, args, &threadAllow);
-		if (args.at(0) == L"bye")
+		BOOL endClient = interpretCommand(p_ICOMMyBaySrv, &sessionID, args, &threadAllow);
+		if (endClient == TRUE)
 		{
+			Sleep(3000);
 			break;
 		}
 	}
@@ -102,12 +103,13 @@ void readConsole(ICOMMyBay *p_ICOMMyBaySrv, COSERVERINFO srvInfo)
 }
 
 // Eingaben werden entsprechend interpretiert
-void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::vector<std::wstring> args, boolean *threadAllow)
+BOOL interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::vector<std::wstring> args, boolean *threadAllow)
 {
+	BOOL endClient = FALSE;
 	HRESULT hr;
 	if (args.size() < 0)
 	{
-		return;
+		return endClient;
 	}
 
 	// login
@@ -117,13 +119,13 @@ void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 		{
 			cerr << "Nicht genug Parameter." << endl;
 			cerr << "login <Username> <Passwort>" << endl;
-			return;
+			return endClient;
 		}
 		else if (args.size() > 3)
 		{
 			cerr << "Zu viele Parameter." << endl;
 			cerr << "login <Username> <Passwort>" << endl;
-			return;
+			return endClient;
 		}
 		hr = p_ICOMMyBaySrv->login(wstr_to_bstr(args.at(1)), wstr_to_bstr(args.at(2)), sessionID);
 		if (hr == S_OK)
@@ -143,6 +145,12 @@ void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 			cin.get();
 			exit(hr);
 		}
+		else if (hr == 0x800706BA)
+		{
+			std::cerr << "[ERROR] " << "Keine Serververbindung. Client wird beendet." << std::endl;
+			*threadAllow = FALSE;
+			return endClient = TRUE;
+		}
 		else
 			cerr << "Es ist ein unerwarteter Fehler aufgetreten. Bitte versuche es erneut." << endl;
 		wcout << endl;
@@ -159,8 +167,14 @@ void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 		}
 		else if (hr == ERROR_USER_NOT_LOGGED_IN)
 			cout << "Fehler: Nicht eingeloggt" << endl;
+		else if (hr == 0x800706BA)
+		{
+			std::cerr << "[ERROR] " << "Keine Serververbindung. Client wird beendet." << std::endl;
+			*threadAllow = FALSE;
+			return endClient = TRUE;
+		}
 		else
-			wcout << "Fehler: Ein unerwarteter Fehler ist aufgetreten" << endl;
+			cerr << "Es ist ein unerwarteter Fehler aufgetreten. Bitte versuche es erneut." << endl;
 	}
 
 	// Auktion eines Artikels starten
@@ -170,13 +184,13 @@ void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 		{
 			cerr << "Nicht genug Parameter." << endl;
 			cerr << "offer <Artikelname> <Mindestgebot>" << endl;
-			return;
+			return endClient;
 		}
 		else if (args.size() > 3)
 		{
 			cerr << "Zu viele Parameter." << endl;
 			cerr << "offer <Artikelname> <Mindestgebot>" << endl;
-			return;
+			return endClient;
 		}
 		else
 		{
@@ -190,7 +204,7 @@ void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 			catch (invalid_argument e)
 			{
 				cout << "Falscher Parameter - das Startgebot muss eine Zahl sein!" << endl;
-				return;
+				return endClient;
 			}
 
 			hr = p_ICOMMyBaySrv->offer(*sessionID, wstr_to_bstr(args.at(1).c_str()), startBid, &auctionNumber);
@@ -221,6 +235,14 @@ void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 				cout << "Fehler: Startgebot darf nicht negativ sein." << endl;
 				cout << "----------------------------------------------------------------------------------------" << endl;
 			}
+			else if (hr == 0x800706BA)
+			{
+				std::cerr << "[ERROR] " << "Keine Serververbindung. Client wird beendet." << std::endl;
+				*threadAllow = FALSE;
+				return endClient = TRUE;
+			}
+			else
+				cerr << "Es ist ein unerwarteter Fehler aufgetreten. Bitte versuche es erneut." << endl;
 		}
 	}
 
@@ -231,13 +253,13 @@ void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 		{
 			cerr << "Nicht genug Parameter." << endl;
 			cerr << "interested <Auktionsnummer>" << endl;
-			return;
+			return endClient;
 		}
 		else if (args.size() > 2)
 		{
 			cerr << "Zu viele Parameter." << endl;
 			cerr << "interested <Auktionsnummer>" << endl;
-			return;
+			return endClient;
 		}
 		else
 		{
@@ -252,7 +274,7 @@ void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 			catch (invalid_argument e)
 			{
 				cout << "Falscher Parameter - das Startgebot muss eine Zahl sein!" << endl;
-				return;
+				return endClient;
 			}
 			hr = p_ICOMMyBaySrv->interested(*sessionID, auctionNumber);
 			if (hr == S_OK)
@@ -281,6 +303,12 @@ void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 				cout << "Fehler: Sie sind bereits unter den Interessierten der Auktion." << endl;
 				cout << "----------------------------------------------------------------------------------------" << endl;
 			}
+			else if (hr == 0x800706BA)
+			{
+				std::cerr << "[ERROR] " << "Keine Serververbindung. Client wird beendet." << std::endl;
+				*threadAllow = FALSE;
+				return endClient = TRUE;
+			}
 			else
 				cerr << "Es ist ein unerwarteter Fehler aufgetreten. Bitte versuche es erneut." << endl;
 		}
@@ -293,7 +321,7 @@ void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 		{
 			cerr << "Zu viele Parameter." << endl;
 			cerr << "listauctions [-a][-A] [<Artikelnameteil]" << endl;
-			return;
+			return endClient;
 		}
 
 		ULONG flag = 0;
@@ -401,6 +429,12 @@ void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 			cout << "Ihre Eingabe ergab keine Ergebnisse." << endl;
 			cout << "----------------------------------------------------------------------------------------" << endl;
 		}
+		else if (hr == 0x800706BA)
+		{
+			std::cerr << "[ERROR] " << "Keine Serververbindung. Client wird beendet." << std::endl;
+			*threadAllow = FALSE;
+			return endClient = TRUE;
+		}
 		else
 			cerr << "Es ist ein unerwarteter Fehler aufgetreten. Bitte versuche es erneut." << endl;
 	}
@@ -410,13 +444,13 @@ void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 		{
 			cerr << "Error: Nicht genug Parameter." << endl;
 			cerr << "bid <Auktionsnummer> <Geldbetrag>" << endl;
-			return;
+			return endClient;
 		}
 		else if (args.size() > 3)
 		{
 			cerr << "Error: Zu viele Parameter." << endl;
 			cerr << "bid <Auktionsnummer> <Geldbetrag>" << endl;
-			return;
+			return endClient;
 		}
 		else
 		{
@@ -434,7 +468,7 @@ void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 			catch (invalid_argument e)
 			{
 				cout << "Falscher Parameter - das Startgebot muss eine Zahl sein!" << endl;
-				return;
+				return endClient;
 			}
 			hr = p_ICOMMyBaySrv->bid(*sessionID, auctionNumber, bidVal);
 			if (hr == S_OK)
@@ -477,6 +511,12 @@ void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 				cout << "----------------------------------------------------------------------------------------" << endl;
 
 			}
+			else if (hr == 0x800706BA)
+			{
+				std::cerr << "[ERROR] " << "Keine Serververbindung. Client wird beendet." << std::endl;
+				*threadAllow = FALSE;
+				return endClient = TRUE;
+			}
 			else
 				cerr << "Es ist ein unerwarteter Fehler aufgetreten. Bitte versuche es erneut." << endl;
 		}
@@ -487,13 +527,13 @@ void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 		{
 			cerr << "Nicht genug Parameter." << endl;
 			cerr << "details <Auktionsnummer>" << endl;
-			return;
+			return endClient;
 		}
 		else if (args.size() > 2)
 		{
 			cerr << "Zu viele Parameter." << endl;
 			cerr << "details <Auktionsnummer>" << endl;
-			return;
+			return endClient;
 		}
 		else
 		{
@@ -509,7 +549,7 @@ void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 			catch (invalid_argument e)
 			{
 				cout << "Falscher Parameter - das Startgebot muss eine Zahl sein!" << endl;
-				return;
+				return endClient;
 			}
 			hr = p_ICOMMyBaySrv->details(*sessionID, auctionNumber, &allBids, &countBids);
 			if (hr == S_OK)
@@ -566,6 +606,12 @@ void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 				cout << "Fehler: Sie koennen nur als Auktionator alle Gebote einsehen." << endl;
 				cout << "----------------------------------------------------------------------------------------" << endl;
 			}
+			else if (hr == 0x800706BA)
+			{
+				std::cerr << "[ERROR] " << "Keine Serververbindung. Client wird beendet." << std::endl;
+				*threadAllow = FALSE;
+				return endClient = TRUE;
+			}
 			else
 				cerr << "Es ist ein unerwarteter Fehler aufgetreten. Bitte versuche es erneut." << endl;
 		}
@@ -577,13 +623,13 @@ void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 		{
 			cerr << "Nicht genug Parameter." << endl;
 			cerr << "details <Auktionsnummer>" << endl;
-			return;
+			return endClient;
 		}
 		else if (args.size() > 2)
 		{
 			cerr << "Zu viele Parameter." << endl;
 			cerr << "details <Auktionsnummer>" << endl;
-			return;
+			return endClient;
 		}
 		else
 		{
@@ -599,7 +645,7 @@ void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 				cout << "----------------------------------------------------------------------------------------" << endl;
 				cout << "Falscher Parameter - das Startgebot muss eine Zahl sein!" << endl;
 				cout << "----------------------------------------------------------------------------------------" << endl;
-				return;
+				return endClient;
 			}
 			hr = p_ICOMMyBaySrv->endauction(*sessionID, auctionNumber);
 			if (hr == S_OK)
@@ -625,6 +671,12 @@ void interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 				cout << "----------------------------------------------------------------------------------------" << endl;
 				cout << "Fehler: Sie koennen nur Auktionen beenden, die Sie auch erstellt haben." << endl;
 				cout << "----------------------------------------------------------------------------------------" << endl;
+			}
+			else if (hr == 0x800706BA)
+			{
+				std::cerr << "[ERROR] " << "Keine Serververbindung. Client wird beendet." << std::endl;
+				*threadAllow = FALSE;
+				return endClient = TRUE;
 			}
 			else
 				cerr << "Es ist ein unerwarteter Fehler aufgetreten. Bitte versuche es erneut." << endl;
