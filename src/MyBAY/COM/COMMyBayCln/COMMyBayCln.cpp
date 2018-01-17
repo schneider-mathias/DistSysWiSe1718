@@ -93,7 +93,8 @@ void readConsole(ICOMMyBay *p_ICOMMyBaySrv, COSERVERINFO srvInfo)
 		BOOL endClient = interpretCommand(p_ICOMMyBaySrv, &sessionID, args, &threadAllow);
 		if (endClient == TRUE)
 		{
-			Sleep(3000);
+			printf("Enter druecken!\n");
+			getchar();
 			break;
 		}
 	}

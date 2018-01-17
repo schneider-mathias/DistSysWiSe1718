@@ -20,11 +20,11 @@
 
 using namespace std;
 
-void rpcCalls(void);
-void Bind(char* remoteNetwAddr);
-void UnBind(void);
-void readConsole();
-void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, boolean *threadAllow);
+//void rpcCalls(void);
+//void Bind(char* remoteNetwAddr);
+//void UnBind(void);
+//void readConsole();
+//void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, boolean *threadAllow);
 
 void main(int argc, char**argv)
 {
@@ -55,7 +55,7 @@ void main(int argc, char**argv)
 	{
 		if (e.GetStatus() == RPC_S_SERVER_UNAVAILABLE)
 		{
-			cerr << "Fehler: Der Server antwortet nicht!\nDer Client wird beendet..." << endl;
+			cerr <<  "Fehler: Der Server antwortet nicht!\nClient beenden."  << endl;
 		}
 		else
 		{
@@ -63,6 +63,9 @@ void main(int argc, char**argv)
 				(int)e.GetStatus(), e.GetErrorText(), e.GetErrorType());
 		}
 	}
+
+	if (srvAdress != NULL)
+		free(srvAdress);
 
 	printf("Enter druecken!\n");
 	getchar();

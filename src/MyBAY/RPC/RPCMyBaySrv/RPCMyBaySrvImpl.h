@@ -11,6 +11,7 @@
 #include <Windows.h>
 #include <map>
 #include <vector>
+#include "RpcException.h"
 #include "MyBayDefines.h"
 #include "CritSectionWrapper.h"
 #include <thread>
@@ -728,20 +729,34 @@ wstring serializeAuctions(vector<auction> interestingAuctions)
 // entgültig beendet wird.
 void auctionEndProcess(wstring user, unsigned long auctionNumber)
 {
-	// Message hinzufügen, die sagt, dass in 15 Sekunden die Auktion endet
-	addEndAuctionMessage(user, auctionNumber, 1);
-	Sleep(5000);
+	try {
+		// Message hinzufügen, die sagt, dass in 15 Sekunden die Auktion endet
+		addEndAuctionMessage(user, auctionNumber, 1);
+		Sleep(5000);
 
-	// Message hinzufügen, die sagt, dass in 10 Sekunden die Auktion endet
-	addEndAuctionMessage(user, auctionNumber, 2);
-	Sleep(5000);
+		// Message hinzufügen, die sagt, dass in 10 Sekunden die Auktion endet
+		addEndAuctionMessage(user, auctionNumber, 2);
+		Sleep(5000);
 
-	// Message hinzufügen, die sagt, dass in 5 Sekunden die Auktion endet
-	addEndAuctionMessage(user, auctionNumber, 3);
-	Sleep(5000);
+		// Message hinzufügen, die sagt, dass in 5 Sekunden die Auktion endet
+		addEndAuctionMessage(user, auctionNumber, 3);
+		Sleep(5000);
 
-	// Auktion beenden
-	endAuction(auctionNumber);
+		// Auktion beenden
+		endAuction(auctionNumber);
+	}
+	catch (RpcException e)
+	{
+		if (e.GetStatus() == RPC_S_SERVER_UNAVAILABLE)
+		{
+			printf("\t[Error]: No server connection. Stop client.\n");
+		}
+		else
+		{
+			printf("Unknown error\nstat=0x%x, text=%s, type=%s\n",
+				(int)e.GetStatus(), e.GetErrorText(), e.GetErrorType());
+		}
+	}
 }
 
 // Erzeugt neue Nachricht, die interessierte Nutzer daraufhinweist, dass Auktion bald endet und fügt diese der Messagebox hinzu.

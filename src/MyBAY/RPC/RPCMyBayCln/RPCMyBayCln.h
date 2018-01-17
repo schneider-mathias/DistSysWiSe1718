@@ -9,17 +9,20 @@
 
 #pragma once
 #include <vector>
-#include "MyBayDefines.h"
 #include <chrono>
 #include <windows.h>
+#include "MyBayDefines.h"
+#include "RpcException.h"
+
 
 using namespace std;
 
-static void Bind(void);
+static void Bind(char* remoteNetwAddr);
 static void UnBind(void);
 static void rpcCalls(void);
 void readConsole();
 void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, boolean *threadAllow);
+HRESULT executeGetMessage(unsigned long *sessionID, boolean* messageAvailable, unsigned long* messageType, String_t *message);
 
 std::vector<std::wstring> args;					// Eingabeargument
 std::vector<unsigned long> MyOwnAuctions;		// Liste meiner eigenen Auktionen (Nummer)
@@ -125,10 +128,9 @@ void pullMessages(unsigned long *sessionID, boolean *threadAllow)
 	boolean messageAvailable = TRUE;
 	unsigned long messageType = 0;
 	String_t message = { 0,0,NULL };
-
 	while (*threadAllow == TRUE)
 	{
-		Sleep(1000);	// millisekundne
+		
 		//std::this_thread::sleep_for(1s);
 		// User ist eingeloggt
 		if (*sessionID != 0)
@@ -137,17 +139,56 @@ void pullMessages(unsigned long *sessionID, boolean *threadAllow)
 			// Pull solange Nachrichten verfügbar
 			do
 			{
-				// neue Nachricht für Client abholen
-				hr = getMessage(*sessionID, &messageAvailable, &messageType, &message);
+				Sleep(1000);	// millisekunden
+				try
+				{
+					try
+					{
+						hr = executeGetMessage(sessionID,&messageAvailable, &messageType, &message);
+					}
+					catch (...)
+					{
+						throw;
+					}
+				}
+				catch (RpcException& e)
+				{
+					if (e.GetStatus() == RPC_S_SERVER_UNAVAILABLE)
+					{
+						cerr << "Fehler: Der Server antwortet nicht!\nClient beenden." << endl;
+						getchar();
+						std::terminate();
+					}
+					else
+					{
+						
+					}
+				}					
 				if (hr == RPC_S_OK && message.str != NULL)
 				{
 					// Nachricht deserialisieren
 					vector<wstring> messageVec = deserialize(message.str, message.len);
 					// Ausgabe der Nachricht, abhängig vom Nachrichtentyp
 					printMessage(messageVec, messageType);
-				}
+				}					
 			} while (messageAvailable == TRUE);
 		}
 	}
-	//std::terminate();
+}
+
+// 
+HRESULT executeGetMessage(unsigned long *sessionID, boolean* messageAvailable, unsigned long* messageType, String_t *message)
+{
+	HRESULT hr;
+	RpcTryExcept
+	{
+		// neue Nachricht für Client abholen
+		hr = getMessage(*sessionID, messageAvailable, messageType, message);
+		return hr;
+	}
+		RpcExcept(1)
+	{
+		RpcException::Raise(RpcExceptionCode(), "RPC call failed", "Remote Procedure Call");
+	}
+	RpcEndExcept
 }
