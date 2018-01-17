@@ -16,6 +16,8 @@ using System.Threading.Tasks;
 
 namespace MyBayLib
 {
+    // Attribute for making this class serializable
+    [Serializable()]
     public class Bid
     {
         #region Properties

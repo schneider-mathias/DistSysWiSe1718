@@ -17,9 +17,13 @@ using System.Timers;
 using AuthenticationService;
 using System.Collections.Concurrent;
 using System.Globalization;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Serialization; 
 
 namespace MyBayLib
 {
+    [Serializable()]
     public class Auction
     {
         public static ConcurrentDictionary<UInt32, ConcurrentBag<Message>> messageBucket = new ConcurrentDictionary<UInt32, ConcurrentBag<Message>>();
@@ -29,6 +33,7 @@ namespace MyBayLib
         private List<Bid> bidList = new List<Bid>();    
         private UInt16 auctionEndCounter = 1;
 
+        [NonSerialized]
         private System.Timers.Timer auctionEndTimer;
 
         #region Properties
@@ -216,6 +221,11 @@ namespace MyBayLib
 
             this._auctionState = 1; // AuctionState 1 -> Auction is preparing to be finished
 
+
+            // enable timer for auction end messages
+            this.auctionEndTimer = new System.Timers.Timer();
+            this.auctionEndTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+            this.auctionEndTimer.Interval = 4000;
             this.auctionEndTimer.Enabled = true;
 
             return "OK";
@@ -288,6 +298,67 @@ namespace MyBayLib
                 return false;
             }
 
+            return true;
+        }
+
+        public static bool SaveAuctionsPersistent(List<Auction> auctionList)
+        {
+            try
+            {
+                string tempPath = Path.GetPathRoot(Environment.SystemDirectory);
+
+                tempPath += "_MyBayData\\persistentServerData.txt";
+                FileStream stream;
+                stream = new FileStream(tempPath, FileMode.Create);
+                BinaryFormatter formatter = new BinaryFormatter();
+              
+
+                lock (auctionList)
+                {
+                    formatter.Serialize(stream, auctionList);
+                }
+                stream.Close(); 
+            }
+            catch (Exception ex)
+            {
+                string excepttext = ex.ToString();
+                return false;
+            }
+            return true;
+        }
+
+        public static List<Auction> GetPersistentAuctions()
+        {
+            List<Auction> listAuctions = new List<Auction>();
+            try
+            {
+
+                string tempPath = Path.GetPathRoot(Environment.SystemDirectory);
+
+                tempPath += "_MyBayData\\persistentServerData.txt";
+                FileStream stream;
+                stream = new FileStream(tempPath, FileMode.Open);
+                BinaryFormatter formatter = new BinaryFormatter();
+                listAuctions = (List<Auction>)formatter.Deserialize(stream);
+                stream.Close();
+
+                foreach (Auction auct in listAuctions)
+                {
+                    if (auct._auctionState == 1) auct._auctionState = 2;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                string excepttext = ex.ToString();
+                return null;
+            }
+            return listAuctions;
+        }
+
+        public static bool setCountAuctions(UInt32 count)
+        {
+            Auction.auctionNumberCount = count;
             return true;
         }
         #endregion

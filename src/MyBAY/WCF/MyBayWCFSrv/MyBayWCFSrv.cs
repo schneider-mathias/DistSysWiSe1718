@@ -26,7 +26,12 @@ namespace MyBayWCFSrv
         public MyBayWCFSrv()
         {
             AuthenticationService.AuthService.initializeAuthService();
-            this.listAuctions = new List<Auction>();
+            this.listAuctions = Auction.GetPersistentAuctions();
+            if (this.listAuctions != null)
+            {
+                Auction.setCountAuctions((UInt32)this.listAuctions.Count);
+            }
+            else this.listAuctions = new List<Auction>();
         }
         #endregion
 
@@ -62,7 +67,11 @@ namespace MyBayWCFSrv
             Auction newAuction = new Auction(artName, startBid, auctioneerIndex);
             auctionNumber = newAuction.AuctionNumber;
 
-            this.listAuctions.Add(newAuction);
+            lock(this.listAuctions)
+            {
+                this.listAuctions.Add(newAuction);
+            }
+            Auction.SaveAuctionsPersistent(this.listAuctions);
 
             return "OK";
         }
@@ -84,6 +93,9 @@ namespace MyBayWCFSrv
                 }
                 auctionTemp.addToInterested(AuthenticationService.AuthService.getIndexBySessionID(sessionID));
             }
+
+            // Write all auctions in a file
+            Auction.SaveAuctionsPersistent(this.listAuctions);
             return "OK";
         }
 
@@ -170,8 +182,13 @@ namespace MyBayWCFSrv
                     return "Die angegebene Auktionsnummer konnte nicht gefunden werden";
                 }
             }
-
-            return auctionTemp.addBid(AuthenticationService.AuthService.getIndexBySessionID(sessionID), bidVal);
+            String returnMsg = auctionTemp.addBid(AuthenticationService.AuthService.getIndexBySessionID(sessionID), bidVal);
+            if (returnMsg == "OK")
+            {
+                // Write all auctions in a file
+                Auction.SaveAuctionsPersistent(this.listAuctions);
+            }
+            return returnMsg;
         }
 
         public String details(UInt32 sessionID, UInt32 auctionNumber, out UInt32 countBids, out List<BidTransfer> allBids)
@@ -235,7 +252,11 @@ namespace MyBayWCFSrv
                     return "Die angegebene Auktionsnummer konnte nicht gefunden werden";
                 }
 
-                return tempAuction.endAuction();
+                string retValue = tempAuction.endAuction();
+
+                if(retValue == "OK") Auction.SaveAuctionsPersistent(this.listAuctions);
+
+                return retValue;
             }
         }
 
