@@ -16,7 +16,7 @@
         <Button x:Name="btn_login" Content="Login" HorizontalAlignment="Left" Margin="266,9,0,0" VerticalAlignment="Top" Width="75" Height="21" Click="btn_login_Click"/>
         <Button x:Name="btn_NewAuction" Content="Neue Auktion Erstellen" HorizontalAlignment="Left" Margin="66,162,0,0" VerticalAlignment="Top" Width="195" Height="29" ScrollViewer.VerticalScrollBarVisibility="Disabled" FontSize="16" TextOptions.TextFormattingMode="Display" Padding="0,0,0,3" VerticalContentAlignment="Center" Click="btn_NewAuction_Click" IsEnabled="False" RenderTransformOrigin="0.35,0.444"/>
         <TextBox x:Name="txtBox_articleName" HorizontalAlignment="Left" Height="23" Margin="141,106,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" UndoLimit="96" TextAlignment="Center"/>
-        <TextBox x:Name="txtBox_startBid" HorizontalAlignment="Left" Height="23" Margin="141,134,0,0" TextWrapping="Wrap" Text="1,00" VerticalAlignment="Top" Width="120" UndoLimit="96" TextAlignment="Center"/>
+        <TextBox x:Name="txtBox_startBid" HorizontalAlignment="Left" Height="23" Margin="141,134,0,0" TextWrapping="Wrap" Text="1.00" VerticalAlignment="Top" Width="120" UndoLimit="96" TextAlignment="Center"/>
         <Label x:Name="lbl_articleName" Content="Artikelbezeichnung" HorizontalAlignment="Left" Margin="21,106,0,0" VerticalAlignment="Top" Width="115" HorizontalContentAlignment="Right"/>
         <Label x:Name="lbl_startBid" Content="Startgebot" HorizontalAlignment="Left" Margin="21,131,0,0" VerticalAlignment="Top" Width="115" HorizontalContentAlignment="Right"/>
         <ListBox x:Name="listBox_auctions" HorizontalAlignment="Left" Height="238" Margin="474,48,0,0" VerticalAlignment="Top" Width="508" HorizontalContentAlignment="Stretch"/>
@@ -26,7 +26,7 @@
         <RadioButton x:Name="radioBtn_allOpen" Content="Alle offenen Auktionen" HorizontalAlignment="Left" Margin="658,334,0,0" VerticalAlignment="Top" GroupName="getAuctionFlag"/>
         <RadioButton x:Name="radioBtn_all" Content="Alle Auktionen" HorizontalAlignment="Left" Margin="658,354,0,0" VerticalAlignment="Top" GroupName="getAuctionFlag"/>
         <Button x:Name="btn_getDetails" Content="Zeige Details" HorizontalAlignment="Left" Margin="825,303,0,0" VerticalAlignment="Top" Width="157" Height="26" IsEnabled="False" Click="btn_getDetails_Click"/>
-        <TextBox x:Name="txtBox_bid" HorizontalAlignment="Left" Height="23" Margin="338,135,0,0" TextWrapping="Wrap" Text="0,00" VerticalAlignment="Top" Width="120" UndoLimit="96" TextAlignment="Center"/>
+        <TextBox x:Name="txtBox_bid" HorizontalAlignment="Left" Height="23" Margin="338,135,0,0" TextWrapping="Wrap" Text="0.00" VerticalAlignment="Top" Width="120" UndoLimit="96" TextAlignment="Center"/>
         <Button x:Name="btn_bid" Content="Biete" HorizontalAlignment="Left" Margin="338,103,0,0" VerticalAlignment="Top" Width="120" Height="26" IsEnabled="False" Click="btn_bid_Click"/>
         <Button x:Name="btn_endAuction" Content="Auktion beenden" HorizontalAlignment="Left" Margin="338,197,0,0" VerticalAlignment="Top" Width="120" Height="26" Click="btn_endAuction_Click" IsEnabled="False"/>
         <ListBox x:Name="listBox_messages" HorizontalAlignment="Left" Height="238" Margin="474,413,0,0" VerticalAlignment="Top" Width="508"/>

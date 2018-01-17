@@ -24,70 +24,6 @@ using System.Globalization;
 
 namespace MyBayWCFCln
 {
-    static class comError
-    {
-        static public bool convertException(Exception ex, out string retString)
-        {
-            retString = "";
-            switch ((UInt32)ex.HResult)
-            {
-                case 0xA0110001: // ERROR_AUCTIONNUMBER_NOT_AVAILABLE
-                    retString = "Die angegebene Auktionsnummer ist nicht verfügbar";
-                    break;
-                case 0xA0110002: // ERROR_USER_ALREADY_INTERESTED
-                    retString = "Sie verfolgen bereits den Status dieser Auktion";
-                    break;
-                // Bid
-                case 0xA0110003: // ERROR_AUCTIONNUMBER_DOES_NOT_ESXIST
-                    retString = "Die angegebene Auktionsnummer ist nicht verfügbar";
-                    break;
-                case 0xA0110004: // ERROR_AUCTION_CLOSED
-                    retString = "Die Auktion ist beendet";
-                    break;
-                case 0xA0110005: // ERROR_BID_TOO_LOW
-                    retString = "Das angegebene Gebot ist zu niedrig";
-                    break;
-                case 0xA0110013: // ERROR_BID_NEGATIVE
-                    retString = "Das eingegebene Gebot ist negativ";
-                    break;
-                // Login
-                case 0xA0110006: // ERROR_ALREADY_LOGGED_IN
-                    retString = "Sie sind bereits eingeloggt";
-                    break;
-                case 0xA0110007: // ERROR_FILE_COULD_NOT_BE_OPENED
-                    retString = "Die Datei konnte nicht geöffnet werden";
-                    break;
-                case 0xA0110008: // ERROR_USERNAME_OR_PASSWORD_WRONG
-                    retString = "Der Benutzername oder das Passwort sind falsch";
-                    break;
-                case 0xA0110009: // ERROR_USER_NOT_LOGGED_IN
-                    retString = "Der Benutzer ist nicht eingeloggt";
-                    break;
-                // Offer
-                case 0xA0110010: // ERROR_ARTICLENAME_IS_EMPTY
-                    retString = "Der Artikelname darf nicht leer sein";
-                    break;
-                case 0xA0110014: // ERROR_VALUE_NEGATIVE
-                    retString = "Das Startgebot darf nicht negativ sein";
-                    break;
-                // getAuctions
-                case 0xA0110011: // ERROR_NO_AUCTIONS_AVAILABLE
-                    retString = "Es sind keine Auktionen verfügbar";
-                    break;
-                // Details
-                case 0xA0110012: // ERROR_USER_IS_NOT_AUCTIONEER
-                    retString = "Der angemeldete Benutzer ist nicht der Auktionator dieser Auktion";
-                    break;
-                default:
-                    retString = "Unbekannte COM Exception";
-                    // the return value is false, if the convert function doesnt know the exception, to write a different message text for each 
-                    // catch, where an exception is catched
-                    return false;
-            }
-            return true;
-        }
-    }
-
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -184,7 +120,7 @@ namespace MyBayWCFCln
                                     listBox_messages.Items.Add("- Neues Gebot - Artikel: "
                                                             + message.MessageText2
                                                             + " - Gebot: "
-                                                            + message.MessageDoubleValue.ToString("C")
+                                                            + String.Format(new CultureInfo("en-US"), "{0:C}", message.MessageDoubleValue)
                                                             + " - Auktionsstatus: "
                                                             + message.MessageIntValue.ToString()
                                                             + " - Bieter: "
@@ -201,7 +137,7 @@ namespace MyBayWCFCln
                                     listBox_messages.Items.Add("- Neues Gebot - Artikel: "
                                                                 + message.MessageText
                                                                 + " - Gebot: "
-                                                                + message.MessageDoubleValue.ToString("C")
+                                                                + String.Format(new CultureInfo("en-US"), "{0:C}", message.MessageDoubleValue)
                                                                 + " - Auktionsstatus: "
                                                                 + message.MessageIntValue.ToString());
 
@@ -229,7 +165,7 @@ namespace MyBayWCFCln
                                 listBox_messages.Items.Add("---------------------------------------------------------------------------------------\n Auktion beendet. Käufer: "
                                 + message.MessageText
                                 + " Preis: "
-                                + message.MessageDoubleValue.ToString("C")
+                                + String.Format(new CultureInfo("en-US"), "{0:C}", message.MessageDoubleValue)
                                 + " Artikel: "
                                 + message.MessageText2.ToString()
                                 + "\n---------------------------------------------------------------------------------------");
@@ -254,10 +190,10 @@ namespace MyBayWCFCln
             {
 #if COM
                 this.getMessageTimer.Stop();
-                MessageBoxResult result = MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
+                MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
 #else
                 this.getMessageTimer.Stop();
-                MessageBoxResult result = MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
+                MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
 #endif
             }
             
@@ -306,11 +242,11 @@ namespace MyBayWCFCln
                     string retvalue;
                     if (comError.convertException(except, out retvalue))
                     {
-                        MessageBoxResult result = MessageBox.Show(retvalue, "Fehler", MessageBoxButton.OK);
+                        MessageBox.Show(retvalue, "Fehler", MessageBoxButton.OK);
                     }
                     else
                     {
-                        MessageBoxResult result = MessageBox.Show("Fehler beim Verbinden zum Server, haben Sie die richtige Adresse eingegeben?", "Fehler", MessageBoxButton.OK);
+                        MessageBox.Show("Fehler beim Verbinden zum Server, haben Sie die richtige Adresse eingegeben?", "Fehler", MessageBoxButton.OK);
                     }    
 #else
                     MessageBox.Show("Fehler beim Verbinden zum Server, haben Sie die richtige Adresse eingegeben?", "Warnung", MessageBoxButton.OK);
@@ -368,14 +304,14 @@ namespace MyBayWCFCln
                     string retvalue;
                     if (comError.convertException(except, out retvalue))
                     {
-                        MessageBoxResult result = MessageBox.Show(retvalue, "Fehler", MessageBoxButton.OK);
+                        MessageBox.Show(retvalue, "Fehler", MessageBoxButton.OK);
                     }
                     else
                     {
-                        MessageBoxResult result = MessageBox.Show("Fehler beim Verbinden zum Server", "Fehler", MessageBoxButton.OK);
+                        MessageBox.Show("Fehler beim Verbinden zum Server", "Fehler", MessageBoxButton.OK);
                     }
 #else
-                    MessageBoxResult result = MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
+                    MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
 #endif
                 }
             }
@@ -388,9 +324,10 @@ namespace MyBayWCFCln
                 UInt32 auctionNumber;
 
                 Double tempStartBid;
-                if (!Double.TryParse(this.txtBox_startBid.Text, out tempStartBid))
+                if (!Double.TryParse(this.txtBox_startBid.Text, NumberStyles.Any, new CultureInfo("en-US"), out tempStartBid))
                 {
                     MessageBox.Show("Bitte geben Sie einen gültigen Wert für das Startgebot an", "Warnung", MessageBoxButton.OK);
+                    return;
                 }
 
 #if COM
@@ -412,14 +349,14 @@ namespace MyBayWCFCln
                 string retvalue;
                 if (comError.convertException(except, out retvalue))
                 {
-                    MessageBoxResult result = MessageBox.Show(retvalue, "Fehler", MessageBoxButton.OK);
+                    MessageBox.Show(retvalue, "Fehler", MessageBoxButton.OK);
                 }
                 else
                 {
-                    MessageBoxResult result = MessageBox.Show("Fehler beim Verbinden zum Server", "Fehler", MessageBoxButton.OK);
+                    MessageBox.Show("Fehler beim Verbinden zum Server", "Fehler", MessageBoxButton.OK);
                 }
 #else
-                MessageBoxResult result = MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
+                MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
 #endif
             }
         }
@@ -438,7 +375,7 @@ namespace MyBayWCFCln
                 UInt32 auctionNumber = (selectedAuction as AuctionListBoxItem).auctionNumber;
 
                 Double bidValue;
-                if (!Double.TryParse(this.txtBox_bid.Text, out bidValue))
+                if (!Double.TryParse(this.txtBox_bid.Text, NumberStyles.Any, new CultureInfo("en-US"), out bidValue))
                 {
                     MessageBox.Show("Bitte geben Sie einen gültigen Wert für das Gebot an", "Warnung", MessageBoxButton.OK);
                     return;
@@ -462,14 +399,14 @@ namespace MyBayWCFCln
                 string retvalue;
                 if (comError.convertException(except, out retvalue))
                 {
-                    MessageBoxResult result = MessageBox.Show(retvalue, "Fehler", MessageBoxButton.OK);
+                    MessageBox.Show(retvalue, "Fehler", MessageBoxButton.OK);
                 }
                 else
                 {
-                    MessageBoxResult result = MessageBox.Show("Fehler beim Verbinden zum Server", "Fehler", MessageBoxButton.OK);
+                    MessageBox.Show("Fehler beim Verbinden zum Server", "Fehler", MessageBoxButton.OK);
                 }
 #else
-                MessageBoxResult result = MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
+                MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
 #endif
             }
         }
@@ -506,14 +443,14 @@ namespace MyBayWCFCln
                 string retvalue;
                 if (comError.convertException(except, out retvalue))
                 {
-                    MessageBoxResult result = MessageBox.Show(retvalue, "Fehler", MessageBoxButton.OK);
+                    MessageBox.Show(retvalue, "Fehler", MessageBoxButton.OK);
                 }
                 else
                 {
-                    MessageBoxResult result = MessageBox.Show("Fehler beim Verbinden zum Server", "Fehler", MessageBoxButton.OK);
+                    MessageBox.Show("Fehler beim Verbinden zum Server", "Fehler", MessageBoxButton.OK);
                 }
 #else
-                MessageBoxResult result = MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
+                MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
 #endif
             }
         }
@@ -550,14 +487,14 @@ namespace MyBayWCFCln
                 string retvalue;
                 if (comError.convertException(except, out retvalue))
                 {
-                    MessageBoxResult result = MessageBox.Show(retvalue, "Fehler", MessageBoxButton.OK);
+                    MessageBox.Show(retvalue, "Fehler", MessageBoxButton.OK);
                 }
                 else
                 {
-                    MessageBoxResult result = MessageBox.Show("Fehler beim Verbinden zum Server", "Fehler", MessageBoxButton.OK);
+                    MessageBox.Show("Fehler beim Verbinden zum Server", "Fehler", MessageBoxButton.OK);
                 }
 #else
-                MessageBoxResult result = MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
+                MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
 #endif
             }
         }
@@ -644,14 +581,14 @@ namespace MyBayWCFCln
                 string retvalue;
                 if (comError.convertException(except, out retvalue))
                 {
-                    MessageBoxResult result = MessageBox.Show(retvalue, "Fehler", MessageBoxButton.OK);
+                    MessageBox.Show(retvalue, "Fehler", MessageBoxButton.OK);
                 }
                 else
                 {
-                    MessageBoxResult result = MessageBox.Show("Fehler beim Verbinden zum Server", "Fehler", MessageBoxButton.OK);
+                    MessageBox.Show("Fehler beim Verbinden zum Server", "Fehler", MessageBoxButton.OK);
                 }
 #else
-                MessageBoxResult result = MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
+                MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
 #endif
             }
         }
@@ -713,7 +650,7 @@ namespace MyBayWCFCln
                     this.listBox_auctions.Items.Add("GebotNr: "
                                                 + item.BidNumber.ToString()
                                                 + " - Höhe Gebot: "
-                                                + item.BidValue.ToString("C")
+                                                + String.Format(new CultureInfo("en-US"), "{0:C}", item.BidValue)
                                                 + " - Bieter: "
                                                 + item.Bidder.ToString());
                 }
@@ -728,14 +665,14 @@ namespace MyBayWCFCln
                 string retvalue;
                 if (comError.convertException(except, out retvalue))
                 {
-                    MessageBoxResult result = MessageBox.Show(retvalue, "Fehler", MessageBoxButton.OK);
+                    MessageBox.Show(retvalue, "Fehler", MessageBoxButton.OK);
                 }
                 else
                 {
-                    MessageBoxResult result = MessageBox.Show("Fehler beim Verbinden zum Server", "Fehler", MessageBoxButton.OK);
+                    MessageBox.Show("Fehler beim Verbinden zum Server", "Fehler", MessageBoxButton.OK);
                 }
 #else
-                MessageBoxResult result = MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
+                MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
 #endif
             }
         }

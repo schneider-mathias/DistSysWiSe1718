@@ -71,6 +71,7 @@
     <Compile Include="AuctionListBoxItem.xaml.cs">
       <DependentUpon>AuctionListBoxItem.xaml</DependentUpon>
     </Compile>
+    <Compile Include="comError.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

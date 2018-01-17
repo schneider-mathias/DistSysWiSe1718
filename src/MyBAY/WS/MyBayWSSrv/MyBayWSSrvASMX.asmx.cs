@@ -27,12 +27,25 @@ namespace MyBayWSSrv
     [System.ComponentModel.ToolboxItem(false)]
     public class MyBayWSSrvASMX : System.Web.Services.WebService
     {
-        private static List<Auction> listAuctions = new List<Auction>();
+        private static List<Auction> listAuctions;
 
         #region C'Tors
         public MyBayWSSrvASMX()
         {
             AuthService.initializeAuthService();
+
+            // Check if Auctionlist is already instantiated
+            if (MyBayWSSrvASMX.listAuctions == null)
+            {
+                MyBayWSSrvASMX.listAuctions = Auction.GetPersistentAuctions();
+                // check if reading from File was successful
+                if (MyBayWSSrvASMX.listAuctions != null)
+                {
+                    Auction.setCountAuctions((UInt32)MyBayWSSrvASMX.listAuctions.Count);
+                }
+                // if reading from file not successfull, create new list
+                else MyBayWSSrvASMX.listAuctions = new List<Auction>();
+            }
         }
         #endregion
 
@@ -75,6 +88,8 @@ namespace MyBayWSSrv
             {
                 MyBayWSSrvASMX.listAuctions.Add(newAuction);
             }
+            Auction.SaveAuctionsPersistent(MyBayWSSrvASMX.listAuctions);
+
             return "OK";
         }
 
@@ -96,6 +111,9 @@ namespace MyBayWSSrv
                 }
                 auctionTemp.addToInterested(AuthenticationService.AuthService.getIndexBySessionID(sessionID));
             }
+
+            // Write all auctions in a file
+            Auction.SaveAuctionsPersistent(MyBayWSSrvASMX.listAuctions);
             return "OK";
         }
 
@@ -185,7 +203,13 @@ namespace MyBayWSSrv
                 }
             }
 
-            return auctionTemp.addBid(AuthenticationService.AuthService.getIndexBySessionID(sessionID), bidVal);
+            String returnMsg = auctionTemp.addBid(AuthenticationService.AuthService.getIndexBySessionID(sessionID), bidVal);
+            if (returnMsg == "OK")
+            {
+                // Write all auctions in a file
+                Auction.SaveAuctionsPersistent(MyBayWSSrvASMX.listAuctions);
+            }
+            return returnMsg;
         }
 
         [WebMethod]
@@ -251,7 +275,11 @@ namespace MyBayWSSrv
                     return "Die angegebene Auktionsnummer konnte nicht gefunden werden";
                 }
 
-                return tempAuction.endAuction();
+                string retValue = tempAuction.endAuction();
+
+                if (retValue == "OK") Auction.SaveAuctionsPersistent(MyBayWSSrvASMX.listAuctions);
+
+                return retValue;
             }
         }
 
