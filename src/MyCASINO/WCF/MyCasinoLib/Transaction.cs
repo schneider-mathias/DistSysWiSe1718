@@ -29,8 +29,8 @@ namespace MyCasinoLib
             get { return name; }
             set { name = value; }
         }
-        private int m_id;
-        public int M_id
+        private ulong m_id;
+        public ulong M_id
         {
             get { return m_id; }
             set { m_id = value; }
@@ -56,7 +56,7 @@ namespace MyCasinoLib
         public Transaction()
         {
         }
-        public Transaction(int m_idTmp, double currentAmountTmp, double changeAmountTmp, string nameTmp, MyCasinoTransactionTypes typeTmp)
+        public Transaction(ulong m_idTmp, double currentAmountTmp, double changeAmountTmp, string nameTmp, MyCasinoTransactionTypes typeTmp)
         {
             M_id = m_idTmp;
             CurrentAmount = currentAmountTmp;

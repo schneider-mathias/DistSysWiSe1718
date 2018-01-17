@@ -21,7 +21,7 @@ namespace MyCasinoWCFLib
         /// <param name="errMsg">Error Message</param>
         /// <returns></returns>
         [OperationContract]
-        bool login(string username, string password, out int sessionId, out MyCasinoUserTypes userType, out string errMsg);
+        bool login(string username, string password, out ulong sessionId, out short userType, out string errMsg);
 
         /// <summary>
         /// Logout method to log out of the server
@@ -30,7 +30,7 @@ namespace MyCasinoWCFLib
         /// <param name="errMsg">Error message</param>
         /// <returns></returns>
         [OperationContract]
-        bool logout(int sessionId, out string errMsg);
+        bool logout(ulong sessionId, out string errMsg);
 
         /// <summary>
         /// A method to pay into the account of a user/casino
@@ -41,7 +41,7 @@ namespace MyCasinoWCFLib
         /// <param name="errMsg">Error message</param>
         /// <returns></returns>
         [OperationContract]
-        bool deposit(int sessionId, string name, double amountMoney, out string errMsg);
+        bool deposit(ulong sessionId, string name, double amountMoney, out string errMsg);
 
         /// <summary>
         /// A method to enter bets
@@ -53,7 +53,7 @@ namespace MyCasinoWCFLib
         /// <param name="errMsg">Error message</param>
         /// <returns></returns>
         [OperationContract]
-        bool bet(int sessionId, double amountMoney, int firstNumber, int secondNumber, out string errMsg);
+        bool bet(ulong sessionId, double amountMoney, short firstNumber, short secondNumber, out string errMsg);
 
         /// <summary>
         /// A method to calculate the profit of bets
@@ -65,12 +65,12 @@ namespace MyCasinoWCFLib
         /// <param name="errMsg"></param>
         /// <returns></returns>
         [OperationContract]
-        bool calculateProfit(int sessionId, double amountMoney, int firstNumber, int secondNumber, out double profitForOneMatch, out double profitForTwoMatches, out string errMsg);
+        bool calculateProfit(ulong sessionId, double amountMoney, short firstNumber, short secondNumber, out double profitForOneMatch, out double profitForTwoMatches, out string errMsg);
 
         //TODO:see list bets
         [OperationContract]
         //bool showbets(int sessionId, out List<Bet> bets, out int count, out string errMsg);
-        bool showbets(int sessionId, out List<string> names, out List<int> firstNumbers, out List<int> secondNumbers, out List<double> amount , out int count, out string errMsg);
+        bool showbets(ulong sessionId, out List<string> names, out List<short> firstNumbers, out List<short> secondNumbers, out List<double> amount , out ulong count, out string errMsg);
 
         /// <summary>
         /// A method to test drawing
@@ -81,7 +81,7 @@ namespace MyCasinoWCFLib
         /// <param name="errMsg"></param>
         /// <returns></returns>
         [OperationContract]
-        bool drawtest(int sessionId, int firstNumberTest, int secondNumberTest, out string errMsg);
+        bool drawtest(ulong sessionId, short firstNumberTest, short secondNumberTest, out string errMsg);
 
         /// <summary>
         /// A method to draw two random numbers
@@ -92,14 +92,12 @@ namespace MyCasinoWCFLib
         /// <param name="errMsg">Error message</param>
         /// <returns></returns>
         [OperationContract]
-        bool draw(int sessionId, out int firstNumber, out int secondNumber, out string errMsg);
+        bool draw(ulong sessionId, out short firstNumber, out short secondNumber, out string errMsg);
 
-        //TODO:see list transaction
         [OperationContract]
-        bool getTransactions(int sessionId, out bool isFinished, out List<string> transaction, out int transactionType, out string errMsg);
-        //TODO:see list information
+        bool getTransactions(ulong sessionId, out bool isFinished, out List<string> transaction, out ulong transactionType, out string errMsg);
         [OperationContract]
-        bool getTransactionInformation(int sessionId, int transactionId, out List<string> information, out int informationType, out string errMsg);
+        bool getTransactionInformation(ulong sessionId, ulong transactionId, out List<string> information, out ulong informationType, out string errMsg);
 
 
 

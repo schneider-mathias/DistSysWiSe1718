@@ -98,8 +98,14 @@ namespace MyCasinoWCFClient.Pages
 
         private string errMsg;
 
+        private ulong sessionId;
 
-#if COM
+        public ulong SessionId
+        {
+            get { return sessionId; }
+            set { sessionId = value; }
+        }
+
         private short numberOne;
 
         public short NumberOne
@@ -134,6 +140,9 @@ namespace MyCasinoWCFClient.Pages
             set { secondNumber = value; }
         }
 
+#if COM
+    
+
         private COMMyCasinoSrvLib.COMMyCasino _comSrv;
 
         public COMMyCasinoSrvLib.COMMyCasino _ComSrv
@@ -142,15 +151,7 @@ namespace MyCasinoWCFClient.Pages
             set { _comSrv = value; }
         }
 
-        private uint sessionId;
-
-        public uint SessionId
-        {
-            get { return sessionId; }
-            set { sessionId = value; }
-        }
-
-        public PlayPage(COMMyCasinoSrvLib.COMMyCasino _comSrvTmp, string usernameTmp, uint sessionIdTmp, short typeTmp)
+        public PlayPage(COMMyCasinoSrvLib.COMMyCasino _comSrvTmp, string usernameTmp, ulong sessionIdTmp, short typeTmp)
         {
             _ComSrv = _comSrvTmp;
             InitializeComponent();
@@ -176,39 +177,6 @@ namespace MyCasinoWCFClient.Pages
 
         }
 #else
-        private int numberOne;
-
-        public int NumberOne
-        {
-            get { return numberOne; }
-            set { numberOne = value; }
-        }
-
-        private int numberTwo;
-            
-        public int NumberTwo
-        {
-            get { return numberTwo; }
-            set { numberTwo = value; }
-        }
-
-        //First drawn number
-        private int firstNumber;
-
-        public int FirstNumber
-        {
-            get { return firstNumber; }
-            set { firstNumber = value; }
-        }
-
-        //Second drawn Number
-        private int secondNumber;
-
-        public int SecondNumber
-        {
-            get { return secondNumber; }
-            set { secondNumber = value; }
-        }
 
         private INETMyCasino _remSrvMyCasino;
 
@@ -218,15 +186,7 @@ namespace MyCasinoWCFClient.Pages
             set { _remSrvMyCasino = value; }
         }
 
-        private int sessionId;
-
-        public int SessionId
-        {
-            get { return sessionId; }
-            set { sessionId = value; }
-        }
-
-        public PlayPage(INETMyCasino _RemSrvMyCasinoMain, string usernameTmp, int sessionIdTmp, MyCasinoUserTypes typeTmp)
+        public PlayPage(INETMyCasino _RemSrvMyCasinoMain, string usernameTmp, ulong sessionIdTmp, short typeTmp)
         {
             _RemSrvMyCasino = _RemSrvMyCasinoMain;
             InitializeComponent();
@@ -235,14 +195,14 @@ namespace MyCasinoWCFClient.Pages
             SessionId = sessionIdTmp;
 
             //disable operator-only features
-            if (typeTmp == MyCasinoUserTypes.Gamer)
+            if (typeTmp == 1)
             {
                 btnDraw.Visibility = Visibility.Hidden;
                 btnDrawNumbers.Visibility = Visibility.Hidden;
                 tblLastDrawing.Visibility = Visibility.Hidden;
             }
             //disable  gamer only- features
-            if (typeTmp == MyCasinoUserTypes.Operator)
+            if (typeTmp == 0)
             {
                 tbxBetSum.Visibility = Visibility.Hidden;
                 btnBet.Visibility = Visibility.Hidden;
@@ -817,10 +777,10 @@ namespace MyCasinoWCFClient.Pages
             uint count = 0;
 #else
             //init lists
-            int count=0;
+            ulong count=0;
             List<string> names = new List<string>();
-            List<int> firstNumberBetList = new List<int>();
-            List<int> secondNumberBetList = new List<int>();
+            List<short> firstNumberBetList = new List<short>();
+            List<short> secondNumberBetList = new List<short>();
             List<double> amountBetList = new List<double>();
 #endif
 
@@ -857,7 +817,7 @@ namespace MyCasinoWCFClient.Pages
                     MessageBox.Show("Betreiber nicht eingeloggt!");
                 }
             }
-            catch(Exception ex)
+            catch(Exception)
             {
                 MessageBox.Show("Fehler beim Anzeigen der Wetten: Kein Server gefunden!");
             }
@@ -890,7 +850,7 @@ namespace MyCasinoWCFClient.Pages
                     }
                 }
 #else
-            for (int i = 0; i < count ; i++)
+            for (int i = 0; i < (int)count ; i++)
             {
                 double profitForOneMatch = 0, profitForTwoMatches = 0;
                 try
@@ -945,7 +905,7 @@ namespace MyCasinoWCFClient.Pages
                     MessageBox.Show("Ungültige ID!");
                 }
             }
-            catch(Exception ex)
+            catch(Exception)
             {
                 MessageBox.Show("Fehler beim Ziehen: Kein Server gefunden!");
             }
@@ -993,7 +953,7 @@ namespace MyCasinoWCFClient.Pages
                     MessageBox.Show("Ungültige ID!");
                 }
             }
-            catch(Exception ex)
+            catch(Exception)
             {
                 MessageBox.Show("Fehler beim Ziehen: Kein Server gefunden");
             }

@@ -20,17 +20,17 @@ namespace MyCasinoLib
         public int id;
         public string username;
         private string password;
-        private MyCasinoUserTypes userType;
+        private short userType;
         public Account account = new Account();
-        private int sessionId;
+        private ulong sessionId;
 
-        public int SessionId
+        public ulong SessionId
         {
             get { return sessionId; }
             set { sessionId = value; }
         }
 
-        public MyCasinoUserTypes UserType
+        public short UserType
         {
             get { return userType; }
             set { userType = value; }
@@ -49,7 +49,7 @@ namespace MyCasinoLib
             set { password = value; }
         }
 
-        public User(int identification, string name, string pw, MyCasinoUserTypes type)
+        public User(int identification, string name, string pw, short type)
         {
             id = identification;
             Username = name;
@@ -57,7 +57,7 @@ namespace MyCasinoLib
             UserType = type;
         }
 
-        public User(string name, int sessionid, MyCasinoUserTypes type)
+        public User(string name, int sessionid, short type)
         {
             Username = name;
             SessionId = sessionId;
@@ -105,7 +105,7 @@ namespace MyCasinoLib
                         Int32.TryParse(substring[3], out type);
                         lock (thisLockUserList)
                         {
-                            userList.Add(new User(id, substring[1], substring[2], (MyCasinoUserTypes)type));
+                            userList.Add(new User(id, substring[1], substring[2], (short)type));
                         }
                     }
                 }
@@ -136,7 +136,7 @@ namespace MyCasinoLib
             }
             return true;
         }
-        public string Login(string username, string pw, out int sessionId, out MyCasinoUserTypes type, Dictionary<Transaction, Draw> dictTransDraw, out User currUser)
+        public string Login(string username, string pw, out ulong sessionId, out short type, Dictionary<Transaction, Draw> dictTransDraw, out User currUser)
         {
             lock (thisLockUserList)
             {
@@ -144,22 +144,22 @@ namespace MyCasinoLib
                 {
                     if (username == user.username && pw == user.Password && 0 == user.SessionId)
                     {
-                        if (user.UserType == MyCasinoUserTypes.Operator && m_operator == true)
+                        if (user.UserType == 0 && m_operator == true)
                         {
-                            user.SessionId = unchecked(Convert.ToInt32(GenerateId()));
+                            user.SessionId = unchecked(Convert.ToUInt32(GenerateId()));
                             sessionId = user.SessionId;
                             type = user.UserType;
                             currUser = user;
                             return "OPERATOR_ALREADY_LOGGED_IN";
                         }
 
-                        if (user.UserType == MyCasinoUserTypes.Operator && m_operator == false)
+                        if (user.UserType == 0 && m_operator == false)
                         {
                             m_operator = true;
                         }
                         //Read transaction information
                         user.account.ReadUserTransaction(user.username, dictTransDraw);
-                        user.SessionId = Math.Abs(unchecked(GenerateId()));
+                        user.SessionId = (uint)Math.Abs(unchecked(GenerateId()));
                         sessionId = user.SessionId;
                         type = user.UserType;
                         currUser = user;
@@ -169,7 +169,7 @@ namespace MyCasinoLib
                 }
             }
             sessionId = 0;
-            type = MyCasinoUserTypes.ERROR;
+            type = 2;
             lock (thisLockUserList)
             {
                 foreach (User user in userList)
@@ -189,7 +189,7 @@ namespace MyCasinoLib
             byte[] buff = Guid.NewGuid().ToByteArray();
             return BitConverter.ToInt32(buff, 0);
         }
-        public string Logout(int sessionId)
+        public string Logout(ulong sessionId)
         {
             //save all current amounts for all users
             using (StreamWriter sw = new StreamWriter(Environment.GetEnvironmentVariable("SystemDrive") + "\\_myCasinoData\\UserBalance.txt", false))
@@ -207,7 +207,7 @@ namespace MyCasinoLib
                 foreach (User user in userList)
                 {
 
-                    if (sessionId == user.SessionId && user.UserType == MyCasinoUserTypes.Operator)
+                    if (sessionId == user.SessionId && user.UserType == 2)
                     {
                         m_operator = false;
                         user.SessionId = 0;
@@ -223,7 +223,7 @@ namespace MyCasinoLib
             }
             return "COULD_NOT_FIND_USER_LOGOUT_UNSUCCESSFUL";
         }
-        public bool SessionIdCheck(int sessionId)
+        public bool SessionIdCheck(ulong sessionId)
         {
             lock (thisLockUserList)
             {

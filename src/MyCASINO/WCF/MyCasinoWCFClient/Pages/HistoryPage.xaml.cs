@@ -29,6 +29,13 @@ namespace MyCasinoWCFClient.Pages
     /// </summary>
     public partial class HistoryPage : Page
     {
+        private ulong sessionId;
+
+        public ulong SessionId
+        {
+            get { return sessionId; }
+            set { sessionId = value; }
+        }
 #if COM
         private COMMyCasinoSrvLib.COMMyCasino _comSrv;
 
@@ -38,13 +45,7 @@ namespace MyCasinoWCFClient.Pages
             set { _comSrv = value; }
         }
 
-        private uint sessionId;
 
-        public uint SessionId
-        {
-            get { return sessionId; }
-            set { sessionId = value; }
-        }
 #else
         private INETMyCasino _remSrvMyCasino;
 
@@ -54,17 +55,10 @@ namespace MyCasinoWCFClient.Pages
             set { _remSrvMyCasino = value; }
         }
 
-        private int sessionId;
-
-        public int SessionId
-        {
-            get { return sessionId; }
-            set { sessionId = value; }
-        }
 #endif
-        //0 dep 1 with 2canc 3betwa 4win 5loss
+        
 #if COM
-        public HistoryPage(COMMyCasinoSrvLib.COMMyCasino _comSrvTmp, string usernameTmp, uint sessionIdTmp, short typeTmp)
+        public HistoryPage(COMMyCasinoSrvLib.COMMyCasino _comSrvTmp, string usernameTmp, ulong sessionIdTmp, short typeTmp)
         {
             _ComSrv = _comSrvTmp;
             InitializeComponent();
@@ -196,7 +190,7 @@ namespace MyCasinoWCFClient.Pages
             }
        }
 #else
-        public HistoryPage(INETMyCasino _RemSrvMyCasinoMain, string usernameTmp, int sessionIdTmp, MyCasinoUserTypes typeTmp)
+        public HistoryPage(INETMyCasino _RemSrvMyCasinoMain, string usernameTmp, ulong sessionIdTmp, short typeTmp)
         {
             _RemSrvMyCasino = _RemSrvMyCasinoMain;
             InitializeComponent();
@@ -205,8 +199,8 @@ namespace MyCasinoWCFClient.Pages
             bool isFinished;
             List<string> transaction;
             List<string> information = null;
-            int informationType;
-            int transactionType;
+            ulong informationType;
+            ulong transactionType;
             string errMsg="";
             double opMoney=0;
             bool operatorLogged = true;
@@ -228,7 +222,7 @@ namespace MyCasinoWCFClient.Pages
                     if (isFinished == true) break;
                     if (transactionType == 0)
                     {
-                        if (typeTmp == MyCasinoUserTypes.Operator)
+                        if (typeTmp == 0)
                         {
                             double opMoneyTmp = 0;
                             if (opMoney == 0)
@@ -260,19 +254,19 @@ namespace MyCasinoWCFClient.Pages
                     {
                         try
                         {
-                            int idTrans;
-                            int.TryParse(transaction.ElementAt(0), out idTrans);
+                            ulong idTrans;
+                            ulong.TryParse(transaction.ElementAt(0), out idTrans);
                             _RemSrvMyCasino.getTransactionInformation(SessionId, idTrans, out information, out informationType, out errMsg);
                             if (errMsg == "INVALID_SESSION_ID")
                             {
                                 MessageBox.Show("Ungültige ID!");
                             }
                         }
-                        catch(Exception ex)
+                        catch(Exception)
                         {
                             MessageBox.Show("Fehler beim abholen der Informationen für die Transaktionen: Server nicht gefunden");
                         }
-                        if (typeTmp == MyCasinoUserTypes.Gamer)
+                        if (typeTmp == 1)
                         {
                             lbBetAmountList.Items.Add(information.ElementAt(3));
                             lbFirstNumberPerRollList.Items.Add(information.ElementAt(1));
@@ -283,7 +277,7 @@ namespace MyCasinoWCFClient.Pages
                             lbPayInList.Items.Add("");
                             lbBalanceList.Items.Add(transaction.ElementAt(1));
                         }
-                        else if (typeTmp == MyCasinoUserTypes.Operator)
+                        else if (typeTmp == 0)
                         {
                             int amount;
                             int.TryParse((information.ElementAt(6)), out amount);
@@ -299,23 +293,25 @@ namespace MyCasinoWCFClient.Pages
                         }
                     }
                     //transaction is loss
+                    //deserialize and fill elements for page
                     else if (transactionType == 5)
                     {
                         try
                         {
-                            int idTrans;
-                            int.TryParse(transaction.ElementAt(0), out idTrans);
+                            ulong idTrans;
+                            ulong.TryParse(transaction.ElementAt(0), out idTrans);
                             _RemSrvMyCasino.getTransactionInformation(SessionId, idTrans, out information, out informationType, out errMsg);
                             if (errMsg == "INVALID_SESSION_ID")
                             {
                                 MessageBox.Show("Ungültige ID!");
                             }
                         }
-                        catch(Exception ex)
+                        catch(Exception)
                         {
                             MessageBox.Show("Fehler beim abholen der Informationen für die Transaktionen: Server nicht gefunden!");
                         }
-                        if (typeTmp == MyCasinoUserTypes.Gamer)
+                        //Fill if user is gamer
+                        if (typeTmp == 1)
                         {
                             int amount;
                             int.TryParse((information.ElementAt(3)),out amount);
@@ -328,7 +324,8 @@ namespace MyCasinoWCFClient.Pages
                             lbPayInList.Items.Add("");
                             lbBalanceList.Items.Add(transaction.ElementAt(1));
                         }
-                        else if (typeTmp == MyCasinoUserTypes.Operator)
+                        //Fill if user is operator
+                        else if (typeTmp == 0)
                         {
                             int amount;
                             int.TryParse((information.ElementAt(3)), out amount);
@@ -351,7 +348,7 @@ namespace MyCasinoWCFClient.Pages
                     MessageBox.Show("Betreiber nicht angemeldet!");
                 }
             }
-            catch(Exception ex)
+            catch(Exception)
             {
                 MessageBox.Show("Fehler beim abholen der Transaktionen: Server nicht gefunden");
             }

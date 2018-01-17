@@ -42,7 +42,6 @@ namespace MyCasinoWCFClient.Pages
 
      
 
-#if COM
         private short userType;
 
         public short UserType
@@ -50,6 +49,15 @@ namespace MyCasinoWCFClient.Pages
             get { return userType; }
             set { userType = value; }
         }
+
+        private ulong sessionId;
+
+        public ulong SessionId
+        {
+            get { return sessionId; }
+            set { sessionId = value; }
+        }
+#if COM
 
 
         private COMMyCasinoSrvLib.COMMyCasino _comSrv;
@@ -60,14 +68,8 @@ namespace MyCasinoWCFClient.Pages
             set { _comSrv = value; }
         }
 
-        private uint sessionId;
-
-        public uint SessionId
-        {
-            get { return sessionId; }
-            set { sessionId = value; }
-        }
-        public GamingPage(COMMyCasinoSrvLib.COMMyCasino _comSrvTmp, string usernameTmp, uint sessionIdTmp, short typeTmp)
+       
+        public GamingPage(COMMyCasinoSrvLib.COMMyCasino _comSrvTmp, string usernameTmp, ulong sessionIdTmp, short typeTmp)
         {
             InitializeComponent();
             _ComSrv = _comSrvTmp;
@@ -92,25 +94,14 @@ namespace MyCasinoWCFClient.Pages
             }
         }
 #else
-        private MyCasinoUserTypes userType;
-        public MyCasinoUserTypes UserType
-        {
-            get { return userType; }
-            set { userType = value; }
-        }
-        private int sessionId;
-        public int SessionId
-        {
-            get { return sessionId; }
-            set { sessionId = value; }
-        }
+
         private INETMyCasino _remSrvMyCasino;
         public INETMyCasino _RemSrvMyCasino
         {
             get { return _remSrvMyCasino; }
             set { _remSrvMyCasino = value; }
         }
-        public GamingPage(INETMyCasino _RemSrvMyCasinoMain, string usernameTmp, int sessionIdTmp, MyCasinoUserTypes typeTmp)
+        public GamingPage(INETMyCasino _RemSrvMyCasinoMain, string usernameTmp, ulong sessionIdTmp, short typeTmp)
         {
             InitializeComponent();
             //save information for different pages
@@ -124,12 +115,12 @@ namespace MyCasinoWCFClient.Pages
             tblUsername.Text = Username;
 
             //disable gamer-only content
-            if (UserType == MyCasinoUserTypes.Operator)
+            if (UserType == 0)
             {
 
             }
             //disable operator-only content
-            if (UserType == MyCasinoUserTypes.Gamer)
+            if (UserType == 1)
             {
                 BtnPayIn.Visibility = Visibility.Hidden;
             }
