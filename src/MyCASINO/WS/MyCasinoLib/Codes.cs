@@ -1,4 +1,9 @@
-﻿using System;
+﻿/************************************************************/
+/* Content:   Codes class                                   */
+/* Autor:     Martin Obermeier                              */
+/* Time:      23. Jan 2018                                  */
+/************************************************************/
+using System;
 using System.Runtime.InteropServices;
 
 namespace MyCasinoLib

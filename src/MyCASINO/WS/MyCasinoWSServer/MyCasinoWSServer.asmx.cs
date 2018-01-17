@@ -1,4 +1,9 @@
-﻿using MyCasinoLib;
+﻿/************************************************************/
+/* Content:   MyCasinoWSServer                              */
+/* Autor:     Martin Obermeier                              */
+/* Time:      23. Jan 2017                                  */
+/************************************************************/
+using MyCasinoLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;

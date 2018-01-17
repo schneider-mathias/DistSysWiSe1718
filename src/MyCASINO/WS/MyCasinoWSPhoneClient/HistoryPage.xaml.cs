@@ -1,4 +1,9 @@
-﻿using System;
+﻿/************************************************************/
+/* Content:   History Page code-behind                      */
+/* Autor:     Martin Obermeier                              */
+/* Time:      23. Jan 2018                                  */
+/************************************************************/
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -193,7 +198,7 @@ namespace MyCasinoWSPhoneClient
                         }
                         else if (resultTransInfo.errMsg != null)
                         {
-                            MessageBox.Show("Fehler beim abholen der Informationen für die Transaktionen: ");
+                            MessageBox.Show("Fehler beim abholen der Informationen für die Transaktionen");
                         }
                         //save all transaction information to the listboxes for gamer
                         if (MyCasinoSvcHistory.UserType == 1)
@@ -227,7 +232,7 @@ namespace MyCasinoWSPhoneClient
             }
             catch (Exception)
             {
-                MessageBox.Show("Fehler beim abholen der Transaktionen: ");
+                MessageBox.Show("Fehler beim abholen der Transaktionen");
             }
             if (operatorLogged == false)
             {

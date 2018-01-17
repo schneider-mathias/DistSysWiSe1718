@@ -6,11 +6,10 @@
 /*                                                          */
 /* Autor(en): Josef Pösl (jp), <XXX>                        */
 /* Firma:     HAW Hochschule Amberg-Weiden                  */
-/* Stand:     14. Nov 2012                                  */
+/* Stand:     23. Jan 2018                                  */
 /*                                                          */
 /* Historie:  21. Dez 2011 jp  erstellt                     */
 /*            14. Nov 2012 jp  ChildPageType bei NaviDel    */
-/*            xx. xxx xxxx     modifiziert...               */
 /*                                                          */
 /* Copyright 2001-2050 HAW Amberg-Weiden ... usw.           */
 /*                                                          */

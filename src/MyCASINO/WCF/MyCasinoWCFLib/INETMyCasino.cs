@@ -1,4 +1,9 @@
-﻿using MyCasinoLib;
+﻿/************************************************************/
+/* Content:   INETMyCasino Interface                        */
+/* Autor:     Martin Obermeier                              */
+/* Time:      23. Jan 2018                                  */
+/************************************************************/
+using MyCasinoLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;

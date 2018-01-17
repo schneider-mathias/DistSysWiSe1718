@@ -1,4 +1,9 @@
-﻿using System;
+﻿/************************************************************/
+/* Content:   App class                                     */
+/* Autor:     Martin Obermeier                              */
+/* Time:      23. Jan 2018                                  */
+/************************************************************/
+using System;
 using System.Diagnostics;
 using System.Resources;
 using System.Windows;

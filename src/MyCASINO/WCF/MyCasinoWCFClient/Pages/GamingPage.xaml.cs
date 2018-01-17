@@ -1,4 +1,10 @@
-﻿//#define COM
+﻿/************************************************************/
+/* Content:   Gaming Page code-behind                       */
+/* Autor:     Martin Obermeier                              */
+/* Time:      23. Jan 2018                                  */
+/************************************************************/
+
+//#define COM
 
 using System;
 using System.Collections.Generic;
@@ -39,8 +45,6 @@ namespace MyCasinoWCFClient.Pages
             get { return username; }
             set { username = value; }
         }
-
-     
 
         private short userType;
 

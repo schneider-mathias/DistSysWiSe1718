@@ -1,4 +1,9 @@
-﻿using System;
+﻿/************************************************************/
+/* Content:   User and Authservice classes                  */
+/* Autor:     Martin Obermeier                              */
+/* Time:      23. Jan 2018                                  */
+/************************************************************/
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;

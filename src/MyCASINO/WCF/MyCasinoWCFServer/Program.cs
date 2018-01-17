@@ -1,4 +1,9 @@
-﻿using System;
+﻿/************************************************************/
+/* Content:   Program                                       */
+/* Autor:     Martin Obermeier                              */
+/* Time:      23. Jan 2018                                  */
+/************************************************************/
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
@@ -16,7 +21,7 @@ namespace MyCasinoWCFServer
         static void Main(string[] args)
         {
 
-            //Server-Object creation (Singleton)
+            //Server-Object creation 
             MyCasinoWCFServerImplementation myCasinoSrv = new MyCasinoWCFServerImplementation();
 
             ServiceHost svh = new ServiceHost(myCasinoSrv, new Uri("http://localhost:1200/MyCasinoWCF"));

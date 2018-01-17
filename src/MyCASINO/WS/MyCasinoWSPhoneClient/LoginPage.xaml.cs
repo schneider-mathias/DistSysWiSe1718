@@ -1,4 +1,9 @@
-﻿using System;
+﻿/************************************************************/
+/* Content:   Login Page code-behind                        */
+/* Autor:     Martin Obermeier                              */
+/* Time:      23. Jan 2018                                  */
+/************************************************************/
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -33,6 +38,10 @@ namespace MyCasinoWSPhoneClient
             myCasinoSvcLogin.MyCasinoSvc = new MyCasinoWSServer.MyCasinoWSServerSoapClient();
             InitializeComponent();
         }
+        
+       // change to true so it will throw an exception
+
+
 
         #region Username and Password standard values
 

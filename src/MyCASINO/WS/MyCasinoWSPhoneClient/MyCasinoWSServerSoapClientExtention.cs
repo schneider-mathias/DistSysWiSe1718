@@ -1,4 +1,10 @@
-﻿using MyCasinoWSPhoneClient.MyCasinoWSServer;
+﻿/***************************************************************************************************************/
+/* Content:   MyCasinoWSServerSoapClientExtensions                                                             */
+/* Autor:     Martin Obermeier                                                                                 */
+/* Time:      23. Jan 2018                                                                                     */
+/* Structure from: https://stackoverflow.com/questions/14103288/how-can-i-use-async-await-to-call-a-webservice */
+/***************************************************************************************************************/
+using MyCasinoWSPhoneClient.MyCasinoWSServer;
 using System;
 using System.Collections.Generic;
 using System.Linq;

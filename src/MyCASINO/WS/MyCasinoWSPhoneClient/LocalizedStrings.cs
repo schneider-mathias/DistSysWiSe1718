@@ -1,4 +1,9 @@
-﻿using MyCasinoWSPhoneClient.Resources;
+﻿/************************************************************/
+/* Content:   LocalizedStrings class                        */
+/* Autor:     Martin Obermeier                              */
+/* Time:      23. Jan 2018                                  */
+/************************************************************/
+using MyCasinoWSPhoneClient.Resources;
 
 namespace MyCasinoWSPhoneClient
 {

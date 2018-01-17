@@ -1,4 +1,9 @@
-﻿using MyCasinoLib;
+﻿/************************************************************/
+/* Content:   MyCasinoWCFServerImpelmentation               */
+/* Autor:     Martin Obermeier                              */
+/* Time:      23. Jan 2018                                  */
+/************************************************************/
+using MyCasinoLib;
 using MyCasinoWCFLib;
 using System;
 using System.Collections.Generic;

@@ -1,4 +1,9 @@
-﻿using System;
+﻿/************************************************************/
+/* Content:   TransportData class                           */
+/* Autor:     Martin Obermeier                              */
+/* Time:      23. Jan 2018                                  */
+/************************************************************/
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;

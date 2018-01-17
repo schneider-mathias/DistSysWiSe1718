@@ -1,4 +1,9 @@
-﻿<phone:PhoneApplicationPage
+﻿<!--************************************************************/
+/* Content:   Login page xaml                                  */
+/* Autor:     Martin Obermeier                                 */
+/* Time:      23. Jan 2018                                     */
+/************************************************************/-->
+<phone:PhoneApplicationPage
     x:Class="MyCasinoWSPhoneClient.LoginPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
