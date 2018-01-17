@@ -77,59 +77,23 @@ namespace MyCasinoWCFServer
             //delete user in loggedlist and empty all bets of specific user
             lock (thisLockUserListLoggedOn)
             {
+                //if user is operator
                 User userOperatorCheck = userListLoggedOn.Find(item => item.UserType == 0);
                 if (userOperatorCheck != null)
                 {
-                    if (sessionId == userOperatorCheck.SessionId)
+                    lock(thisLockDictTransDraw)
                     {
-                        lock (thisLockDictTransDraw)
-                        {
-                            for (int i = 0; i < dictTransDraw.Count; i++)
-                            {
-                                if (dictTransDraw.ElementAt(i).Key.TransType == MyCasinoTransactionTypes.BET_WAGER)
-                                {
-                                    dictTransDraw.ElementAt(i).Key.TransType = MyCasinoTransactionTypes.CANCELED;
-                                    //set money of unfinished bets back and delete bets
-                                    foreach (User user in userListLoggedOn)
-                                    {
-                                        user.account.DelBets();
-                                        user.account.MoneyAmountLeft += dictTransDraw.ElementAt(i).Value.DrawBet.M_setAmount;
-                                    }
-                                    userOperatorCheck.account.MoneyAmountLeft -= dictTransDraw.ElementAt(i).Value.DrawBet.M_setAmount;
-                                }
-                            }
-                        }
-                        //user from logged list
-                        name = userOperatorCheck.Username;
-                        userListLoggedOn.Remove(userOperatorCheck);
+                        userOperatorCheck.OperatorLogout(sessionId, dictTransDraw, userListLoggedOn,userOperatorCheck,out name);
                     }
                 }
-
+                //if user is gamer
                 else
                 {
                     foreach (User user in userListLoggedOn)
                     {
-                        if (user.SessionId == sessionId)
+                        lock (thisLockDictTransDraw)
                         {
-                            lock (thisLockDictTransDraw)
-                            {
-                                for (int i = 0; i < dictTransDraw.Count; i++)
-                                {
-                                    //set money of unfinished bets back
-                                    if (dictTransDraw.ElementAt(i).Key.Name == user.username &&
-                                        dictTransDraw.ElementAt(i).Key.TransType == MyCasinoTransactionTypes.BET_WAGER)
-                                    {
-                                        dictTransDraw.ElementAt(i).Key.TransType = MyCasinoTransactionTypes.CANCELED;
-                                        user.account.MoneyAmountLeft += dictTransDraw.ElementAt(i).Value.DrawBet.M_setAmount;
-                                        userOperatorCheck.account.MoneyAmountLeft -= dictTransDraw.ElementAt(i).Value.DrawBet.M_setAmount;
-                                    }
-                                }
-                            }
-                            //delete bets and user from logged list
-                            user.account.DelBets();
-                            name = user.Username;
-                            userListLoggedOn.Remove(user);
-                            break;
+                            user.GamerLogout(sessionId, dictTransDraw, userListLoggedOn, userOperatorCheck, user, out name);
                         }
                     }
                 }
@@ -211,55 +175,60 @@ namespace MyCasinoWCFServer
                 User userOperatorCheck = userListLoggedOn.Find(item => item.UserType == 0);
                 if (userOperatorCheck != null)
                 {
-                    double profitForOneMatch = 0, profitForTwoMatches = 0;
                     //init
+                    double profitForOneMatch = 0, profitForTwoMatches = 0;
+                    double profitForTwoMatchesTmp = 0;
                     MyCasinoTransactionTypes transType;
-                    double  profitForTwoMatchesTmp = 0;
                     double moneyAmountLeftChange = userOperatorCheck.account.MoneyAmountLeft;
-                    List<Bet> betsProfit = new List<Bet>();
-                    //calculate how much money the operator will have after bet
+                    //new
+                    userOperatorCheck.account.CalculateProfitOperatorAfterBet(userListLoggedOn,sessionId, firstNumber, secondNumber, amountMoney, profitForOneMatch, profitForTwoMatches, out profitForTwoMatchesTmp);
 
-                        List<Bet> betsTmp = new List<Bet>();
-                    User userNameTmpBet = userListLoggedOn.Find(item => item.SessionId == sessionId);
+                    ////init
+                    //List<Bet> betsProfit = new List<Bet>();
+                    ////calculate how much money the operator will have after bet
 
-                    foreach (User user in userListLoggedOn)
-                    {
-                        user.account.getBetList(out betsTmp);
-                        if(userNameTmpBet.SessionId==sessionId)
-                        {
-                            betsTmp.Add(new Bet(userNameTmpBet.Username, firstNumber, secondNumber, amountMoney));
-                        }
-                        for (int i = 0; i < betsTmp.Count; i++)
-                        {
-                            if (betsTmp.ElementAt(i).M_firstNumber == firstNumber && betsTmp.ElementAt(i).M_secondNumber == secondNumber)
-                            {
-                                user.account.CalculateProfit(amountMoney, out profitForOneMatch, out profitForTwoMatches);
+                    //List<Bet> betsTmp = new List<Bet>();
+                    //User userNameTmpBet = userListLoggedOn.Find(item => item.SessionId == sessionId);
 
-                                if (user.SessionId == sessionId)
-                                {
-                                    profitForTwoMatches = profitForTwoMatches - amountMoney;
-                                    break;
-                                }
-                            }
-                        }
-                        
-                    betsTmp.Remove(new Bet(userNameTmpBet.Username, firstNumber, secondNumber, amountMoney));
-                    }
+                    //foreach (User user in userListLoggedOn)
+                    //{
+                    //    user.account.getBetList(out betsTmp);
+                    //    if (userNameTmpBet.SessionId == sessionId)
+                    //    {
+                    //        betsTmp.Add(new Bet(userNameTmpBet.Username, firstNumber, secondNumber, amountMoney));
+                    //    }
+                    //    for (int i = 0; i < betsTmp.Count; i++)
+                    //    {
+                    //        if (betsTmp.ElementAt(i).M_firstNumber == firstNumber && betsTmp.ElementAt(i).M_secondNumber == secondNumber)
+                    //        {
+                    //            user.account.CalculateProfit(amountMoney, out profitForOneMatch, out profitForTwoMatches);
 
-                    foreach (User userProfit in userListLoggedOn)
-                    {
-                        List<Bet> betlist = new List<Bet>();
-                        userProfit.account.getBetList(out betlist);
-                        for (int k = 0; k < betlist.Count; k++)
-                        {
-                            profitForTwoMatchesTmp += betlist.ElementAt(k).M_setAmount;
-                        }
-                    }
+                    //            if (user.SessionId == sessionId)
+                    //            {
+                    //                profitForTwoMatches = profitForTwoMatches - amountMoney;
+                    //                break;
+                    //            }
+                    //        }
+                    //    }
 
-                    //profitForTwoMatchesTmp += amountMoney;
-                    profitForTwoMatches += profitForTwoMatchesTmp;
+                    //    betsTmp.Remove(new Bet(userNameTmpBet.Username, firstNumber, secondNumber, amountMoney));
+                    //}
+
+                    //foreach (User userProfit in userListLoggedOn)
+                    //{
+                    //    List<Bet> betlist = new List<Bet>();
+                    //    userProfit.account.getBetList(out betlist);
+                    //    for (int k = 0; k < betlist.Count; k++)
+                    //    {
+                    //        profitForTwoMatchesTmp += betlist.ElementAt(k).M_setAmount;
+                    //    }
+                    //}
+
+                    //profitForTwoMatches += profitForTwoMatchesTmp;
+
+
                     //check if operator has enough money to support this bet
-                    if (moneyAmountLeftChange  >= profitForTwoMatches || amountMoney==0)
+                    if (moneyAmountLeftChange  >= profitForTwoMatchesTmp + amountMoney || amountMoney==0)
                     //if (moneyAmountLeftChange + amountMoney >= profitForTwoMatchesTmp || amountMoney==0)
                     {
                         //check if money of user is enough
@@ -416,23 +385,27 @@ namespace MyCasinoWCFServer
             {
                 foreach (User user in userListLoggedOn)
                 {
-                    List<Bet> bets = new List<Bet>();
+                User userBlock = userListLoggedOn.Find(item => item.SessionId == sessionId);
+                List<Bet> bets = new List<Bet>();
                     user.account.getBetList(out bets);
                     for (int i = 0; i < bets.Count; i++)
                     {
-                        if (bets.ElementAt(i).M_firstNumber == firstNumber && bets.ElementAt(i).M_secondNumber == secondNumber)
+                        if ((bets.ElementAt(i).M_firstNumber == firstNumber && bets.ElementAt(i).M_secondNumber == secondNumber))
                         {
                             user.account.CalculateProfit(amountMoney, out profitForOneMatch, out profitForTwoMatches);
-                            foreach(User userProfit in userListLoggedOn)
+                            foreach (User userProfit in userListLoggedOn)
                             {
-                                    List<Bet> betlist = new List<Bet>();
-                                    userProfit.account.getBetList(out betlist);
-                                    for (int k = 0; k < betlist.Count; k++)
+                                List<Bet> betlist = new List<Bet>();
+                                userProfit.account.getBetList(out betlist);
+                                for (int k = 0; k < betlist.Count; k++)
+                                {
+                                    if (!(userProfit.SessionId == user.SessionId))
                                     {
-                                        profitForTwoMatches += betlist.ElementAt(k).M_setAmount; 
+                                       profitForTwoMatches += betlist.ElementAt(k).M_setAmount;
                                     }
+
+                                 }
                             }
-                            profitForTwoMatches=profitForTwoMatches - amountMoney;
                         }
                     }
                 }
@@ -449,17 +422,19 @@ namespace MyCasinoWCFServer
                 if (user.UserType == 0)
                 {
                     errMsg = null;
-                    Console.WriteLine("Showbets: no operator logged in");
                 }
             }
 
             //Initialization of out params
-            List<Bet> betsUser = new List<Bet>();
             names = null;
             firstNumber = null;
             secondNumber = null;
             amount = null;
             count = 0;
+            names = new List<string>();
+            firstNumber = new List<short>();
+            secondNumber = new List<short>();
+            amount = new List<double>();
 
             //Check for valid sessionId
             if (!m_authService.SessionIdCheck(sessionId))
@@ -469,21 +444,15 @@ namespace MyCasinoWCFServer
                 return false;
             }
 
-            //fill userlist for showbets
-            //init
-            names = new List<string>();
-            firstNumber = new List<short>();
-            secondNumber = new List<short>();
-            amount = new List<double>();
             lock (thisLockUserListLoggedOn)
             {
                 foreach (User user in userListLoggedOn)
                 {
+                    List<Bet> betsUser = new List<Bet>();
                     user.account.Showbets(out betsUser);
                     for (int i = 0; i < betsUser.Count; i++)
                     {
                         //set values for the data that has to be sent to the client
-
                         names.Add(betsUser.ElementAt(i).M_name.ToString());
                         firstNumber.Add(betsUser.ElementAt(i).M_firstNumber);
                         secondNumber.Add(betsUser.ElementAt(i).M_secondNumber);
@@ -491,7 +460,6 @@ namespace MyCasinoWCFServer
                         count++;
                     }
                 }
-
                 return true;
             }
         }
@@ -837,51 +805,24 @@ namespace MyCasinoWCFServer
             //save all information, that has to be transmitted to the client if the request came from a gamer
             lock (thisLockUserListLoggedOn)
             {
-                User user = userListLoggedOn.Find(item => item.SessionId == sessionId);
-                if (user.UserType == 1)
+                lock (thisLockDictTransDraw)
                 {
-                    lock (thisLockDictTransDraw)
+                    for (int i = 0; i < dictTransDraw.Count; i++)
                     {
-                        for (int i = 0; i < dictTransDraw.Count; i++)
+                        if (dictTransDraw.ElementAt(i).Key.M_id == transactionId)
                         {
-                            if (dictTransDraw.ElementAt(i).Key.M_id == transactionId)
-                            {
-                                information.Add(dictTransDraw.ElementAt(i).Key.Name.ToString());
-                                information.Add(dictTransDraw.ElementAt(i).Value.DrawBet.M_firstNumber.ToString());
-                                information.Add(dictTransDraw.ElementAt(i).Value.DrawBet.M_secondNumber.ToString());
-                                information.Add(dictTransDraw.ElementAt(i).Value.DrawBet.M_setAmount.ToString());
-                                information.Add(dictTransDraw.ElementAt(i).Value.M_drawnFirstNumber.ToString());
-                                information.Add(dictTransDraw.ElementAt(i).Value.M_drawnSecondNumber.ToString());
-                                information.Add(dictTransDraw.ElementAt(i).Value.MoneyWon.ToString());
-                            }
-                        }
-                    }
-
-                    return true;
-                }
-                //save all information, that has to be transmitted to the client if the request came form the operator
-                if (user.UserType == 0)
-                {
-                    lock (thisLockDictTransDraw)
-                    {
-                        for (int i = 0; i < dictTransDraw.Count; i++)
-                        {
-                            if (dictTransDraw.ElementAt(i).Key.M_id == transactionId)
-                            {
-                                information.Add(dictTransDraw.ElementAt(i).Key.Name.ToString());
-                                information.Add(dictTransDraw.ElementAt(i).Value.DrawBet.M_firstNumber.ToString());
-                                information.Add(dictTransDraw.ElementAt(i).Value.DrawBet.M_secondNumber.ToString());
-                                information.Add(dictTransDraw.ElementAt(i).Value.DrawBet.M_setAmount.ToString());
-                                information.Add(dictTransDraw.ElementAt(i).Value.M_drawnFirstNumber.ToString());
-                                information.Add(dictTransDraw.ElementAt(i).Value.M_drawnSecondNumber.ToString());
-                                information.Add(dictTransDraw.ElementAt(i).Value.MoneyWon.ToString());
-                            }
+                            information.Add(dictTransDraw.ElementAt(i).Key.Name.ToString());
+                            information.Add(dictTransDraw.ElementAt(i).Value.DrawBet.M_firstNumber.ToString());
+                            information.Add(dictTransDraw.ElementAt(i).Value.DrawBet.M_secondNumber.ToString());
+                            information.Add(dictTransDraw.ElementAt(i).Value.DrawBet.M_setAmount.ToString());
+                            information.Add(dictTransDraw.ElementAt(i).Value.M_drawnFirstNumber.ToString());
+                            information.Add(dictTransDraw.ElementAt(i).Value.M_drawnSecondNumber.ToString());
+                            information.Add(dictTransDraw.ElementAt(i).Value.MoneyWon.ToString());
                         }
                     }
                 }
+                return true;
             }
-            return true;
         }
-
     }
 }

@@ -111,6 +111,52 @@ namespace MyCasinoLib
             }
         }
 
+        public void CalculateProfitOperatorAfterBet(List<User> userListLoggedOn, ulong sessionId, short firstNumber, short secondNumber, double amountMoney, double profitForOneMatch, double profitForTwoMatches, out double profitForTwoMatchesTmp)
+        {
+            //init
+            List<Bet> betsProfit = new List<Bet>();
+            //calculate how much money the operator will have after bet
+            profitForTwoMatchesTmp = 0;
+
+            List<Bet> betsTmp = new List<Bet>();
+            User userNameTmpBet = userListLoggedOn.Find(item => item.SessionId == sessionId);
+
+            foreach (User user in userListLoggedOn)
+            {
+                user.account.getBetList(out betsTmp);
+                if (userNameTmpBet.SessionId == sessionId)
+                {
+                    betsTmp.Add(new Bet(userNameTmpBet.Username, firstNumber, secondNumber, amountMoney));
+                }
+                for (int i = 0; i < betsTmp.Count; i++)
+                {
+                    if (betsTmp.ElementAt(i).M_firstNumber == firstNumber && betsTmp.ElementAt(i).M_secondNumber == secondNumber)
+                    {
+                        user.account.CalculateProfit(amountMoney, out profitForOneMatch, out profitForTwoMatches);
+
+                        if (user.SessionId == sessionId)
+                        {
+                            profitForTwoMatches = profitForTwoMatches - amountMoney;
+                            break;
+                        }
+                    }
+                }
+
+                betsTmp.Remove(new Bet(userNameTmpBet.Username, firstNumber, secondNumber, amountMoney));
+            }
+
+            foreach (User userProfit in userListLoggedOn)
+            {
+                List<Bet> betlist = new List<Bet>();
+                userProfit.account.getBetList(out betlist);
+                for (int k = 0; k < betlist.Count; k++)
+                {
+                    profitForTwoMatchesTmp += betlist.ElementAt(k).M_setAmount;
+                }
+            }
+            profitForTwoMatches += profitForTwoMatchesTmp;
+        }
+
         public bool Bet(string nameTmp ,double amountMoneyTmp, short firstNumberTmp, short secondNumberTmp, out  MyCasinoTransactionTypes typetmp, out bool overridden, out bool delOverriddenBet, out bool _betDel)
         {
                 overridden = true;
@@ -185,6 +231,7 @@ namespace MyCasinoLib
             }
         }
 
+
         public bool CalculateProfit(double amountMoney, out double profitForOneMatch, out double profitForTwoMatches)
         {
             //Init
@@ -200,12 +247,12 @@ namespace MyCasinoLib
                     for (int i = 0; i < betList.Count; i++)
                     {
                         profitForTwoMatches += betList.ElementAt(i).M_setAmount;
+
                     }
                     if(betList.Count==0)
                     {
                         profitForTwoMatches += amountMoney;
                     }
-
                 }
                 return true;
             }
