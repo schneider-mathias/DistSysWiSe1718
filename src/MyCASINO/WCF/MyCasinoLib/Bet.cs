@@ -9,8 +9,8 @@ namespace MyCasinoLib
     public class Bet
     {
         private string m_name;
-        private int m_firstNumber;
-        private int m_secondNumber;
+        private short m_firstNumber;
+        private short m_secondNumber;
         private double m_setAmount;
 
         public string M_name
@@ -19,13 +19,13 @@ namespace MyCasinoLib
             set { m_name = value; }
         }
 
-        public int M_firstNumber
+        public short M_firstNumber
         {
             get { return m_firstNumber; }
             set { m_firstNumber = value; }
         }
 
-        public int M_secondNumber
+        public short M_secondNumber
         {
             get { return m_secondNumber; }
             set { m_secondNumber = value; }
@@ -37,7 +37,7 @@ namespace MyCasinoLib
             set { m_setAmount = value; }
         }
 
-        public Bet(string name, int firstNumber, int secondNumber, double setAmount)
+        public Bet(string name, short firstNumber, short secondNumber, double setAmount)
         {
             M_name = name;
             M_firstNumber = firstNumber;

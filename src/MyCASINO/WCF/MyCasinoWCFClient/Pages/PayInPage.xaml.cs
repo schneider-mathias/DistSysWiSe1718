@@ -29,6 +29,14 @@ namespace MyCasinoWCFClient.Pages
     /// </summary>
     public partial class PayInPage : Page
     {
+
+        private ulong sessionId;
+
+        public ulong SessionId
+        {
+            get { return sessionId; }
+            set { sessionId = value; }
+        }
 #if COM
         private COMMyCasinoSrvLib.COMMyCasino _comSrv;
 
@@ -38,16 +46,10 @@ namespace MyCasinoWCFClient.Pages
             set { _comSrv = value; }
         }
 
-        private uint sessionId;
-
-        public uint SessionId
-        {
-            get { return sessionId; }
-            set { sessionId = value; }
-        }
+     
 
 
-        public PayInPage(COMMyCasinoSrvLib.COMMyCasino _comSrvTmp, string usernameTmp, uint sessionIdTmp, short typeTmp)
+        public PayInPage(COMMyCasinoSrvLib.COMMyCasino _comSrvTmp, string usernameTmp, ulong sessionIdTmp, short typeTmp)
         {
             _ComSrv = _comSrvTmp;
             SessionId = sessionIdTmp;
@@ -69,16 +71,7 @@ namespace MyCasinoWCFClient.Pages
             set { _remSrvMyCasino = value; }
         }
 
-        private int sessionId;
-
-        public int SessionId
-        {
-            get { return sessionId; }
-            set { sessionId = value; }
-        }
-
-
-        public PayInPage(INETMyCasino _RemSrvMyCasinoMain, string usernameTmp, int sessionIdTmp, MyCasinoUserTypes typeTmp)
+        public PayInPage(INETMyCasino _RemSrvMyCasinoMain, string usernameTmp, ulong sessionIdTmp, short typeTmp)
         {
             _RemSrvMyCasino = _RemSrvMyCasinoMain;
             SessionId = sessionIdTmp;

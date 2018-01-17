@@ -1,5 +1,4 @@
 ﻿//#define COM
-//#define SINGLETON
 
 using System;
 using System.Collections.Generic;
@@ -50,8 +49,8 @@ namespace MyCasinoWCFClient.Pages
         }
 #endif
 
-        public int _sessionId;
-        private MyCasinoUserTypes _userType;
+        public ulong _sessionId;
+        private short _userType;
         private string _errMsg;
 
         public LoginPage()
@@ -245,9 +244,9 @@ namespace MyCasinoWCFClient.Pages
             catch (Exception ex)
             {
                 if (ex is COMException)
-                    errMsg = Codes.ResolveCode((ex as COMException).ErrorCode);
+                    _errMsg = Codes.ResolveCode((ex as COMException).ErrorCode);
                 else
-                    errMsg = "Unknown";
+                    _errMsg = "Unknown";
 
                 tblAuthentificationFailed.Text = _errMsg;
 

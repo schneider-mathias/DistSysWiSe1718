@@ -106,7 +106,7 @@ namespace MyCasinoLib
             }
         }
 
-        public bool Bet(string nameTmp ,double amountMoneyTmp, int firstNumberTmp, int secondNumberTmp, out  MyCasinoTransactionTypes typetmp, out bool overridden, out bool delOverriddenBet, out bool _betDel)
+        public bool Bet(string nameTmp ,double amountMoneyTmp, short firstNumberTmp, short secondNumberTmp, out  MyCasinoTransactionTypes typetmp, out bool overridden, out bool delOverriddenBet, out bool _betDel)
         {
                 overridden = true;
                 delOverriddenBet = false;
@@ -247,7 +247,7 @@ namespace MyCasinoLib
         }
 
 
-        public bool Draw(out int firstNumber, out int secondNumber)
+        public bool Draw(out short firstNumber, out short secondNumber)
         {
             //init
             firstNumber = 0;
@@ -257,8 +257,8 @@ namespace MyCasinoLib
                 do
                 {
                     Random rnd = new Random();
-                    firstNumber = rnd.Next(1, 5);
-                    secondNumber = rnd.Next(1, 5);
+                    firstNumber = (short)rnd.Next(1, 5);
+                    secondNumber = (short)rnd.Next(1, 5);
                 } while (!(firstNumber < secondNumber));
                 return true;
             }

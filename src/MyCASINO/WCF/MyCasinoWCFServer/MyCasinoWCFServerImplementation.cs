@@ -27,7 +27,7 @@ namespace MyCasinoWCFServer
         /// dictonary for all bets
         /// </summary>
         Dictionary<Transaction, Draw> dictTransDraw = new Dictionary<Transaction, Draw>();
-        public bool login(string username, string password, out int sessionId, out MyCasinoUserTypes userType, out string errMsg)
+        public bool login(string username, string password, out ulong sessionId, out short userType, out string errMsg)
         {
             User currUser;
             lock (thisLockDictTransDraw)
@@ -42,7 +42,7 @@ namespace MyCasinoWCFServer
                     if (currUser != null) userListLoggedOn.Add(currUser);
                     foreach (User user in userListLoggedOn)
                     {
-                        if (user.UserType == MyCasinoUserTypes.Operator)
+                        if (user.UserType == 0)
                         {
                             Console.WriteLine(username + ": logged in");
                             return true;
@@ -58,7 +58,7 @@ namespace MyCasinoWCFServer
             return false;
         }
 
-        public bool logout(int sessionId, out string errMsg)
+        public bool logout(ulong sessionId, out string errMsg)
         {
             //init
             string name = "";
@@ -72,7 +72,7 @@ namespace MyCasinoWCFServer
             //delete user in loggedlist and empty all bets of specific user
             lock (thisLockUserListLoggedOn)
             {
-                User userOperatorCheck = userListLoggedOn.Find(item => item.UserType == MyCasinoUserTypes.Operator);
+                User userOperatorCheck = userListLoggedOn.Find(item => item.UserType == 0);
                 if (userOperatorCheck != null)
                 {
                     if (sessionId == userOperatorCheck.SessionId)
@@ -143,7 +143,7 @@ namespace MyCasinoWCFServer
         }
 
 
-        public bool deposit(int sessionId, string name, double amountMoney, out string errMsg)
+        public bool deposit(ulong sessionId, string name, double amountMoney, out string errMsg)
         {
             //Check for valid sessionId
             if (!m_authService.SessionIdCheck(sessionId))
@@ -185,7 +185,7 @@ namespace MyCasinoWCFServer
             }
         }
 
-        public bool bet(int sessionId, double amountMoney, int firstNumber, int secondNumber, out string errMsg)
+        public bool bet(ulong sessionId, double amountMoney, short firstNumber, short secondNumber, out string errMsg)
         {
             //Check for valid sessionId
             if (!m_authService.SessionIdCheck(sessionId))
@@ -203,7 +203,7 @@ namespace MyCasinoWCFServer
 
             lock (thisLockUserListLoggedOn)
             {
-                User userOperatorCheck = userListLoggedOn.Find(item => item.UserType == MyCasinoUserTypes.Operator);
+                User userOperatorCheck = userListLoggedOn.Find(item => item.UserType == 0);
                 if (userOperatorCheck != null)
                 {
                     double profitForOneMatch = 0, profitForTwoMatches = 0;
@@ -393,7 +393,7 @@ namespace MyCasinoWCFServer
             }
         }
 
-        public bool calculateProfit(int sessionId, double amountMoney, int firstNumber, int secondNumber, out double profitForOneMatch, out double profitForTwoMatches, out string errMsg)
+        public bool calculateProfit(ulong sessionId, double amountMoney, short firstNumber, short secondNumber, out double profitForOneMatch, out double profitForTwoMatches, out string errMsg)
         {
             //Initializiation
             profitForTwoMatches = 0;
@@ -435,13 +435,13 @@ namespace MyCasinoWCFServer
             }
         }
 
-        public bool showbets(int sessionId, out List<string> names, out List<int> firstNumber, out List<int> secondNumber, out List<double> amount, out int count, out string errMsg)
+        public bool showbets(ulong sessionId, out List<string> names, out List<short> firstNumber, out List<short> secondNumber, out List<double> amount, out ulong count, out string errMsg)
         {
             //check if operator is logged in
             errMsg = "OPERATOR_NOT_LOGGED_IN";
             foreach (User user in userListLoggedOn)
             {
-                if (user.UserType == MyCasinoUserTypes.Operator)
+                if (user.UserType == 0)
                 {
                     errMsg = null;
                     Console.WriteLine("Showbets: no operator logged in");
@@ -467,8 +467,8 @@ namespace MyCasinoWCFServer
             //fill userlist for showbets
             //init
             names = new List<string>();
-            firstNumber = new List<int>();
-            secondNumber = new List<int>();
+            firstNumber = new List<short>();
+            secondNumber = new List<short>();
             amount = new List<double>();
             lock (thisLockUserListLoggedOn)
             {
@@ -491,7 +491,7 @@ namespace MyCasinoWCFServer
             }
         }
 
-        public bool drawtest(int sessionId, int firstNumberTest, int secondNumberTest, out string errMsg)
+        public bool drawtest(ulong sessionId, short firstNumberTest, short secondNumberTest, out string errMsg)
         {
             //Check for valid sessionId
             if (!m_authService.SessionIdCheck(sessionId))
@@ -515,7 +515,7 @@ namespace MyCasinoWCFServer
                 foreach (User userdrawingbets in userListLoggedOn)
                 {
                     count = 0;
-                    if (MyCasinoUserTypes.Gamer == userdrawingbets.UserType)
+                    if (1 == userdrawingbets.UserType)
                     {
                         //calculate money won
                         userdrawingbets.account.Profit(firstNumberTest, secondNumberTest, out profit);
@@ -553,7 +553,7 @@ namespace MyCasinoWCFServer
                                             dictTransDraw.ElementAt(i).Key.CurrentAmount = dictTransDraw.ElementAt(i - index).Key.CurrentAmount + profit.ElementAt(count);
                                             dictTransDraw.ElementAt(i).Key.CurrentAmount -= dictTransDraw.ElementAt(i).Value.DrawBet.M_setAmount;
                                             //set casino money
-                                            User userOperatorCheck = userListLoggedOn.Find(item => item.UserType == MyCasinoUserTypes.Operator);
+                                            User userOperatorCheck = userListLoggedOn.Find(item => item.UserType == 0);
                                             userOperatorCheck.account.MoneyAmountLeft -= profit.ElementAt(count);
                                             //set user money
                                             User userMoney = userListLoggedOn.Find(item => item.Username == dictTransDraw.ElementAt(i).Key.Name);
@@ -596,7 +596,7 @@ namespace MyCasinoWCFServer
             {
                 foreach (User userdelbets in userListLoggedOn)
                 {
-                    if (MyCasinoUserTypes.Gamer == userdelbets.UserType)
+                    if (1 == userdelbets.UserType)
                     {
                         userdelbets.account.DelBets();
                     }
@@ -606,7 +606,7 @@ namespace MyCasinoWCFServer
             return true;
         }
 
-        public bool draw(int sessionId, out int firstNumber, out int secondNumber, out string errMsg)
+        public bool draw(ulong sessionId, out short firstNumber, out short secondNumber, out string errMsg)
         {
             //init
             secondNumber = 0;
@@ -630,7 +630,7 @@ namespace MyCasinoWCFServer
                 foreach (User userdrawingbets in userListLoggedOn)
                 {
                     count = 0;
-                    if (MyCasinoUserTypes.Gamer == userdrawingbets.UserType)
+                    if (1 == userdrawingbets.UserType)
                     {
                         //calculate money won
                         userdrawingbets.account.Profit(firstNumber, secondNumber, out profit);
@@ -668,7 +668,7 @@ namespace MyCasinoWCFServer
                                             dictTransDraw.ElementAt(i).Key.CurrentAmount = dictTransDraw.ElementAt(i - index).Key.CurrentAmount + profit.ElementAt(count);
                                             dictTransDraw.ElementAt(i).Key.CurrentAmount -= dictTransDraw.ElementAt(i).Value.DrawBet.M_setAmount;
                                             //set casino money
-                                            User userOperatorCheck = userListLoggedOn.Find(item => item.UserType == MyCasinoUserTypes.Operator);
+                                            User userOperatorCheck = userListLoggedOn.Find(item => item.UserType == 0);
                                             userOperatorCheck.account.MoneyAmountLeft -= profit.ElementAt(count);
                                             //set user money
                                             User userMoney = userListLoggedOn.Find(item => item.Username == dictTransDraw.ElementAt(i).Key.Name);
@@ -710,7 +710,7 @@ namespace MyCasinoWCFServer
             {
                 foreach (User userdelbets in userListLoggedOn)
                 {
-                    if (MyCasinoUserTypes.Gamer == userdelbets.UserType)
+                    if (1 == userdelbets.UserType)
                     {
                         userdelbets.account.DelBets();
                     }
@@ -720,13 +720,13 @@ namespace MyCasinoWCFServer
             return true;
         }
 
-        public bool getTransactions(int sessionId, out bool isFinished, out List<string> transaction, out int transactionType, out string errMsg)
+        public bool getTransactions(ulong sessionId, out bool isFinished, out List<string> transaction, out ulong transactionType, out string errMsg)
         {
             //check if operator is logged in
             errMsg = "OPERATOR_NOT_LOGGED_IN";
             foreach (User user in userListLoggedOn)
             {
-                if (user.UserType == MyCasinoUserTypes.Operator)
+                if (user.UserType == 0)
                 {
                     errMsg = null;
                     Console.WriteLine("Transaction: no operator logged in");
@@ -750,7 +750,7 @@ namespace MyCasinoWCFServer
             {
                 User user = userListLoggedOn.Find(item => item.SessionId == sessionId);
                 //prepare string to be transmitted to the client, if the client is a gamer
-                if (user.UserType == MyCasinoUserTypes.Gamer)
+                if (user.UserType == 1)
                 {
                     lock (thisLockDictTransDraw)
                     {
@@ -763,7 +763,7 @@ namespace MyCasinoWCFServer
                                 transaction.Add(dictTransDraw.ElementAt(i).Key.M_id.ToString());
                                 transaction.Add(dictTransDraw.ElementAt(i).Key.CurrentAmount.ToString());
                                 transaction.Add(dictTransDraw.ElementAt(i).Key.ChangeAmount.ToString());
-                                transactionType = (int)dictTransDraw.ElementAt(i).Key.TransType;
+                                transactionType = (ulong)dictTransDraw.ElementAt(i).Key.TransType;
                                 dictTransDraw.ElementAt(i).Key.IsFinished = true;
                                 return true;
                             }
@@ -771,7 +771,7 @@ namespace MyCasinoWCFServer
                     }
                 }
                 //prepare string to be transmitted to the client, if the client is a operator
-                else if (user.UserType == MyCasinoUserTypes.Operator)
+                else if (user.UserType == 0)
                 {
                     lock (thisLockDictTransDraw)
                     {
@@ -785,7 +785,7 @@ namespace MyCasinoWCFServer
                                 transaction.Add(dictTransDraw.ElementAt(i).Key.M_id.ToString());
                                 transaction.Add(dictTransDraw.ElementAt(i).Key.CurrentAmount.ToString());
                                 transaction.Add(dictTransDraw.ElementAt(i).Key.ChangeAmount.ToString());
-                                transactionType = (int)dictTransDraw.ElementAt(i).Key.TransType;
+                                transactionType = (ulong)dictTransDraw.ElementAt(i).Key.TransType;
                                 dictTransDraw.ElementAt(i).Key.IsFinished = true;
                                 return true;
                             }
@@ -797,7 +797,7 @@ namespace MyCasinoWCFServer
                                 transaction.Add(dictTransDraw.ElementAt(i).Key.M_id.ToString());
                                 transaction.Add(dictTransDraw.ElementAt(i).Key.CurrentAmount.ToString());
                                 transaction.Add(dictTransDraw.ElementAt(i).Key.ChangeAmount.ToString());
-                                transactionType = (int)dictTransDraw.ElementAt(i).Key.TransType;
+                                transactionType = (ulong)dictTransDraw.ElementAt(i).Key.TransType;
                                 dictTransDraw.ElementAt(i).Key.IsFinished = true;
                                 return true;
                             }
@@ -816,7 +816,7 @@ namespace MyCasinoWCFServer
             }
             return true;
         }
-        public bool getTransactionInformation(int sessionId, int transactionId, out List<string> information, out int informationType, out string errMsg)
+        public bool getTransactionInformation(ulong sessionId, ulong transactionId, out List<string> information, out ulong informationType, out string errMsg)
         {
             information = new List<string>();
             informationType = 0;
@@ -833,7 +833,7 @@ namespace MyCasinoWCFServer
             lock (thisLockUserListLoggedOn)
             {
                 User user = userListLoggedOn.Find(item => item.SessionId == sessionId);
-                if (user.UserType == MyCasinoUserTypes.Gamer)
+                if (user.UserType == 1)
                 {
                     lock (thisLockDictTransDraw)
                     {
@@ -855,7 +855,7 @@ namespace MyCasinoWCFServer
                     return true;
                 }
                 //save all information, that has to be transmitted to the client if the request came form the operator
-                if (user.UserType == MyCasinoUserTypes.Operator)
+                if (user.UserType == 0)
                 {
                     lock (thisLockDictTransDraw)
                     {
