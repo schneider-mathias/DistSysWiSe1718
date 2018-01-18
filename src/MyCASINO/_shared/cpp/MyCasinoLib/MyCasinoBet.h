@@ -2,19 +2,22 @@
 // project:	MyCasinoLib
 // file:	MyCasinoBet.h
 //
-// summary:	Declares my casino bet class
+// summary:	Declares a thread-safe bet class storing all information about a bet including
+//			wager, chosen numbers. After a bet was drawn it also provides infomation
+//			about drawn numbers and resulting reward. Implements IMyCasinoTransactionInformation
+//			interface so that it can be used as a detailed transaction information object.
 //
 //			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
 //
 //			Date		Developer			Change
-//			13.01.2018	Mathias Schneider	Created
+//			24.12.2017	Mathias Schneider	Created
+//			XXXXXXXXXX	Mathias Schneider	Changed
  *-----------------------------------------------------------------------------------------------**/
 
 #pragma once
 #include <windows.h>
 #include <vector>
 #include "MyCasinoTransaction.h"
-#include <OAIdl.h>
 
 #define MY_CASINO_BET_REWARD_FACTOR_FOR_ONE 2
 

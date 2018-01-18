@@ -2,12 +2,16 @@
 // project:	MyCasinoLib
 // file:	MyCasinoAccount.h
 //
-// summary:	Declares my casino account class
+// summary:	Declares thread-safe account class which keeps track of 
+//			user account balance. Balance can be serialized to file, single 
+//			transactions are not persistent. Consistency has to be ensured by
+//			user of this class.
 //
 //			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
 //
 //			Date		Developer			Change
-//			13.01.2018	Mathias Schneider	Created
+//			24.12.2017	Mathias Schneider	Created
+//			XXXXXXXXXX	Mathias Schneider	Changed
  *-----------------------------------------------------------------------------------------------**/
 
 #pragma once

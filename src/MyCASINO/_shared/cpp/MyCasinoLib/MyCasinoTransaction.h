@@ -2,12 +2,16 @@
 // project:	MyCasinoLib
 // file:	MyCasinoTransaction.h
 //
-// summary:	Declares my casino transaction class
+// summary:	Declares a thread-safe class to store information about account transactions. 
+//			Can also store detailed information dynamically about the transaction,
+//			e.g. a bet object. The account class has to provide consistency about
+//			transaction objects and overall balance.
 //
 //			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
 //
 //			Date		Developer			Change
-//			13.01.2018	Mathias Schneider	Created
+//			24.12.2017	Mathias Schneider	Created
+//			XXXXXXXXXX	Mathias Schneider	Changed
  *-----------------------------------------------------------------------------------------------**/
 
 #pragma once

@@ -2,12 +2,14 @@
 // project:	MyCasinoLib
 // file:	MyCasinoUser.h
 //
-// summary:	Declares my casino user class
+// summary:	Declares MyCasino user class which stores credentials for login. 
+//			Furthermore it implements (de)serialization into a plain .txt.
 //
 //			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
 //
 //			Date		Developer			Change
-//			13.01.2018	Mathias Schneider	Created
+//			23.12.2017	Mathias Schneider	Created
+//			XXXXXXXXXX	Mathias Schneider	Changed
  *-----------------------------------------------------------------------------------------------**/
 
 #pragma once
