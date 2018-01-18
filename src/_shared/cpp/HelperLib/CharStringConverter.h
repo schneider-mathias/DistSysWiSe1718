@@ -9,7 +9,8 @@
 //			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
 //
 //			Date		Developer			Change
-//			13.01.2018	Mathias Schneider	Created
+//			28.12.2017	Mathias Schneider	Created
+//			XXXXXXXXXX	Mathias Schneider	Changed
  *-----------------------------------------------------------------------------------------------**/
 
 #ifndef CHAR_STRING_CONVERTER_INLCUDED
@@ -37,9 +38,9 @@ inline std::wstring char_to_wstring(const char* str2conv)
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Wstring to character array. </summary>
+ * <summary>	Wstring to character array. Has to be deleted by callee. </summary>
  *
- * <param name="s">	A std::wstring to process. </param>
+ * <param name="s">	A std::wstring to convert to char array. </param>
  *
  * <returns>	Null if it fails, else a pointer to a char. </returns>
  *-----------------------------------------------------------------------------------------------**/
@@ -54,6 +55,13 @@ inline char* wstring_to_char(const std::wstring& s)
 	return buf;
 }
 
+/**--------------------------------------------------------------------------------------------------
+ * <summary>	Wstring to string.</summary>
+ *
+ * <param name="s">	A std::wstring to process. </param>
+ *
+ * <returns>	A std::string. </returns>
+ *-----------------------------------------------------------------------------------------------**/
 
 inline std::string wstring_to_string(const std::wstring& s)
 {
