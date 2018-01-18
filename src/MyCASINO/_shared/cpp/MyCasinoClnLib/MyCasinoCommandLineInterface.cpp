@@ -95,6 +95,7 @@ bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> argu
 
 	if (command.compare(L"user") == 0)
 	{
+		// two arguments {username} {password}
 		bool resVal = checkCallArguments(arguments, 2, std::vector<size_t>() = { 2 })
 			&& user(arguments.at(1), arguments.at(2));
 
@@ -109,6 +110,8 @@ bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> argu
 		double amountMoneyLowerBound = 0;
 		double amountMoneyUpperBound = UPPER_MONEY_BOUNDARY;
 
+		// two arguments {username} {amount | money double} 
+		// only callable by operator
 		bool resVal=checkCallPrerequisites(MyCasinoUserTypes::Operator)
 			&& checkCallArguments(arguments, 2, std::vector<size_t>()= { 2 })
 			&& safeArgumentCast<double>(arguments, 2, &amountMoney, &amountMoneyLowerBound, &amountMoneyUpperBound, ArgumentType::MONEY)
@@ -132,6 +135,8 @@ bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> argu
 		double firstNumberUpperBound = 4;
 		double numberUpperBound = 5;
 
+		// three arguments {amount | money double} {firstNumber | && > 1 && < 4} {secondNumber | > firstNumber && > 2 && < 5}
+		// only callable by gamer (cheked on server-side)
 		bool resVal = checkCallPrerequisites(MyCasinoUserTypes::Any)
 			&& checkCallArguments(arguments, 3, std::vector<size_t>() = { 3 })
 			&& safeArgumentCast<double>(arguments, 1, &setMoney, &setMoneyLowerBound, &setMoneyUpperBound, ArgumentType::MONEY)
@@ -148,6 +153,7 @@ bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> argu
 	{
 		checkCallArguments(arguments, 0, std::vector<size_t>() = { 0 });
 
+		// no arguments
 		return checkCallPrerequisites(MyCasinoUserTypes::Any)
 			&& checkCallArguments(arguments, 0, std::vector<size_t>() = { 0 })
 			&& showbets();
@@ -163,6 +169,8 @@ bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> argu
 		double firstNumberUpperBound = 4;
 		double numberUpperBound = 5;
 
+		// none or two arguments {firstNumber | && > 1 && < 4} {secondNumber | > firstNumber && > 2 && < 5}
+		// only callable by operator
 		// if first number pointer is set, it becomes the lower boundary, otherwise set it to 0 (will be ignored anyway)
 		bool retVal = checkCallPrerequisites(MyCasinoUserTypes::Operator)
 			&& checkCallArguments(arguments, 0, std::vector<size_t>() = { 0, 2 })
@@ -183,12 +191,14 @@ bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> argu
 	}
 	else if (command.compare(L"showstatus") == 0)
 	{
+		// no arguments
 		return checkCallPrerequisites(MyCasinoUserTypes::Any)
 			&& checkCallArguments(arguments, 0, std::vector<size_t>() = { 0 })
 			&& showstatus();
 	}
 	else if (command.compare(L"bye") == 0)
 	{
+		// no arguments
 		checkCallArguments(arguments, 0, std::vector<size_t>() = { 0 });
 
 		bool retVal = true;
