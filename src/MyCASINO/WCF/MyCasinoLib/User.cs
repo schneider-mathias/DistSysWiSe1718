@@ -74,8 +74,6 @@ namespace MyCasinoLib
             name = null;
             if (sessionId == userOperatorCheck.SessionId)
             {
-                //lock (thisLockDictTransDraw)
-                //{
                     for (int i = 0; i < dictTransDraw.Count; i++)
                     {
                         if (dictTransDraw.ElementAt(i).Key.TransType == MyCasinoTransactionTypes.BET_WAGER)
@@ -90,7 +88,6 @@ namespace MyCasinoLib
                             userOperatorCheck.account.MoneyAmountLeft -= dictTransDraw.ElementAt(i).Value.DrawBet.M_setAmount;
                         }
                     }
-                //}
                 //user from logged list
                 name = userOperatorCheck.Username;
                 userListLoggedOn.Remove(userOperatorCheck);

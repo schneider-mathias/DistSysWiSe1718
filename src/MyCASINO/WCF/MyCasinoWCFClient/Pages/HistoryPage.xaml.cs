@@ -284,9 +284,9 @@ namespace MyCasinoWCFClient.Pages
                         }
                         else if (typeTmp == 0)
                         {
-                            int amount;
-                            int.TryParse((information.ElementAt(6)), out amount);
-                            opMoney = opMoney - amount;
+                            double amount;
+                            double.TryParse((information.ElementAt(6)), out amount);
+                            opMoney = opMoney - (amount/2);
                             lbBetAmountList.Items.Add(information.ElementAt(3));
                             lbFirstNumberPerRollList.Items.Add(information.ElementAt(1));
                             lbSecondNumberPerRollList.Items.Add(information.ElementAt(2));
@@ -318,8 +318,8 @@ namespace MyCasinoWCFClient.Pages
                         //Fill if user is gamer
                         if (typeTmp == 1)
                         {
-                            int amount;
-                            int.TryParse((information.ElementAt(3)),out amount);
+                            double amount;
+                            double.TryParse((information.ElementAt(3)),out amount);
                             lbBetAmountList.Items.Add(information.ElementAt(3));
                             lbFirstNumberPerRollList.Items.Add(information.ElementAt(1));
                             lbSecondNumberPerRollList.Items.Add(information.ElementAt(2));
@@ -332,8 +332,8 @@ namespace MyCasinoWCFClient.Pages
                         //Fill if user is operator
                         else if (typeTmp == 0)
                         {
-                            int amount;
-                            int.TryParse((information.ElementAt(3)), out amount);
+                            double amount;
+                            double.TryParse((information.ElementAt(3)), out amount);
                             opMoney = opMoney + amount;
                             lbBetAmountList.Items.Add(information.ElementAt(3));
                             lbFirstNumberPerRollList.Items.Add(information.ElementAt(1));

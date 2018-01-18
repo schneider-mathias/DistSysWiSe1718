@@ -69,6 +69,57 @@ namespace MyCasinoLib
             UserType = type;
         }
 
+        public void OperatorLogout(int sessionId, Dictionary<Transaction, Draw> dictTransDraw, List<User> userListLoggedOn, User userOperatorCheck, out string name)
+        {
+            name = null;
+            if (sessionId == userOperatorCheck.SessionId)
+            {
+                //lock (thisLockDictTransDraw)
+                //{
+                for (int i = 0; i < dictTransDraw.Count; i++)
+                {
+                    if (dictTransDraw.ElementAt(i).Key.TransType == MyCasinoTransactionTypes.BET_WAGER)
+                    {
+                        dictTransDraw.ElementAt(i).Key.TransType = MyCasinoTransactionTypes.CANCELED;
+                        //set money of unfinished bets back and delete bets
+                        foreach (User user in userListLoggedOn)
+                        {
+                            user.account.DelBets();
+                            user.account.MoneyAmountLeft += dictTransDraw.ElementAt(i).Value.DrawBet.M_setAmount;
+                        }
+                        userOperatorCheck.account.MoneyAmountLeft -= dictTransDraw.ElementAt(i).Value.DrawBet.M_setAmount;
+                    }
+                }
+                //}
+                //user from logged list
+                name = userOperatorCheck.Username;
+                userListLoggedOn.Remove(userOperatorCheck);
+            }
+        }
+
+        public void GamerLogout(int sessionId, Dictionary<Transaction, Draw> dictTransDraw, List<User> userListLoggedOn, User userOperatorCheck, User user, out string name)
+        {
+            name = null;
+            if (user.SessionId == sessionId)
+            {
+                for (int i = 0; i < dictTransDraw.Count; i++)
+                {
+                    //set money of unfinished bets back
+                    if (dictTransDraw.ElementAt(i).Key.Name == user.username &&
+                        dictTransDraw.ElementAt(i).Key.TransType == MyCasinoTransactionTypes.BET_WAGER)
+                    {
+                        dictTransDraw.ElementAt(i).Key.TransType = MyCasinoTransactionTypes.CANCELED;
+                        user.account.MoneyAmountLeft += dictTransDraw.ElementAt(i).Value.DrawBet.M_setAmount;
+                        userOperatorCheck.account.MoneyAmountLeft -= dictTransDraw.ElementAt(i).Value.DrawBet.M_setAmount;
+                    }
+
+                }
+                //delete bets and user from logged list
+                user.account.DelBets();
+                name = user.Username;
+                userListLoggedOn.Remove(user);
+            }
+        }
     }
 
     public class AuthService

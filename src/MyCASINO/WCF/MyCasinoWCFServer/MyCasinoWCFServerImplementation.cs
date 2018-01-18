@@ -94,6 +94,7 @@ namespace MyCasinoWCFServer
                         lock (thisLockDictTransDraw)
                         {
                             user.GamerLogout(sessionId, dictTransDraw, userListLoggedOn, userOperatorCheck, user, out name);
+                            break;
                         }
                     }
                 }
@@ -183,53 +184,8 @@ namespace MyCasinoWCFServer
                     //new
                     userOperatorCheck.account.CalculateProfitOperatorAfterBet(userListLoggedOn,sessionId, firstNumber, secondNumber, amountMoney, profitForOneMatch, profitForTwoMatches, out profitForTwoMatchesTmp);
 
-                    ////init
-                    //List<Bet> betsProfit = new List<Bet>();
-                    ////calculate how much money the operator will have after bet
-
-                    //List<Bet> betsTmp = new List<Bet>();
-                    //User userNameTmpBet = userListLoggedOn.Find(item => item.SessionId == sessionId);
-
-                    //foreach (User user in userListLoggedOn)
-                    //{
-                    //    user.account.getBetList(out betsTmp);
-                    //    if (userNameTmpBet.SessionId == sessionId)
-                    //    {
-                    //        betsTmp.Add(new Bet(userNameTmpBet.Username, firstNumber, secondNumber, amountMoney));
-                    //    }
-                    //    for (int i = 0; i < betsTmp.Count; i++)
-                    //    {
-                    //        if (betsTmp.ElementAt(i).M_firstNumber == firstNumber && betsTmp.ElementAt(i).M_secondNumber == secondNumber)
-                    //        {
-                    //            user.account.CalculateProfit(amountMoney, out profitForOneMatch, out profitForTwoMatches);
-
-                    //            if (user.SessionId == sessionId)
-                    //            {
-                    //                profitForTwoMatches = profitForTwoMatches - amountMoney;
-                    //                break;
-                    //            }
-                    //        }
-                    //    }
-
-                    //    betsTmp.Remove(new Bet(userNameTmpBet.Username, firstNumber, secondNumber, amountMoney));
-                    //}
-
-                    //foreach (User userProfit in userListLoggedOn)
-                    //{
-                    //    List<Bet> betlist = new List<Bet>();
-                    //    userProfit.account.getBetList(out betlist);
-                    //    for (int k = 0; k < betlist.Count; k++)
-                    //    {
-                    //        profitForTwoMatchesTmp += betlist.ElementAt(k).M_setAmount;
-                    //    }
-                    //}
-
-                    //profitForTwoMatches += profitForTwoMatchesTmp;
-
-
                     //check if operator has enough money to support this bet
                     if (moneyAmountLeftChange  >= profitForTwoMatchesTmp + amountMoney || amountMoney==0)
-                    //if (moneyAmountLeftChange + amountMoney >= profitForTwoMatchesTmp || amountMoney==0)
                     {
                         //check if money of user is enough
                         User useraccountmoney = userListLoggedOn.Find(item => item.SessionId == sessionId);
@@ -409,6 +365,7 @@ namespace MyCasinoWCFServer
                         }
                     }
                 }
+
                 return true;
             }
         }
@@ -702,16 +659,12 @@ namespace MyCasinoWCFServer
                 if (user.UserType == 0)
                 {
                     errMsg = null;
-                    Console.WriteLine("Transaction: no operator logged in");
                 }
             }
-            
-
             //init
             transaction = new List<string>(); ;
             transactionType = 0;
             isFinished = false;
-            //errMsg = null;
             //Check for valid sessionId
             if (!m_authService.SessionIdCheck(sessionId))
             {
@@ -743,7 +696,7 @@ namespace MyCasinoWCFServer
                         }
                     }
                 }
-                //prepare string to be transmitted to the client, if the client is a operator
+                //prepare string to be transmitted to the client, if the client is an operator
                 else if (user.UserType == 0)
                 {
                     lock (thisLockDictTransDraw)

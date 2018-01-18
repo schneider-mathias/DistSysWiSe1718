@@ -174,9 +174,9 @@ namespace MyCasinoWSPhoneClient
                         //save all transaction information to the listboxes for operator
                         else if (MyCasinoSvcHistory.UserType == 0)
                         {
-                            int amount;
-                            int.TryParse((resultTransInfo.information.ElementAt(6).Replace(',', '.')), out amount);
-                            opMoney = opMoney - amount;
+                            double amount;
+                            double.TryParse((resultTransInfo.information.ElementAt(6).Replace(',', '.')), out amount);
+                            opMoney = opMoney - (amount/2);
                             lbBetAmountList.Items.Add(resultTransInfo.information.ElementAt(3));
                             lbFirstNumberPerRollList.Items.Add(resultTransInfo.information.ElementAt(1));
                             lbSecondNumberPerRollList.Items.Add(resultTransInfo.information.ElementAt(2));
@@ -203,8 +203,8 @@ namespace MyCasinoWSPhoneClient
                         //save all transaction information to the listboxes for gamer
                         if (MyCasinoSvcHistory.UserType == 1)
                         {
-                            int amount;
-                            int.TryParse((resultTransInfo.information.ElementAt(3)), out amount);
+                            double amount;
+                            double.TryParse((resultTransInfo.information.ElementAt(3)), out amount);
                             lbBetAmountList.Items.Add(resultTransInfo.information.ElementAt(3));
                             lbFirstNumberPerRollList.Items.Add(resultTransInfo.information.ElementAt(1));
                             lbSecondNumberPerRollList.Items.Add(resultTransInfo.information.ElementAt(2));
@@ -215,8 +215,8 @@ namespace MyCasinoWSPhoneClient
                         //save all transaction information to the listboxes for operator
                         else if (MyCasinoSvcHistory.UserType == 0)
                         {
-                            int amount;
-                            int.TryParse((resultTransInfo.information.ElementAt(3)), out amount);
+                            double amount;
+                            double.TryParse((resultTransInfo.information.ElementAt(3)), out amount);
                             opMoney = opMoney + amount;
                             lbBetAmountList.Items.Add(resultTransInfo.information.ElementAt(3));
                             lbFirstNumberPerRollList.Items.Add(resultTransInfo.information.ElementAt(1));
