@@ -11,7 +11,7 @@
 //			XXXXXXXXXX	Mathias Schneider	Changed
  *-------------------------------------------------------------------**/
 
-#include "IPValidate.h"
+#include "HelperLib\IPValidate.h"
 
 #include <windows.h>
 #include <iostream>
@@ -23,9 +23,9 @@
 #include "../COMMyCasinoSrv/COMMyCasinoSrv_i.c"
 #include "../COMMyCasinoSrv/COMMyCasinoSrv_i.h"
 
-#include "BstrStringConverter.h"
+#include "HelperLib\BstrStringConverter.h"
 #include "COMMyCasinoCommandLineInterface.h"
-#include "CmdInterpreter.h"
+#include "CmdInterpreterLib\CmdInterpreter.h"
 
 /**---------------------------------------------------------------------
  * <summary>	Main entry-point for this application. </summary>

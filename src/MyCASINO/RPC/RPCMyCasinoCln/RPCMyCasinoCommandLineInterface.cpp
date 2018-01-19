@@ -14,8 +14,8 @@
 
 #include "RPCMyCasinoCommandLineInterface.h"
 #include "MyCasino_i.h"
-#include "CharStringConverter.h"
-#include "MyCasinoDefines.h"
+#include "HelperLib\CharStringConverter.h"
+#include "IncPub\MyCasinoDefines.h"
 
 #include "json\reader.h"
 #include "bprinter\table_printer.h"

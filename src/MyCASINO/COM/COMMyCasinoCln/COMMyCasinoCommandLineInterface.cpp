@@ -16,9 +16,9 @@
 #include <atlsafe.h>
 
 #include "COMMyCasinoCommandLineInterface.h"
-#include "BstrStringConverter.h"
-#include "CharStringConverter.h"
-#include "MyCasinoDefines.h"
+#include "HelperLib\BstrStringConverter.h"
+#include "HelperLib\CharStringConverter.h"
+#include "IncPub\MyCasinoDefines.h"
 
 #include "bprinter\table_printer.h"
 

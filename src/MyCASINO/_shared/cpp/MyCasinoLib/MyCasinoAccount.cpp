@@ -15,7 +15,7 @@
 
 #include <sstream>
 
-#include "ScopedLock.h"
+#include "IncPub\ScopedLock.h"
 #include "MyCasinoAccount.h"
 #include "MyCasinoTransaction.h"
 

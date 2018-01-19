@@ -12,7 +12,7 @@
  *-------------------------------------------------------------------**/
 
 #include "MyCasino.h"
-#include "ScopedLock.h"
+#include "IncPub\ScopedLock.h"
 #include <utility>
 #include <cstdlib>
 #include <time.h>

@@ -18,7 +18,7 @@
 #include <iomanip>
 #include <math.h>
 
-#include "CharStringConverter.h"
+#include "HelperLib/CharStringConverter.h"
 
 /** <summary>	Values that represent argument types. </summary> */
 enum ArgumentType

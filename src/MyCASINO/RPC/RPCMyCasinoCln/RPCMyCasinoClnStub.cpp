@@ -11,4 +11,4 @@
  *-------------------------------------------------------------------**/
 
 #include "MyCasino_i_c.c"
-#include "RpcMem.c"
+#include "RPCMyCasino/RpcMem.c"

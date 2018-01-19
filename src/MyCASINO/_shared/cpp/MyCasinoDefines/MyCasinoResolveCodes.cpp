@@ -14,8 +14,8 @@
  *-------------------------------------------------------------------**/
 
 #include <Windows.h>
-#include "MyCasinoDefines.h"
-#include "CharStringConverter.h"
+#include "IncPub/MyCasinoDefines.h"
+#include "HelperLib/CharStringConverter.h"
 
 extern "C"
 {

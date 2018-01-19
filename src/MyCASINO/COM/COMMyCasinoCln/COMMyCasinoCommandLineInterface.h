@@ -13,8 +13,8 @@
 
 #pragma once
 #include <string>
-#include "MyCasinoCommandLineInterface.h"
-#include "CmdInterpreter.h"
+#include "MyCasinoClnLib\MyCasinoCommandLineInterface.h"
+#include "CmdInterpreterLib\CmdInterpreter.h"
 
 #include "../COMMyCasinoSrv/COMMyCasinoSrv_i.h"
 

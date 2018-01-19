@@ -16,7 +16,7 @@
 
 #include <iostream>
 #include "CmdInterpreter.h"
-#include "../HelperLib/CharStringConverter.h"
+#include "HelperLib/CharStringConverter.h"
 
 /**---------------------------------------------------------------------
  * <summary>	Constructor. </summary>

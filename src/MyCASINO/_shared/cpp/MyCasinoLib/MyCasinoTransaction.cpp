@@ -11,7 +11,7 @@
 //			XXXXXXXXXX	Mathias Schneider	Changed
  *-------------------------------------------------------------------**/
 
-#include "ScopedLock.h"
+#include "IncPub\ScopedLock.h"
 #include "MyCasinoTransaction.h"
 
 /**---------------------------------------------------------------------

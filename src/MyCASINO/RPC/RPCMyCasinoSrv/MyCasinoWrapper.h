@@ -11,7 +11,7 @@
  *-------------------------------------------------------------------**/
 
 #pragma once
-#include "MyCasino.h"
+#include "MyCasinoLib\MyCasino.h"
 
 static MyCasino* myCasino;
 

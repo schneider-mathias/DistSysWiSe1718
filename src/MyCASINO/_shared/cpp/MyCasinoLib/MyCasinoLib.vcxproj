@@ -74,7 +74,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>../IncPub;../../../../_shared/cpp/AuthServiceLib;../../../../_shared/cpp/HelperLib</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..;../../../../_shared/cpp</AdditionalIncludeDirectories>
     </ClCompile>
     <Lib>
       <AdditionalLibraryDirectories>../../../$(Configuration)</AdditionalLibraryDirectories>
@@ -95,7 +95,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>../IncPub;../../../../_shared/cpp/AuthServiceLib;../../../../_shared/cpp/HelperLib</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..;../../../../_shared/cpp</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>

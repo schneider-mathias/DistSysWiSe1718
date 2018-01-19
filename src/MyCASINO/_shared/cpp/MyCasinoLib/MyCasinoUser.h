@@ -14,8 +14,8 @@
 
 #pragma once
 #include <windows.h>
-#include "IAuthServiceUser.h"
-#include "../IncPub/MyCasinoDefines.h"
+#include "AuthServiceLib\IAuthServiceUser.h"
+#include "IncPub/MyCasinoDefines.h"
 
 #define MY_CASINO_USER_SERIALIZED_PROPERTY_COUNT 4
 #define MY_CASINO_USER_SERIALIZER_SEPARATOR_WSTRING L" "

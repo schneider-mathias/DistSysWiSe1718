@@ -12,7 +12,7 @@
  *-------------------------------------------------------------------**/
 
 #include "MyCasinoBet.h"
-#include "ScopedLock.h"
+#include "IncPub\ScopedLock.h"
 
 /**---------------------------------------------------------------------
  * <summary>	Constructor. </summary>

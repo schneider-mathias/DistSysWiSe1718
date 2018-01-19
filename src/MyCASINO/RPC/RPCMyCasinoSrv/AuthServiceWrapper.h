@@ -11,8 +11,8 @@
  *-------------------------------------------------------------------**/
 
 #pragma once
-#include "AuthServiceTemplate.h"
-#include "MyCasinoUser.h"
+#include "AuthServiceLib\AuthServiceTemplate.h"
+#include "MyCasinoLib\MyCasinoUser.h"
 
 static CAuthServiceTemplate<MyCasinoUser>* authService;
 

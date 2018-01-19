@@ -13,8 +13,7 @@
 
 #pragma once
 #include "resource.h"       // main symbols
-#include "AuthServiceTemplate.h"
-#include "MyCasino.h"
+#include "MyCasinoLib\MyCasino.h"
 
 #include "COMMyCasinoSrv_i.h"
 

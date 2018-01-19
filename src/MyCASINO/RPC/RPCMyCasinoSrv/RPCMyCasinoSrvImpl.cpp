@@ -16,11 +16,11 @@
 #include "AuthServiceWrapper.h"
 #include "MyCasinoWrapper.h"
 
-#include "CharStringConverter.h"
-#include "MyCasinoBet.h"
-#include "MyCasinoTransaction.h"
+#include "HelperLib\CharStringConverter.h"
+#include "MyCasinoLib\MyCasinoBet.h"
+#include "MyCasinoLib\MyCasinoTransaction.h"
 
-#include "MyCasinoDefines.h"
+#include "Incpub\MyCasinoDefines.h"
 
 #include "json/writer.h"
 

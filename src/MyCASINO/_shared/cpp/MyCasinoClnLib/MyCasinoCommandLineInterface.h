@@ -14,8 +14,8 @@
 #pragma once
 #include <type_traits>
 
-#include "CmdInterpreter.h"
-#include "ICommandLineInterface.h"
+#include "CmdInterpreterLib/CmdInterpreter.h"
+#include "CmdInterpreterLib/ICommandLineInterface.h"
 
 
 class MyCasinoCommandLineInterface : public ICommandLineInterface

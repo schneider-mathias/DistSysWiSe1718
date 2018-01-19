@@ -22,9 +22,9 @@
 #include "../COMMyCasinoSrv/COMMyCasinoSrv_i.c"
 #include "../COMMyCasinoSrv/COMMyCasinoSrv_i.h"
 
-#include "BstrStringConverter.h"
+#include "HelperLib\BstrStringConverter.h"
 #include "COMMyCasinoCommandLineInterface.h"
-#include "CmdInterpreter.h"
+#include "CmdInterpreterLib\CmdInterpreter.h"
 
 /**---------------------------------------------------------------------
  * <summary>	Executes the command operation. </summary>
@@ -398,7 +398,7 @@ BOOL testcase_close_casino(CmdInterpreter& interpreter)
 }
 
 /**---------------------------------------------------------------------
-* <summary>	Testcase close casino. </summary>
+* <summary>	Testcase check transaction order. </summary>
 *
 * <param name="interpreter">	[in,out] The interpreter. </param>
 *

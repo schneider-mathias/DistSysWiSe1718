@@ -11,8 +11,8 @@
  *-------------------------------------------------------------------**/
 
 #include "MyCasino_i.h"
-#include "RpcException.h"
-#include "Config.h"
+#include "RPCMyCasino/RpcException.h"
+#include "RPCMyCasino/Config.h"
 #include <stdio.h>
 
 /** <summary>	Main entry-point for this application. </summary> */

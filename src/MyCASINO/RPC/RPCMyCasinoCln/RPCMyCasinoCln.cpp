@@ -11,13 +11,13 @@
 //			XXXXXXXXXX	Mathias Schneider	Changed
  *-------------------------------------------------------------------**/
 
-#include "IPValidate.h"
+#include "HelperLib\IPValidate.h"
 #include "MyCasino_i.h"    
-#include "Config.h"
-#include "RpcException.h"
+#include "RPCMyCasino\Config.h"
+#include "RPCMyCasino\RpcException.h"
 
 #include "RPCMyCasinoCommandLineInterface.h"
-#include "CmdInterpreter.h"
+#include "CmdInterpreterLib\CmdInterpreter.h"
 
 
 static void Bind(char*);

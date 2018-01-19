@@ -16,10 +16,11 @@
 #include <vector>
 
 #include "COMMyCasino.h"
-#include "BstrStringConverter.h"
-#include "MyCasinoBet.h"
-#include "MyCasinoTransaction.h"
-#include "MyCasinoDefines.h"
+#include "HelperLib\BstrStringConverter.h"
+#include "MyCasinoLib\MyCasinoBet.h"
+#include "MyCasinoLib\MyCasinoTransaction.h"
+#include "IncPub\MyCasinoDefines.h"
+#include "AuthServiceLib\AuthServiceTemplate.h"
 
 // Aggregation is not possible when using CoCreateInstanceEx:
 // https://msdn.microsoft.com/de-de/library/windows/desktop/ms680701(v=vs.85).aspx

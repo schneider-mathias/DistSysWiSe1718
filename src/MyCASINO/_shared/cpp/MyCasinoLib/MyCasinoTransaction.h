@@ -19,8 +19,8 @@
 #include <vector>
 #include <mutex>
 
-#include "TaggedUnion.h"
-#include "../IncPub/MyCasinoDefines.h"
+#include "HelperLib/TaggedUnion.h"
+#include "IncPub/MyCasinoDefines.h"
 
 class IMyCasinoTransactionInformation
 {

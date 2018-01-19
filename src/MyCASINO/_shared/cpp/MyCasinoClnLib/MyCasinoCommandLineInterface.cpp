@@ -12,10 +12,10 @@
  *-------------------------------------------------------------------**/
 
 #include "MyCasinoCommandLineInterface.h"
-#include "MyCasinoDefines.h"
+#include "IncPub/MyCasinoDefines.h"
 #include <iostream>
 #include "comdef.h"
-#include "CharStringConverter.h"
+#include "HelperLib/CharStringConverter.h"
 
 /**---------------------------------------------------------------------
  * <summary>	Constructor. </summary>

@@ -13,7 +13,7 @@
 
 #pragma once
 #include <string>
-#include "MyCasinoCommandLineInterface.h"
+#include "MyCasinoClnLib\MyCasinoCommandLineInterface.h"
 
 
 class RPCMyCasinoCommandLineInterface : public MyCasinoCommandLineInterface
