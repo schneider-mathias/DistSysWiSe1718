@@ -1,6 +1,6 @@
 ﻿/*************************************************************************/
 /*                                                                       */
-/*    Inhalt:    Interface of the MyBay WCF-Server                       */
+/*    Inhalt:    Interfacedefinition of the MyBay WCF-Server             */
 /*                                                                       */
 /*    Autor(en): Manuel Schlemelch                                       */
 /*    Stand:     03.01.2018                                              */
@@ -9,9 +9,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.ServiceModel;
 using MyBayLib;
 
@@ -50,7 +47,6 @@ namespace MyBayWCFLibrary
 
         [OperationContract]
         String getMessage(UInt32 sessionID, out Boolean messageAvailable, out UInt32 messageType, out MessageTransfer message);
-
         #endregion
     }
 }

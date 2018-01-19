@@ -1,35 +1,35 @@
 ﻿/*************************************************************************/
 /*                                                                       */
-/*    Inhalt:    Autkionen des MyBay WCF-Servers                         */
+/*    Inhalt:    Class Auction defines an auctions of a MyBay .net-Server*/
 /*                                                                       */
 /*    Autor(en): Manuel Schlemelch                                       */
-/*    Stand:     03.01.2018                                              */
+/*    Stand:     18.01.2018                                              */
 /*                                                                       */
 /*************************************************************************/
 
-
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Timers;
-using AuthenticationService;
 using System.Collections.Concurrent;
 using System.Globalization;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Runtime.Serialization; 
 
 namespace MyBayLib
 {
     [Serializable()]
     public class Auction
     {
+        /// <summary>
+        /// A ConcurrentDicionary is used for making the access to the stored messages threadsafe
+        /// </summary>
         public static ConcurrentDictionary<UInt32, ConcurrentBag<Message>> messageBucket = new ConcurrentDictionary<UInt32, ConcurrentBag<Message>>();
 
-        // Will increase for each new auction
+        /// <summary>
+        /// auctionNumberCount will increase for each new auction
+        /// </summary>
         private static UInt32 auctionNumberCount = 0;
+
         private List<Bid> bidList = new List<Bid>();    
         private UInt16 auctionEndCounter = 1;
 
@@ -105,8 +105,16 @@ namespace MyBayLib
         #endregion
 
         #region C'tors
+        /// <summary>
+        /// Constructor of the class Auction
+        /// </summary>
+        /// <param name="artName"></param>
+        /// <param name="startBid"></param>
+        /// <param name="auctioneer"></param>
         public Auction(String artName, Double startBid, UInt32 auctioneer)
         {
+            // When creating new auction, the auctioneer is automatically setting the highest bid
+            // of this auction (startBid)
             this._highestBid = new Bid(0,auctioneer,startBid);
             this._artName = artName;
 
@@ -123,13 +131,10 @@ namespace MyBayLib
 
             // Auctioneer automatically interested in auction
             this._bidderInterested.Add(auctioneer);
-
-            auctionEndTimer = new System.Timers.Timer();
-            auctionEndTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
-            auctionEndTimer.Interval = 3000;
         }
 
-        // CopyConstructor
+        // CopyConstructor for creating deep copies while executing the getAuctions method 
+        // on the server. 
         public Auction(Auction oldAuction)
         {
             _highestBid = oldAuction._highestBid;
@@ -143,6 +148,12 @@ namespace MyBayLib
         #endregion
 
         #region Methods
+        /// <summary>
+        /// This method adds a new bid to an auction
+        /// </summary>
+        /// <param name="bidderIndex"></param>
+        /// <param name="bidValue"></param>
+        /// <returns></returns>
         public String addBid(UInt32 bidderIndex, Double bidValue)
         {
             if (this._auctionState == 2)
@@ -173,6 +184,11 @@ namespace MyBayLib
             return "OK";
         }
 
+        /// <summary>
+        /// This method is adding users to the list of interested bidders for an auction
+        /// </summary>
+        /// <param name="bidderIndex"></param>
+        /// <returns></returns>
         public bool addToInterested(UInt32 bidderIndex)
         {
             lock (this._bidderInterested)
@@ -182,15 +198,29 @@ namespace MyBayLib
             return true;
         }
 
+        /// <summary>
+        /// This method returns a new copy of the list of bids of an auction
+        /// if the client wants to get the details of an auction
+        /// </summary>
+        /// <returns></returns>
         public List<Bid> getBids()
         {
             lock (this.bidList) return new List<Bid>(this.bidList);
         }
 
+        /// <summary>
+        /// This method is called each time a new bid was given for this auction to inform all the 
+        /// interested clients about the new bid
+        /// </summary>
+        /// <param name="bidValue"></param>
+        /// <param name="bidderIndex"></param>
+        /// <returns></returns>
         private bool informBidders(Double bidValue, UInt32 bidderIndex)
         {
             List<UInt32> biddersInterested;
-            
+
+            // Shortly lock the list which is storing all the indexes of the bidders who 
+            // are interesed in this auction and copy it to a new list (shortening lock time)
             lock (this._bidderInterested)
             {
                 biddersInterested = new List<uint>(this._bidderInterested);
@@ -212,6 +242,12 @@ namespace MyBayLib
             return true;
         }
 
+        /// <summary>
+        /// Method is called by user who wants to end its own auction
+        /// When this method is called, a timer is started for sending 3 warning messages to each client
+        /// and closing the auction after
+        /// </summary>
+        /// <returns></returns>
         public string endAuction()
         {
             if (this._auctionState != 0)
@@ -221,25 +257,35 @@ namespace MyBayLib
 
             this._auctionState = 1; // AuctionState 1 -> Auction is preparing to be finished
 
-
             // enable timer for auction end messages
             this.auctionEndTimer = new System.Timers.Timer();
             this.auctionEndTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
-            this.auctionEndTimer.Interval = 4000;
+            this.auctionEndTimer.Interval = 4000; // 4 seconds
             this.auctionEndTimer.Enabled = true;
 
             return "OK";
         }
 
+        /// <summary>
+        /// This method is called by the Elapsed event of the auctionEndTimer
+        /// This method is generating 3 messages for warning the clients that the auction
+        /// will be over soon. The 4th time it is called, it is closing the auctions and setting
+        /// its status to 2 (closed) and also informing the clients with an auction end message.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="e"></param>
         private void OnTimedEvent(object source, ElapsedEventArgs e)
         {
             List<UInt32> biddersInterested;
 
+            // Shortly lock the list which is storing all the indexes of the bidders who 
+            // are interesed in this auction and copy it to a new list (shortening lock time)
             lock (this._bidderInterested)
             {
                 biddersInterested = new List<uint>(this._bidderInterested);
             }
 
+            // all 3 warnings have been sent, the auction will be closed now
             if (auctionEndCounter == 4)
             {
                 auctionEndTimer.Enabled = false;
@@ -280,6 +326,15 @@ namespace MyBayLib
             }
         }
 
+        /// <summary>
+        /// The server has a "bucket" for messages where messages to different receipients (clients) are stored.
+        /// This bucket is realised with a ConcurrentDictionary for guaranteeing thread safety.
+        /// This method is called by any method which wants to send a message to the client for adding the message 
+        /// to the dictionary
+        /// </summary>
+        /// <param name="receipientIndex"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
         private bool AddMessageToBucket(UInt32 receipientIndex, Message message)
         {
             if (!messageBucket.ContainsKey(receipientIndex))
@@ -301,6 +356,14 @@ namespace MyBayLib
             return true;
         }
 
+        /// <summary>
+        /// This method is called after every change on the list of auctions in the server
+        /// for storing the data persistent on the hard drive.
+        /// The list of auctions is serialized and stored in the same folder where 
+        /// the authenticationservice is getting its settings
+        /// </summary>
+        /// <param name="auctionList"></param>
+        /// <returns></returns>
         public static bool SaveAuctionsPersistent(List<Auction> auctionList)
         {
             try
@@ -327,6 +390,13 @@ namespace MyBayLib
             return true;
         }
 
+        /// <summary>
+        /// This static method reads all auctions out of a file from the hard disk drive and
+        /// generates a new list of auctions.
+        /// If a server is shut down while an auction is in state 1 (not finished but shortly before)
+        /// its state is set to 2 (closed)
+        /// </summary>
+        /// <returns></returns>
         public static List<Auction> GetPersistentAuctions()
         {
             List<Auction> listAuctions = new List<Auction>();
@@ -356,6 +426,12 @@ namespace MyBayLib
             return listAuctions;
         }
 
+        /// <summary>
+        /// After restarting the server, it reads the persistent data out of a file 
+        /// and the actual number of auctions has to be been set again
+        /// </summary>
+        /// <param name="count"></param>
+        /// <returns></returns>
         public static bool setCountAuctions(UInt32 count)
         {
             Auction.auctionNumberCount = count;
@@ -364,6 +440,9 @@ namespace MyBayLib
         #endregion
     }
 
+    /// <summary>
+    /// The class AuctionTransfer defines an object for transferring auctions from the server to the client
+    /// </summary>
     public class AuctionTransfer
     {
         public UInt32 AuctNumber { get; set; }

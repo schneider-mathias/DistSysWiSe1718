@@ -3,17 +3,12 @@
 /*    Inhalt:    Program.cs des MyBay WCF-Servers                        */
 /*                                                                       */
 /*    Autor(en): Manuel Schlemelch                                       */
-/*    Stand:     08.01.2018                                              */
+/*    Stand:     12.01.2018                                              */
 /*                                                                       */
 /*************************************************************************/
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.ServiceModel;
-using AuthenticationService;
 
 namespace MyBayWCFSrv
 {

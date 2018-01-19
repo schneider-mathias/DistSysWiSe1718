@@ -34,6 +34,5 @@
         <Button x:Name="btn_interested" Content="Auktion verfolgen" HorizontalAlignment="Left" Margin="338,165,0,0" VerticalAlignment="Top" Width="120" Height="26" Click="btn_interested_Click" IsEnabled="False"/>
         <TextBox x:Name="txtBox_search" HorizontalAlignment="Left" Height="23" Margin="520,346,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="111" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" VerticalScrollBarVisibility="Disabled"/>
         <Label x:Name="lbl_searchBox" Content="Suche" HorizontalAlignment="Left" Margin="474,343,0,0" VerticalAlignment="Top" Width="41" HorizontalContentAlignment="Right"/>
-
     </Grid>
 </Window>

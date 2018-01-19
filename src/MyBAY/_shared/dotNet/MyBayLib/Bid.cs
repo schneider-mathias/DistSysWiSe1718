@@ -1,21 +1,19 @@
 ﻿/*************************************************************************/
 /*                                                                       */
-/*    Inhalt:    Bids des MyBay WCF-Servers                              */
+/*    Inhalt:    Class for creating Bid-objects of each auction          */
 /*                                                                       */
 /*    Autor(en): Manuel Schlemelch                                       */
 /*    Stand:     03.01.2018                                              */
 /*                                                                       */
 /*************************************************************************/
 
-
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MyBayLib
 {
+    /// <summary>
+    /// Bid class for storing the bids of an auction internal. Each auction has its own list of bids
+    /// </summary>
     // Attribute for making this class serializable
     [Serializable()]
     public class Bid
@@ -41,6 +39,11 @@ namespace MyBayLib
         #endregion
     }
 
+    /// <summary>
+    /// Class for transferring bids from the server to the client.
+    /// The difference to the class bid is, that the index of the bidder
+    /// is translated to the name of the bidder
+    /// </summary>
     public class BidTransfer
     {
         public UInt32 BidNumber { get; set; }

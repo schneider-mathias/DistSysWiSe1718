@@ -1,11 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/*************************************************************************/
+/*                                                                       */
+/*    Inhalt:    Static comError class of WCF-Client                     */
+/*                                                                       */
+/*                                                                       */
+/*    Autor(en): Manuel Schlemelch                                       */
+/*    Stand:     06.01.2018                                              */
+/*                                                                       */
+/*************************************************************************/
+
+using System;
 
 namespace MyBayWCFCln
 {
+    /// <summary>
+    /// Static class for translating COM-Exceptions to strings to show the user
+    /// </summary>
     static class comError
     {
         static public bool convertException(Exception ex, out string retString)

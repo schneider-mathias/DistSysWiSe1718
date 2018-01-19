@@ -1,21 +1,21 @@
 ﻿/*************************************************************************/
 /*                                                                       */
-/*    Inhalt:    Messages des MyBay WCF-Servers                          */
+/*    Inhalt:    Messages of the MyBay .net-Servers                      */
 /*                                                                       */
 /*    Autor(en): Manuel Schlemelch                                       */
 /*    Stand:     03.01.2018                                              */
 /*                                                                       */
 /*************************************************************************/
 
-
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MyBayLib
 {
+    /// <summary>
+    /// Each message can either be a message informing the client about a new bid,
+    /// a message informing the client about the approaching closing of the auction
+    /// and a message about the auction being closed
+    /// </summary>
     public enum MessageType
     {
         NewBid = 0,
@@ -23,6 +23,11 @@ namespace MyBayLib
         EndOfAuction
     };
 
+    /// <summary>
+    /// Definition of class Message which is used internal to store messages on the server.
+    /// The Properties of a message are variable and contains 2 strings, one double and 2 unsigned integer variables
+    /// which are filled and used depending on what kind of message
+    /// </summary>
     public class Message
     {
         #region Properties
@@ -41,6 +46,15 @@ namespace MyBayLib
         #endregion
 
         #region C'Tors
+        /// <summary>
+        /// Constructor of class Message
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="text"></param>
+        /// <param name="text2"></param>
+        /// <param name="doublevalue"></param>
+        /// <param name="intvalue"></param>
+        /// <param name="intvalue2"></param>
         public Message(MessageType type, String text, String text2, Double doublevalue, UInt32 intvalue, UInt32 intvalue2)
         {
             this.Type = type;
@@ -53,6 +67,12 @@ namespace MyBayLib
         #endregion
     }
 
+    /// <summary>
+    /// Class for transferring Messages from the server to the client. 
+    /// The difference to the class Message is, 
+    /// that the enum MessageType is replaced by an unsigned integer 
+    /// (interface defined also because of .net - COM - communication
+    /// </summary>
     public class MessageTransfer
     {
         // Depending on MessageType, Client will interprete

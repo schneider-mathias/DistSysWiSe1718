@@ -1,24 +1,22 @@
-﻿//#define COM
+﻿/*************************************************************************/
+/*                                                                       */
+/*    Inhalt:    Background logic of the MainWindow (main functionality  */
+/*               of WCF-Client - This client can also operate with a     */
+/*               COM-Object if you set the define COM before compiling   */
+/*                                                                       */
+/*    Autor(en): Manuel Schlemelch                                       */
+/*    Stand:     19.01.2018                                              */
+/*                                                                       */
+/*************************************************************************/
+
+//#define COM
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using MyBayLib;
 using MyBayWCFLibrary;
 using System.ServiceModel;
-using System.Net;
-using System.Text.RegularExpressions;
 using System.Timers;
 using System.Globalization;
 
@@ -35,16 +33,27 @@ namespace MyBayWCFCln
         /// </summary>
         private COMMyBaySrvLib.COMMyBay _comServer;
 #else
+        // Create a ChannelFactory for the interface "IMyBay"
         private ChannelFactory<IMyBay> _MyBayFactory = new ChannelFactory<IMyBay>(new BasicHttpBinding());
         private IMyBay _remoteSrvMyBay;
 #endif
-                    
+
         private UInt32 sessionID;
         private string srvAddress;
 
+        /// <summary>
+        /// This timer is enabled in the constructor of the MainWindow and polls cyclic for new messages at the server
+        /// </summary>
         private Timer getMessageTimer;
+
+        /// <summary>
+        /// This EventHandler handles events for updating the listbox displaying the messages
+        /// </summary>
         public event EventHandler myListBoxUpdateEventHandler;
 
+        /// <summary>
+        /// Constructor of the MainWindow
+        /// </summary>
          public MainWindow()
          {
             this.DataContext = this;
@@ -56,11 +65,18 @@ namespace MyBayWCFCln
             InitializeComponent();
             myListBoxUpdateEventHandler += myMessageListBoxUpdateEvent;
 #if COM
+            // Set Text of IP input textBox (for the demonstration - IP-address of other computer in the lab)
             this.txtBox_serverIP.Text = "192.168.52.208";
 #else
 #endif
         }
 
+        /// <summary>
+        /// This method handles the Elapsed event of the getMessageTimer
+        /// It cyclic asks the server if there are new messages for the client
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="e"></param>
         private void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)
         {
             if (sessionID == 0) return;
@@ -115,6 +131,8 @@ namespace MyBayWCFCln
                         case 0: // New Bid
                             if (!String.IsNullOrEmpty(message.MessageText2))
                             {
+                            // For adding the messages to the listbox on the MainWindow, you need to invoke this action with the dispatcher
+                            // of the MainWindow because the timer calling this method is using a different thread
                                 Dispatcher.BeginInvoke(new Action(delegate ()
                                 {
                                     listBox_messages.Items.Add("- Neues Gebot - Artikel: "
@@ -188,27 +206,37 @@ namespace MyBayWCFCln
         }
             catch (Exception)
             {
-#if COM
+                // If something went wrong with getting the messages from the server, disable the polling for messages
                 this.getMessageTimer.Stop();
+#if COM
                 MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
 #else
-                this.getMessageTimer.Stop();
                 MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
 #endif
             }
             
         }
 
+        /// <summary>
+        /// Method handles Click event of btn_login button 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btn_login_Click(object sender, RoutedEventArgs e)
         {
-            if (String.IsNullOrEmpty(this.txtBox_serverIP.Text))
-            {
-                MessageBox.Show("Bitte geben Sie eine Serveradresse ein", "Fehler", MessageBoxButton.OK);
-                return;
-            }
-
+            // This method is changing its behaviour depending on the content of the btn_login button.
+            // It is used for the login and logout functionality, if a user is successfully logged in, the
+            // content of the button changes to "logout". If a user is successfully logged out, it 
+            // changes back to "login"
             if (this.btn_login.Content.ToString().Contains("Login"))
             {
+                // Check if textbox for inserting the server IP address is empty
+                if (String.IsNullOrEmpty(this.txtBox_serverIP.Text))
+                {
+                    MessageBox.Show("Bitte geben Sie eine Serveradresse ein", "Fehler", MessageBoxButton.OK);
+                    return;
+                }
+
                 try
                 {
 #if COM
@@ -226,6 +254,8 @@ namespace MyBayWCFCln
                         return;
                     }
 #endif
+                    // Change button content to "Logout" if user is successfully logged in
+                    // and disable the textboxes needed for the login
                     this.btn_login.Content = "Logout";
                     this.txtBox_username.IsEnabled = false;
                     this.txtBox_password.IsEnabled = false;
@@ -253,13 +283,14 @@ namespace MyBayWCFCln
 #endif
                 }
             }
-            // When logout button is clicked (same button, different functionality
+            // If logout button is clicked same button, different functionality
             else
             {
                 try
                 {
 #if COM
                     _comServer.logout(this.sessionID);
+                    // if logout is succesful, stop the cyclic event of polling the messages from the server
                     this.getMessageTimer.Stop();
 #else
                     String returnStr = _remoteSrvMyBay.logout(this.sessionID);
@@ -268,9 +299,10 @@ namespace MyBayWCFCln
                         MessageBox.Show(returnStr, "Fehler", MessageBoxButton.OK);
                         return;
                     }
+                    // if logout is succesful, stop the cyclic event of polling the messages from the server
                     this.getMessageTimer.Stop();
 
-                    // Close Client Connection
+                    // Close Client Connection to WCF-Server
                     if (_remoteSrvMyBay != null)
                     {
                         ((IClientChannel)_remoteSrvMyBay).Close();
@@ -283,9 +315,11 @@ namespace MyBayWCFCln
                     this.txtBox_username.IsEnabled = true;
                     this.txtBox_password.IsEnabled = true;
                     this.txtBox_serverIP.IsEnabled = true;
+
+                    // Change content of button btn_login back to "Login" if the logout is completed
                     this.btn_login.Content = "Login";
 
-                    // Disable all other functionality
+                    // Disable all other functionality on GUI
                     this.btn_NewAuction.IsEnabled = false;
                     this.btn_getAuctions.IsEnabled = false;
                     this.btn_interested.IsEnabled = false;
@@ -317,6 +351,11 @@ namespace MyBayWCFCln
             }
         }
 
+        /// <summary>
+        /// Method handles Click event of btn_NewAuction button 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btn_NewAuction_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -324,6 +363,7 @@ namespace MyBayWCFCln
                 UInt32 auctionNumber;
 
                 Double tempStartBid;
+                // Check if input in txtBox_startBid is a valid double
                 if (!Double.TryParse(this.txtBox_startBid.Text, NumberStyles.Any, new CultureInfo("en-US"), out tempStartBid))
                 {
                     MessageBox.Show("Bitte geben Sie einen gültigen Wert für das Startgebot an", "Warnung", MessageBoxButton.OK);
@@ -361,16 +401,23 @@ namespace MyBayWCFCln
             }
         }
 
+        /// <summary>
+        /// Method handles Click event of btn_bid button 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btn_bid_Click(object sender, RoutedEventArgs e)
         {
             try
             {
+                // Check if any auction in the listbox is selected
                 if (this.listBox_auctions.SelectedItem == null)
                 {
                     MessageBox.Show("Sie haben keine Auktion ausgewählt", "Hinweis", MessageBoxButton.OK);
                     return;
                 }
 
+                // Get auction number from selected listbox item
                 var selectedAuction = this.listBox_auctions.SelectedItem;
                 UInt32 auctionNumber = (selectedAuction as AuctionListBoxItem).auctionNumber;
 
@@ -411,16 +458,23 @@ namespace MyBayWCFCln
             }
         }
 
+        /// <summary>
+        /// Method handles Click event of btn_interested button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btn_interested_Click(object sender, RoutedEventArgs e)
         {
             try
             {
+                // Check if any auction in the listbox is selected
                 if (this.listBox_auctions.SelectedItem == null)
                 {
                     MessageBox.Show("Sie haben keine Auktion ausgewählt", "Hinweis", MessageBoxButton.OK);
                     return;
                 }
 
+                // Get auction number from selected listbox item
                 var selectedAuction = this.listBox_auctions.SelectedItem;
                 UInt32 auctionNumber = (selectedAuction as AuctionListBoxItem).auctionNumber;
 
@@ -455,19 +509,27 @@ namespace MyBayWCFCln
             }
         }
 
+        /// <summary>
+        /// Method handles Click event of btn_endAuction button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btn_endAuction_Click(object sender, RoutedEventArgs e)
         {
             try
             {
+                // Check if any auction in the listbox is selected
                 if (this.listBox_auctions.SelectedItem == null)
                 {
                     MessageBox.Show("Sie haben keine Auktion ausgewählt", "Hinweis", MessageBoxButton.OK);
                     return;
                 }
 
+                // Get auction number from selected listbox item
                 var selectedAuction = this.listBox_auctions.SelectedItem;
                 UInt32 auctionNumber = (selectedAuction as AuctionListBoxItem).auctionNumber;
 
+                // Call endauction method on remote server
 #if COM
                 _comServer.endauction(this.sessionID, auctionNumber);
 #else
@@ -499,15 +561,24 @@ namespace MyBayWCFCln
             }
         }
 
+        /// <summary>
+        /// Method handles Click event of btn_getAuctions button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btn_getAuctions_Click(object sender, RoutedEventArgs e)
         {
             try
             {
+                // create reference for a list of AuctionTransfer objects which 
+                // will be passed back from the server
                 List<AuctionTransfer> newListAuctions;
 
                 UInt32 flags = 0;
                 UInt32 countAuctions = 0;
 
+                // Set the flags for the request for auctions at the server 
+                // depening on which radio button is checked
                 if ((bool)radioBtn_interested.IsChecked)
                 {
                     flags = 0;
@@ -521,12 +592,16 @@ namespace MyBayWCFCln
                     flags = 2;
                 }
 
+                // Clear the listbox of auctions to display the new received list
                 this.listBox_auctions.Items.Clear();
 
 #if COM
                 Array com_auctions;
                 _comServer.getAuctions(this.sessionID, flags, this.txtBox_search.Text, out countAuctions, out com_auctions);
                 newListAuctions = new List<AuctionTransfer>();
+
+                // for the communication with a com object, the values of the received array have to be parsed to the correct
+                // datatypes first
                 if (com_auctions != null && countAuctions > 0)
                 {
                     for (int i = 0; i < (countAuctions * 5); i++)
@@ -560,6 +635,7 @@ namespace MyBayWCFCln
                 {
                     this.listBox_auctions.Items.Add(new AuctionListBoxItem(item.ArtName, item.AuctNumber, item.HighestBid, item.CountBids, item.AuctionState));
                 }
+                // if auctions available, enable the buttons to interact with the auctions
                 if (this.listBox_auctions.Items.Count > 0)
                 {
                     this.btn_getDetails.IsEnabled = true;
@@ -567,6 +643,7 @@ namespace MyBayWCFCln
                     this.btn_endAuction.IsEnabled = true;
                     this.btn_interested.IsEnabled = true;
                 }
+                // if no auctions with the requested criteria have been found, disable the buttons to interact with the auctions
                 else
                 {
                     this.btn_getDetails.IsEnabled = false;
@@ -593,12 +670,16 @@ namespace MyBayWCFCln
             }
         }
 
+        /// <summary>
+        /// Method handles Click event of btn_getDetails button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btn_getDetails_Click(object sender, RoutedEventArgs e)
         {
             try
             {
                 List<BidTransfer> newListBids;
-
                 UInt32 countBids;
 
                 if (this.listBox_auctions.SelectedItem == null)
@@ -607,6 +688,7 @@ namespace MyBayWCFCln
                     return;
                 }
 
+                // Get auction number by checking which auction is selected in listbox
                 var selectedAuction = this.listBox_auctions.SelectedItem;
                 UInt32 auctionNumber = (selectedAuction as AuctionListBoxItem).auctionNumber;
 
@@ -636,13 +718,16 @@ namespace MyBayWCFCln
                 }
 
 #endif
+                // Clear the listBox for the auctions to display the details of an auction in the same listBox
                 this.listBox_auctions.Items.Clear();
 
+                // If there are no bids yet for this auction
                 if (countBids == 0)
                 {
                     this.listBox_auctions.Items.Add("Für diese Auktion wurden noch keine Gebote abgegeben");
                 }
 
+                // Sort the list of bids, that they are in the right order. They are ordered by their property BidNumber
                 newListBids.Sort((a, b) => (a.BidNumber.CompareTo(b.BidNumber)));
 
                 foreach (BidTransfer item in newListBids)
@@ -654,6 +739,9 @@ namespace MyBayWCFCln
                                                 + " - Bieter: "
                                                 + item.Bidder.ToString());
                 }
+
+                // While showing the details of an auction, disable all the other buttons, that the user
+                // can not modify other auctions
                 this.btn_interested.IsEnabled = false;
                 this.btn_bid.IsEnabled = false;
                 this.btn_endAuction.IsEnabled = false;
@@ -677,7 +765,12 @@ namespace MyBayWCFCln
             }
         }
 
-        // Needed for the messages to show the newest Messages automatically
+        /// <summary>
+        /// Handles the event which is fired everytime a message is added to the listbox 
+        /// displaying the messages that the user always sees the newest message selected
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void myMessageListBoxUpdateEvent(object sender, EventArgs e)
         {
             listBox_messages.SelectedIndex = listBox_messages.Items.Count - 1;

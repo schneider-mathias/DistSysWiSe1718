@@ -1,4 +1,14 @@
-﻿using System;
+﻿/*************************************************************************/
+/*                                                                       */
+/*    Inhalt:    Code-Behind file of the AuctionListBoxItem              */
+/*               of the MyBay WCF-Client                                 */
+/*                                                                       */
+/*    Autor(en): Manuel Schlemelch                                       */
+/*    Stand:     06.01.2018                                              */
+/*                                                                       */
+/*************************************************************************/
+
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -22,6 +32,15 @@ namespace MyBayWCFCln
     public partial class AuctionListBoxItem : UserControl
     {
         public UInt32 auctionNumber;
+        
+        /// <summary>
+        /// Constructor of AuctionListBoxItem is setting all its properties and filling the labels content
+        /// </summary>
+        /// <param name="auctionName"></param>
+        /// <param name="auctionNumber"></param>
+        /// <param name="highestBid"></param>
+        /// <param name="countBids"></param>
+        /// <param name="auctionState"></param>
         public AuctionListBoxItem(string auctionName, UInt32 auctionNumber, Double highestBid, UInt32 countBids, UInt32 auctionState)
         {
             InitializeComponent();
