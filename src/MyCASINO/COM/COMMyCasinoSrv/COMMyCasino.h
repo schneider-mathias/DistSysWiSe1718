@@ -2,13 +2,14 @@
 // project:	COMMyCasinoSrv
 // file:	COMMyCasino.h
 //
-// summary:	Declaration of the CCOMMyCasino
+// summary:	[Created by Visual Studio]. Declaration of the CCOMMyCasino
 //
 //			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
 //
 //			Date		Developer			Change
-//			13.01.2018	Mathias Schneider	Created
- *-----------------------------------------------------------------------------------------------**/
+//			19.12.2017	Mathias Schneider	Created
+//			XXXXXXXXXX	Mathias Schneider	Changed
+*-----------------------------------------------------------------------------------------------**/
 
 #pragma once
 #include "resource.h"       // main symbols

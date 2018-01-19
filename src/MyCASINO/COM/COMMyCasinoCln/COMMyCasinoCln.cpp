@@ -7,7 +7,8 @@
 //			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
 //
 //			Date		Developer			Change
-//			13.01.2018	Mathias Schneider	Created
+//			19.12.2017	Mathias Schneider	Created
+//			XXXXXXXXXX	Mathias Schneider	Changed
  *-----------------------------------------------------------------------------------------------**/
 
 #include "IPValidate.h"
@@ -47,6 +48,7 @@ int main(int argc, char**argv)
 	COSERVERINFO srvInfo = { 0, L"127.0.0.1", 0, 0 };
 	LPWSTR lpwstrSrvName = NULL;
 	
+	// adjust IP if provided by command line
 	if (argc > 1)
 	{
 		std::wstring wstrSrvName(argv[1], argv[1] + strlen(argv[1]) + 1);
@@ -65,6 +67,8 @@ int main(int argc, char**argv)
 	
 	MULTI_QI multiQi = { &IID_ICOMMyCasino, 0, 0 };
 
+
+	// create remote COM object
 	hr = CoCreateInstanceEx(CLSID_COMMyCasino, NULL, CLSCTX_REMOTE_SERVER,
 		&srvInfo, 1, &multiQi);
 
@@ -85,6 +89,7 @@ int main(int argc, char**argv)
 	interpreter.registerCmdDispatcher(&myCasinoCLI, p);
 	interpreter.run();
 
+	// clean up COM object
 	pICOMMyCasinoSrv->Release();
 	CoUninitialize();
 
