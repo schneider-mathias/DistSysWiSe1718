@@ -1,4 +1,15 @@
-﻿//#define PORTFWDLIBACTIVE
+﻿/*************************************************************************/
+/*                                                                       */
+/*    Inhalt:    App.xaml.cs of WP8 Phone Client                         */
+/*               if define PORTFWDLIBACTIVE is set, debugging with       */
+/*               the real hardware is possible                           */
+/*                                                                       */
+/*    Autor(en): Manuel Schlemelch                                       */
+/*    Stand:     19.01.2018                                              */
+/*                                                                       */
+/*************************************************************************/
+
+//#define PORTFWDLIBACTIVE
 
 using System;
 using System.Diagnostics;
@@ -23,6 +34,7 @@ namespace MyBayWSPhoneCln
 #if PORTFWDLIBACTIVE
         PortForwarderWP pfWebSvc;
 #endif
+        // Object is defined here in App class, because all the phone pages can access this object
         public static DataObject MyDataObject;
 
         /// <summary>
@@ -83,6 +95,7 @@ namespace MyBayWSPhoneCln
                 PhoneApplicationService.Current.UserIdleDetectionMode = IdleDetectionMode.Disabled;
             }
 
+            // Create new instance of the DataObject
             App.MyDataObject = new DataObject();
 
 #if PORTFWDLIBACTIVE

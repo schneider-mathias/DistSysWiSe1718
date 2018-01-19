@@ -1,16 +1,20 @@
-﻿//#define PORTFWDLIBACTIVE
+﻿/*************************************************************************/
+/*                                                                       */
+/*    Inhalt:    Background logic LoginPage                              */
+/*                                                                       */
+/*                                                                       */
+/*                                                                       */
+/*    Autor(en): Manuel Schlemelch                                       */
+/*    Stand:     19.01.2018                                              */
+/*                                                                       */
+/*************************************************************************/
+
+//#define PORTFWDLIBACTIVE
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
-using Microsoft.Phone.Shell;
-using Windows.UI.Popups;
-using Windows.UI.Notifications;
 using System.ServiceModel;
 using MyBayWSPhoneCln.MyBayWSSrvASMXSoapService;
 
@@ -18,19 +22,19 @@ namespace MyBayWSPhoneCln
 {
     public partial class LoginPage : PhoneApplicationPage
     {
-        private DataObject _myDataObject = new DataObject();
-
-        public DataObject MyDataObject
-        {
-            get { return _myDataObject; }
-            set { _myDataObject = value; }
-        }
-
+        /// <summary>
+        /// Constructor of class LoginPage
+        /// </summary>
         public LoginPage()
         {
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Method handles Click event of btn_login button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btn_login_Click(object sender, RoutedEventArgs e)
         {
             IPAddress srvAddressIP;
@@ -62,12 +66,18 @@ namespace MyBayWSPhoneCln
 #endif
             }
 
+            // register eventhandler for event loginCompleted
             App.MyDataObject.RemoteSrvMyBay.loginCompleted += myBaySvc_login_completed;
 
-
+            // Call server method login asynchron
             App.MyDataObject.RemoteSrvMyBay.loginAsync(txtBox_username.Text, passBox_password.Password);
         }
 
+        /// <summary>
+        /// Callback function of asynchron server request loginAsync
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private void myBaySvc_login_completed(object sender, loginCompletedEventArgs args)
         {
             try
@@ -77,16 +87,17 @@ namespace MyBayWSPhoneCln
 
                 String errText = args.Result;
 
+                // Handle error case if something went wrong in the Login method on the server
                 if (!errText.Contains("OK"))
                 {
                     MessageBox.Show(errText, "Warnung", MessageBoxButton.OK);
                     return;
                 }
-
                 else
                 {
                     App.MyDataObject.SessionID = args.sessionID;
                     MessageBox.Show("Sie wurden erfolgreich mit der Session ID: " + App.MyDataObject.SessionID + " angemeldet", "Hinweis", MessageBoxButton.OK);
+                    // Go back to MainPage
                     this.ShowNewDialog<MainPage>();
                 }
             }

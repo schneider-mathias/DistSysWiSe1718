@@ -1,16 +1,22 @@
-﻿using System;
+﻿/*************************************************************************/
+/*                                                                       */
+/*    Inhalt:    Background logic of the showAuctions page               */
+/*               of WP8 Client                                           */
+/*                                                                       */
+/*                                                                       */
+/*    Autor(en): Manuel Schlemelch                                       */
+/*    Stand:     19.01.2018                                              */
+/*                                                                       */
+/*************************************************************************/
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
-using Microsoft.Phone.Shell;
 using MyBayWSPhoneCln.MyBayWSSrvASMXSoapService;
 using System.Windows.Media;
 using System.Globalization;
-using System.Threading;
 using System.Windows.Threading;
 using System.Windows.Documents;
 
@@ -30,6 +36,7 @@ namespace MyBayWSPhoneCln
         {
             InitializeComponent();
 
+            // if timer doesnt exist yet, create new timer for cyclic getting the messages from the server
             if (getMessageTimer == null)
             {
                 getMessageTimer = new System.Windows.Threading.DispatcherTimer();
@@ -48,6 +55,7 @@ namespace MyBayWSPhoneCln
         /// <param name="e"></param>                
         protected override void OnBackKeyPress(System.ComponentModel.CancelEventArgs e)
         {
+            // if the user taps on the hardware back button, stop the message timer and go back to the MainPage
             getMessageTimer.Stop();
             base.OnBackKeyPress(e);
         }
@@ -97,8 +105,10 @@ namespace MyBayWSPhoneCln
                 }
                 else
                 {
+                    // check if there were messages passed by the server
                     if (args.message.Count > 0)
                     {
+                        // iterate over all the messages and add them to the stackPanel for messages
                         foreach(MessageTransfer messageT in args.message)
                         {
                             TextBlock msg = new TextBlock();
@@ -136,7 +146,7 @@ namespace MyBayWSPhoneCln
                                         stackPanelMessages.Children.Insert(0, msg);                                        
                                     }
                                     break;
-                                case 1:
+                                case 1: // auction is ending soon
                                         msg.Text = "Auktion: "      + messageT.MessageText
                                                                     + " endet bald, dies ist die "
                                                                     + messageT.MessageIntValue.ToString()
@@ -146,7 +156,7 @@ namespace MyBayWSPhoneCln
 
                                         stackPanelMessages.Children.Insert(0,msg);
                                     break;
-                                case 2:
+                                case 2: // auction finished
                                     msg.Inlines.Add("Auktion beendet. Käufer: "
                                    + messageT.MessageText
                                    + " Preis: "
@@ -173,22 +183,29 @@ namespace MyBayWSPhoneCln
             }
             finally
             {
-                // Event im Eventhandler abmelden
+                // remove this method from the eventhandler of getMessageCompleted event
                 App.MyDataObject.RemoteSrvMyBay.getMessageCompleted -= myBaySvc_getMessages_completed;
 
-                // Client is not asking for new Messages as long as the old messages didnt arrive
+                // Client is not asking for new Messages as long as the old messages didnt arrive (synchronization)
                 messagesProceeded = true;
             }
         }
 
 
         #region GETAUCTIONS
+        /// <summary>
+        /// Method handles the click event of the btn_getAuctions button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btn_getAuctions_Click(object sender, RoutedEventArgs e)
         {
             try
             {
                 UInt32 flags = 0;
 
+                // Set the flags for the request for auctions at the server 
+                // depening on which radio button is checked
                 if ((bool)radioBtn_interested.IsChecked)
                 {
                     flags = 0;
@@ -216,12 +233,21 @@ namespace MyBayWSPhoneCln
             }
         }
 
+        /// <summary>
+        /// Callback function of Async method getAuctions event (response from the webserver)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private void myBaySvc_getAuctions_completed(object sender, getAuctionsCompletedEventArgs args)
         {
             // Handle connection error
             if (args != null) App.handleConnectionError(args);
 
+            // create reference for a list of AuctionTransfer objects which 
+            // will be passed back from the server
             List<AuctionTransfer> newListAuctions;
+
+            // Clear the stackPanel of auctions to display the new received list
             this.stackPanelAuctions.Children.Clear();
 
             try
@@ -259,6 +285,11 @@ namespace MyBayWSPhoneCln
         }
         #endregion
 
+        /// <summary>
+        /// Method handles the Tap event of AuctionListBoxItem
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void AuctionItem_Tap(object sender, System.Windows.Input.GestureEventArgs e)
         {
             int auctionIndexInStackpanel;
@@ -266,6 +297,8 @@ namespace MyBayWSPhoneCln
 
             auctionIndexInStackpanel = stackPanelAuctions.Children.IndexOf(senderItem);
 
+            // create new auctionTapElement for showing more options to interact with the auction
+            // the newTapElement is remembering the auctionTapElement which was tapped
             auctionTapElement newTapElement = new auctionTapElement(senderItem);
 
             // register all events of tapelement
@@ -274,11 +307,18 @@ namespace MyBayWSPhoneCln
             newTapElement.btn_endAuction.Click += Btn_endAuction_Click;
             newTapElement.btn_interested.Click += Btn_interested_Click;
             newTapElement.btn_details.Click += Btn_details_Click;
+
+            // replace AuctionListBoxItem in stackpanel with new auctionTapElement
             stackPanelAuctions.Children[auctionIndexInStackpanel] = newTapElement;
             
         }
 
         #region DETAILS
+        /// <summary>
+        /// Method handles the click event of the Btn_details button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Btn_details_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -312,6 +352,12 @@ namespace MyBayWSPhoneCln
                 MessageBox.Show("Unerwarteter Fehler bei Benutzung der Details Funktion", "Fehler", MessageBoxButton.OK);
             }
         }
+
+        /// <summary>
+        /// Callback function of Async method details event (response from the webserver)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private void myBaySvc_details_completed(object sender, detailsCompletedEventArgs args)
         {
             // Handle connection error
@@ -328,6 +374,8 @@ namespace MyBayWSPhoneCln
                 }
                 else
                 {
+                    // Transfer incoming bids in a new list which can be sorted again and displayed
+                    // args.allBids is readonly
                     List<BidTransfer> newListBids = new List<BidTransfer>();
                     foreach (BidTransfer item in args.allBids)
                     {
@@ -337,7 +385,7 @@ namespace MyBayWSPhoneCln
                         newItem.BidValue = item.BidValue;
                         newListBids.Add(newItem);
                     }
-
+                    
 
                     if (args.countBids == 0)
                     {
@@ -345,7 +393,10 @@ namespace MyBayWSPhoneCln
                     }
                     else
                     {
+                        // Clear the stackPanel for the auctions to display the details of an auction in the same listBox
                         this.stackPanelAuctions.Children.Clear();
+
+                        // Sort the list of bids, that they are in the right order. They are ordered by their property BidNumber
                         newListBids.Sort((a, b) => (a.BidNumber.CompareTo(b.BidNumber)));
 
                         foreach (BidTransfer item in newListBids)
@@ -377,6 +428,11 @@ namespace MyBayWSPhoneCln
         #endregion
 
         #region INTERESTED
+        /// <summary>
+        /// Method handles the click event of the Btn_interested button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Btn_interested_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -410,6 +466,12 @@ namespace MyBayWSPhoneCln
                 MessageBox.Show("Unerwarteter Fehler bei Benutzung der Auktion Folgen Funktion", "Fehler", MessageBoxButton.OK);
             }
         }
+
+        /// <summary>
+        /// Callback function of Async method interested event (response from the webserver)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private void myBaySvc_interested_completed(object sender, interestedCompletedEventArgs args)
         {
             // Handle connection error
@@ -442,6 +504,11 @@ namespace MyBayWSPhoneCln
         #endregion
 
         #region ENDAUCTION
+        /// <summary>
+        /// Method handles the click event of the Btn_endAuction button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Btn_endAuction_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -475,6 +542,12 @@ namespace MyBayWSPhoneCln
                 MessageBox.Show("Unerwarteter Fehler bei Benutzung der Auktion Beenden Funktion", "Fehler", MessageBoxButton.OK);
             }
         }
+
+        /// <summary>
+        /// Callback function of Async method endauction event (response from the webserver)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private void myBaySvc_endauction_completed(object sender, endauctionCompletedEventArgs args)
         {
             // Handle connection error
@@ -507,6 +580,11 @@ namespace MyBayWSPhoneCln
         #endregion
 
         #region BID
+        /// <summary>
+        /// Method handles the click event of the Btn_bid button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Btn_bid_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -523,8 +601,10 @@ namespace MyBayWSPhoneCln
                 {
                     if (current.GetType() == targetType)
                     {
+                        // Get auction number from AuctionListBoxItem which was creating this auctionTapElement
                         sourceTapElement = (auctionTapElement)current;
                         UInt32 auctionNumber = sourceTapElement.OldAuctionListBoxItem.auctionNumber;
+
                         Double bidValue;
                         if (!Double.TryParse(sourceTapElement.txtBox_bid.Text,NumberStyles.Any,new CultureInfo("en-US"), out bidValue))
                         {
@@ -552,6 +632,12 @@ namespace MyBayWSPhoneCln
                 MessageBox.Show("Unerwarteter Fehler bei Benutzung der Bieten Funktion", "Fehler", MessageBoxButton.OK);
             }
         }
+
+        /// <summary>
+        /// Callback function of Async method bid event (response from the webserver)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private void myBaySvc_bid_completed(object sender, bidCompletedEventArgs args)
         {
             // Handle connection error
@@ -582,6 +668,12 @@ namespace MyBayWSPhoneCln
             }
         }
         #endregion
+
+        /// <summary>
+        /// Method handles the click event of the Btn_cancel button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Btn_cancel_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -591,7 +683,6 @@ namespace MyBayWSPhoneCln
                 auctionTapElement sourceTapElement;
 
                 // Walk through the visual tree of the senderbutton to find the auctionTapElement
-
                 DependencyObject current = senderButton.Parent;
                 Type targetType = typeof(auctionTapElement);
 
@@ -604,6 +695,8 @@ namespace MyBayWSPhoneCln
 
                         if (tapElementIndexInStackpanel != -1)
                         {
+                            // When cancel button is pressed, replace this auctionTapElement by the old AuctionListBoxItem 
+                            // which was originally displayed at this place in the stackPanel
                             stackPanelAuctions.Children[tapElementIndexInStackpanel] = sourceTapElement.OldAuctionListBoxItem;
                         }
                         break;

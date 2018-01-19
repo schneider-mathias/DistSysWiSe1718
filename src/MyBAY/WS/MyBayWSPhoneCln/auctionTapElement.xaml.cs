@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Windows;
+﻿/*************************************************************************/
+/*                                                                       */
+/*    Inhalt:    Background logic of auctionTapElement usercontrol       */
+/*                                                                       */
+/*                                                                       */
+/*                                                                       */
+/*    Autor(en): Manuel Schlemelch                                       */
+/*    Stand:     19.01.2018                                              */
+/*                                                                       */
+/*************************************************************************/
+
 using System.Windows.Controls;
-using System.Windows.Navigation;
-using Microsoft.Phone.Controls;
-using Microsoft.Phone.Shell;
 
 namespace MyBayWSPhoneCln
 {
@@ -14,6 +17,10 @@ namespace MyBayWSPhoneCln
     {
         private AuctionListBoxItem oldAuctionListBoxItem;
 
+        /// <summary>
+        /// auctionTapElement stores AuctionListBoxItem which was creating this 
+        /// auctionTapElement in its Tap eventhandler
+        /// </summary>
         public AuctionListBoxItem OldAuctionListBoxItem
         {
             get {
@@ -21,7 +28,10 @@ namespace MyBayWSPhoneCln
             }
         }
 
-
+        /// <summary>
+        /// Constructor of class auctionTapElement
+        /// </summary>
+        /// <param name="sourceItem"></param>
         public auctionTapElement(AuctionListBoxItem sourceItem)
         {
             this.oldAuctionListBoxItem = sourceItem;

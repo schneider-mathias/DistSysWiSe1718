@@ -1,9 +1,17 @@
-﻿using MyBayWSPhoneCln.MyBayWSSrvASMXSoapService;
+﻿/*************************************************************************/
+/*                                                                       */
+/*    Inhalt:    Dataobject for exchanging data between the different    */
+/*               phone pages                                             */
+/*                                                                       */
+/*                                                                       */
+/*                                                                       */
+/*    Autor(en): Manuel Schlemelch                                       */
+/*    Stand:     19.01.2018                                              */
+/*                                                                       */
+/*************************************************************************/
+
+using MyBayWSPhoneCln.MyBayWSSrvASMXSoapService;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MyBayWSPhoneCln
 {

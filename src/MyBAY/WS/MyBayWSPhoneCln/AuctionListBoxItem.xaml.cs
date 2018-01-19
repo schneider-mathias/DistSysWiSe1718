@@ -1,18 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿/*************************************************************************/
+/*                                                                       */
+/*    Inhalt:    Background logic of AuctionListBoxItem user control     */
+/*                                                                       */
+/*                                                                       */
+/*                                                                       */
+/*    Autor(en): Manuel Schlemelch                                       */
+/*    Stand:     19.01.2018                                              */
+/*                                                                       */
+/*************************************************************************/
+
+using System;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace MyBayWSPhoneCln
 {
@@ -22,6 +22,15 @@ namespace MyBayWSPhoneCln
     public partial class AuctionListBoxItem : UserControl
     {
         public UInt32 auctionNumber;
+
+        /// <summary>
+        /// Constructor of AuctionListBoxItem is setting all its properties and filling the labels content
+        /// </summary>
+        /// <param name="auctionName"></param>
+        /// <param name="auctionNumber"></param>
+        /// <param name="highestBid"></param>
+        /// <param name="countBids"></param>
+        /// <param name="auctionState"></param>
         public AuctionListBoxItem(string auctionName, UInt32 auctionNumber, Double highestBid, UInt32 countBids, UInt32 auctionState)
         {
             InitializeComponent();

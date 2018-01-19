@@ -79,6 +79,7 @@ namespace MyBayWCFCln
         /// <param name="e"></param>
         private void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)
         {
+            // Not logged in
             if (sessionID == 0) return;
 
             this.getMessageTimer.Interval = 1500;
@@ -197,7 +198,7 @@ namespace MyBayWCFCln
                     if (messageAvailable)
                     {
                         this.getMessageTimer.Interval = 10;
-                    }                
+                    }
 #if COM
             }
 #else
@@ -209,9 +210,9 @@ namespace MyBayWCFCln
                 // If something went wrong with getting the messages from the server, disable the polling for messages
                 this.getMessageTimer.Stop();
 #if COM
-                MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
+                MessageBox.Show("Fehler bei der Verbindung zum Server, der Client wird geschlossen", "Warnung", MessageBoxButton.OK);
 #else
-                MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
+                MessageBox.Show("Fehler bei der Verbindung zum Server, der Client wird geschlossen", "Warnung", MessageBoxButton.OK);
 #endif
             }
             

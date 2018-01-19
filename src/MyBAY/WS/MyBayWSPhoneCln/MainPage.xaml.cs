@@ -1,14 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+﻿/*************************************************************************/
+/*                                                                       */
+/*    Inhalt:    Background logic of the MainPage                        */
+/*               of WP8 Client                                           */
+/*                                                                       */
+/*                                                                       */
+/*    Autor(en): Manuel Schlemelch                                       */
+/*    Stand:     19.01.2018                                              */
+/*                                                                       */
+/*************************************************************************/
+
+using System;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
-using Microsoft.Phone.Shell;
-using MyBayWSPhoneCln.Resources;
-using PortForwardLib;
 using MyBayWSPhoneCln.MyBayWSSrvASMXSoapService;
 
 namespace MyBayWSPhoneCln
@@ -90,6 +93,8 @@ namespace MyBayWSPhoneCln
 
                 else
                 {
+                    // If logout successful, change SessionID to 0
+                    // and change content of login-Button back to Login
                     App.MyDataObject.SessionID = 0;
                     this.btn_login.Content = "Login";
 
