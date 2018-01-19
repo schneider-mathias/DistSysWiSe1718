@@ -7,7 +7,7 @@
 //			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
 //
 //			Date		Developer			Change
-//			13.01.2018	Mathias Schneider	Created
+//			28.12.2017	Mathias Schneider	Created
  *-----------------------------------------------------------------------------------------------**/
 
 #include "MyCasino_i_c.c"

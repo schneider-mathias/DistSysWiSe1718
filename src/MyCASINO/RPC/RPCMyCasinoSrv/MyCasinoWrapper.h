@@ -14,6 +14,7 @@ MyCasino* getCasino()
 	if (NULL == myCasino)
 	{
 		myCasino = new MyCasino(&std::wstring(L"SystemDrive"));
+		// batch file copies data files before opening the solution
 		myCasino->LoadAccounts(L"\\_MyCasinoData\\mycasino_account.txt");
 	}
 

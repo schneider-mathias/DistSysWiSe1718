@@ -2,12 +2,13 @@
 // project:	COMMyCasinoSrv
 // file:	COMMyCasino.cpp
 //
-// summary:	Implements the COM MyCasino class 
+// summary:	Implements the COM MyCasino class interfaces
 //
 //			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
 //
 //			Date		Developer			Change
-//			1/13/2018	Mathias Schneider	Created
+//			19.12.2017	Mathias Schneider	Created
+//			XXXXXXXXXX	Mathias Schneider	Changed
  *-----------------------------------------------------------------------------------------------**/
 
 #include "stdafx.h"
@@ -41,6 +42,7 @@ CAuthServiceTemplate<MyCasinoUser>& getAuthService()
 	if (pAuthServiceInstance == NULL)
 	{
 		pAuthServiceInstance = new CAuthServiceTemplate<MyCasinoUser>(&std::wstring(L"SystemDrive"));
+		// batch file copies data files before opening the solution
 		pAuthServiceInstance->readRegisteredUser(L"\\_MyCasinoData\\mycasino_user.txt");
 	}
 
@@ -58,6 +60,7 @@ MyCasino& getCasino()
 	if (pCasinoInstance == NULL)
 	{
 		pCasinoInstance = new MyCasino(&std::wstring(L"SystemDrive"));
+		// batch file copies data files before opening the solution
 		pCasinoInstance->LoadAccounts(L"\\_MyCasinoData\\mycasino_account.txt");
 	}
 
@@ -89,12 +92,14 @@ STDMETHODIMP CCOMMyCasino::login(BSTR username, BSTR password, ULONG* sessionId,
 {
 	std::wstring errCode;
 
+	// login via AuthService
 	if (!getAuthService().login(bstr_to_wstr(username), bstr_to_wstr(password), sessionId))
 	{
 		*errMsg = wstr_to_bstr(TRANSLATE_MYCASINO_ERRORCODE(errCode, E_MY_CASINO_ACCESS_DENIED));
 		return E_MY_CASINO_ACCESS_DENIED;
 	}
 	
+	// get user object
 	MyCasinoUser* user = NULL;
 	if (!getAuthService().isLoggedIn(*sessionId, &user))
 	{
@@ -102,6 +107,7 @@ STDMETHODIMP CCOMMyCasino::login(BSTR username, BSTR password, ULONG* sessionId,
 		return E_MY_CASINO_INTERNAL_AUTH_SERVICE_ERROR;
 	}
 
+	// check if user is operator and open casino
 	*userType = user->GetUserType();
 	if (*userType == MyCasinoUserTypes::Operator)
 	{
@@ -113,6 +119,7 @@ STDMETHODIMP CCOMMyCasino::login(BSTR username, BSTR password, ULONG* sessionId,
 		}
 	}
 	
+	// add information if operator is logged in
 	BOOL resVal = S_OK;
 	if (!getCasino().IsOpened())
 	{
@@ -137,6 +144,7 @@ STDMETHODIMP CCOMMyCasino::logout(ULONG sessionId, BSTR* errMsg)
 {
 	std::wstring errCode;
 
+	// check if session id is valid
 	MyCasinoUser* user = NULL;;
 	if (!getAuthService().isLoggedIn(sessionId, &user))
 	{
@@ -173,6 +181,7 @@ STDMETHODIMP CCOMMyCasino::logout(ULONG sessionId, BSTR* errMsg)
 		return E_MY_CASINO_INTERNAL_LOGOUT_ERROR;
 	}
 
+	// add information if operator is logged in
 	BOOL resVal = S_OK;
 	if (!getCasino().IsOpened())
 	{
@@ -190,7 +199,7 @@ STDMETHODIMP CCOMMyCasino::logout(ULONG sessionId, BSTR* errMsg)
  *
  * <param name="sessionId">  	Identifier for the session. </param>
  * <param name="name">		 	The name of the user for which a deposit should be exectued.
- * 								 </param>
+ * 								</param>
  * <param name="amountMoney">	The amount of money. </param>
  * <param name="errMsg">	 	[in,out] If non-null, message describing the error. </param>
  *
@@ -201,6 +210,7 @@ STDMETHODIMP CCOMMyCasino::deposit(ULONG sessionId, BSTR name, DOUBLE amountMone
 {
 	std::wstring errCode;
 
+	// check if session id is valid
 	MyCasinoUser* user = NULL;
 	if (!getAuthService().isLoggedIn(sessionId, &user))
 	{
@@ -208,6 +218,7 @@ STDMETHODIMP CCOMMyCasino::deposit(ULONG sessionId, BSTR name, DOUBLE amountMone
 		return E_MY_CASINO_USER_NOT_LOGGED_IN;
 	}
 
+	// check if user is operator
 	if (!getCasino().IsOperator(*user))
 	{
 		*errMsg = wstr_to_bstr(TRANSLATE_MYCASINO_ERRORCODE(errCode, E_MY_CASINO_USER_PERMISSION_DENIED));
@@ -225,6 +236,7 @@ STDMETHODIMP CCOMMyCasino::deposit(ULONG sessionId, BSTR name, DOUBLE amountMone
 		return E_MY_CASINO_USER_FOR_DEPOSIT_NOT_LOGGED_IN;
 	}
 
+	// perform deposit
 	BOOL resVal = getCasino().Deposit(*userForDeposit, amountMoney);
 	if(FAILED(resVal))
 	{
@@ -254,6 +266,7 @@ STDMETHODIMP CCOMMyCasino::bet(ULONG sessionId, DOUBLE amountMoney, SHORT firstN
 {
 	std::wstring errCode;
 
+	// check if session id is valid
 	MyCasinoUser* user = NULL;;
 	if (!getAuthService().isLoggedIn(sessionId, &user))
 	{
@@ -261,12 +274,14 @@ STDMETHODIMP CCOMMyCasino::bet(ULONG sessionId, DOUBLE amountMoney, SHORT firstN
 		return E_MY_CASINO_USER_NOT_LOGGED_IN;
 	}
 
+	// check if casino is opened
 	if (!getCasino().IsOpened())
 	{
 		*errMsg = wstr_to_bstr(TRANSLATE_MYCASINO_ERRORCODE(errCode, E_MY_CASINO_NO_OPERATOR));
 		return E_MY_CASINO_NO_OPERATOR;
 	}
 
+	// check if casino is not operator type
 	if (user->GetUserType() == MyCasinoUserTypes::Operator)
 	{
 		*errMsg = wstr_to_bstr(TRANSLATE_MYCASINO_ERRORCODE(errCode, E_MY_CASINO_USER_PERMISSION_DENIED));
@@ -303,6 +318,7 @@ STDMETHODIMP CCOMMyCasino::calculateProfit(ULONG sessionId, DOUBLE amountMoney, 
 {
 	std::wstring errCode;
 
+	// check if session id is valid
 	MyCasinoUser* user = NULL;
 	if (!getAuthService().isLoggedIn(sessionId, &user))
 	{
@@ -333,6 +349,7 @@ STDMETHODIMP CCOMMyCasino::showbets(ULONG sessionId, SAFEARR_VAR* bets, ULONG* c
 {
 	std::wstring errCode;
 
+	// check if session id is valid
 	MyCasinoUser* user = NULL;
 	if (!getAuthService().isLoggedIn(sessionId, &user))
 	{
@@ -340,7 +357,7 @@ STDMETHODIMP CCOMMyCasino::showbets(ULONG sessionId, SAFEARR_VAR* bets, ULONG* c
 		return E_MY_CASINO_USER_NOT_LOGGED_IN;
 	}
 
-
+	// create a snapshot of all current bets
 	std::vector<MyCasinoBet*> betsSnapshot = getCasino().GetBets();
 	CComSafeArray<VARIANT> betsSafeArray(betsSnapshot.size() * BET_DETAILS_PROPTERY_COUNT);
 
@@ -357,7 +374,7 @@ STDMETHODIMP CCOMMyCasino::showbets(ULONG sessionId, SAFEARR_VAR* bets, ULONG* c
 	betsSafeArray.CopyTo(bets);
 	*count = betsSnapshot.size();
 
-
+	// add information if operator is logged in
 	BOOL resVal = S_OK;
 	if (!getCasino().IsOpened())
 	{
@@ -386,6 +403,7 @@ STDMETHODIMP CCOMMyCasino::drawTest(ULONG sessionId, SHORT firstNumberTest, SHOR
 {
 	std::wstring errCode;
 
+	// check if session id is valid
 	MyCasinoUser* user = NULL;
 	if (!getAuthService().isLoggedIn(sessionId, &user))
 	{
@@ -393,6 +411,7 @@ STDMETHODIMP CCOMMyCasino::drawTest(ULONG sessionId, SHORT firstNumberTest, SHOR
 		return E_MY_CASINO_USER_NOT_LOGGED_IN;
 	}
 
+	// check if user is operator
 	if (!getCasino().IsOperator(*user))
 	{
 		*errMsg = wstr_to_bstr(TRANSLATE_MYCASINO_ERRORCODE(errCode, E_MY_CASINO_USER_PERMISSION_DENIED));
@@ -402,6 +421,7 @@ STDMETHODIMP CCOMMyCasino::drawTest(ULONG sessionId, SHORT firstNumberTest, SHOR
 	short *drawnFirstNumber = new short(firstNumberTest);
 	short *drawnSecondNumber = new short(secondNumberTest);
 
+	// draw fake numbers
 	BOOL resVal = getCasino().Draw(&drawnFirstNumber, &drawnSecondNumber);
 	if (FAILED(resVal))
 	{
@@ -431,6 +451,7 @@ STDMETHODIMP CCOMMyCasino::draw(ULONG sessionId, SHORT* firstNumber, SHORT* seco
 {
 	std::wstring errCode;
 
+	// check if session id is valid
 	MyCasinoUser* user = NULL;
 	if (!getAuthService().isLoggedIn(sessionId, &user))
 	{
@@ -438,6 +459,7 @@ STDMETHODIMP CCOMMyCasino::draw(ULONG sessionId, SHORT* firstNumber, SHORT* seco
 		return E_MY_CASINO_USER_NOT_LOGGED_IN;
 	}
 
+	// check if user is operator
 	if (!getCasino().IsOperator(*user))
 	{
 		*errMsg = wstr_to_bstr(TRANSLATE_MYCASINO_ERRORCODE(errCode, E_MY_CASINO_USER_PERMISSION_DENIED));
@@ -448,6 +470,7 @@ STDMETHODIMP CCOMMyCasino::draw(ULONG sessionId, SHORT* firstNumber, SHORT* seco
 	short *drawnFirstNumber = NULL;
 	short *drawnSecondNumber = NULL;
 
+	// draw numbers
 	BOOL resVal = getCasino().Draw(&drawnFirstNumber, &drawnSecondNumber);
 	if (FAILED(resVal))
 	{
@@ -482,6 +505,7 @@ STDMETHODIMP CCOMMyCasino::getTransactions(ULONG sessionId, BOOL* isFinished, SA
 {
 	std::wstring errCode;
 
+	// check if session id is valid
 	MyCasinoUser* user = NULL;
 	if (!getAuthService().isLoggedIn(sessionId, &user))
 	{
@@ -489,6 +513,7 @@ STDMETHODIMP CCOMMyCasino::getTransactions(ULONG sessionId, BOOL* isFinished, SA
 		return E_MY_CASINO_USER_NOT_LOGGED_IN;
 	}
 
+	// get next transaction
 	MyCasinoTransaction* nextTransaction = NULL;
 	*isFinished = getCasino().GetNextTransaction(*user, &nextTransaction);
 	
@@ -505,6 +530,7 @@ STDMETHODIMP CCOMMyCasino::getTransactions(ULONG sessionId, BOOL* isFinished, SA
 
 	transactionSafeArray.CopyTo(transaction);
 
+	// add information if operator is logged in
 	BOOL resVal = S_OK;
 	if (!getCasino().IsOpened())
 	{
@@ -533,6 +559,7 @@ STDMETHODIMP CCOMMyCasino::getTransactionInformation(ULONG sessionId, ULONG tran
 {
 	std::wstring errCode;
 
+	// check if session id is valid
 	MyCasinoUser* user = NULL;
 	if (!getAuthService().isLoggedIn(sessionId, &user))
 	{
@@ -540,6 +567,7 @@ STDMETHODIMP CCOMMyCasino::getTransactionInformation(ULONG sessionId, ULONG tran
 		return E_MY_CASINO_USER_NOT_LOGGED_IN;
 	}
 
+	// get transaction information for corresponding transaction
 	IMyCasinoTransactionInformation *currentDetails = NULL;
 	MyCasinoTransactionsInformationTypes detailType;
 	if(!getCasino().GetTransactionInfomation(*user, transactionId, &currentDetails,&detailType))
@@ -562,6 +590,7 @@ STDMETHODIMP CCOMMyCasino::getTransactionInformation(ULONG sessionId, ULONG tran
 	transactionInformationSafeArray->CopyTo(information);
 	delete transactionInformationSafeArray;
 
+	// add information if operator is logged in
 	BOOL resVal = S_OK;
 	if (!getCasino().IsOpened())
 	{

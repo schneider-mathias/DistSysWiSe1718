@@ -42,8 +42,6 @@ bool toJson(std::vector<TaggedUnion>& currentInformation, Json::Value** resJson)
 	int jsonArrValue = 0;
 	for (std::vector<TaggedUnion>::iterator it = currentInformation.begin(); it != currentInformation.end(); ++it)
 	{
-		//const char *arrayPos = std::to_string(jsonArrValue).c_str();
-
 		switch ((*it).getType())
 		{
 		case TaggedUnion::Type::Boolean:
@@ -76,11 +74,14 @@ bool toJson(std::vector<TaggedUnion>& currentInformation, Json::Value** resJson)
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Login. </summary>
+ * <summary>	Login to MyCasino using a username and password. Returns a session id and
+ * 				usertype. The session id is required  in order to call other COM instance
+ * 				interfaces.
+ * </summary>
  *
+ * <param name="username"> 	The username for authentifictation </param>
+ * <param name="password"> 	The password for authentifictation </param>
  * <param name="sessionId">	[in,out] If non-null, identifier for the session. </param>
- * <param name="username"> 	[in,out] If non-null, the username. </param>
- * <param name="password"> 	[in,out] If non-null, the password. </param>
  * <param name="userType"> 	[in,out] If non-null, type of the user. </param>
  *
  * <returns>	An error_status_t. </returns>
@@ -88,14 +89,16 @@ bool toJson(std::vector<TaggedUnion>& currentInformation, Json::Value** resJson)
 
 error_status_t login(unsigned long*  sessionId, unsigned char *username, unsigned char *password, short* userType)
 {
-
+	// login via AuthService
 	if (!getAuthService()->login(char_to_wstring((char*)username), char_to_wstring((char*)password), sessionId))
 		return E_MY_CASINO_ACCESS_DENIED;
 
+	// get user object
 	MyCasinoUser* user = NULL;
 	if (!getAuthService()->isLoggedIn(*sessionId, &user))
 		return E_MY_CASINO_INTERNAL_AUTH_SERVICE_ERROR;
 
+	// check if user is operator and open casino
 	*userType = user->GetUserType();
 	if (*userType == MyCasinoUserTypes::Operator)
 	{
@@ -103,14 +106,8 @@ error_status_t login(unsigned long*  sessionId, unsigned char *username, unsigne
 		if (FAILED(retVal))
 			return retVal;
 	}
-	// close all open bets
-	else if (user->GetUserType() == MyCasinoUserTypes::Gamer)
-	{
-		BOOL retVal = getCasino()->CloseBets(*user);
-		if (FAILED(retVal))
-			return retVal;
-	}
 
+	// check if an operator is logged in
 	BOOL resVal = RPC_S_OK;
 	if (!getCasino()->IsOpened())
 		resVal = S_MY_CASINO_NO_OPERATOR_LOGGED_IN;
@@ -119,7 +116,7 @@ error_status_t login(unsigned long*  sessionId, unsigned char *username, unsigne
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Logout. </summary>
+ * <summary>	Logout for a user. Afterwards session id is not valid anymore. </summary>
  *
  * <param name="sessionId">	Identifier for the session. </param>
  *
@@ -128,6 +125,7 @@ error_status_t login(unsigned long*  sessionId, unsigned char *username, unsigne
 
 error_status_t logout(unsigned long sessionId)
 {
+	// check if session id is valid
 	MyCasinoUser* user = NULL;
 	if (!getAuthService()->isLoggedIn(sessionId, &user))
 		return E_MY_CASINO_USER_NOT_LOGGED_IN;
@@ -140,10 +138,19 @@ error_status_t logout(unsigned long sessionId)
 
 		getCasino()->Close();
 	}
+	// close all open bets
+	else if (user->GetUserType() == MyCasinoUserTypes::Gamer)
+	{
+		BOOL retVal = getCasino()->CloseBets(*user);
+		if (FAILED(retVal))
+			return retVal;
+	}
 
+	// log out user
 	if (!getAuthService()->logout(sessionId))
 		return E_MY_CASINO_USER_LOGOUT_FAILED;
 
+	// check if an operator is logged in
 	BOOL resVal = S_OK;
 	if (!getCasino()->IsOpened())
 		resVal = S_MY_CASINO_NO_OPERATOR_LOGGED_IN;
@@ -152,21 +159,25 @@ error_status_t logout(unsigned long sessionId)
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Deposits. </summary>
+ * <summary>	Deposits a certain amount of money for a logged in user. This method is only
+ * 				allowed to be called by the operator. </summary>
  *
  * <param name="sessionId">  	Identifier for the session. </param>
- * <param name="name">		 	[in,out] If non-null, the name. </param>
- * <param name="amountMoney">	The amount money. </param>
+ * <param name="name">		 	The name of the user for which a deposit should be exectued.
+ * 								</param>
+ * <param name="amountMoney">	The amount of money. </param>
  *
  * <returns>	An error_status_t. </returns>
  *-----------------------------------------------------------------------------------------------**/
 
 error_status_t deposit(unsigned long sessionId, unsigned char *name, double amountMoney)
 {
+	// check if session id is valid
 	MyCasinoUser* user = NULL;
 	if (!getAuthService()->isLoggedIn(sessionId, &user))
 		return E_MY_CASINO_USER_NOT_LOGGED_IN;
 
+	// check if user is operator
 	if (!getCasino()->IsOperator(*user))
 		return E_MY_CASINO_USER_PERMISSION_DENIED;
 
@@ -186,18 +197,22 @@ error_status_t deposit(unsigned long sessionId, unsigned char *name, double amou
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Bets. </summary>
+ * <summary>	Create a bet on two numbers with certain amount of money.
+ * 				Numbers have to be valid and amount of money must not exceed
+ * 				operator's and gamer's account balance. Furthermore only
+ * 				one user can bet on two same pair of number at a time. </summary>
  *
  * <param name="sessionId">   	Identifier for the session. </param>
- * <param name="amountMoney"> 	The amount money. </param>
- * <param name="firstNumber"> 	The first number. </param>
- * <param name="secondNumber">	The second number. </param>
+ * <param name="amountMoney"> 	The amount money for this bet. </param>
+ * <param name="firstNumber"> 	The first number to bet on. </param>
+ * <param name="secondNumber">	The second number to bet on. </param>
  *
  * <returns>	An error_status_t. </returns>
  *-----------------------------------------------------------------------------------------------**/
 
 error_status_t bet(unsigned long sessionId, double amountMoney, short firstNumber, short secondNumber)
 {
+	// check if session id is valid
 	MyCasinoUser* user = NULL;
 	if (!getAuthService()->isLoggedIn(sessionId, &user))
 		return E_MY_CASINO_USER_NOT_LOGGED_IN;
@@ -205,6 +220,7 @@ error_status_t bet(unsigned long sessionId, double amountMoney, short firstNumbe
 	if (!getCasino()->IsOpened())
 		return E_MY_CASINO_NO_OPERATOR;
 
+	// check if user is not operator
 	if (user->GetUserType() == MyCasinoUserTypes::Operator)
 		return E_MY_CASINO_USER_PERMISSION_DENIED;
 
@@ -217,7 +233,7 @@ error_status_t bet(unsigned long sessionId, double amountMoney, short firstNumbe
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Calculates the profit. </summary>
+ * <summary>	Calculates the profit for two numbers and a amount of money. </summary>
  *
  * <param name="sessionId">			 	Identifier for the session. </param>
  * <param name="amountMoney">		 	The amount money. </param>
@@ -232,6 +248,7 @@ error_status_t bet(unsigned long sessionId, double amountMoney, short firstNumbe
 
 error_status_t calculateProfit(unsigned long sessionId, double amountMoney, short firstNumber, short secondNumber, double* profitForOneMatch, double* profitForTwoMatches)
 {
+	// check if session id is valid
 	MyCasinoUser* user = NULL;
 	if (!getAuthService()->isLoggedIn(sessionId, &user))
 		return E_MY_CASINO_USER_NOT_LOGGED_IN;
@@ -244,17 +261,19 @@ error_status_t calculateProfit(unsigned long sessionId, double amountMoney, shor
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Showbets. </summary>
+ * <summary>	Return all bets that are currently placed including information
+ * 				about gamer name, first and second number and amount of money.</summary>
  *
  * <param name="sessionId">	Identifier for the session. </param>
  * <param name="bets">	   	[in,out] If non-null, the bets. </param>
- * <param name="count">	   	[in,out] If non-null, number of. </param>
+ * <param name="count">	   	[in,out] If non-null, number of bets. </param>
  *
  * <returns>	An error_status_t. </returns>
  *-----------------------------------------------------------------------------------------------**/
 
 error_status_t showbets(unsigned long sessionId, MyCasinoBet_t** bets, unsigned long* count)
 {
+	// check if session id is valid
 	MyCasinoUser* user = NULL;
 	if (!getAuthService()->isLoggedIn(sessionId, &user))
 		return E_MY_CASINO_USER_NOT_LOGGED_IN;
@@ -282,6 +301,7 @@ error_status_t showbets(unsigned long sessionId, MyCasinoBet_t** bets, unsigned 
 		strcpy((char*)(*bets)[i].name.str, (char*)wstring_to_string(betsSnapshot.at(i)->GetUsername()).c_str());
 	}
 
+	// check if an operator is logged in
 	BOOL resVal = S_OK;
 	if (!getCasino()->IsOpened())
 		resVal = S_MY_CASINO_NO_OPERATOR_LOGGED_IN;
@@ -291,21 +311,24 @@ error_status_t showbets(unsigned long sessionId, MyCasinoBet_t** bets, unsigned 
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	result numbers equal input. </summary>
+ * <summary>	(For testing) Draws the two specified numbers and calculates results
+ * 				(rewards). This method is only allowed to be called by the operator. </summary>
  *
  * <param name="sessionId">		  	Identifier for the session. </param>
- * <param name="firstNumberTest"> 	The first number test. </param>
- * <param name="secondNumberTest">	The second number test. </param>
+ * <param name="firstNumberTest"> 	The first number for drawing test. </param>
+ * <param name="secondNumberTest">	The second number for drawing test. </param>
  *
  * <returns>	An error_status_t. </returns>
  *-----------------------------------------------------------------------------------------------**/
 
 error_status_t drawTest(unsigned long sessionId, short firstNumberTest, short secondNumberTest)
 {
+	// check if session id is valid
 	MyCasinoUser* user = NULL;
 	if (!getAuthService()->isLoggedIn(sessionId, &user))
 		return E_MY_CASINO_USER_NOT_LOGGED_IN;
 
+	// check if user is operator
 	if (!getCasino()->IsOperator(*user))
 		return E_MY_CASINO_USER_PERMISSION_DENIED;
 
@@ -323,7 +346,8 @@ error_status_t drawTest(unsigned long sessionId, short firstNumberTest, short se
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Draws. </summary>
+ * <summary>	Draws two random numbers, calculates results (rewards) and return these number.
+ * 				This method is only allowed to be called by the operator.</summary>
  *
  * <param name="sessionId">   	Identifier for the session. </param>
  * <param name="firstNumber"> 	[in,out] If non-null, the first number. </param>
@@ -336,10 +360,12 @@ error_status_t draw(unsigned long sessionId, short* firstNumber, short* secondNu
 {
 	std::wstring errCode;
 
+	// check if session id is valid
 	MyCasinoUser* user = NULL;
 	if (!getAuthService()->isLoggedIn(sessionId, &user))
 		return E_MY_CASINO_USER_NOT_LOGGED_IN;
 
+	// check if user is operator
 	if (!getCasino()->IsOperator(*user))
 		return E_MY_CASINO_USER_PERMISSION_DENIED;
 
@@ -360,10 +386,12 @@ error_status_t draw(unsigned long sessionId, short* firstNumber, short* secondNu
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Gets the transactions. </summary>
+ * <summary>	Gets next account transaction of a user including deposits and bet results.
+ * 				IsFinished return value indicates when all transactions were sent to client.
+ * 				</summary>
  *
  * <param name="sessionId">		 	Identifier for the session. </param>
- * <param name="isFinished">	 	[in,out] If non-null, true if this object is finished. </param>
+ * <param name="isFinished">	 	[in,out] If non-null, true if all transactions were sent. </param>
  * <param name="transaction">	 	[in,out] If non-null, the transaction. </param>
  * <param name="transactionType">	[in,out] If non-null, type of the transaction. </param>
  *
@@ -372,7 +400,7 @@ error_status_t draw(unsigned long sessionId, short* firstNumber, short* secondNu
 
 error_status_t getTransactions(unsigned long sessionId, boolean* isFinished, MyCasinoTransaction_t* transaction, unsigned long* transactionType)
 {
-
+	// check if session id is valid
 	MyCasinoUser* user = NULL;
 	if (!getAuthService()->isLoggedIn(sessionId, &user))
 		return E_MY_CASINO_USER_NOT_LOGGED_IN;
@@ -389,6 +417,7 @@ error_status_t getTransactions(unsigned long sessionId, boolean* isFinished, MyC
 		*transactionType = nextTransaction->GetTransactionType();
 	}
 
+	// check if an operator is logged in
 	BOOL resVal = RPC_S_OK;
 	if (!getCasino()->IsOpened())
 		resVal = S_MY_CASINO_NO_OPERATOR_LOGGED_IN;
@@ -397,11 +426,12 @@ error_status_t getTransactions(unsigned long sessionId, boolean* isFinished, MyC
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Gets transaction information. </summary>
+ * <summary>	Gets transaction information for given transaction id. </summary>
  *
  * <param name="sessionId">		 	Identifier for the session. </param>
  * <param name="transactionId">  	Identifier for the transaction. </param>
- * <param name="information">	 	[in,out] If non-null, the information. </param>
+ * <param name="information">	 	[in,out] If non-null, the information serialized 
+ * 									as a JSON string. </param>
  * <param name="informationType">	[in,out] If non-null, type of the information. </param>
  *
  * <returns>	The transaction information. </returns>
@@ -411,6 +441,7 @@ error_status_t getTransactionInformation(unsigned long sessionId, unsigned long 
 {
 	std::wstring errCode;
 
+	// check if session id is valid
 	MyCasinoUser* user = NULL;
 	if (!getAuthService()->isLoggedIn(sessionId, &user))
 		return E_MY_CASINO_USER_NOT_LOGGED_IN;
@@ -442,6 +473,7 @@ error_status_t getTransactionInformation(unsigned long sessionId, unsigned long 
 
 	*informationType = detailType;
 
+	// check if an operator is logged in
 	BOOL resVal = RPC_S_OK;
 	if (!getCasino()->IsOpened())
 		resVal = S_MY_CASINO_NO_OPERATOR_LOGGED_IN;

@@ -27,6 +27,7 @@ CAuthServiceTemplate<MyCasinoUser>* getAuthService()
 	if (NULL == authService)
 	{
 		authService = new CAuthServiceTemplate<MyCasinoUser>(&std::wstring(L"SystemDrive"));
+		// batch file copies data files before opening the solution
 		authService->readRegisteredUser(L"\\_MyCasinoData\\mycasino_user.txt");
 	}
 

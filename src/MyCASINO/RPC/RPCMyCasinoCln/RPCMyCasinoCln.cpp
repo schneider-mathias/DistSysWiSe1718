@@ -7,7 +7,8 @@
 //			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
 //
 //			Date		Developer			Change
-//			13.01.2018	Mathias Schneider	Created
+//			28.12.2018	Mathias Schneider	Created
+//			XXXXXXXXXX	Mathias Schneider	Changed
  *-----------------------------------------------------------------------------------------------**/
 
 #include "IPValidate.h"
@@ -59,7 +60,7 @@ void main(int argc, char**argv)
 			UnBind();
 			throw;
 		}
-		//free RPC binding
+		// free RPC binding
 		UnBind();
 	}
 	catch (RpcException& e)
@@ -141,7 +142,7 @@ void Bind(char* remoteNetwAddr)
 			"RPC Runtime Error"));
 	}
 
-	//create binding handle
+	// create binding handle
 	status = RpcBindingFromStringBinding(stringBinding,
 		&hMyCasino_i);
 	if (status)
