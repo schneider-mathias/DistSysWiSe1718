@@ -1,4 +1,4 @@
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
 // project:	COMMyCasinoTestCln
 // file:	COMMyCasinoTestCln.cpp
 //
@@ -8,7 +8,7 @@
 //
 //			Date		Developer			Change
 //			13.01.2018	Mathias Schneider	Created
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 #include <windows.h>
 #include <iostream>
@@ -26,14 +26,14 @@
 #include "COMMyCasinoCommandLineInterface.h"
 #include "CmdInterpreter.h"
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Executes the command operation. </summary>
  *
  * <param name="interpreter">	[in,out] The interpreter. </param>
  * <param name="command">	 	The command. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 bool runCommand(CmdInterpreter& interpreter, std::wstring command)
 {
@@ -49,13 +49,13 @@ bool runCommand(CmdInterpreter& interpreter, std::wstring command)
 	return true;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Testcase payin different accounts. </summary>
  *
  * <param name="interpreter">	[in,out] The interpreter. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 BOOL testcase_payin_different_accounts(CmdInterpreter& interpreter)
 {
@@ -84,13 +84,13 @@ BOOL testcase_payin_different_accounts(CmdInterpreter& interpreter)
 	return S_OK;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Testcase window two numbers bets. </summary>
  *
  * <param name="interpreter">	[in,out] The interpreter. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 BOOL testcase_win_two_numbers_bets(CmdInterpreter& interpreter)
 {
@@ -124,13 +124,13 @@ BOOL testcase_win_two_numbers_bets(CmdInterpreter& interpreter)
 	return S_OK;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Testcase lose bets. </summary>
  *
  * <param name="interpreter">	[in,out] The interpreter. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 BOOL testcase_lose_bets(CmdInterpreter& interpreter)
 {
@@ -173,13 +173,13 @@ BOOL testcase_lose_bets(CmdInterpreter& interpreter)
 	return S_OK;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Testcase window lose bets. </summary>
  *
  * <param name="interpreter">	[in,out] The interpreter. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 BOOL testcase_win_lose_bets(CmdInterpreter& interpreter)
 {
@@ -222,13 +222,13 @@ BOOL testcase_win_lose_bets(CmdInterpreter& interpreter)
 	return S_OK;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Testcase delete bet. </summary>
  *
  * <param name="interpreter">	[in,out] The interpreter. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 BOOL testcase_delete_bet(CmdInterpreter& interpreter)
 {
@@ -250,13 +250,13 @@ BOOL testcase_delete_bet(CmdInterpreter& interpreter)
 	return S_OK;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Testcase change bet more wager. </summary>
  *
  * <param name="interpreter">	[in,out] The interpreter. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 BOOL testcase_change_bet_more_wager(CmdInterpreter& interpreter)
 {
@@ -299,13 +299,13 @@ BOOL testcase_change_bet_more_wager(CmdInterpreter& interpreter)
 	return S_OK;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Testcase change bet less wager. </summary>
  *
  * <param name="interpreter">	[in,out] The interpreter. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 BOOL testcase_change_bet_less_wager(CmdInterpreter& interpreter)
 {
@@ -351,13 +351,13 @@ BOOL testcase_change_bet_less_wager(CmdInterpreter& interpreter)
 	return S_OK;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Testcase close casino. </summary>
  *
  * <param name="interpreter">	[in,out] The interpreter. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 BOOL testcase_close_casino(CmdInterpreter& interpreter)
 {
@@ -397,13 +397,13 @@ BOOL testcase_close_casino(CmdInterpreter& interpreter)
 	return S_OK;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
 * <summary>	Testcase close casino. </summary>
 *
 * <param name="interpreter">	[in,out] The interpreter. </param>
 *
 * <returns>	True if it succeeds, false if it fails. </returns>
-*-----------------------------------------------------------------------------------------------**/
+*-------------------------------------------------------------------**/
 
 BOOL testcase_transaction_order_casino(CmdInterpreter& interpreter)
 {
@@ -476,14 +476,14 @@ BOOL testcase_transaction_order_casino(CmdInterpreter& interpreter)
 	return S_OK;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Main entry-point for this application. </summary>
  *
  * <param name="argc">	The number of command-line arguments provided. </param>
  * <param name="argv">	An array of command-line argument strings. </param>
  *
  * <returns>	Exit-code for the process - 0 for success, else an error code. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 int main(int argc, char**argv)
 {

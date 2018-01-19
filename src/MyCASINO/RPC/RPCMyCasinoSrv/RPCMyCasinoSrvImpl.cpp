@@ -1,4 +1,4 @@
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
 // project:	RPCMyCasinoSrv
 // file:	RPCMyCasinoSrvImpl.cpp
 //
@@ -9,7 +9,7 @@
 //			Date		Developer			Change
 //			28.12.2017	Mathias Schneider	Created
 //			XXXXXXXXXX	Mathias Schneider	Changed
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 #include "MyCasino_i.h"
 
@@ -24,14 +24,14 @@
 
 #include "json/writer.h"
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Converts this object to a JSON. </summary>
  *
  * <param name="currentInformation">	[in,out] Information describing the current. </param>
  * <param name="resJson">				[in,out] If non-null, the result JSON. </param>
  *
  * <returns>	The given data converted to a bool. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 bool toJson(std::vector<TaggedUnion>& currentInformation, Json::Value** resJson)
 {
@@ -73,7 +73,7 @@ bool toJson(std::vector<TaggedUnion>& currentInformation, Json::Value** resJson)
 	return true;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Login to MyCasino using a username and password. Returns a session id and
  * 				usertype. The session id is required  in order to call other COM instance
  * 				interfaces.
@@ -85,7 +85,7 @@ bool toJson(std::vector<TaggedUnion>& currentInformation, Json::Value** resJson)
  * <param name="userType"> 	[in,out] If non-null, type of the user. </param>
  *
  * <returns>	An error_status_t. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 error_status_t login(unsigned long*  sessionId, unsigned char *username, unsigned char *password, short* userType)
 {
@@ -115,13 +115,13 @@ error_status_t login(unsigned long*  sessionId, unsigned char *username, unsigne
 	return resVal;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Logout for a user. Afterwards session id is not valid anymore. </summary>
  *
  * <param name="sessionId">	Identifier for the session. </param>
  *
  * <returns>	An error_status_t. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 error_status_t logout(unsigned long sessionId)
 {
@@ -158,7 +158,7 @@ error_status_t logout(unsigned long sessionId)
 	return resVal;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Deposits a certain amount of money for a logged in user. This method is only
  * 				allowed to be called by the operator. </summary>
  *
@@ -168,7 +168,7 @@ error_status_t logout(unsigned long sessionId)
  * <param name="amountMoney">	The amount of money. </param>
  *
  * <returns>	An error_status_t. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 error_status_t deposit(unsigned long sessionId, unsigned char *name, double amountMoney)
 {
@@ -196,7 +196,7 @@ error_status_t deposit(unsigned long sessionId, unsigned char *name, double amou
 	return RPC_S_OK;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Create a bet on two numbers with certain amount of money.
  * 				Numbers have to be valid and amount of money must not exceed
  * 				operator's and gamer's account balance. Furthermore only
@@ -208,7 +208,7 @@ error_status_t deposit(unsigned long sessionId, unsigned char *name, double amou
  * <param name="secondNumber">	The second number to bet on. </param>
  *
  * <returns>	An error_status_t. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 error_status_t bet(unsigned long sessionId, double amountMoney, short firstNumber, short secondNumber)
 {
@@ -232,7 +232,7 @@ error_status_t bet(unsigned long sessionId, double amountMoney, short firstNumbe
 	return RPC_S_OK;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Calculates the profit for two numbers and a amount of money. </summary>
  *
  * <param name="sessionId">			 	Identifier for the session. </param>
@@ -244,7 +244,7 @@ error_status_t bet(unsigned long sessionId, double amountMoney, short firstNumbe
  * <param name="profitForTwoMatches">	[in,out] If non-null, the profit for two matches. </param>
  *
  * <returns>	The calculated profit. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 error_status_t calculateProfit(unsigned long sessionId, double amountMoney, short firstNumber, short secondNumber, double* profitForOneMatch, double* profitForTwoMatches)
 {
@@ -260,7 +260,7 @@ error_status_t calculateProfit(unsigned long sessionId, double amountMoney, shor
 	return RPC_S_OK;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Return all bets that are currently placed including information
  * 				about gamer name, first and second number and amount of money.</summary>
  *
@@ -269,7 +269,7 @@ error_status_t calculateProfit(unsigned long sessionId, double amountMoney, shor
  * <param name="count">	   	[in,out] If non-null, number of bets. </param>
  *
  * <returns>	An error_status_t. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 error_status_t showbets(unsigned long sessionId, MyCasinoBet_t** bets, unsigned long* count)
 {
@@ -310,7 +310,7 @@ error_status_t showbets(unsigned long sessionId, MyCasinoBet_t** bets, unsigned 
 	return resVal;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	(For testing) Draws the two specified numbers and calculates results
  * 				(rewards). This method is only allowed to be called by the operator. </summary>
  *
@@ -319,7 +319,7 @@ error_status_t showbets(unsigned long sessionId, MyCasinoBet_t** bets, unsigned 
  * <param name="secondNumberTest">	The second number for drawing test. </param>
  *
  * <returns>	An error_status_t. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 error_status_t drawTest(unsigned long sessionId, short firstNumberTest, short secondNumberTest)
 {
@@ -345,7 +345,7 @@ error_status_t drawTest(unsigned long sessionId, short firstNumberTest, short se
 	return RPC_S_OK;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Draws two random numbers, calculates results (rewards) and return these number.
  * 				This method is only allowed to be called by the operator.</summary>
  *
@@ -354,7 +354,7 @@ error_status_t drawTest(unsigned long sessionId, short firstNumberTest, short se
  * <param name="secondNumber">	[in,out] If non-null, the second number. </param>
  *
  * <returns>	An error_status_t. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 error_status_t draw(unsigned long sessionId, short* firstNumber, short* secondNumber)
 {
@@ -385,7 +385,7 @@ error_status_t draw(unsigned long sessionId, short* firstNumber, short* secondNu
 	return RPC_S_OK;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Gets next account transaction of a user including deposits and bet results.
  * 				IsFinished return value indicates when all transactions were sent to client.
  * 				</summary>
@@ -396,7 +396,7 @@ error_status_t draw(unsigned long sessionId, short* firstNumber, short* secondNu
  * <param name="transactionType">	[in,out] If non-null, type of the transaction. </param>
  *
  * <returns>	The transactions. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 error_status_t getTransactions(unsigned long sessionId, boolean* isFinished, MyCasinoTransaction_t* transaction, unsigned long* transactionType)
 {
@@ -425,7 +425,7 @@ error_status_t getTransactions(unsigned long sessionId, boolean* isFinished, MyC
 	return resVal;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Gets transaction information for given transaction id. </summary>
  *
  * <param name="sessionId">		 	Identifier for the session. </param>
@@ -435,7 +435,7 @@ error_status_t getTransactions(unsigned long sessionId, boolean* isFinished, MyC
  * <param name="informationType">	[in,out] If non-null, type of the information. </param>
  *
  * <returns>	The transaction information. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 error_status_t getTransactionInformation(unsigned long sessionId, unsigned long transactionId, String_t* information, unsigned long* informationType)
 {

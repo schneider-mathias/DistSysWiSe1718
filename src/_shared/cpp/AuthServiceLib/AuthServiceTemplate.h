@@ -1,4 +1,4 @@
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
 // project:	AuthServiceLib
 // file:	AuthServiceTemplate.h
 //
@@ -9,7 +9,7 @@
 //			Date		Developer			Change
 //			21.12.2017	Mathias Schneider	Created
 //			XXXXXXXXXX  Mathias Schneider	Changed
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 #pragma once
 
@@ -35,28 +35,28 @@ public:
 	// check that template type is derived from IAuthServiceUser
 	static_assert(std::is_base_of<IAuthServiceUser, TAuthServiceUser>::value, "T must inherit from IAuthServiceUser");
 
-	/**--------------------------------------------------------------------------------------------------
+	/**---------------------------------------------------------------------
 	 * <summary>	Constructor. </summary>
 	 *
 	 * <param name="userDataDirRootEnv">	[in,out] (Optional) If non-null, the user data dir root
 	 * 										environment variable. </param>
-	 *-----------------------------------------------------------------------------------------------**/
+	 *-------------------------------------------------------------------**/
 
 	CAuthServiceTemplate(std::wstring* userDataDirRootEnv = nullptr);
 	/** <summary>	Destructor. </summary> */
 	~CAuthServiceTemplate();
 
-	/**--------------------------------------------------------------------------------------------------
+	/**---------------------------------------------------------------------
 	 * <summary>	Reads registered users from given file. </summary>
 	 *
 	 * <param name="filename">	Filename of the data source. </param>
 	 *
 	 * <returns>	True if it succeeds, false if it fails. </returns>
-	 *-----------------------------------------------------------------------------------------------**/
+	 *-------------------------------------------------------------------**/
 
 	BOOL readRegisteredUser(std::wstring filename);
 
-	/**--------------------------------------------------------------------------------------------------
+	/**---------------------------------------------------------------------
 	 * <summary>	Login a user and returns a session id. Fails if user is not 
 	 * 				in user database. </summary>
 	 *
@@ -65,59 +65,59 @@ public:
 	 * <param name="sessinId">	[in,out] If non-null, identifier for the session. </param>
 	 *
 	 * <returns>	True if it succeeds, false if it fails. </returns>
-	 *-----------------------------------------------------------------------------------------------**/
+	 *-------------------------------------------------------------------**/
 
 	BOOL login(std::wstring username, std::wstring password, ULONG* sessionId);
 
-	/**--------------------------------------------------------------------------------------------------
+	/**---------------------------------------------------------------------
 	 * <summary>	Query if user with 'sessionId' is logged in. </summary>
 	 *
 	 * <param name="sessionId">	Identifier for the session. </param>
 	 * <param name="user">	   	[in,out] (Optional) If non-null, the logged in user. </param>
 	 *
 	 * <returns>	True if logged in, false if not. </returns>
-	 *-----------------------------------------------------------------------------------------------**/
+	 *-------------------------------------------------------------------**/
 
 	BOOL isLoggedIn(ULONG sessionId, TAuthServiceUser** user = nullptr);
 
-	/**--------------------------------------------------------------------------------------------------
+	/**---------------------------------------------------------------------
 	 * <summary>	Query if user with 'username' is logged in. </summary>
 	 *
 	 * <param name="username">	  	The username. </param>
 	 * <param name="newSessionId">	[in,out] If non-null, identifier for the new session. </param>
 	 *
 	 * <returns>	True if logged in, false if not. </returns>
-	 *-----------------------------------------------------------------------------------------------**/
+	 *-------------------------------------------------------------------**/
 
 	BOOL isLoggedIn(std::wstring username, ULONG* newSessionId);
 
-	/**--------------------------------------------------------------------------------------------------
+	/**---------------------------------------------------------------------
 	 * <summary>	Logout a logged in user by session id. </summary>
 	 *
 	 * <param name="sessionId">	Identifier for the session. </param>
 	 *
 	 * <returns>	True if it succeeds, false if it fails. </returns>
-	 *-----------------------------------------------------------------------------------------------**/
+	 *-------------------------------------------------------------------**/
 
 	BOOL logout(ULONG sessionId);
 
 private:
 
-	/**--------------------------------------------------------------------------------------------------
+	/**---------------------------------------------------------------------
 	 * <summary>	Check whether a session id is used. </summary>
 	 *
 	 * <param name="newSessionId">	Identifier for the new session. </param>
 	 *
 	 * <returns>	True if used session identifier, false if not. </returns>
-	 *-----------------------------------------------------------------------------------------------**/
+	 *-------------------------------------------------------------------**/
 
 	BOOL isUsedSessionId(ULONG newSessionId);
 
-	/**--------------------------------------------------------------------------------------------------
+	/**---------------------------------------------------------------------
 	 * <summary>	Generates a session identifier. </summary>
 	 *
 	 * <returns>	The session identifier. </returns>
-	 *-----------------------------------------------------------------------------------------------**/
+	 *-------------------------------------------------------------------**/
 
 	ULONG generateSessionId();
 
@@ -132,12 +132,12 @@ private:
 };
 
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Constructor. </summary>
  *
  * <typeparam name="TAuthServiceUser">	Type of the authentication service user. </typeparam>
  * <param name="userDataDirRootEnv">	[in,out] If non-null, the user data dir root environment. </param>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 template <class TAuthServiceUser>
 CAuthServiceTemplate<TAuthServiceUser>::CAuthServiceTemplate(std::wstring* userDataDirRootEnv)
@@ -163,11 +163,11 @@ CAuthServiceTemplate<TAuthServiceUser>::CAuthServiceTemplate(std::wstring* userD
 }
 
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Destructor. </summary>
  *
  * <typeparam name="TAuthServiceUser">	Type of the authentication service user. </typeparam>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 template <class TAuthServiceUser>
 CAuthServiceTemplate<TAuthServiceUser>::~CAuthServiceTemplate()
@@ -185,14 +185,14 @@ CAuthServiceTemplate<TAuthServiceUser>::~CAuthServiceTemplate()
 }
 
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Reads registered users from given file. </summary>
  *
  * <typeparam name="TAuthServiceUser">	Type of the authentication service user. </typeparam>
  * <param name="filename">	Filename of the data source. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 template <class TAuthServiceUser>
 BOOL CAuthServiceTemplate<TAuthServiceUser>::readRegisteredUser(std::wstring filename)
@@ -229,7 +229,7 @@ BOOL CAuthServiceTemplate<TAuthServiceUser>::readRegisteredUser(std::wstring fil
 }
 
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Login a user and returns a session id. Fails if user is not 
  * 				in user database. </summary>
  *
@@ -239,7 +239,7 @@ BOOL CAuthServiceTemplate<TAuthServiceUser>::readRegisteredUser(std::wstring fil
  * <param name="sessionId">	[in,out] If non-null, identifier for the session. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 template <class TAuthServiceUser>
 BOOL CAuthServiceTemplate<TAuthServiceUser>::login(std::wstring username, std::wstring password, ULONG* sessionId)
@@ -292,13 +292,13 @@ BOOL CAuthServiceTemplate<TAuthServiceUser>::login(std::wstring username, std::w
 	return TRUE;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Generates a session identifier. </summary>
  *
  * <typeparam name="TAuthServiceUser">	Type of the authentication service user. </typeparam>
  *
  * <returns>	The session identifier. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 template <class TAuthServiceUser>
 ULONG CAuthServiceTemplate<TAuthServiceUser>::generateSessionId()
@@ -313,7 +313,7 @@ ULONG CAuthServiceTemplate<TAuthServiceUser>::generateSessionId()
 
 
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Query if user with 'username' is logged in. </summary>
  *
  * <typeparam name="TAuthServiceUser">	Type of the authentication service user. </typeparam>
@@ -321,7 +321,7 @@ ULONG CAuthServiceTemplate<TAuthServiceUser>::generateSessionId()
  * <param name="sessionId">	[in,out] If non-null, identifier for the session. </param>
  *
  * <returns>	True if logged in, false if not. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 template <class TAuthServiceUser>
 BOOL CAuthServiceTemplate<TAuthServiceUser>::isLoggedIn(std::wstring username, ULONG* sessionId)
@@ -350,14 +350,14 @@ BOOL CAuthServiceTemplate<TAuthServiceUser>::isLoggedIn(std::wstring username, U
 
 
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Check whether a session id is used.  </summary>
  *
  * <typeparam name="TAuthServiceUser">	Type of the authentication service user. </typeparam>
  * <param name="newSessionId">	Identifier for the new session. </param>
  *
  * <returns>	True if used session identifier, false if not. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 template <class TAuthServiceUser> 
 BOOL CAuthServiceTemplate<TAuthServiceUser>::isUsedSessionId(ULONG newSessionId)
@@ -375,7 +375,7 @@ BOOL CAuthServiceTemplate<TAuthServiceUser>::isUsedSessionId(ULONG newSessionId)
 	return sessionIdAlreadyUsed;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Query if user with 'sessionId' is logged in. </summary>
  *
  * <typeparam name="TAuthServiceUser">	Type of the authentication service user. </typeparam>
@@ -383,7 +383,7 @@ BOOL CAuthServiceTemplate<TAuthServiceUser>::isUsedSessionId(ULONG newSessionId)
  * <param name="user">	   	[in,out] If non-null, the user. </param>
  *
  * <returns>	True if logged in, false if not. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 template <class TAuthServiceUser>
 BOOL CAuthServiceTemplate<TAuthServiceUser>::isLoggedIn(ULONG sessionId, TAuthServiceUser** user)
@@ -406,14 +406,14 @@ BOOL CAuthServiceTemplate<TAuthServiceUser>::isLoggedIn(ULONG sessionId, TAuthSe
 	return isLoggedIn;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Logout a logged in user by session id. </summary>
  *
  * <typeparam name="TAuthServiceUser">	Type of the authentication service user. </typeparam>
  * <param name="sessionId">	Identifier for the session. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 template <class TAuthServiceUser>
 BOOL CAuthServiceTemplate<TAuthServiceUser>::logout(ULONG sessionId)

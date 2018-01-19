@@ -1,4 +1,4 @@
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
 // project:	AuthServiceLib
 // file:	AuthServiceDefaultUser.cpp
 //
@@ -10,17 +10,17 @@
 //			Date		Developer			Change
 //			21.12.2017	Mathias Schneider	Created
 //			XXXXXXXXXX  Mathias Schneider	Changed
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 #include "AuthServiceDefaultUser.h"
 #include <vector>
 #include <sstream>
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Serialize this object to a string. </summary>
  *
  * <returns>	A wstring containing the erialized object information. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 std::wstring AuthServiceDefaultUser::Serialize()
 {
@@ -31,13 +31,13 @@ std::wstring AuthServiceDefaultUser::Serialize()
 	return serialized;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Deserialize string and apply data to this object. </summary>
  *
  * <param name="in">	Serialized input string. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 BOOL AuthServiceDefaultUser::Deserialize(std::wstring in)
 {

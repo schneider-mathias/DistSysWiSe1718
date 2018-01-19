@@ -1,4 +1,4 @@
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
 // project:	-
 // file:	MyCasinoDefines.h
 //
@@ -10,7 +10,7 @@
 //			Date		Developer			Change
 //			30.12.2018	Mathias Schneider	Created
 //			XXXXXXXXXX  Mathias Schneider	Changed
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 #pragma once
 #include <string>
@@ -50,13 +50,13 @@
 #define S_MY_CASINO_USER_HAS_NUMBERS 0x20010000L
 #define S_MY_CASINO_NO_OPERATOR_LOGGED_IN 0x20010001L
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Translate MyCasino error code to message. </summary>
  *
  * <param name="errorcode">	The errorcode. </param>
  *
  * <returns>	A verbose explanation for the given errorcode. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 inline std::wstring translate_error_message(unsigned long errorcode)
 {
@@ -122,13 +122,13 @@ inline std::wstring translate_error_message(unsigned long errorcode)
 	}
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Translate MyCasino information code to message. </summary>
  *
  * <param name="infocode">	The infocode. </param>
  *
  * <returns>	A verbose explanation for the given info code.</returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 inline std::wstring translate_info_message(unsigned long infocode)
 {
@@ -146,13 +146,13 @@ inline std::wstring translate_info_message(unsigned long infocode)
 #define TRANSLATE_MYCASINO_ERRORCODE(x, retVal) \
 	x = (FAILED(retVal))? translate_error_message(retVal):L"Success"
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Resolve any MyCasino code. </summary>
  *
  * <param name="infocode">	The code to resolve. </param>
  *
  * <returns>	A verbose explanation for the given code. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 inline std::wstring resolve_mycasino_code(long infocode)
 {
@@ -196,13 +196,13 @@ enum MyCasinoTransactionsTypes
 	BET_LOSS
 };
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Resolve transaction type to string. </summary>
  *
  * <param name="type">	The type as enum </param>
  *
  * <returns>	A string version of enumeration. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 inline std::wstring resolve_transaction_type(MyCasinoTransactionsTypes type)
 {

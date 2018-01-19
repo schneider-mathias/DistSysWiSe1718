@@ -1,4 +1,4 @@
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
 // project:	HelperLib
 // file:	CharStringConverter.h
 //
@@ -11,7 +11,7 @@
 //			Date		Developer			Change
 //			28.12.2017	Mathias Schneider	Created
 //			XXXXXXXXXX	Mathias Schneider	Changed
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 #ifndef CHAR_STRING_CONVERTER_INLCUDED
 #define CHAR_STRING_CONVERTER_INLCUDED
@@ -20,13 +20,13 @@
 #include <Windows.h>
 #include <string>
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Character to wstring. </summary>
  *
  * <param name="str2conv">	The char array to convert. </param>
  *
  * <returns>	A std::wstring. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 inline std::wstring char_to_wstring(const char* str2conv)
 {
@@ -37,13 +37,13 @@ inline std::wstring char_to_wstring(const char* str2conv)
 	return wstrTo;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Wstring to character array. Has to be deleted by callee. </summary>
  *
  * <param name="s">	A std::wstring to convert to char array. </param>
  *
  * <returns>	Null if it fails, else a pointer to a char. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 inline char* wstring_to_char(const std::wstring& s)
 {
@@ -55,13 +55,13 @@ inline char* wstring_to_char(const std::wstring& s)
 	return buf;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Wstring to string.</summary>
  *
  * <param name="s">	A std::wstring to process. </param>
  *
  * <returns>	A std::string. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 inline std::string wstring_to_string(const std::wstring& s)
 {

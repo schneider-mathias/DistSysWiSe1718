@@ -1,16 +1,16 @@
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
 // project:	MyCasinoLib
 // file:	MyCasino.h
 //
-// summary:	Declares thread-safe controller class for MyCasino business logic. Uses
-//			AuthService template class for credential checks.
+// summary:	Declares thread-safe controller class for MyCasino business logic.
+//			Uses AuthService template class for credential checks.
 //
 //			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
 //
 //			Date		Developer			Change
 //			24.12.2017	Mathias Schneider	Created
 //			XXXXXXXXXX	Mathias Schneider	Changed
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 #pragma once
 #include <map>

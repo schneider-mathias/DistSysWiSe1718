@@ -1,4 +1,4 @@
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
 // project:	MyCasinoLib
 // file:	MyCasinoAccount.cpp
 //
@@ -11,7 +11,7 @@
 //			Date		Developer			Change
 //			25.12.2017	Mathias Schneider	Created
 //			XXXXXXXXXX	Mathias Schneider	Changed
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 #include <sstream>
 
@@ -19,11 +19,11 @@
 #include "MyCasinoAccount.h"
 #include "MyCasinoTransaction.h"
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Constructor. </summary>
  *
  * <param name="balance">	The inital balance for this account. </param>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 MyCasinoAccount::MyCasinoAccount(DOUBLE balance)
 	: m_username(L""),
@@ -50,11 +50,11 @@ MyCasinoAccount::~MyCasinoAccount()
 	}
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Serialize this object to the given stream. </summary>
  *
  * <returns>	A serialized string containing account information. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 std::wstring MyCasinoAccount::Serialize()
 {
@@ -65,13 +65,13 @@ std::wstring MyCasinoAccount::Serialize()
 	return serialized;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Deserialize given stream and applies it to this object. </summary>
  *
  * <param name="in">	The serialized string. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 BOOL MyCasinoAccount::Deserialize(std::wstring in)
 {
@@ -107,18 +107,18 @@ BOOL MyCasinoAccount::Deserialize(std::wstring in)
 	return TRUE;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Gets the username. </summary>
  *
  * <returns>	The username. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 std::wstring MyCasinoAccount::GetUsername()
 {
 	return m_username;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Creates a transaction for the account including information.
  * 				Account balance is calculated accordingly. </summary>
  *
@@ -129,7 +129,7 @@ std::wstring MyCasinoAccount::GetUsername()
  * <param name="transactionId">	[in,out] If non-null, identifier for the transaction. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 BOOL MyCasinoAccount::CreateTransaction(DOUBLE changeAmount, MyCasinoTransactionsTypes type, IMyCasinoTransactionInformation* information, MyCasinoTransactionsInformationTypes* infoType, ULONG* transactionId)
 {
@@ -191,14 +191,14 @@ BOOL MyCasinoAccount::CreateTransaction(DOUBLE changeAmount, MyCasinoTransaction
 	return TRUE;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Cancel a transaction by its unique identifier. All balance changes are undone
  * 				and transaction type is set to CANCELED. </summary>
  *
  * <param name="transactionId">	Identifier for the transaction. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 BOOL MyCasinoAccount::CancelTransaction(ULONG transactionId)
 {
@@ -231,7 +231,7 @@ BOOL MyCasinoAccount::CancelTransaction(ULONG transactionId)
 	return TRUE;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Gets transaction information and type for a given transaction id. 
  * 				Both values might be null, because it is not mandatory to have an
  * 				information object for each transaction. </summary>
@@ -241,7 +241,7 @@ BOOL MyCasinoAccount::CancelTransaction(ULONG transactionId)
  * <param name="infotype">	   	[in,out] If non-null, the infotype. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 BOOL MyCasinoAccount::GetTransactionInformation(ULONG transactionId, IMyCasinoTransactionInformation** information, MyCasinoTransactionsInformationTypes* infotype)
 {
@@ -255,14 +255,14 @@ BOOL MyCasinoAccount::GetTransactionInformation(ULONG transactionId, IMyCasinoTr
 	return (NULL != *information);
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Gets a transaction by its identifier. </summary>
  *
  * <param name="transactionId">	Identifier for the transaction. </param>
  * <param name="transaction">  	[in,out] If non-null, the transaction. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 BOOL MyCasinoAccount::GetTransaction(ULONG transactionId, MyCasinoTransaction** transaction)
 {
@@ -280,7 +280,7 @@ BOOL MyCasinoAccount::GetTransaction(ULONG transactionId, MyCasinoTransaction** 
 	return (NULL != *transaction);
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Gets a transaction by its transaction details object and returns its id. </summary>
  *
  * <param name="transactionInformation">	[in,out] If non-null, information describing the
@@ -288,7 +288,7 @@ BOOL MyCasinoAccount::GetTransaction(ULONG transactionId, MyCasinoTransaction** 
  * <param name="transactionId">				[in,out] If non-null, identifier for the transaction. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 BOOL MyCasinoAccount::GetTransaction(IMyCasinoTransactionInformation* transactionInformation, ULONG* transactionId)
 {
@@ -311,11 +311,11 @@ BOOL MyCasinoAccount::GetTransaction(IMyCasinoTransactionInformation* transactio
 	return FALSE;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Gets current balance including preliminary balance. </summary>
  *
  * <returns>	The current balance. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 DOUBLE MyCasinoAccount::GetCurrentBalance()
 {
@@ -323,7 +323,7 @@ DOUBLE MyCasinoAccount::GetCurrentBalance()
 	return m_currentBalance + m_preliminaryBalance;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Change transaction (identified by parameter). Preliminary
  * 				balance and balance are calculated accodingly. Only transactions which 
  * 				are marked as wager transaction are allowed to be changed. 
@@ -339,7 +339,7 @@ DOUBLE MyCasinoAccount::GetCurrentBalance()
  * <param name="infoType">	   	[in,out] If non-null, type of the information. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 BOOL MyCasinoAccount::ChangeTransaction(ULONG transactionId, DOUBLE changeAmount, MyCasinoTransactionsTypes type, IMyCasinoTransactionInformation* information, MyCasinoTransactionsInformationTypes* infoType)
 {
@@ -431,7 +431,7 @@ BOOL MyCasinoAccount::ChangeTransaction(ULONG transactionId, DOUBLE changeAmount
 	return TRUE;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Gets the next transaction. Transactions are iterated internally 
  * 				and sorted automatically so that account balances and its changes 
  * 				are comprehensibly (historic transaction order is confusing). </summary>
@@ -439,7 +439,7 @@ BOOL MyCasinoAccount::ChangeTransaction(ULONG transactionId, DOUBLE changeAmount
  * <param name="nextTransaction">	[in,out] If non-null, the next transaction. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 BOOL MyCasinoAccount::GetNextTransaction(MyCasinoTransaction** nextTransaction)
 {

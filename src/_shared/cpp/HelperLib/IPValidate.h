@@ -1,4 +1,4 @@
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
 // project:	HelperLib
 // file:	IPValidate.h
 //
@@ -10,7 +10,7 @@
 //			Date		Developer			Change
 //			12.01.2018	Mathias Schneider	Created
 //			XXXXXXXXXX	Mathias Schneider	Changed
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 #pragma once
 #include <string>
@@ -22,13 +22,13 @@
 // include neecssary Ws2_32.lib dependency for inet_pton method
 #pragma comment(lib, "Ws2_32.lib")
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Validates the IP address described by ipAddress. </summary>
  *
  * <param name="ipAddress">	The IP address. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 bool validateIpAddress(const std::wstring &ipAddress)
 {
@@ -37,13 +37,13 @@ bool validateIpAddress(const std::wstring &ipAddress)
 	return result > 0;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Validates the IP address described by ipAddress. </summary>
  *
  * <param name="ipAddress">	[in,out] If non-null, the IP address. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 bool validateIpAddress(char* ipAddress)
 {

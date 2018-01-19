@@ -1,4 +1,4 @@
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
 // project:	MyCasinoDefines
 // file:	MyCasinoResolveCodes.cpp
 //
@@ -11,7 +11,7 @@
 //			Date		Developer			Change
 //			10.01.2018	Mathias Schneider	Created
 //			XXXXXXXXXX	Mathias Schneider	Changed
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 #include <Windows.h>
 #include "MyCasinoDefines.h"
@@ -19,7 +19,7 @@
 
 extern "C"
 {
-	/**--------------------------------------------------------------------------------------------------
+	/**---------------------------------------------------------------------
 	 * <summary>	Resolves a MyCasino HRESULT code and returns a string to callee.
 	 * 				Inspired by https://limbioliong.wordpress.com/2011/06/16/returning-strings-from-a-c-api/
 	 * 				 </summary>
@@ -27,7 +27,7 @@ extern "C"
 	 * <param name="code">	The return code which should be resolved. </param>
 	 *
 	 * <returns>	Null if it fails, else a pointer to a char. </returns>
-	 *-----------------------------------------------------------------------------------------------**/
+	 *-------------------------------------------------------------------**/
 
 	__declspec(dllexport) char*  ResolveCode(long code)
 	{

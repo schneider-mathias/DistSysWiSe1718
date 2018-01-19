@@ -1,4 +1,4 @@
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
 // project:	RPCMyCasinoCln
 // file:	RPCMyCasinoCommandLineInterface.cpp
 //
@@ -10,7 +10,7 @@
 //			Date		Developer			Change
 //			30.12.2018	Mathias Schneider	Created
 //			XXXXXXXXXX	Mathias Schneider	Changed
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 #include "RPCMyCasinoCommandLineInterface.h"
 #include "MyCasino_i.h"
@@ -20,11 +20,11 @@
 #include "json\reader.h"
 #include "bprinter\table_printer.h"
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Constructor. </summary>
  *
  * <param name="interpreter">	[in,out] If non-null, the interpreter. </param>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 RPCMyCasinoCommandLineInterface::RPCMyCasinoCommandLineInterface(CmdInterpreter* interpreter)
 	:MyCasinoCommandLineInterface(interpreter)
@@ -38,7 +38,7 @@ RPCMyCasinoCommandLineInterface::~RPCMyCasinoCommandLineInterface()
 {
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Wrapper for calling RPC server's 'login' interface.
  * 				For detailed information refer to RPCMyCasinoSrv.cpp </summary>
  *
@@ -46,7 +46,7 @@ RPCMyCasinoCommandLineInterface::~RPCMyCasinoCommandLineInterface()
  * <param name="password">	The password. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 bool RPCMyCasinoCommandLineInterface::user(std::wstring user, std::wstring password)
 {
@@ -95,7 +95,7 @@ bool RPCMyCasinoCommandLineInterface::user(std::wstring user, std::wstring passw
 	return true;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Wrapper for calling RPC server's 'payin' interface.
  * 				For detailed information refer to RPCMyCasinoSrv.cpp </summary>
  *
@@ -103,7 +103,7 @@ bool RPCMyCasinoCommandLineInterface::user(std::wstring user, std::wstring passw
  * <param name="amount">	The amount. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 bool RPCMyCasinoCommandLineInterface::payin(std::wstring user, double amount)
 {
@@ -123,7 +123,7 @@ bool RPCMyCasinoCommandLineInterface::payin(std::wstring user, double amount)
 	return true;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Wrapper for calling RPC server's 'bet' interface.
  * 				For detailed information refer to RPCMyCasinoSrv.cpp </summary>
  *
@@ -132,7 +132,7 @@ bool RPCMyCasinoCommandLineInterface::payin(std::wstring user, double amount)
  * <param name="secondNumber">	The second number. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 bool RPCMyCasinoCommandLineInterface::bet(double setAmount, unsigned short firstNumber, unsigned short secondNumber)
 {
@@ -144,12 +144,12 @@ bool RPCMyCasinoCommandLineInterface::bet(double setAmount, unsigned short first
 	return SUCCEEDED(hr);
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Wrapper for calling RPC server's 'showbets' and 'calculateProfit' interfaces.
  * 				For detailed information refer to RPCMyCasinoSrv.cpp </summary>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 bool RPCMyCasinoCommandLineInterface::showbets()
 {
@@ -204,7 +204,7 @@ bool RPCMyCasinoCommandLineInterface::showbets()
 	return true;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Wrapper for calling RPC server's 'draw' and 'drawTest' interfaces.
  * 				For detailed information refer to RPCMyCasinoSrv.cpp </summary>
  *
@@ -212,7 +212,7 @@ bool RPCMyCasinoCommandLineInterface::showbets()
  * <param name="secondNumberTest">	[in,out] If non-null, the second number test. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 bool RPCMyCasinoCommandLineInterface::draw(unsigned short** firstNumberTest, unsigned short** secondNumberTest)
 {
@@ -253,13 +253,13 @@ bool RPCMyCasinoCommandLineInterface::draw(unsigned short** firstNumberTest, uns
 	return hr ? false : true;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Wrapper for calling RPC server's 'getTransactions' 
  * 				and 'getTransactionInformation' interfaces.
  * 				For detailed information refer to RPCMyCasinoSrv.cpp </summary>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 bool RPCMyCasinoCommandLineInterface::showstatus()
 {
@@ -368,12 +368,12 @@ bool RPCMyCasinoCommandLineInterface::showstatus()
 	return true;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Wrapper for calling RPC server's 'logout' interface.
  * 				For detailed information refer to RPCMyCasinoSrv.cpp </summary>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 bool RPCMyCasinoCommandLineInterface::bye()
 {

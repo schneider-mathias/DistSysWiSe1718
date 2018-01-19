@@ -1,4 +1,4 @@
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
 // project:	MyCasinoClnLib
 // file:	MyCasinoCommandLineInterface.cpp
 //
@@ -9,7 +9,7 @@
 //			Date		Developer			Change
 //			29.12.2018	Mathias Schneider	Created
 //			XXXXXXXXXX  Mathias Schneider	Changed
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 #include "MyCasinoCommandLineInterface.h"
 #include "MyCasinoDefines.h"
@@ -17,12 +17,12 @@
 #include "comdef.h"
 #include "CharStringConverter.h"
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Constructor. </summary>
  *
  * <param name="interpreter">	[in,out] If non-null, the command line 
  * 								interpreter. </param>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 MyCasinoCommandLineInterface::MyCasinoCommandLineInterface(CmdInterpreter* interpreter)
 	:m_pSessionId(NULL),
@@ -43,7 +43,7 @@ MyCasinoCommandLineInterface::~MyCasinoCommandLineInterface()
 	m_pCmdInterpreter = NULL;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Handler, called after a command was executed in order to 
  * 				evaluate the return code and display the corresponding message. </summary>
  *
@@ -51,7 +51,7 @@ MyCasinoCommandLineInterface::~MyCasinoCommandLineInterface()
  * 										the output. </param>
  * <param name="code">				   	The return code. </param>
  * <param name="msg">				   	[in,out] The message. </param>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 void MyCasinoCommandLineInterface::resultHandler(std::string additionalInformation, long code, std::string& msg)
 {
@@ -78,7 +78,7 @@ void MyCasinoCommandLineInterface::resultHandler(std::string additionalInformati
 	}
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Dispatcher method in order to process the command described by 
  * 				arguments as defined by the MyCasino specication. Before running 
  * 				the commands which will be implemented in child class, all arguments 
@@ -87,7 +87,7 @@ void MyCasinoCommandLineInterface::resultHandler(std::string additionalInformati
  * <param name="arguments">	The arguments. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> arguments)
 {
@@ -254,13 +254,13 @@ bool MyCasinoCommandLineInterface::ProcessCommand(std::vector<std::wstring> argu
 	return false;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Check call prerequisites (logged in and permission level of user type). </summary>
  *
  * <param name="minRequiredUserType">	Type of the minimum required user. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 bool MyCasinoCommandLineInterface::checkCallPrerequisites(short minRequiredUserType)
 {
@@ -278,24 +278,24 @@ bool MyCasinoCommandLineInterface::checkCallPrerequisites(short minRequiredUserT
 	return true;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Query if a client is already logged in. </summary>
  *
  * <returns>	True if logged in, false if not. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 bool MyCasinoCommandLineInterface::isLoggedIn()
 {
 	return NULL != m_pSessionId;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Check whether the user fullfills permission level. </summary>
  *
  * <param name="minRequiredUserType">	Type of the minimum required user. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 bool MyCasinoCommandLineInterface::fullfillsPermissionLevel(short minRequiredUserType)
 {

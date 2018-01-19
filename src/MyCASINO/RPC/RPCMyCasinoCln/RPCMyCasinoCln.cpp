@@ -1,4 +1,4 @@
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
 // project:	RPCMyCasinoCln
 // file:	RPCMyCasinoCln.cpp
 //
@@ -9,7 +9,7 @@
 //			Date		Developer			Change
 //			28.12.2018	Mathias Schneider	Created
 //			XXXXXXXXXX	Mathias Schneider	Changed
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 #include "IPValidate.h"
 #include "MyCasino_i.h"    
@@ -25,12 +25,12 @@ static void UnBind(void);
 static void rpcCalls(void);
 void startCommandLineInterface();
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Main entry-point for this application. </summary>
  *
  * <param name="argc">	The number of command-line arguments provided. </param>
  * <param name="argv">	An array of command-line argument strings. </param>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 void main(int argc, char**argv)
 {
@@ -107,13 +107,13 @@ void rpcCalls(void)
 	RpcEndExcept
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Binds the given remote netw address. </summary>
  *
  * <exception cref="RpcException">	Thrown when a RPC error condition occurs. </exception>
  *
  * <param name="remoteNetwAddr">	[in,out] If non-null, the remote netw address. </param>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 void Bind(char* remoteNetwAddr)
 {
@@ -160,11 +160,11 @@ void Bind(char* remoteNetwAddr)
 	}
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Un bind. </summary>
  *
  * <exception cref="RpcException">	Thrown when a RPC error condition occurs. </exception>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 void UnBind(void)
 {

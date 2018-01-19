@@ -1,4 +1,4 @@
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
 // project:	COMMyCasinoSrv
 // file:	COMMyCasino.cpp
 //
@@ -9,7 +9,7 @@
 //			Date		Developer			Change
 //			19.12.2017	Mathias Schneider	Created
 //			XXXXXXXXXX	Mathias Schneider	Changed
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 #include "stdafx.h"
 #include <atlsafe.h>
@@ -31,11 +31,11 @@ CAuthServiceTemplate<MyCasinoUser>* pAuthServiceInstance=NULL;
 /** <summary>	The shared casino instance. </summary> */
 MyCasino* pCasinoInstance = NULL;
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Gets authentication service (single instance shared for all COM objects). </summary>
  *
  * <returns>	The authentication service instance. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 CAuthServiceTemplate<MyCasinoUser>& getAuthService()
 {
@@ -49,11 +49,11 @@ CAuthServiceTemplate<MyCasinoUser>& getAuthService()
 	return *pAuthServiceInstance;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Gets the casino (single instance shared for all COM objects) </summary>
  *
  * <returns>	The casino instance. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 MyCasino& getCasino()
 {
@@ -73,7 +73,7 @@ CCOMMyCasino::CCOMMyCasino()
 {
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Login to MyCasino using a username and password. Returns a session id and 
  * 				usertype. The session id is required  in order to call other COM instance
  * 				interfaces.
@@ -86,7 +86,7 @@ CCOMMyCasino::CCOMMyCasino()
  * <param name="errMsg">   	[in,out] If non-null, message describing the error. </param>
  *
  * <returns>	A custom MyCasino HRESULT </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 STDMETHODIMP CCOMMyCasino::login(BSTR username, BSTR password, ULONG* sessionId, SHORT* userType, BSTR* errMsg)
 {
@@ -131,14 +131,14 @@ STDMETHODIMP CCOMMyCasino::login(BSTR username, BSTR password, ULONG* sessionId,
 	return resVal;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Logout for a user. Afterwards session id is not valid anymore. </summary>
  *
  * <param name="sessionId">	Identifier for the session. </param>
  * <param name="errMsg">   	[in,out] If non-null, message describing the error. </param>
  *
  * <returns> A custom MyCasino HRESULT </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 STDMETHODIMP CCOMMyCasino::logout(ULONG sessionId, BSTR* errMsg)
 {
@@ -193,7 +193,7 @@ STDMETHODIMP CCOMMyCasino::logout(ULONG sessionId, BSTR* errMsg)
 	return resVal;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Deposits a certain amount of money for a logged in user. This method is only 
  * 				allowed to be called by the operator. </summary>
  *
@@ -204,7 +204,7 @@ STDMETHODIMP CCOMMyCasino::logout(ULONG sessionId, BSTR* errMsg)
  * <param name="errMsg">	 	[in,out] If non-null, message describing the error. </param>
  *
  * <returns> A custom MyCasino HRESULT </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 STDMETHODIMP CCOMMyCasino::deposit(ULONG sessionId, BSTR name, DOUBLE amountMoney, BSTR* errMsg)
 {
@@ -247,7 +247,7 @@ STDMETHODIMP CCOMMyCasino::deposit(ULONG sessionId, BSTR name, DOUBLE amountMone
 	return S_OK;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Create a bet on two numbers with certain amount of money. 
  * 				Numbers have to be valid and amount of money must not exceed 
  * 				operator's and gamer's account balance. Furthermore only
@@ -260,7 +260,7 @@ STDMETHODIMP CCOMMyCasino::deposit(ULONG sessionId, BSTR name, DOUBLE amountMone
  * <param name="errMsg">	  	[in,out] If non-null, message describing the error. </param>
  *
  * <returns> A custom MyCasino HRESULT </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 STDMETHODIMP CCOMMyCasino::bet(ULONG sessionId, DOUBLE amountMoney, SHORT firstNumber, SHORT secondNumber, BSTR* errMsg)
 {
@@ -299,7 +299,7 @@ STDMETHODIMP CCOMMyCasino::bet(ULONG sessionId, DOUBLE amountMoney, SHORT firstN
 	return S_OK;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Calculates the profit for two numbers and a amount of money. </summary>
  *
  * <param name="sessionId">			 	Identifier for the session. </param>
@@ -312,7 +312,7 @@ STDMETHODIMP CCOMMyCasino::bet(ULONG sessionId, DOUBLE amountMoney, SHORT firstN
  * <param name="errMsg">			 	[in,out] If non-null, message describing the error. </param>
  *
  * <returns>	The calculated profit. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 STDMETHODIMP CCOMMyCasino::calculateProfit(ULONG sessionId, DOUBLE amountMoney, SHORT firstNumber, SHORT secondNumber, DOUBLE* profitForOneMatch, DOUBLE* profitForTwoMatches, BSTR* errMsg)
 {
@@ -333,7 +333,7 @@ STDMETHODIMP CCOMMyCasino::calculateProfit(ULONG sessionId, DOUBLE amountMoney, 
 	return S_OK;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Return all bets that are currently placed including information
  * 				about gamer name, first and second number and amount of money.</summary>
  *
@@ -343,7 +343,7 @@ STDMETHODIMP CCOMMyCasino::calculateProfit(ULONG sessionId, DOUBLE amountMoney, 
  * <param name="errMsg">   	[in,out] If non-null, message describing the error. </param>
  *
  * <returns> A custom MyCasino HRESULT </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 STDMETHODIMP CCOMMyCasino::showbets(ULONG sessionId, SAFEARR_VAR* bets, ULONG* count, BSTR* errMsg)
 {
@@ -387,7 +387,7 @@ STDMETHODIMP CCOMMyCasino::showbets(ULONG sessionId, SAFEARR_VAR* bets, ULONG* c
 	return resVal;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	(For testing) Draws the two specified numbers and calculates results 
  * 				(rewards). This method is only allowed to be called by the operator. </summary>
  *
@@ -397,7 +397,7 @@ STDMETHODIMP CCOMMyCasino::showbets(ULONG sessionId, SAFEARR_VAR* bets, ULONG* c
  * <param name="errMsg">		  	[in,out] If non-null, message describing the error. </param>
  *
  * <returns> A custom MyCasino HRESULT </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 STDMETHODIMP CCOMMyCasino::drawTest(ULONG sessionId, SHORT firstNumberTest, SHORT secondNumberTest, BSTR* errMsg)
 {
@@ -435,7 +435,7 @@ STDMETHODIMP CCOMMyCasino::drawTest(ULONG sessionId, SHORT firstNumberTest, SHOR
 	return S_OK;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Draws two random numbers, calculates results (rewards) and return these number.
  * 				This method is only allowed to be called by the operator.</summary>
  *
@@ -445,7 +445,7 @@ STDMETHODIMP CCOMMyCasino::drawTest(ULONG sessionId, SHORT firstNumberTest, SHOR
  * <param name="errMsg">	  	[in,out] If non-null, message describing the error. </param>
  *
  * <returns> A custom MyCasino HRESULT </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 STDMETHODIMP CCOMMyCasino::draw(ULONG sessionId, SHORT* firstNumber, SHORT* secondNumber, BSTR* errMsg)
 {
@@ -487,7 +487,7 @@ STDMETHODIMP CCOMMyCasino::draw(ULONG sessionId, SHORT* firstNumber, SHORT* seco
 	return S_OK;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Gets next account transaction of a user including deposits and bet results.
  * 				IsFinished return value indicates when all transactions were sent to client.
  * 				</summary>
@@ -499,7 +499,7 @@ STDMETHODIMP CCOMMyCasino::draw(ULONG sessionId, SHORT* firstNumber, SHORT* seco
  * <param name="errMsg">		 	[in,out] If non-null, message describing the error. </param>
  *
  * <returns> A custom MyCasino HRESULT </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 STDMETHODIMP CCOMMyCasino::getTransactions(ULONG sessionId, BOOL* isFinished, SAFEARR_VAR* transaction, ULONG* transactionType, BSTR* errMsg)
 {
@@ -542,7 +542,7 @@ STDMETHODIMP CCOMMyCasino::getTransactions(ULONG sessionId, BOOL* isFinished, SA
 	return resVal;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Gets transaction information for given transaction id. </summary>
  *
  * <param name="sessionId">		 	Identifier for the session. </param>
@@ -553,7 +553,7 @@ STDMETHODIMP CCOMMyCasino::getTransactions(ULONG sessionId, BOOL* isFinished, SA
  * <param name="errMsg">		 	[in,out] If non-null, message describing the error. </param>
  *
  * <returns> A custom MyCasino HRESULT </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 STDMETHODIMP CCOMMyCasino::getTransactionInformation(ULONG sessionId, ULONG transactionId, SAFEARR_VAR* information, ULONG* informationType, BSTR* errMsg)
 {
@@ -602,14 +602,14 @@ STDMETHODIMP CCOMMyCasino::getTransactionInformation(ULONG sessionId, ULONG tran
 	return resVal;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Converts this object to a COMSafeArray. </summary>
  *
  * <param name="currentInformation">	[in,out] Current information list as TaggedUnion. </param>
  * <param name="resArr">				[in,out] If non-null, converted COMSafeArray of results. </param>
  *
  * <returns>	Whether conversion was successful. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 bool CCOMMyCasino::toCComSafeArray(std::vector<TaggedUnion>& currentInformation, CComSafeArray<VARIANT>** resArr)
 {

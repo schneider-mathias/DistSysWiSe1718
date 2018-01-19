@@ -1,4 +1,4 @@
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
 // project:	CmdInterpreterLib
 // file:	CmdInterpreter.cpp
 //
@@ -12,19 +12,19 @@
 //			Date		Developer			Change
 //			29.12.2018	Mathias Schneider	Created
 //			XXXXXXXXXX	Mathias Schneider	Changed
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 #include <iostream>
 #include "CmdInterpreter.h"
 #include "../HelperLib/CharStringConverter.h"
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Constructor. </summary>
  *
  * <param name="linePrefix">	   	The line prefix before any output message. </param>
  * <param name="defaultSuccessMsg">	The default success message after a command succedded. </param>
  * <param name="defaultErrorMsg">  	The default error message after a command failed. </param>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 CmdInterpreter::CmdInterpreter(std::wstring linePrefix, std::wstring defaultSuccessMsg, std::wstring defaultErrorMsg)
 	: m_previousBufferOut(NULL),
@@ -43,7 +43,7 @@ CmdInterpreter::~CmdInterpreter()
 	std::cout.rdbuf(m_previousBufferOut); 
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Registers the command dispatcher. </summary>
  *
  * <param name="dispatcherObj">	[in,out] If non-null, the dispatcher object which contains the
@@ -51,7 +51,7 @@ CmdInterpreter::~CmdInterpreter()
  * <param name="func">		   	The processing member funcion of the dispatcher object. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 bool CmdInterpreter::registerCmdDispatcher(ICommandLineInterface* dispatcherObj, dispatcherMemFunc func)
 {
@@ -60,7 +60,7 @@ bool CmdInterpreter::registerCmdDispatcher(ICommandLineInterface* dispatcherObj,
 	return true;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>
  * Splits an command string to its parameters (takes quotes into account). 
  * Code from https://stackoverflow.com/questions/18675364/c-tokenize-a-string-with-spaces-and-quotes.
@@ -70,7 +70,7 @@ bool CmdInterpreter::registerCmdDispatcher(ICommandLineInterface* dispatcherObj,
  * <param name="command">	The command string that should be split. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 bool CmdInterpreter::splitInArgs(std::vector<std::wstring>& qargs, std::wstring command)
 {
@@ -148,13 +148,13 @@ void CmdInterpreter::run()
 	}
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Executes the given command. </summary>
  *
  * <param name="command">	The command as a string that should be executed. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 bool CmdInterpreter::execute(std::wstring command)
 {
@@ -223,7 +223,7 @@ void CmdInterpreter::cout()
 	m_previousBufferErrorOut = std::cerr.rdbuf(m_outBuffer.rdbuf());
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Split a string by a delimter into a vector.
  * 				https://stackoverflow.com/questions/13172158/c-split-string-by-line. </summary>
  *
@@ -231,7 +231,7 @@ void CmdInterpreter::cout()
  * <param name="delimiter">	The delimiter for splitting. </param>
  *
  * <returns>	A std::vector&lt;std::string&gt; </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 std::vector<std::string> CmdInterpreter::splitString(const std::string& str, const std::string& delimiter)
 {

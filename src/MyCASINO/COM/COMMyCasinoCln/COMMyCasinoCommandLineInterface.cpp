@@ -1,4 +1,4 @@
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
 // project:	COMMyCasinoCln
 // file:	COMMyCasinoCommandLineInterface.cpp
 //
@@ -10,7 +10,7 @@
 //			Date		Developer			Change
 //			29.12.2017	Mathias Schneider	Created
 //			XXXXXXXXXX	Mathias Schneider	Changed
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 #include <iostream>
 #include <atlsafe.h>
@@ -22,12 +22,12 @@
 
 #include "bprinter\table_printer.h"
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Constructor. </summary>
  *
  * <param name="interpreter">	  	[in,out] If non-null, the interpreter. </param>
  * <param name="pICOMMyCasinoSrv">	[in,out] If non-null, the icom my casino server. </param>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 COMMyCasinoCommandLineInterface::COMMyCasinoCommandLineInterface(CmdInterpreter* interpreter, ICOMMyCasino* pICOMMyCasinoSrv)
 	: MyCasinoCommandLineInterface(interpreter)
@@ -41,7 +41,7 @@ COMMyCasinoCommandLineInterface::~COMMyCasinoCommandLineInterface()
 	m_pICOMMyCasinoSrv = NULL;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Wrapper for calling COM object's 'login' interface. 
  * 				For detailed information refer to COMMyCasino.cpp </summary>
  *
@@ -49,7 +49,7 @@ COMMyCasinoCommandLineInterface::~COMMyCasinoCommandLineInterface()
  * <param name="password">	The password. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 bool COMMyCasinoCommandLineInterface::user(std::wstring user, std::wstring password)
 {
@@ -90,7 +90,7 @@ bool COMMyCasinoCommandLineInterface::user(std::wstring user, std::wstring passw
 	return true;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Wrapper for calling COM object's 'payin' interface.
  * 				For detailed information refer to COMMyCasino.cpp </summary>
  *
@@ -98,7 +98,7 @@ bool COMMyCasinoCommandLineInterface::user(std::wstring user, std::wstring passw
  * <param name="amount">	The amount. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 bool COMMyCasinoCommandLineInterface::payin(std::wstring user, double amount)
 {
@@ -114,7 +114,7 @@ bool COMMyCasinoCommandLineInterface::payin(std::wstring user, double amount)
 	return true;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Wrapper for calling COM object's 'bet' interface.
  * 				For detailed information refer to COMMyCasino.cpp </summary>
  * 
@@ -123,7 +123,7 @@ bool COMMyCasinoCommandLineInterface::payin(std::wstring user, double amount)
  * <param name="secondNumber">	The second number. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 bool COMMyCasinoCommandLineInterface::bet(double setAmount, unsigned short firstNumber, unsigned short secondNumber)
 {
@@ -134,12 +134,12 @@ bool COMMyCasinoCommandLineInterface::bet(double setAmount, unsigned short first
 	return SUCCEEDED(hr);
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Wrapper for calling COM object's 'showbets' and 'calculateProfit' interfaces.
  * 				For detailed information refer to COMMyCasino.cpp </summary>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 bool COMMyCasinoCommandLineInterface::showbets()
 {
@@ -218,7 +218,7 @@ bool COMMyCasinoCommandLineInterface::showbets()
 	return true;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Wrapper for calling COM object's 'draw' interface.
  * 				For detailed information refer to COMMyCasino.cpp </summary>
  *
@@ -226,7 +226,7 @@ bool COMMyCasinoCommandLineInterface::showbets()
  * <param name="secondNumberTest">	[in,out] If non-null, the second number test. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 bool COMMyCasinoCommandLineInterface::draw(unsigned short** firstNumberTest, unsigned short** secondNumberTest)
 {
@@ -268,13 +268,13 @@ bool COMMyCasinoCommandLineInterface::draw(unsigned short** firstNumberTest, uns
 	return true;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Wrapper for calling COM object's 'getTransactions' 
  * 				and 'getTransactionInformation' interfaces.
  * 				For detailed information refer to COMMyCasino.cpp </summary>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 bool COMMyCasinoCommandLineInterface::showstatus()
 {
@@ -392,12 +392,12 @@ bool COMMyCasinoCommandLineInterface::showstatus()
 	return true;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Wrapper for calling COM object's 'logout' interface.
  * 				For detailed information refer to COMMyCasino.cpp </summary>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 bool COMMyCasinoCommandLineInterface::bye()
 {

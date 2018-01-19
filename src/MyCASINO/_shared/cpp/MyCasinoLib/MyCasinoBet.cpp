@@ -1,4 +1,4 @@
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
 // project:	MyCasinoLib
 // file:	MyCasinoBet.cpp
 //
@@ -9,12 +9,12 @@
 //			Date		Developer			Change
 //			25.12.2017	Mathias Schneider	Created
 //			XXXXXXXXXX	Mathias Schneider	Changed
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 #include "MyCasinoBet.h"
 #include "ScopedLock.h"
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Constructor. </summary>
  *
  * <param name="username">	  	The owner of the bet. </param>
@@ -22,7 +22,7 @@
  * <param name="firstNumber"> 	The first number. </param>
  * <param name="secondNumber">	The second number. </param>
  * <param name="amount">	  	The amount. </param>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 MyCasinoBet::MyCasinoBet(std::wstring username, ULONG id, SHORT firstNumber, SHORT secondNumber, DOUBLE amount)
 	: IMyCasinoTransactionInformation(id, MyCasinoTransactionsInformationTypes::Bet),
@@ -43,7 +43,7 @@ MyCasinoBet::~MyCasinoBet()
 {
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Sets bet result after it is finsihed by drawing two numbers </summary>
  *
  * <param name="drawnFirstNumber"> 	The drawn first number. </param>
@@ -51,7 +51,7 @@ MyCasinoBet::~MyCasinoBet()
  * <param name="resultAmount">	   	The result reward amount (without wager). </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 BOOL MyCasinoBet::SetBetResult(SHORT drawnFirstNumber, SHORT drawnSecondNumber, DOUBLE resultAmount)
 {
@@ -67,11 +67,11 @@ BOOL MyCasinoBet::SetBetResult(SHORT drawnFirstNumber, SHORT drawnSecondNumber, 
 	return TRUE;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Gets the username. </summary>
  *
  * <returns>	The username. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 std::wstring MyCasinoBet::GetUsername()
 {
@@ -79,11 +79,11 @@ std::wstring MyCasinoBet::GetUsername()
 	return m_username;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Gets the first number. </summary>
  *
  * <returns>	The first number. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 SHORT MyCasinoBet::GetFirstNumber()
 {
@@ -91,11 +91,11 @@ SHORT MyCasinoBet::GetFirstNumber()
 	return m_firstNumber;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Gets second number. </summary>
  *
  * <returns>	The second number. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 SHORT MyCasinoBet::GetSecondNumber()
 {
@@ -103,11 +103,11 @@ SHORT MyCasinoBet::GetSecondNumber()
 	return m_secondNumber;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Gets set amount. </summary>
  *
  * <returns>	The set amount. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 DOUBLE MyCasinoBet::GetSetAmount()
 {
@@ -115,11 +115,11 @@ DOUBLE MyCasinoBet::GetSetAmount()
 	return m_setAmount;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Sets wager for this bet. </summary>
  *
  * <param name="wager">	The wager (has to be positive). </param>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 void MyCasinoBet::SetWager(DOUBLE wager)
 {
@@ -130,11 +130,11 @@ void MyCasinoBet::SetWager(DOUBLE wager)
 	}
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Determines if we can result is drawn. </summary>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 BOOL MyCasinoBet::ResultIsDrawn()
 {
@@ -142,13 +142,13 @@ BOOL MyCasinoBet::ResultIsDrawn()
 	return m_isDrawn;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Gets the information as a tagged union. </summary>
  *
  * <returns>	The information of this bet as a tagged union 
  * 				(information about types and values). Depending on bet 
  * 				state it either contains four or seven fields. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 std::vector<TaggedUnion> MyCasinoBet::GetInformation()
 {
@@ -169,11 +169,11 @@ std::vector<TaggedUnion> MyCasinoBet::GetInformation()
 	return betInformation;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Gets information fields count. </summary>
  *
  * <returns>	The information fields count. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 SHORT MyCasinoBet::GetInformationCount()
 {
@@ -181,13 +181,13 @@ SHORT MyCasinoBet::GetInformationCount()
 	return m_isDrawn? BET_FULL_DETAILS_PROPTERY_COUNT : BET_DETAILS_PROPTERY_COUNT;
 }
 
-/**--------------------------------------------------------------------------------------------------
+/**---------------------------------------------------------------------
  * <summary>	Equality operator. </summary>
  *
  * <param name="ref">	The reference. </param>
  *
  * <returns>	True if the parameters are considered equivalent. </returns>
- *-----------------------------------------------------------------------------------------------**/
+ *-------------------------------------------------------------------**/
 
 bool MyCasinoBet::operator==(const MyCasinoBet& ref)
 {
