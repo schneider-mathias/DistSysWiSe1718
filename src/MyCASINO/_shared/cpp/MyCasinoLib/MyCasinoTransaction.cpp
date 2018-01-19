@@ -7,7 +7,8 @@
 //			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
 //
 //			Date		Developer			Change
-//			13.01.2018	Mathias Schneider	Created
+//			25.12.2017	Mathias Schneider	Created
+//			XXXXXXXXXX	Mathias Schneider	Changed
  *-----------------------------------------------------------------------------------------------**/
 
 #include "ScopedLock.h"
@@ -41,7 +42,7 @@ MyCasinoTransaction::~MyCasinoTransaction()
 		m_pTransactionInformationType = NULL;
 	}
 
-	// ownership has MyCasino
+	// ownership has MyCasino so do not delete
 	m_pTransactionDetails = NULL;
 }
 
@@ -109,7 +110,8 @@ MyCasinoTransactionsTypes MyCasinoTransaction::GetTransactionType()
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Sets transaction type. </summary>
+ * <summary>	Sets transaction type and its correspnding information 
+ * 				(and information type). </summary>
  *
  * <param name="type">					The type. </param>
  * <param name="transactionDetails">	[in,out] If non-null, the transaction details. </param>
@@ -123,7 +125,7 @@ BOOL MyCasinoTransaction::SetTransactionType(MyCasinoTransactionsTypes type, IMy
 	SCOPED_LOCK(m_transactionMutex);
 
 	m_transactionType = type;
-	
+
 	// clear information type
 	if (NULL != m_pTransactionInformationType)
 	{

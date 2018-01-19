@@ -2,12 +2,13 @@
 // project:	MyCasinoLib
 // file:	MyCasinoBet.cpp
 //
-// summary:	Implements my casino bet class
+// summary:	Implements my casino bet class which stores information about a bet.
 //
 //			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
 //
 //			Date		Developer			Change
-//			13.01.2018	Mathias Schneider	Created
+//			25.12.2017	Mathias Schneider	Created
+//			XXXXXXXXXX	Mathias Schneider	Changed
  *-----------------------------------------------------------------------------------------------**/
 
 #include "MyCasinoBet.h"
@@ -16,14 +17,14 @@
 /**--------------------------------------------------------------------------------------------------
  * <summary>	Constructor. </summary>
  *
- * <param name="username">	  	The username. </param>
+ * <param name="username">	  	The owner of the bet. </param>
  * <param name="id">		  	The identifier. </param>
  * <param name="firstNumber"> 	The first number. </param>
  * <param name="secondNumber">	The second number. </param>
  * <param name="amount">	  	The amount. </param>
  *-----------------------------------------------------------------------------------------------**/
 
-MyCasinoBet::MyCasinoBet(std::wstring username, ULONG id,SHORT firstNumber, SHORT secondNumber, DOUBLE amount)
+MyCasinoBet::MyCasinoBet(std::wstring username, ULONG id, SHORT firstNumber, SHORT secondNumber, DOUBLE amount)
 	: IMyCasinoTransactionInformation(id, MyCasinoTransactionsInformationTypes::Bet),
 	m_username(username),
 	m_id(id),
@@ -43,11 +44,11 @@ MyCasinoBet::~MyCasinoBet()
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Sets bet result. </summary>
+ * <summary>	Sets bet result after it is finsihed by drawing two numbers </summary>
  *
  * <param name="drawnFirstNumber"> 	The drawn first number. </param>
  * <param name="drawnSecondNumber">	The drawn second number. </param>
- * <param name="resultAmount">	   	The result amount. </param>
+ * <param name="resultAmount">	   	The result reward amount (without wager). </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
  *-----------------------------------------------------------------------------------------------**/
@@ -115,9 +116,9 @@ DOUBLE MyCasinoBet::GetSetAmount()
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Sets a wager. </summary>
+ * <summary>	Sets wager for this bet. </summary>
  *
- * <param name="wager">	The wager. </param>
+ * <param name="wager">	The wager (has to be positive). </param>
  *-----------------------------------------------------------------------------------------------**/
 
 void MyCasinoBet::SetWager(DOUBLE wager)
@@ -142,9 +143,11 @@ BOOL MyCasinoBet::ResultIsDrawn()
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Gets the information. </summary>
+ * <summary>	Gets the information as a tagged union. </summary>
  *
- * <returns>	The information. </returns>
+ * <returns>	The information of this bet as a tagged union 
+ * 				(information about types and values). Depending on bet 
+ * 				state it either contains four or seven fields. </returns>
  *-----------------------------------------------------------------------------------------------**/
 
 std::vector<TaggedUnion> MyCasinoBet::GetInformation()
@@ -167,9 +170,9 @@ std::vector<TaggedUnion> MyCasinoBet::GetInformation()
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Gets information count. </summary>
+ * <summary>	Gets information fields count. </summary>
  *
- * <returns>	The information count. </returns>
+ * <returns>	The information fields count. </returns>
  *-----------------------------------------------------------------------------------------------**/
 
 SHORT MyCasinoBet::GetInformationCount()

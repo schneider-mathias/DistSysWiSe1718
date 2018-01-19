@@ -2,12 +2,13 @@
 // project:	MyCasinoLib
 // file:	MyCasino.cpp
 //
-// summary:	Implements my casino class
+// summary:	Implements controller class for MyCasino business logic.
 //
 //			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
 //
 //			Date		Developer			Change
-//			13.01.2018	Mathias Schneider	Created
+//			25.12.2017	Mathias Schneider	Created
+//			XXXXXXXXXX	Mathias Schneider	Changed
  *-----------------------------------------------------------------------------------------------**/
 
 #include "MyCasino.h"
@@ -20,7 +21,8 @@
 /**--------------------------------------------------------------------------------------------------
  * <summary>	Constructor. </summary>
  *
- * <param name="userDataDirRootEnv">	[in,out] If non-null, the user data dir root environment. </param>
+ * <param name="userDataDirRootEnv">	[in,out] If non-null, the name of
+ * 										the user data dir root environment variable. </param>
  *-----------------------------------------------------------------------------------------------**/
 
 MyCasino::MyCasino(std::wstring* userDataDirRootEnv) :
@@ -41,6 +43,7 @@ MyCasino::MyCasino(std::wstring* userDataDirRootEnv) :
 		}
 	}
 
+	// initialize randomness
 	srand((ULONG)time(NULL));
 }
 
@@ -81,27 +84,37 @@ MyCasino::~MyCasino()
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Opens the given user. </summary>
+ * <summary>	Opens the Casino, sets the user as operator and loads the corresponding operator
+ * 				account. Fails if there is already a operator or if passed user is 
+ * 				not an operator. </summary>
  *
  * <param name="user">	[in,out] If non-null, the user. </param>
  *
- * <returns>	True if it succeeds, false if it fails. </returns>
+ * <returns>	TRUE if it succeeds, MyCasino HRESULT if it fails. </returns>
  *-----------------------------------------------------------------------------------------------**/
 
 BOOL MyCasino::Open(MyCasinoUser* user)
 {
-	// already opened with specified user as operator
+	// check if already opened with 
+	// specified user as operator
 	if (IsOperator(*user))
 		return TRUE;
 
+	// check if casino is already opened by another operator
 	if (IsOpened())
 		return E_MY_CASINO_HAS_ALREADY_OPERATOR;
 
+	// check if potential user has operator role
+	if (!user->IsUserType(MyCasinoUserTypes::Operator))
+		return E_MY_CASINO_USER_PERMISSION_DENIED;
+	
+	// set operator
 	{
 		SCOPED_LOCK(m_operatorMutex);
 		m_pOperator = user;
 	}
 	
+	// load operator account
 	MyCasinoAccount* account = NULL;
 	if (!LoadAccount(*m_pOperator, &account))
 		return E_MY_CASINO_CANNOT_LOAD_ACCOUNT;
@@ -116,7 +129,7 @@ BOOL MyCasino::Open(MyCasinoUser* user)
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Query if this object is opened. </summary>
+ * <summary>	Query if the casino is opened (has operator). </summary>
  *
  * <returns>	True if opened, false if not. </returns>
  *-----------------------------------------------------------------------------------------------**/
@@ -141,15 +154,17 @@ BOOL MyCasino::IsOperator(MyCasinoUser& user)
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Loads the accounts. </summary>
+ * <summary>	Loads all accounts from database. </summary>
  *
- * <param name="filename">	Filename of the file. </param>
+ * <param name="filename">	Filename of the data storage. </param>
  *
- * <returns>	True if it succeeds, false if it fails. </returns>
+ * <returns>	TRUE if it succeeds, MyCasino HRESULT if it fails. </returns>
  *-----------------------------------------------------------------------------------------------**/
 
 BOOL MyCasino::LoadAccounts(std::wstring filename)
 {
+
+	// create filestream
 	std::wifstream m_accountDataFileStream;
 
 	m_accountDataFilename = filename;
@@ -162,6 +177,7 @@ BOOL MyCasino::LoadAccounts(std::wstring filename)
 		return FALSE;
 	}
 
+	// read file and deserialize account information linewise
 	std::wstring wLine;
 	while (std::getline(m_accountDataFileStream, wLine))
 	{
@@ -185,10 +201,10 @@ BOOL MyCasino::LoadAccounts(std::wstring filename)
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Loads an account. </summary>
+ * <summary>	Return the account for the given user. </summary>
  *
  * <param name="user">   	The user. </param>
- * <param name="account">	[in,out] If non-null, the account. </param>
+ * <param name="account">	[in,out] If non-null, the existing account. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
  *-----------------------------------------------------------------------------------------------**/
@@ -209,13 +225,14 @@ BOOL MyCasino::LoadAccount(const MyCasinoUser& user, MyCasinoAccount** account)
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Saves the accounts. </summary>
+ * <summary>	Saves the accounts to data storage. </summary>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
  *-----------------------------------------------------------------------------------------------**/
 
 BOOL MyCasino::SaveAccounts()
 {
+	// create writing file stream
 	std::wofstream m_accountDataFileStream;
 
 	std::wstring accountFile = m_userDataDirRoot;
@@ -227,6 +244,7 @@ BOOL MyCasino::SaveAccounts()
 		return FALSE;
 	}
 
+	// write data
 	{
 		SCOPED_LOCK(m_userAccountsMutex);
 		for (auto it = m_userAccounts.begin(); it != m_userAccounts.end(); it++)
@@ -241,13 +259,13 @@ BOOL MyCasino::SaveAccounts()
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Calculates the profit. </summary>
+ * <summary>	Calculates the profit for a given bet in a thread-safe way. </summary>
  *
  * <param name="bet">		 	[in,out] The bet. </param>
  * <param name="priceForOne">	[in,out] If non-null, the price for one. </param>
  * <param name="priceForTwo">	[in,out] If non-null, the price for two. </param>
  *
- * <returns>	True if it succeeds, false if it fails. </returns>
+ * <returns>	TRUE if it succeeds, MyCasino HRESULT if it fails. </returns>
  *-----------------------------------------------------------------------------------------------**/
 
 BOOL MyCasino::CalculateProfit(MyCasinoBet& bet, DOUBLE* priceForOne, DOUBLE* priceForTwo)
@@ -260,13 +278,14 @@ BOOL MyCasino::CalculateProfit(MyCasinoBet& bet, DOUBLE* priceForOne, DOUBLE* pr
 // has to be locked from outside SCOPED_LOCK(m_betsMutex);
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Calculates the profit. </summary>
+ * <summary>	Internal method for calculating 
+ * 				the profit for a given bet. </summary>
  *
  * <param name="bet">		  	[in,out] The bet. </param>
  * <param name="rewardForOne">	[in,out] If non-null, the reward for one. </param>
  * <param name="rewardForTwo">	[in,out] If non-null, the reward for two. </param>
  *
- * <returns>	True if it succeeds, false if it fails. </returns>
+ * <returns>	TRUE if it succeeds, MyCasino HRESULT if it fails. </returns>
  *-----------------------------------------------------------------------------------------------**/
 
 BOOL MyCasino::CalcProfit(MyCasinoBet& bet, DOUBLE* rewardForOne, DOUBLE* rewardForTwo)
@@ -296,14 +315,19 @@ BOOL MyCasino::CalcProfit(MyCasinoBet& bet, DOUBLE* rewardForOne, DOUBLE* reward
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Bets. </summary>
+ * <summary>	Create a bet for an existing user. The bet must not already exist 
+ * 				(unique first and second number). If the same user already bet 
+ * 				on the same numbers the amount is adjusted accordingly. If amount is 0
+ * 				bet is canceled. Gamer and operator preliminary balances 
+ * 				are noted (transaction is prepared) for calculation which is done by draw 
+ * 				method. </summary>
  *
  * <param name="user">		  	[in,out] The user. </param>
- * <param name="firstNumber"> 	The first number. </param>
- * <param name="secondNumber">	The second number. </param>
- * <param name="setAmount">   	The set amount. </param>
+ * <param name="firstNumber"> 	The first number of the bet. </param>
+ * <param name="secondNumber">	The second number of the bet. </param>
+ * <param name="setAmount">   	The set amount for the bet. </param>
  *
- * <returns>	True if it succeeds, false if it fails. </returns>
+ * <returns>	TRUE if it succeeds, MyCasino HRESULT if it fails. </returns>
  *-----------------------------------------------------------------------------------------------**/
 
 BOOL MyCasino::Bet(MyCasinoUser& user, SHORT firstNumber, SHORT secondNumber, DOUBLE setAmount)
@@ -431,12 +455,13 @@ BOOL MyCasino::Bet(MyCasinoUser& user, SHORT firstNumber, SHORT secondNumber, DO
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Deletes the bet. </summary>
+ * <summary>	Deletes the bet from current bet list. The bet object is not deleted
+ * 				immediately but stored in a list which will delete it later. </summary>
  *
  * <param name="firstNumber"> 	The first number. </param>
  * <param name="secondNumber">	The second number. </param>
  *
- * <returns>	True if it succeeds, false if it fails. </returns>
+ * <returns>	TRUE if it succeeds, MyCasino HRESULT if it fails. </returns>
  *-----------------------------------------------------------------------------------------------**/
 
 BOOL MyCasino::DeleteBet(SHORT firstNumber, SHORT secondNumber)
@@ -471,12 +496,13 @@ BOOL MyCasino::DeleteBet(SHORT firstNumber, SHORT secondNumber)
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Closes a bet. </summary>
+ * <summary>	Closes a bet for a user which implies canceling existing account 
+ * 				transactions for this bet. </summary>
  *
  * <param name="user">	The user. </param>
- * <param name="bet"> 	[in,out] The bet. </param>
+ * <param name="bet"> 	[in,out] The bet to close. </param>
  *
- * <returns>	True if it succeeds, false if it fails. </returns>
+ * <returns>	TRUE if it succeeds, MyCasino HRESULT if it fails. </returns>
  *-----------------------------------------------------------------------------------------------**/
 
 BOOL MyCasino::CloseBet(const MyCasinoUser& user, MyCasinoBet& bet)
@@ -507,11 +533,11 @@ BOOL MyCasino::CloseBet(const MyCasinoUser& user, MyCasinoBet& bet)
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Closes the bets. </summary>
+ * <summary>	Closes all current bets of a given user. </summary>
  *
  * <param name="user">	The user. </param>
  *
- * <returns>	True if it succeeds, false if it fails. </returns>
+ * <returns>	TRUE if it succeeds, MyCasino HRESULT if it fails. </returns>
  *-----------------------------------------------------------------------------------------------**/
 
 BOOL MyCasino::CloseBets(const MyCasinoUser& user)
@@ -551,13 +577,13 @@ BOOL MyCasino::CloseBets(const MyCasinoUser& user)
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Gets a bet. </summary>
+ * <summary>	Gets a bet object from current list by its numbers. </summary>
  *
  * <param name="firstNumber"> 	The first number. </param>
  * <param name="secondNumber">	The second number. </param>
  * <param name="bet">		  	[in,out] If non-null, the bet. </param>
  *
- * <returns>	True if it succeeds, false if it fails. </returns>
+ * <returns>	TRUE if it succeeds, MyCasino HRESULT if it fails. </returns>
  *-----------------------------------------------------------------------------------------------**/
 
 BOOL MyCasino::GetBet(SHORT firstNumber, SHORT secondNumber, MyCasinoBet** bet)
@@ -585,12 +611,12 @@ BOOL MyCasino::GetBet(SHORT firstNumber, SHORT secondNumber, MyCasinoBet** bet)
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Gets an account. </summary>
+ * <summary>	Gets the account for the povided user. </summary>
  *
  * <param name="user">   	The user. </param>
- * <param name="account">	[in,out] If non-null, the account. </param>
+ * <param name="account">	[in,out] If non-null, the user's account. </param>
  *
- * <returns>	True if it succeeds, false if it fails. </returns>
+ * <returns>	TRUE if it succeeds, MyCasino HRESULT if it fails. </returns>
  *-----------------------------------------------------------------------------------------------**/
 
 BOOL MyCasino::GetAccount(const MyCasinoUser& user, MyCasinoAccount** account)
@@ -611,6 +637,7 @@ BOOL MyCasino::GetAccount(const MyCasinoUser& user, MyCasinoAccount** account)
 		}
 	}
 
+	// check gamer accounts
 	{
 		SCOPED_LOCK(m_userAccountsMutex);
 		for (std::map<MyCasinoUser, MyCasinoAccount*>::iterator it = m_loadedUserAccounts.begin(); it != m_loadedUserAccounts.end(); it++)
@@ -623,6 +650,8 @@ BOOL MyCasino::GetAccount(const MyCasinoUser& user, MyCasinoAccount** account)
 		}
 	}
 
+	// if neither in active gamer account list nor operator account
+	// try to load it from overall account data storage
 	if (NULL == *account)
 	{
 		MyCasinoAccount* loadedAccount = NULL;
@@ -637,11 +666,11 @@ BOOL MyCasino::GetAccount(const MyCasinoUser& user, MyCasinoAccount** account)
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Check operator account. </summary>
+ * <summary>	Check if operator account balance is sufficient for a given bet. </summary>
  *
- * <param name="bet">	[in,out] The bet. </param>
+ * <param name="bet">	[in,out] The bet to check. </param>
  *
- * <returns>	True if it succeeds, false if it fails. </returns>
+ * <returns>	TRUE if it succeeds, MyCasino HRESULT if it fails. </returns>
  *-----------------------------------------------------------------------------------------------**/
 
 BOOL MyCasino::CheckOperatorAccount(MyCasinoBet& bet)
@@ -649,6 +678,8 @@ BOOL MyCasino::CheckOperatorAccount(MyCasinoBet& bet)
 	double rewardForOne = 0.0;
 	double rewardForTwo = 0.0;
 	BOOL resVal = FALSE;
+
+	// calculate potential rewards
 	{
 		SCOPED_LOCK(m_betsMutex);
 		resVal = CalcProfit(bet, &rewardForOne, &rewardForTwo);
@@ -668,7 +699,7 @@ BOOL MyCasino::CheckOperatorAccount(MyCasinoBet& bet)
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Query if 'firstNumber' is valid bet number. </summary>
+ * <summary>	Query if 'number' is valid bet number. </summary>
  *
  * <param name="firstNumber">	The first number. </param>
  *
@@ -681,12 +712,13 @@ BOOL MyCasino::IsValidBetNumber(SHORT firstNumber)
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Check bet. </summary>
+ * <summary>	Determine whether a bet is valid and if the provided user already has
+ * 				the ownership for this bet. </summary>
  *
  * <param name="user">	[in,out] The user. </param>
  * <param name="bet"> 	[in,out] The bet. </param>
  *
- * <returns>	True if it succeeds, false if it fails. </returns>
+ * <returns>	TRUE if it succeeds, MyCasino HRESULT if it fails. </returns>
  *-----------------------------------------------------------------------------------------------**/
 
 BOOL MyCasino::CheckBet(MyCasinoUser& user, MyCasinoBet& bet)
@@ -719,12 +751,12 @@ BOOL MyCasino::CheckBet(MyCasinoUser& user, MyCasinoBet& bet)
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Deposits. </summary>
+ * <summary>	Deposits given amount of money for the user. </summary>
  *
  * <param name="user">  	[in,out] The user. </param>
  * <param name="amount">	The amount. </param>
  *
- * <returns>	True if it succeeds, false if it fails. </returns>
+ * <returns>	TRUE if it succeeds, MyCasino HRESULT if it fails. </returns>
  *-----------------------------------------------------------------------------------------------**/
 
 BOOL MyCasino::Deposit(MyCasinoUser& user, DOUBLE amount)
@@ -748,12 +780,12 @@ BOOL MyCasino::Deposit(MyCasinoUser& user, DOUBLE amount)
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Withdraws. </summary>
+ * <summary>	Withdraws a mount of money for a given user. </summary>
  *
  * <param name="user">  	[in,out] The user. </param>
  * <param name="amount">	The amount. </param>
  *
- * <returns>	True if it succeeds, false if it fails. </returns>
+ * <returns>	TRUE if it succeeds, MyCasino HRESULT if it fails. </returns>
  *-----------------------------------------------------------------------------------------------**/
 
 BOOL MyCasino::Withdraw(MyCasinoUser& user, DOUBLE amount)
@@ -765,12 +797,15 @@ BOOL MyCasino::Withdraw(MyCasinoUser& user, DOUBLE amount)
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Draws. </summary>
+ * <summary>	Draws two number and finishes the current bets. Numbers either can be drawn
+ * 				randomly or can be provided as arguments (for testing). After numbers are
+ * 				drawn all bet rewards will be calculated and transfered to the 
+ * 				corresponding accounts.</summary>
  *
  * <param name="firstNumber"> 	[in,out] If non-null, the first number. </param>
  * <param name="secondNumber">	[in,out] If non-null, the second number. </param>
  *
- * <returns>	True if it succeeds, false if it fails. </returns>
+ * <returns>	TRUE if it succeeds, MyCasino HRESULT if it fails. </returns>
  *-----------------------------------------------------------------------------------------------**/
 
 BOOL MyCasino::Draw(SHORT** firstNumber, SHORT** secondNumber)
@@ -778,6 +813,7 @@ BOOL MyCasino::Draw(SHORT** firstNumber, SHORT** secondNumber)
 	if (!IsOpened())
 		return E_MY_CASINO_NO_OPERATOR;
 
+	// generate random numbers if not provided
 	if (NULL == *firstNumber)
 		*firstNumber = new short(GenerateDrawNumber(NULL));
 	if (NULL == *secondNumber)
@@ -826,7 +862,8 @@ BOOL MyCasino::Draw(SHORT** firstNumber, SHORT** secondNumber)
 				return E_MY_CASINO_UNKNOWN_TRANSACTION_ID;
 
 			MyCasinoTransactionsInformationTypes infoType = MyCasinoTransactionsInformationTypes::Bet;
-			if (totalReward > 0.001)
+			// gamer wins the bet
+			if (totalReward > 0.001) 
 			{
 				resVal = (account)->ChangeTransaction(currentTransactionId,
 					totalReward, 
@@ -844,7 +881,8 @@ BOOL MyCasino::Draw(SHORT** firstNumber, SHORT** secondNumber)
 				if (FAILED(resVal))
 					return resVal;
 			}
-			else
+			// operator wins the bet
+			else 
 			{
 				resVal = (account)->ChangeTransaction(currentTransactionId,
 					-(*it).second->GetSetAmount(),
@@ -865,7 +903,7 @@ BOOL MyCasino::Draw(SHORT** firstNumber, SHORT** secondNumber)
 					return resVal;
 			}
 
-			// save result
+			// save result to bet object
 			(*it).second->SetBetResult(**firstNumber, **secondNumber, totalReward);
 
 			// save bets in order to delete them later
@@ -887,9 +925,10 @@ BOOL MyCasino::Draw(SHORT** firstNumber, SHORT** secondNumber)
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Generates a draw number. </summary>
+ * <summary>	Generates a random number according to MyCasino rules. </summary>
  *
- * <param name="firstNumber">	[in,out] If non-null, the first number. </param>
+ * <param name="firstNumber">	[in,out] If non-null, the first number which restricts
+ * 								the valid output values for the second number. </param>
  *
  * <returns>	The draw number. </returns>
  *-----------------------------------------------------------------------------------------------**/
@@ -901,9 +940,9 @@ SHORT MyCasino::GenerateDrawNumber(SHORT* firstNumber)
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Gets the bets. </summary>
+ * <summary>	Gets all current opened bets. </summary>
  *
- * <returns>	Null if it fails, else the bets. </returns>
+ * <returns>	Vector of all current bets. </returns>
  *-----------------------------------------------------------------------------------------------**/
 
 std::vector<MyCasinoBet*> MyCasino::GetBets()
@@ -922,12 +961,12 @@ std::vector<MyCasinoBet*> MyCasino::GetBets()
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Gets the next transaction. </summary>
+ * <summary>	Gets the next transaction object for a given user. </summary>
  *
  * <param name="user">		 	[in,out] The user. </param>
  * <param name="transaction">	[in,out] If non-null, the transaction. </param>
  *
- * <returns>	True if it succeeds, false if it fails. </returns>
+ * <returns>	TRUE if it succeeds, MyCasino HRESULT if it fails. </returns>
  *-----------------------------------------------------------------------------------------------**/
 
 BOOL MyCasino::GetNextTransaction(MyCasinoUser& user, MyCasinoTransaction** const transaction)
@@ -940,7 +979,7 @@ BOOL MyCasino::GetNextTransaction(MyCasinoUser& user, MyCasinoTransaction** cons
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Gets transaction infomation. </summary>
+ * <summary>	Gets transaction infomation and type for a given transaction id. </summary>
  *
  * <param name="user">						[in,out] The user. </param>
  * <param name="transationId">				Identifier for the transation. </param>
@@ -948,7 +987,7 @@ BOOL MyCasino::GetNextTransaction(MyCasinoUser& user, MyCasinoTransaction** cons
  * 											transaction. </param>
  * <param name="type">						[in,out] If non-null, the type. </param>
  *
- * <returns>	True if it succeeds, false if it fails. </returns>
+ * <returns>	TRUE if it succeeds, MyCasino HRESULT if it fails. </returns>
  *-----------------------------------------------------------------------------------------------**/
 
 BOOL MyCasino::GetTransactionInfomation(MyCasinoUser& user, ULONG transationId, IMyCasinoTransactionInformation** const transactionInformation, MyCasinoTransactionsInformationTypes* type)
@@ -961,9 +1000,10 @@ BOOL MyCasino::GetTransactionInfomation(MyCasinoUser& user, ULONG transationId, 
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Closes this object. </summary>
+ * <summary>	Closes the casino (removes the current operator 
+ * 				and cleans up all existing bets. </summary>
  *
- * <returns>	True if it succeeds, false if it fails. </returns>
+ * <returns>	TRUE if it succeeds, MyCasino HRESULT if it fails. </returns>
  *-----------------------------------------------------------------------------------------------**/
 
 BOOL MyCasino::Close()

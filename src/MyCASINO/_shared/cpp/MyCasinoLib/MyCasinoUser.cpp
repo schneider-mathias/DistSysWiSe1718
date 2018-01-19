@@ -7,7 +7,8 @@
 //			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
 //
 //			Date		Developer			Change
-//			13.01.2018	Mathias Schneider	Created
+//			23.12.2017	Mathias Schneider	Created
+//			XXXXXXXXXX	Mathias Schneider	Changed
  *-----------------------------------------------------------------------------------------------**/
 
 #include "MyCasinoUser.h"
@@ -25,9 +26,9 @@ MyCasinoUser::~MyCasinoUser()
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Serialize this object to the given stream. </summary>
+ * <summary>	Serialize user object to string </summary>
  *
- * <returns>	A std::wstring. </returns>
+ * <returns>	A string containing the MyCasino user information. </returns>
  *-----------------------------------------------------------------------------------------------**/
 
 std::wstring MyCasinoUser::Serialize()
@@ -44,9 +45,9 @@ std::wstring MyCasinoUser::Serialize()
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Deserialize this object to the given stream. </summary>
+ * <summary>	Deserialize a string and applies its values to this object. </summary>
  *
- * <param name="in">	The in. </param>
+ * <param name="in">	The serialized string. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
  *-----------------------------------------------------------------------------------------------**/

@@ -2,12 +2,15 @@
 // project:	MyCasinoLib
 // file:	MyCasinoAccount.cpp
 //
-// summary:	Implements my casino account class
+// summary:	Implements my casino account class which handles the current balance 
+//			(including prelimary balance) and keeps internally track of all transactions their
+//			detailed information. Can be (de-)serialized from/to file data storage.
 //
 //			Copyright (c) 2018 OTH-Amberg/Weiden. All rights reserved.
 //
 //			Date		Developer			Change
-//			13.01.2018	Mathias Schneider	Created
+//			25.12.2017	Mathias Schneider	Created
+//			XXXXXXXXXX	Mathias Schneider	Changed
  *-----------------------------------------------------------------------------------------------**/
 
 #include <sstream>
@@ -19,7 +22,7 @@
 /**--------------------------------------------------------------------------------------------------
  * <summary>	Constructor. </summary>
  *
- * <param name="balance">	The balance. </param>
+ * <param name="balance">	The inital balance for this account. </param>
  *-----------------------------------------------------------------------------------------------**/
 
 MyCasinoAccount::MyCasinoAccount(DOUBLE balance)
@@ -50,7 +53,7 @@ MyCasinoAccount::~MyCasinoAccount()
 /**--------------------------------------------------------------------------------------------------
  * <summary>	Serialize this object to the given stream. </summary>
  *
- * <returns>	A std::wstring. </returns>
+ * <returns>	A serialized string containing account information. </returns>
  *-----------------------------------------------------------------------------------------------**/
 
 std::wstring MyCasinoAccount::Serialize()
@@ -63,9 +66,9 @@ std::wstring MyCasinoAccount::Serialize()
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Deserialize this object to the given stream. </summary>
+ * <summary>	Deserialize given stream and applies it to this object. </summary>
  *
- * <param name="in">	The in. </param>
+ * <param name="in">	The serialized string. </param>
  *
  * <returns>	True if it succeeds, false if it fails. </returns>
  *-----------------------------------------------------------------------------------------------**/
@@ -116,7 +119,8 @@ std::wstring MyCasinoAccount::GetUsername()
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Creates a transaction. </summary>
+ * <summary>	Creates a transaction for the account including information.
+ * 				Account balance is calculated accordingly. </summary>
  *
  * <param name="changeAmount"> 	The change amount. </param>
  * <param name="type">		   	The type. </param>
@@ -129,7 +133,7 @@ std::wstring MyCasinoAccount::GetUsername()
 
 BOOL MyCasinoAccount::CreateTransaction(DOUBLE changeAmount, MyCasinoTransactionsTypes type, IMyCasinoTransactionInformation* information, MyCasinoTransactionsInformationTypes* infoType, ULONG* transactionId)
 {
-	// apply transaction
+	// apply transaction to (preliminary) balance
 	switch (type)
 	{
 	case MyCasinoTransactionsTypes::DEPOSIT:
@@ -155,6 +159,9 @@ BOOL MyCasinoAccount::CreateTransaction(DOUBLE changeAmount, MyCasinoTransaction
 			m_currentBalance += changeAmount;
 		}
 		break;
+
+	// wager is not applied to balance immediately and only saved to preliminary balance
+	// which is "lying on the table"
 	case MyCasinoTransactionsTypes::BET_WAGER:
 		if (changeAmount + GetCurrentBalance() < 0 )
 			return E_MY_CASINO_ACCOUNT_BALANCE_NOT_SUFFICIENT;
@@ -168,7 +175,7 @@ BOOL MyCasinoAccount::CreateTransaction(DOUBLE changeAmount, MyCasinoTransaction
 		return E_MY_CASINO_INVALID_TRANSACTION_TYPE;
 	}
 
-
+	// create and save transaction object
 	MyCasinoTransaction* transaction = new MyCasinoTransaction(m_transactionIdCounter++, m_currentBalance, changeAmount);
 	transaction->SetTransactionType(type, information, infoType);
 
@@ -185,7 +192,8 @@ BOOL MyCasinoAccount::CreateTransaction(DOUBLE changeAmount, MyCasinoTransaction
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Queries if we cancel transaction 'transactionId'. </summary>
+ * <summary>	Cancel a transaction by its unique identifier. All balance changes are undone
+ * 				and transaction type is set to CANCELED. </summary>
  *
  * <param name="transactionId">	Identifier for the transaction. </param>
  *
@@ -198,6 +206,7 @@ BOOL MyCasinoAccount::CancelTransaction(ULONG transactionId)
 	if (!GetTransaction(transactionId, &transaction))
 		return FALSE;
 
+	// undo (preliminary) balance changes
 	switch (transaction->GetTransactionType())
 	{
 	case MyCasinoTransactionsTypes::DEPOSIT:
@@ -217,12 +226,15 @@ BOOL MyCasinoAccount::CancelTransaction(ULONG transactionId)
 		return E_MY_CASINO_INVALID_TRANSACTION_TYPE;
 	}
 
+	// set transaction type to canceled and delete transaction information
 	transaction->SetTransactionType(MyCasinoTransactionsTypes::CANCELED, NULL, NULL);
 	return TRUE;
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Gets transaction information. </summary>
+ * <summary>	Gets transaction information and type for a given transaction id. 
+ * 				Both values might be null, because it is not mandatory to have an
+ * 				information object for each transaction. </summary>
  *
  * <param name="transactionId">	Identifier for the transaction. </param>
  * <param name="information">  	[in,out] If non-null, the information. </param>
@@ -244,7 +256,7 @@ BOOL MyCasinoAccount::GetTransactionInformation(ULONG transactionId, IMyCasinoTr
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Gets a transaction. </summary>
+ * <summary>	Gets a transaction by its identifier. </summary>
  *
  * <param name="transactionId">	Identifier for the transaction. </param>
  * <param name="transaction">  	[in,out] If non-null, the transaction. </param>
@@ -269,7 +281,7 @@ BOOL MyCasinoAccount::GetTransaction(ULONG transactionId, MyCasinoTransaction** 
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Gets a transaction. </summary>
+ * <summary>	Gets a transaction by its transaction details object and returns its id. </summary>
  *
  * <param name="transactionInformation">	[in,out] If non-null, information describing the
  * 											transaction. </param>
@@ -300,7 +312,7 @@ BOOL MyCasinoAccount::GetTransaction(IMyCasinoTransactionInformation* transactio
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Gets current balance. </summary>
+ * <summary>	Gets current balance including preliminary balance. </summary>
  *
  * <returns>	The current balance. </returns>
  *-----------------------------------------------------------------------------------------------**/
@@ -312,7 +324,13 @@ DOUBLE MyCasinoAccount::GetCurrentBalance()
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Change transaction. </summary>
+ * <summary>	Change transaction (identified by parameter). Preliminary
+ * 				balance and balance are calculated accodingly. Only transactions which 
+ * 				are marked as wager transaction are allowed to be changed. 
+ * 				The transaction object and its  detailed information are changed 
+ * 				as provided. If a change cannot be applied because the 
+ * 				account would become negative the transaction will not be 
+ * 				changed. </summary>
  *
  * <param name="transactionId">	Identifier for the transaction. </param>
  * <param name="changeAmount"> 	The change amount. </param>
@@ -342,11 +360,13 @@ BOOL MyCasinoAccount::ChangeTransaction(ULONG transactionId, DOUBLE changeAmount
 	// same type simply amount changed
 	if (type == MyCasinoTransactionsTypes::BET_WAGER)
 	{
+		// calculate difference to current (wager) amount
 		additionalWageDifference = -(previousAmount - changeAmount);
 
 		if (GetCurrentBalance() - additionalWageDifference < 0)
 			return E_MY_CASINO_ACCOUNT_BALANCE_NOT_SUFFICIENT;
 
+		// adjust preliminary balance
 		{
 			SCOPED_LOCK(balanceMutex);
 			m_preliminaryBalance += additionalWageDifference;
@@ -356,6 +376,7 @@ BOOL MyCasinoAccount::ChangeTransaction(ULONG transactionId, DOUBLE changeAmount
 	}
 	else if (type == MyCasinoTransactionsTypes::BET_LOSS)
 	{
+		// calculate difference to current amount
 		if (previousAmount > 0.0 && changeAmount < 0.0)
 			additionalWageDifference = changeAmount + previousAmount;
 		else
@@ -379,6 +400,7 @@ BOOL MyCasinoAccount::ChangeTransaction(ULONG transactionId, DOUBLE changeAmount
 	}
 	else if (type == MyCasinoTransactionsTypes::BET_WIN)
 	{
+		// calculate difference to current amount
 		if (previousAmount < 0.0 && changeAmount > 0.0)
 			additionalWageDifference = changeAmount + previousAmount;
 		else
@@ -410,7 +432,9 @@ BOOL MyCasinoAccount::ChangeTransaction(ULONG transactionId, DOUBLE changeAmount
 }
 
 /**--------------------------------------------------------------------------------------------------
- * <summary>	Gets the next transaction. </summary>
+ * <summary>	Gets the next transaction. Transactions are iterated internally 
+ * 				and sorted automatically so that account balances and its changes 
+ * 				are comprehensibly (historic transaction order is confusing). </summary>
  *
  * <param name="nextTransaction">	[in,out] If non-null, the next transaction. </param>
  *
@@ -430,6 +454,7 @@ BOOL MyCasinoAccount::GetNextTransaction(MyCasinoTransaction** nextTransaction)
 	{
 		m_sortedTransactions.clear();
 
+		// create a temporary list for sorting
 		std::vector<MyCasinoTransaction*> tmpTransactionList = m_transactions;
 
 		// init with first and remorve it from temp list
@@ -443,6 +468,7 @@ BOOL MyCasinoAccount::GetNextTransaction(MyCasinoTransaction** nextTransaction)
 			{
 				nextTransactionForSort = (*it);
 
+				// skip transactions that are canceled or not yet done
 				if (nextTransactionForSort->GetTransactionType() == MyCasinoTransactionsTypes::CANCELED
 					|| nextTransactionForSort->GetTransactionType() == MyCasinoTransactionsTypes::BET_WAGER)
 				{
@@ -454,17 +480,22 @@ BOOL MyCasinoAccount::GetNextTransaction(MyCasinoTransaction** nextTransaction)
 				double nextChange = nextTransactionForSort->GetChangeAmount();
 				double nextBalance = nextTransactionForSort->GetResultBalance();
 
+				// check if the current changed balance matches netx balance
 				if ((currentBalance + nextChange) - nextBalance < 0.001 )
 				{
+					// remove comprehensive next transaction from temporary list
+					// and stop search
 					it = tmpTransactionList.erase(it);
 					break;
 				}
 				else
 				{
+					// check next transaction
 					it++;
 				}
 			}
 
+			// add found next transaction to sorted list
 			m_sortedTransactions.push_back(nextTransactionForSort);
 		}
 	}
