@@ -22,7 +22,6 @@
 
 #include "MyCasinoDefines.h"
 
-// include jsoncpp writer
 #include "json/writer.h"
 
 /**--------------------------------------------------------------------------------------------------
