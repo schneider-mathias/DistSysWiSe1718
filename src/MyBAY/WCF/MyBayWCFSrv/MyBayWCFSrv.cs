@@ -31,7 +31,7 @@ namespace MyBayWCFSrv
 
         #region C'Tors
         /// <summary>
-        /// Constructor of the MyBayWCFSrv class
+        /// Constructor of the class MyBayWCFSrv 
         /// </summary>
         public MyBayWCFSrv()
         {
@@ -39,10 +39,12 @@ namespace MyBayWCFSrv
             AuthenticationService.AuthService.initializeAuthService();
 
             this.listAuctions = Auction.GetPersistentAuctions();
+            // check if reading from file was successful
             if (this.listAuctions != null)
             {
                 Auction.setCountAuctions((UInt32)this.listAuctions.Count);
             }
+            // if reading from file not successfull, create new list
             else this.listAuctions = new List<Auction>();
         }
         #endregion

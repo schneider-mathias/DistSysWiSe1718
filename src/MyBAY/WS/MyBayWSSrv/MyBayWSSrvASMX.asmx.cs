@@ -1,9 +1,9 @@
 ﻿/*************************************************************************/
 /*                                                                       */
-/*    Inhalt:    Implementierung des Webservices                         */
+/*    Inhalt:    Implementierung des MyBay - Webservices                 */
 /*                                                                       */
 /*    Autor(en): Manuel Schlemelch                                       */
-/*    Stand:     12.01.2018                                              */
+/*    Stand:     14.01.2018                                              */
 /*                                                                       */
 /*************************************************************************/
 
@@ -20,16 +20,25 @@ using System.Collections.Concurrent;
 namespace MyBayWSSrv
 {
     /// <summary>
-    /// Zusammenfassungsbeschreibung für MyBayWSSrvASMX
+    /// Class MyBayWSSrv is implementing the Web-Service for providing an endpoint for the Windows Phone App
+    /// 
     /// </summary>
     [WebService(Namespace = "http://MyBayServer.org/")]
     [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
     [System.ComponentModel.ToolboxItem(false)]
     public class MyBayWSSrvASMX : System.Web.Services.WebService
     {
+        /// <summary>
+        /// This is a private list of auctions which is initialized during the start of the Web-Service in it's constructor
+        /// The list is either created new or the list is created from the persistent data on the hard disk drive, if the service 
+        /// was already executed before on the same machine
+        /// </summary>
         private static List<Auction> listAuctions;
 
         #region C'Tors
+        /// <summary>
+        /// Constructor of the class MayBayWSSrvASMX
+        /// </summary>
         public MyBayWSSrvASMX()
         {
             AuthService.initializeAuthService();
@@ -38,7 +47,7 @@ namespace MyBayWSSrv
             if (MyBayWSSrvASMX.listAuctions == null)
             {
                 MyBayWSSrvASMX.listAuctions = Auction.GetPersistentAuctions();
-                // check if reading from File was successful
+                // check if reading from file was successful
                 if (MyBayWSSrvASMX.listAuctions != null)
                 {
                     Auction.setCountAuctions((UInt32)MyBayWSSrvASMX.listAuctions.Count);
@@ -50,6 +59,13 @@ namespace MyBayWSSrv
         #endregion
 
         #region Methods
+        /// <summary>
+        /// Login method to log in a user
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <param name="password"></param>
+        /// <param name="sessionID"></param>
+        /// <returns></returns>
         [WebMethod]
         public String login(String userName, String password, out UInt32 sessionID)
         {
@@ -62,23 +78,38 @@ namespace MyBayWSSrv
                 sessionID = loginSessionID;
                 return "OK";
             }
-
+            
+            // If login failed, set sessionID of user to 0 (not logged in)
             sessionID = 0;
             return ReturnMessage;
         }
 
+        /// <summary>
+        /// logout method to log out a user
+        /// </summary>
+        /// <param name="sessionID"></param>
+        /// <returns></returns>
         [WebMethod]
         public String logout(UInt32 sessionID)
         {
             return AuthenticationService.AuthService.Logout(sessionID);
         }
 
+        /// <summary>
+        /// Offer method to create a new auction and add it to the list of auctions
+        /// </summary>
+        /// <param name="sessionID"></param>
+        /// <param name="artName"></param>
+        /// <param name="startBid"></param>
+        /// <param name="auctionNumber"></param>
+        /// <returns></returns>
         [WebMethod]
         public String offer(UInt32 sessionID, String artName, Double startBid, out UInt32 auctionNumber)
         {
             auctionNumber = 0;
             if (!AuthenticationService.AuthService.isLoggedIn(sessionID)) return "Die angegebene SessionID ist nicht registriert, loggen Sie sich erneut ein";
 
+            // Translating current sessionID of client to the index of the user which is logged in
             UInt32 auctioneerIndex = AuthenticationService.AuthService.getIndexBySessionID(sessionID);
 
             Auction newAuction = new Auction(artName, startBid, auctioneerIndex);
@@ -93,6 +124,13 @@ namespace MyBayWSSrv
             return "OK";
         }
 
+        /// <summary>
+        /// Method to add a user on the list of interested users of an auction so that
+        /// the user will be informed about updates on this auction
+        /// </summary>
+        /// <param name="sessionID"></param>
+        /// <param name="auctionNumber"></param>
+        /// <returns></returns>
         [WebMethod]
         public String interested(UInt32 sessionID, UInt32 auctionNumber)
         {
@@ -109,6 +147,8 @@ namespace MyBayWSSrv
                 {
                     return "Die angegebene Auktionsnummer konnte nicht gefunden werden";
                 }
+                // Translating current sessionID of client to the index of the user which is logged in and
+                // add it to the list of interested users of the auction with the passed auctionNumber
                 auctionTemp.addToInterested(AuthenticationService.AuthService.getIndexBySessionID(sessionID));
             }
 
@@ -117,6 +157,22 @@ namespace MyBayWSSrv
             return "OK";
         }
 
+        /// <summary>
+        /// Method to go through the list of auctions and filter them by the criteria
+        /// the calling client was passing with the parameters
+        /// </summary>
+        /// <param name="sessionID"></param>
+        /// <param name="flags">Can be 0, 1 and 2:
+        /// 0: all open auctions where the calling client (user) is interested in
+        /// 1: all open auctions
+        /// 2: all auctions - open and closed
+        /// </param>
+        /// <param name="artName">
+        /// If this string is not empty, the auctions are also filtered by the name of the auction
+        /// </param>
+        /// <param name="countAuctions"></param>
+        /// <param name="auctions"></param>
+        /// <returns></returns>
         [WebMethod]
         public String getAuctions(UInt32 sessionID, UInt32 flags, String artName, out UInt32 countAuctions, out List<AuctionTransfer> auctions)
         {
@@ -154,21 +210,19 @@ namespace MyBayWSSrv
                     break;
             }
 
+            // If passed string for filtering with the articleName is not empty
             if (!String.IsNullOrEmpty(artName))
             {
                 personalizedAuctionList = personalizedAuctionList.FindAll(item => item.ArtName.StartsWith(artName));
-
-                if (personalizedAuctionList.Count < 1)
-                {
-                    return "Keine Auktionen mit den angegebenen Artikelnamen gefunden";
-                }
             }
 
+            // if personalizedAuctionList doesnt contain any items
             if (personalizedAuctionList.Count < 1)
             {
                 return "Keine Auktionen mit den angegebenen Parametern gefunden";
             }
 
+            // Create new list with AuctionTransfer objects for passing the found information back to the client
             foreach (Auction auct in personalizedAuctionList)
             {
                 AuctionTransfer transferItem = new AuctionTransfer();
@@ -185,11 +239,19 @@ namespace MyBayWSSrv
             return "OK";
         }
 
+        /// <summary>
+        /// Method for bidding on an article
+        /// </summary>
+        /// <param name="sessionID"></param>
+        /// <param name="auctionNumber"></param>
+        /// <param name="bidVal"></param>
+        /// <returns></returns>
         [WebMethod]
         public String bid(UInt32 sessionID, UInt32 auctionNumber, Double bidVal)
         {
             if (!AuthenticationService.AuthService.isLoggedIn(sessionID)) return "Die angegebene SessionID ist nicht registriert, loggen Sie sich erneut ein";
 
+            // Find the auction with the passed auctionNumber
             Auction auctionTemp;
             lock (MyBayWSSrvASMX.listAuctions)
             {
@@ -203,6 +265,7 @@ namespace MyBayWSSrv
                 }
             }
 
+            // Call method for adding the bid with the passed value (bidVal)
             String returnMsg = auctionTemp.addBid(AuthenticationService.AuthService.getIndexBySessionID(sessionID), bidVal);
             if (returnMsg == "OK")
             {
@@ -212,6 +275,14 @@ namespace MyBayWSSrv
             return returnMsg;
         }
 
+        /// <summary>
+        /// Method for getting all Bids of an auction, can just be executed by the auctioneer of an auction
+        /// </summary>
+        /// <param name="sessionID"></param>
+        /// <param name="auctionNumber"></param>
+        /// <param name="countBids"></param>
+        /// <param name="allBids"></param>
+        /// <returns></returns>
         [WebMethod]
         public String details(UInt32 sessionID, UInt32 auctionNumber, out UInt32 countBids, out List<BidTransfer> allBids)
         {
@@ -237,6 +308,7 @@ namespace MyBayWSSrv
                 }
             }
 
+            // Create new list with BidTransfer objects for passing the found bids back to the client
             foreach (Bid bid in copyBids)
             {
                 BidTransfer tempTransfer = new BidTransfer();
@@ -250,6 +322,13 @@ namespace MyBayWSSrv
             return "OK";
         }
 
+        /// <summary>
+        /// Method for ending an auction
+        /// An auction can just be ended if the calling client (user) is the auctioneer of the auction with the passed auctionNumber
+        /// </summary>
+        /// <param name="sessionID"></param>
+        /// <param name="auctionNumber"></param>
+        /// <returns></returns>
         [WebMethod]
         public String endauction(UInt32 sessionID, UInt32 auctionNumber)
         {
@@ -283,6 +362,15 @@ namespace MyBayWSSrv
             }
         }
 
+        /// <summary>
+        /// Method checks, if there are any messages for the calling client (user) in the 
+        /// static list of the Auction class.
+        /// If there is are messages, they will be copied to a list of MessageTransfer objects and passed back to the client
+        /// </summary>
+        /// <param name="sessionID"></param>
+        /// <param name="messageAvailable"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
         [WebMethod]
         public String getMessage(UInt32 sessionID, out Boolean messageAvailable, out List<MessageTransfer> message)
         {
@@ -307,6 +395,8 @@ namespace MyBayWSSrv
                         if (tempMessage != null)
                         {
                             MessageTransfer tempTransferMessage = new MessageTransfer();
+                            // Properties of MessageTransfer are interpreted on client side depending on the Type
+                            // of the message
                             tempTransferMessage.MessageDoubleValue = tempMessage.MessageDoubleValue;
                             tempTransferMessage.MessageIntValue = tempMessage.MessageIntValue;
                             tempTransferMessage.MessageIntValue2 = tempMessage.MessageIntValue2;
