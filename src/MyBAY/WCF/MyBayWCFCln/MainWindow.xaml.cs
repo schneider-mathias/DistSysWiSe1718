@@ -52,6 +52,13 @@ namespace MyBayWCFCln
         public event EventHandler myListBoxUpdateEventHandler;
 
         /// <summary>
+        /// This boolean variable is needed because otherwise the client would open several messageboxes
+        /// to inform the user about a connection error on return of not valid
+        /// requests while cyclic getting the messages
+        /// </summary>
+        private bool informedUserAboutServerError = false;
+
+        /// <summary>
         /// Constructor of the MainWindow
         /// </summary>
          public MainWindow()
@@ -210,9 +217,17 @@ namespace MyBayWCFCln
                 // If something went wrong with getting the messages from the server, disable the polling for messages
                 this.getMessageTimer.Stop();
 #if COM
-                MessageBox.Show("Fehler bei der Verbindung zum Server, der Client wird geschlossen", "Warnung", MessageBoxButton.OK);
+                if(!informedUserAboutServerError)
+                {
+                    MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
+                    informedUserAboutServerError = true;
+                }
 #else
-                MessageBox.Show("Fehler bei der Verbindung zum Server, der Client wird geschlossen", "Warnung", MessageBoxButton.OK);
+                if (!informedUserAboutServerError)
+                {
+                    MessageBox.Show("Fehler bei der Verbindung zum Server", "Warnung", MessageBoxButton.OK);
+                    informedUserAboutServerError = true;
+                }
 #endif
             }
             
