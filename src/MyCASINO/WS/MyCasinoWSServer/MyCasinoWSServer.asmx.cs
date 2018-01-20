@@ -76,6 +76,7 @@ namespace MyCasinoWSServer
         {
             //init
             string name = "";
+            bool operatorLogout = false;
             //Check for valid sessionId
             if (!m_authService.SessionIdCheck(sessionId))
             {
@@ -89,6 +90,7 @@ namespace MyCasinoWSServer
                 User userOperatorCheck = userListLoggedOn.Find(item => item.UserType == 0);
                 if (userOperatorCheck != null)
                 {
+                    operatorLogout = true;
                     lock (thisLockDictTransDraw)
                     {
                         userOperatorCheck.OperatorLogout(sessionId, dictTransDraw, userListLoggedOn, userOperatorCheck, out name);
@@ -112,6 +114,11 @@ namespace MyCasinoWSServer
             //Logout successful
             if (errMsg == "S_OK")
             {
+                User userOperatorCheck = userListLoggedOn.Find(item => item.UserType == 0);
+                if (userOperatorCheck == null && operatorLogout == false)
+                {
+                    errMsg = "OPERATOR_NOT_LOGGED_IN";
+                }
                 Console.WriteLine(name + ": logged out!");
                 return true;
             }

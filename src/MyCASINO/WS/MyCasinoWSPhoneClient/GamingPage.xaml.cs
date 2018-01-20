@@ -93,8 +93,12 @@ namespace MyCasinoWSPhoneClient
         {
             var result = await myCasinoSvcGaming.MyCasinoSvc.LogoutAsyncTask(myCasinoSvcGaming.SessionId);
 
-            if (result.errMsg == "S_OK")
+            if (result.errMsg == "S_OK" || result.errMsg == "OPERATOR_NOT_LOGGED_IN")
             {
+                if (result.errMsg == "OPERATOR_NOT_LOGGED_IN")
+                {
+                    MessageBox.Show("Betreiber nicht eingelogged");
+                }
                 this.ShowNewDialog<LoginPage>(
                   cp => { cp.MyCasinoSvcLogin = myCasinoSvcGaming; },
                   //cp => { MyCasinoSvcLogin = cp.MyCasinoSvcGamingPage; });
@@ -808,8 +812,6 @@ namespace MyCasinoWSPhoneClient
         #region Page loaded
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-
-            btnRefresh_Click(new object(), new RoutedEventArgs());
             if (MyCasinoSvcGaming.UserType == 1)
             {
                 btnBet.Visibility = Visibility.Visible;
