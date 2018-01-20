@@ -97,7 +97,7 @@ namespace MyCasinoWCFClient.Pages
 #if COM
             try
             {
-                _ComSrv.deposit(SessionId, cbxPayInUsername.Text, amount, out errMsg);
+                _ComSrv.deposit((uint)SessionId, cbxPayInUsername.Text, amount, out errMsg);
             }
             catch (Exception ex)
             {

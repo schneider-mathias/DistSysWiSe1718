@@ -159,7 +159,11 @@ namespace MyCasinoWCFClient.Pages
 #if COM
             try
             {
-                _ComSrv.logout(SessionId, out errMsg);
+                _ComSrv.logout((uint)SessionId, out errMsg);
+                if (errMsg != null)
+                {
+                    MessageBox.Show("No operator is logged in!");
+                }
 
                 System.Windows.Application.Current.Shutdown();
             }
@@ -182,6 +186,10 @@ namespace MyCasinoWCFClient.Pages
             {
                 if (_RemSrvMyCasino.logout(SessionId, out errMsg))
                 {
+                    if(errMsg== "OPERATOR_NOT_LOGGED_IN")
+                    {
+                        MessageBox.Show("Betreiber nicht eingelogged");
+                    }
                     // Close Client Connection
                     if (_RemSrvMyCasino != null)
                     {

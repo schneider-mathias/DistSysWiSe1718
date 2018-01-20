@@ -673,12 +673,13 @@ namespace MyCasinoWCFClient.Pages
 
         private void btnBet_Click(object sender, RoutedEventArgs e)
         {
+            bool betNotSuccessful = false;
             double amount;
             double.TryParse(tbxBetSum.Text, out amount);
 #if COM
             try
             {
-                _ComSrv.bet(SessionId, amount, NumberOne, NumberTwo, out errMsg);
+                _ComSrv.bet((uint)SessionId, amount, NumberOne, NumberTwo, out errMsg);
             }
             catch (Exception ex)
             {
@@ -688,6 +689,9 @@ namespace MyCasinoWCFClient.Pages
                     errMsg = "Unknown";
 
                 MessageBox.Show(errMsg);
+
+                betNotSuccessful = true;
+
 
                 if(ex.HResult == -2147023174)
                 {
@@ -754,7 +758,10 @@ namespace MyCasinoWCFClient.Pages
             btnBet.IsEnabled = false;
 
             //Refresh showbets
-            btnRefresh_Click(new object(), new RoutedEventArgs());
+            if(!betNotSuccessful)
+            {
+                btnRefresh_Click(new object(), new RoutedEventArgs());
+            }
         }
 
         private void tbxBetSum_KeyUp(object sender, KeyEventArgs e)
@@ -793,7 +800,11 @@ namespace MyCasinoWCFClient.Pages
             System.Array bets=null;
             try
             {
-                _comSrv.showbets(SessionId, out bets, out count, out errMsg);
+                _comSrv.showbets((uint)SessionId, out bets, out count, out errMsg);
+                if (errMsg != null)
+                {
+                    MessageBox.Show("No operator is logged in!");
+                }
             }
            catch (Exception ex)
             {
@@ -834,7 +845,7 @@ namespace MyCasinoWCFClient.Pages
                 double profitForOneMatch = 0, profitForTwoMatches = 0;
                 try
                 {
-                    _ComSrv.calculateProfit(SessionId,(double)bets.GetValue(i+3) , (short)bets.GetValue(i+1), (short)bets.GetValue(i+2), out profitForOneMatch, out profitForTwoMatches, out errMsg);
+                    _ComSrv.calculateProfit((uint)SessionId,(double)bets.GetValue(i+3) , (short)bets.GetValue(i+1), (short)bets.GetValue(i+2), out profitForOneMatch, out profitForTwoMatches, out errMsg);
                     lbNameList.Items.Add(bets.GetValue(i));
                     lbFirstNumberList.Items.Add(bets.GetValue(i+1).ToString());
                     lbSecondNumberList.Items.Add(bets.GetValue(i+2).ToString());
@@ -885,7 +896,11 @@ namespace MyCasinoWCFClient.Pages
 #if COM
             try
             {
-                _ComSrv.draw(SessionId, out firstNumber, out secondNumber, out errMsg);
+                _ComSrv.draw((uint)SessionId, out firstNumber, out secondNumber, out errMsg);
+                if (errMsg != null)
+                {
+                    MessageBox.Show("No operator is logged in!");
+                }
             }
            catch (Exception ex)
             {
@@ -932,7 +947,7 @@ namespace MyCasinoWCFClient.Pages
 #if COM
             try
             {
-                _ComSrv.drawTest(SessionId, firstNumber, secondNumber, out errMsg);
+                _ComSrv.drawTest((uint)SessionId, firstNumber, secondNumber, out errMsg);
             }
            catch (Exception ex)
             {

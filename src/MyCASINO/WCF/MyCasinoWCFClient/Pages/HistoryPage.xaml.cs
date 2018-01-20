@@ -80,7 +80,11 @@ namespace MyCasinoWCFClient.Pages
             {
                 do
                 {
-                    _ComSrv.getTransactions(SessionId, out isFinished, out transaction, out transactionType, out errMsg);
+                    _ComSrv.getTransactions((uint)SessionId, out isFinished, out transaction, out transactionType, out errMsg);
+                    if (errMsg != null)
+                    {
+                        MessageBox.Show("No operator is logged in!");
+                    }
                     //transaction is deposit
                     if (transactionType == 0)
                     {
@@ -99,7 +103,7 @@ namespace MyCasinoWCFClient.Pages
                     {
                         try
                         {
-                            _ComSrv.getTransactionInformation(SessionId,(uint)transaction.GetValue(0), out information, out informationType,out errMsg);
+                            _ComSrv.getTransactionInformation((uint)SessionId,(uint)transaction.GetValue(0), out information, out informationType,out errMsg);
                         }
                         catch (Exception ex)
                         {
@@ -143,7 +147,7 @@ namespace MyCasinoWCFClient.Pages
                     {
                         try
                         {
-                            _ComSrv.getTransactionInformation(SessionId, (uint)transaction.GetValue(0), out information, out informationType, out errMsg);
+                            _ComSrv.getTransactionInformation((uint)SessionId, (uint)transaction.GetValue(0), out information, out informationType, out errMsg);
                         }
                         catch (Exception ex)
                         {

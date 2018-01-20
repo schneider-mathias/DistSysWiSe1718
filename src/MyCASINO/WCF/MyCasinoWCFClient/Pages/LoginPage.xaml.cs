@@ -243,6 +243,10 @@ namespace MyCasinoWCFClient.Pages
             {
                 
                     _ComSrv.login(tbxUsername.Text, pwbPassword.Password, out _sessionId, out tmpUsertype, out _errMsg);
+                if (_errMsg != null)
+                {
+                    MessageBox.Show("No operator is logged in!");
+                }
                 this.NavigationService.Navigate(new GamingPage(_ComSrv, tbxUsername.Text, _sessionId, tmpUsertype));
 
             }
