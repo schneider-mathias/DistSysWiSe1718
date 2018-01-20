@@ -253,7 +253,7 @@ namespace MyCasinoWSPhoneClient
         {
             if (e.Error != null)
             {
-                //check if an error occurred
+                //check what error occurred
                 if (e.Error.GetType() == typeof(System.ServiceModel.CommunicationException))
                 {
                     MessageBox.Show("Es konnte keine Verbindung zum Server gefunden werden!", "Error", MessageBoxButton.OK);

@@ -126,6 +126,22 @@ namespace MyCasinoWSPhoneClient
             //error handling
             string errMsg = null;
             errMsg = e.errMsg;
+
+            if (e.Error != null)
+            {
+                //check what error occurred
+                if (e.Error.GetType() == typeof(System.ServiceModel.CommunicationException))
+                {
+                    MessageBox.Show("Es konnte keine Verbindung zum Server gefunden werden!", "Error", MessageBoxButton.OK);
+                    Application.Current.Terminate();
+                }
+                else
+                {
+                    MessageBox.Show("Es ist ein unbekannter Fehler beim Verbindungsversuch aufgetreten", "Error", MessageBoxButton.OK);
+                    Application.Current.Terminate();
+                }
+            }
+
             if (errMsg == "USER_NOT_LOGGED_IN")
             {
                 MessageBox.Show("User nicht eingeloggt");

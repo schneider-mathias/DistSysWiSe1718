@@ -64,8 +64,12 @@ namespace MyCasinoWSPhoneClient
         {
             var result = await myCasinoSvcHistory.MyCasinoSvc.LogoutAsyncTask(myCasinoSvcHistory.SessionId);
 
-            if (result.errMsg == "S_OK")
+            if (result.errMsg == "S_OK" || result.errMsg == "OPERATOR_NOT_LOGGED_IN")
             {
+                if (result.errMsg == "OPERATOR_NOT_LOGGED_IN")
+                {
+                    MessageBox.Show("Betreiber nicht eingelogged");
+                }
                 this.ShowNewDialog<LoginPage>(
                   cp => { cp.MyCasinoSvcLogin = myCasinoSvcHistory; },
                   //cp => { MyCasinoSvcLogin = cp.MyCasinoSvcGamingPage; });
