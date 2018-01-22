@@ -27,7 +27,12 @@ HRESULT executeGetMessage(unsigned long *sessionID, boolean* messageAvailable, u
 std::vector<std::wstring> args;					// Eingabeargument
 std::vector<unsigned long> MyOwnAuctions;		// Liste meiner eigenen Auktionen (Nummer)
 
-// Deserialisiert einen char*, dessen Wörter mit Leerzeichen getrennt sind
+/// <summary>
+/// Deserialisiert einen char*, dessen Wörter mit Leerzeichen getrennt sind
+/// </summary>
+/// <param name="inStr"> Input String der serialisert werden soll </param>
+/// <param name="len"> Länge des Input String der serialisert werden soll </param>
+/// <returns> Vektor mit allen Nachrichtenteilen </returns>
 std::vector<wstring> deserialize(unsigned char *inStr, unsigned long len)
 {
 	vector<wstring> desStr;
@@ -37,9 +42,7 @@ std::vector<wstring> deserialize(unsigned char *inStr, unsigned long len)
 		// solange kein Platzhalter kommt, wird das Wort zusammengesetzt
 		if (inStr[i] != L' ')
 		{
-			//wstring s((char)inStr[i]);
 			tempStr.push_back(inStr[i]);
-			//tempStr += s(char_to_wstring((const char*)inStr[i]));
 		}
 		// Leerzeichen wurde erkannt und somit wird neues Wort der Liste hinzugefügt
 		else
@@ -51,32 +54,11 @@ std::vector<wstring> deserialize(unsigned char *inStr, unsigned long len)
 	return desStr;
 }
 
-//// Deserialisiert einen String, dessen Wörter mit einem Platzhalter getrennt sind
-//std::vector<wstring> deserialize(unsigned char *inStr, unsigned long len)
-//{
-//	vector<wstring> desStr;
-//	wstring tempStr;
-//	for (int i = 0; i < len; i++)
-//	{
-//		// solange kein Platzhalter kommt, wird das Wort zusammengesetzt
-//		if (inStr[i] != (unsigned char)PLACEHOLDER_FOR_SERIALISATION_DESERIALISATION)
-//		{
-//			//wstring s((char)inStr[i]);
-//			tempStr.push_back(inStr[i]);
-//			//tempStr += s(char_to_wstring((const char*)inStr[i]));
-//		}
-//		// Leerzeichen wurde erkannt und somit wird neues Wort der Liste hinzugefügt
-//		else
-//		{
-//			desStr.push_back(tempStr);
-//			tempStr.clear();
-//		}
-//	}
-//	return desStr;
-//}
-
-
-// Ausgabe der empfangenen Nachrichten
+/// <summary>
+/// Ausgabe der empfangenen Nachrichten
+/// </summary>
+/// <param name="messageVec"> Vector aus allen Nachrichtenteilen </param>
+/// <param name="messageType"> Type der Nachricht </param>
 void printMessage(vector<wstring> messageVec, unsigned long messageType)
 {
 	wcout << endl;
@@ -121,8 +103,11 @@ void printMessage(vector<wstring> messageVec, unsigned long messageType)
 	wcout << endl;
 }
 
-// Funktion wird von Thread MessagesThread ausgeführt
-// Pullt alle neuen Nachrichten, die auf dem Server für den Client bereitliegen und gibt diese auf der Console aus
+/// <summary>
+/// MessagesThread: Pullt alle neuen Nachrichten, die auf dem Server für den Client bereitliegen und gibt diese auf der Console aus
+/// </summary>
+/// <param name="sessionID"> SessionId des Clients </param>
+/// <param name="threadAllow"> Erlaubnis zur Ausführung für den Thread </param>
 void pullMessages(unsigned long *sessionID, boolean *threadAllow)
 {
 	boolean messageAvailable = TRUE;
@@ -130,8 +115,6 @@ void pullMessages(unsigned long *sessionID, boolean *threadAllow)
 	String_t message = { 0,0,NULL };
 	while (*threadAllow == TRUE)
 	{
-		
-		//std::this_thread::sleep_for(1s);
 		// User ist eingeloggt
 		if (*sessionID != 0)
 		{
@@ -139,11 +122,12 @@ void pullMessages(unsigned long *sessionID, boolean *threadAllow)
 			// Pull solange Nachrichten verfügbar
 			do
 			{
-				Sleep(1000);	// millisekunden
+				Sleep(1000);
 				try
 				{
 					try
 					{
+						// Nachricht am Server für den Client abholen
 						hr = executeGetMessage(sessionID,&messageAvailable, &messageType, &message);
 					}
 					catch (...)
@@ -174,9 +158,16 @@ void pullMessages(unsigned long *sessionID, boolean *threadAllow)
 			} while (messageAvailable == TRUE);
 		}
 	}
-}
+};
 
-// 
+/// <summary>
+/// Nachrichten für den Client vom Server abholen
+/// </summary>
+/// <param name="sessionID"> SessionId des Clients </param>
+/// <param name="messageAvailable"> Zeigt an, noch weitere Nachrichten für den Client am Server bereit stehen </param>
+/// <param name="messageType"> Typ der Nachricht </param>
+/// <param name="message"> Nachricht für den Client </param>
+/// <returns> HRESULT </returns>
 HRESULT executeGetMessage(unsigned long *sessionID, boolean* messageAvailable, unsigned long* messageType, String_t *message)
 {
 	HRESULT hr;

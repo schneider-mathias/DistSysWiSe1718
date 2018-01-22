@@ -1,6 +1,6 @@
 /************************************************************/
 /*                                                          */
-/* Inhalt:    RpcExcepton - Header				            */
+/* Inhalt:    RpcExcepton						            */
 /*                                                          */
 /* Autor:	  Johannes Sauer		                        */
 /* Stand:     23. Jan 2018                                  */

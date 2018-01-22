@@ -20,12 +20,11 @@
 
 using namespace std;
 
-//void rpcCalls(void);
-//void Bind(char* remoteNetwAddr);
-//void UnBind(void);
-//void readConsole();
-//void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, boolean *threadAllow);
-
+/// <summary>
+/// Eintrittspunkt für diese Anwendung
+/// </summary>
+/// <param name="argc"> Die Anzahl der Kommandozeilen Argumente </param>
+/// <param name="argv"> Ein Array mit den Kommandozeilen Argumenten als Strings </param>
 void main(int argc, char**argv)
 {
 	char* srvAdress = NULL;
@@ -71,8 +70,9 @@ void main(int argc, char**argv)
 	getchar();
 }
 
-
-
+/// <summary>
+/// RPC Aufrufe
+/// </summary>
 void rpcCalls(void)
 {
 	RpcTryExcept
@@ -86,6 +86,10 @@ void rpcCalls(void)
 	RpcEndExcept
 }
 
+/// <summary>
+/// Binding
+/// </summary>
+/// <param name="argc"> Adresse zum Remoteserver </param>
 void Bind(char* remoteNetwAddr)
 {
 	RPC_STATUS status;
@@ -131,6 +135,9 @@ void Bind(char* remoteNetwAddr)
 	}
 }
 
+/// <summary>
+/// Unbinding
+/// </summary>
 void UnBind(void)
 {
 	RPC_STATUS status;
@@ -143,8 +150,9 @@ void UnBind(void)
 	}
 }
 
-
-
+/// <summary>
+/// Einlesen der Kommandos von der Kommandozeile und starten des Threads
+/// </summary>
 void readConsole()
 {
 	std::cout << "----------------------------------------------------------------" << std::endl;
@@ -172,10 +180,6 @@ void readConsole()
 		{
 			if (i != 0)
 			{
-				/*if (size_t pos = scommand.find_first_of(L'ö') != wstring::npos)
-				{
-					scommand.replace(pos, 1, L"oe");
-				}*/
 				args.push_back(scommand.substr(0, i));									// Argument bis zum nächsten Leerzeichen zur Argumenten-Liste hinzufügen
 				scommand = scommand.substr(i + 1, scommand.length());					// Argument vom String entfernen
 			}
@@ -193,6 +197,13 @@ void readConsole()
 
 }
 
+/// <summary>
+/// Die Kommandozeilen-Eingaben werden entsprechend interpretiert, die zugehörige Funktion ausgeführt
+/// und die Ausgabe erzeugt.
+/// </summary>
+/// <param name="sessionID"> Die SessionId des Clients </param>
+/// <param name="args"> Ein Vector aus Strings mit den Kommandozeilen Argumenten </param>
+/// <param name="threadAllow"> Die Erlaubnis, ob der Thread zum Pullen der Nachrichten ausgeführt wird oder nicht </param>
 void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, boolean *threadAllow)
 {
 	HRESULT hr;
@@ -216,7 +227,9 @@ void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, 
 			cerr << "login <Username> <Passwort>" << endl;
 			return;
 		}
+		// login auf Server ausführen
 		hr = login((unsigned char*)wstring_to_char(args.at(1).c_str()), (unsigned char*)wstring_to_char(args.at(2).c_str()), sessionID);
+		// HRESULt interpretieren 
 		if (hr == S_OK)
 		{
 			wcout << "Einloggen erfolgreich" << endl;
@@ -242,7 +255,9 @@ void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, 
 	// logout
 	else if (args.at(0) == L"bye")
 	{
+		// logout auf Server ausführen
 		hr = logout((*sessionID));
+		// HRESULt interpretieren 
 		if (hr == RPC_S_OK)
 		{
 			cout << " *** Auf Wiedersehen! *** " << endl;
@@ -283,16 +298,16 @@ void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, 
 				cout << "Falscher Parameter - das Startgebot muss eine Zahl sein!" << endl;
 				return;
 			}
-
+			// Auktion wird gestartet
 			hr = offer(*sessionID, (unsigned char*)wstring_to_char(args.at(1).c_str()), startBid, &auctionNumber);
-			MyOwnAuctions.push_back(auctionNumber);						// füge die neue Auktion der Liste meiner eigenen Auktionen hinzu
+			//MyOwnAuctions.push_back(auctionNumber);						// füge die neue Auktion der Liste meiner eigenen Auktionen hinzu
+			// HRESULt interpretieren 
 			if (hr == S_OK)
 			{
 				cout << "----------------------------------------------------------------------------------------" << endl;
 				cout << "Die Auktion wurde gestartet." << endl;
 				cout << "Deine Auktion hat die Auktionsnummer: " << auctionNumber << endl;
 				cout << "----------------------------------------------------------------------------------------" << endl;
-				//MyAuctions.push_back(auctionNumber);		// fügt die Auktionsnummer zur Liste der eigenen Auktionen hinzu
 			}
 			else if (hr == ERROR_USER_NOT_LOGGED_IN)
 			{
@@ -349,7 +364,9 @@ void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, 
 				cout << "----------------------------------------------------------------------------------------" << endl;
 				return;
 			}
+			// User wird als interessierter User für die angegebene Auktion registriert
 			hr = interested(*sessionID, auctionNumber);
+			// HRESULT interpretieren 
 			if (hr == RPC_S_OK)
 			{
 				cout << "----------------------------------------------------------------------------------------" << endl;
@@ -380,9 +397,10 @@ void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, 
 				cerr << "Es ist ein unerwarteter Fehler aufgetreten. Bitte versuche es erneut." << endl;
 		}
 	}
+
+	// Gibt alle Auktionen aus, die den Eingaben entsprechen
 	else if (args.at(0) == L"listauctions")
 	{
-
 		String_t auctions = { 0,0,NULL };
 		if (args.size() > 3)
 		{
@@ -394,11 +412,8 @@ void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, 
 		ULONG flag = 0;
 		unsigned long countAuctions;
 		char* artNamePart = "";
-		
-		// Flags entsprechend setzen
-		// Flag = 0 -> ohne [-a] und [-A]
-		// Flag = 1 -> [-a]
-		// Flag = 2 -> [-A]
+
+		// Falls Optionen angegeben wurden
 		if (args.size() > 1)
 		{
 			if (args.at(1) == L"\-a")
@@ -406,32 +421,37 @@ void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, 
 			else if (args.at(1) == L"\-A")
 				flag = 2;
 		}
+
+		// Falls nur ein Artikelnameteil angegeben wurde, ohne die Optionen -a oder -A
 		if (args.size() == 2 && flag == 0)
 		{
 			artNamePart = wstring_to_char(args.at(1));
 		}
+
 		// Falls ein Artikelnameteil angegben wurde
 		if (args.size() > 2)
 		{
 			artNamePart = wstring_to_char(args.at(2));
 		}
+
+		// Auktionen von Server anfragen 
 		hr = getAuctions(*sessionID, flag, (unsigned char*) artNamePart, &countAuctions, &auctions);
+		
+		// HRESULT interpretieren 
 		if (hr == RPC_S_OK)
 		{
 			vector<wstring> allAuctVec = deserialize(auctions.str, auctions.len);
-			// Ausgabe der Auktionen
+			
 			int cnt = 0;
 			wcout << endl;
-
-			/* Testprint */
 			int i = 10;
+			// Ausgabe der Auktionen
 			std::cout.width(15); std::cout << left << "Auktionsnummer";
 			std::cout.width(20); std::cout << left << "Artikelname";
 			std::cout.width(15); std::cout << left << "Hoechstgebot";
 			std::cout.width(15); std::cout << left << "Status";
 			std::cout.width(15); std::cout << left << "Anzahl Gebote" << endl;
 			std::cout << "----------------------------------------------------------------------------------------" << endl;
-			/* End Testprint */
 
 			for (std::vector<wstring>::iterator it = allAuctVec.begin(); it != allAuctVec.end(); it++)
 			{
@@ -490,8 +510,11 @@ void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, 
 		else
 			cerr << "Es ist ein unerwarteter Fehler aufgetreten. Bitte versuche es erneut." << endl;
 
-		MIDL_user_free(auctions.str);
+		// Speicher wieder freigeben
+		MIDL_user_free(auctions.str);					
 	}
+
+	// Gebot abgeben
 	else if (args.at(0) == L"bid")
 	{
 		if (args.size() < 3)
@@ -524,7 +547,11 @@ void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, 
 				cout << "Falscher Parameter - das Startgebot muss eine Zahl sein!" << endl;
 				return;
 			}
+
+			// Gebot wird abgegeben
 			hr = bid(*sessionID, auctionNumber, bidVal);
+			
+			// HRESULT interpretieren 
 			if (hr == RPC_S_OK)
 			{
 				cout << "----------------------------------------------------------------------------------------" << endl;
@@ -569,6 +596,8 @@ void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, 
 				cerr << "Es ist ein unerwarteter Fehler aufgetreten. Bitte versuche es erneut." << endl;
 		}
 	}
+
+	// Alle Gebote zu einer Auktion anzeigen
 	else if (args.at(0) == L"details")
 	{
 		if (args.size() < 2)
@@ -599,7 +628,11 @@ void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, 
 				cout << "Falscher Parameter - das Startgebot muss eine Zahl sein!" << endl;
 				return;
 			}
+
+			// Alle Gebote zu einer Auktion abholen
 			hr = details(*sessionID, auctionNumber, &allBids, &countBids);
+
+			// HRESULT interpretieren 
 			if (hr == RPC_S_OK)
 			{
 				if (countBids == 0)
@@ -655,6 +688,8 @@ void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, 
 		}
 		
 	}
+
+	// Auktion beenden
 	else if (args.at(0) == L"endauction")
 	{
 		if (args.size() < 2)
@@ -685,7 +720,11 @@ void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, 
 				cout << "----------------------------------------------------------------------------------------" << endl;
 				return;
 			}
+
+			// Auktion wird am Server beendet
 			hr = endauction(*sessionID, auctionNumber);
+			
+			// HRESULT interpretieren 
 			if (hr == RPC_S_OK)
 			{
 				cout << "----------------------------------------------------------------------------------------" << endl;
@@ -715,6 +754,8 @@ void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, 
 
 		}
 	}
+
+	// Zeigt eine Übersicht aller möglichen Befehle an
 	else if (args.at(0) == L"help")
 	{
 		cout << "******************** MyBAY ********************" << endl;
@@ -729,6 +770,8 @@ void interpretCommand(unsigned long *sessionID, std::vector<std::wstring> args, 
 		cout << "******************** MyBAY ********************" << endl;
 		cout << endl;
 	}
+
+	// Die Eingaben konnten nicht interpretiert werden
 	else
 	{
 		cout << "Error: keine zulässige Eingabe" << endl;

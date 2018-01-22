@@ -27,6 +27,13 @@ using namespace std;
 long numUser = 0;
 unsigned long numAuct = 0;
 
+/// <summary>
+/// Login
+/// </summary>
+/// <param name="username"> Username </param>
+/// <param name="password"> Passwort </param>
+/// <param name="sessionId"> SessionId des Users </param>
+/// <returns> Error Status </returns>
 error_status_t login(unsigned char *username, unsigned char *password, unsigned long* sessionId)
 {
 	wifstream csvread;
@@ -47,6 +54,7 @@ error_status_t login(unsigned char *username, unsigned char *password, unsigned 
 		return RPC_S_OK;
 	}
 	
+	// User-File einlesen
 	csvread.open("C:/_MyBayData/user.csv", ios::in);
 	if (csvread) {
 		wstring fline, fname, fpassword;
@@ -77,6 +85,11 @@ error_status_t login(unsigned char *username, unsigned char *password, unsigned 
 	return ERROR_USERNAME_OR_PASSWORD_WRONG;
 }
 
+/// <summary>
+/// Logout
+/// </summary>
+/// <param name="sessionId"> SessionId des Users </param>
+/// <returns> Error Status </returns>
 error_status_t logout(unsigned long sessionId)
 {
 	//überprüfen ob user angemeldet und dann aus Liste entfernen
@@ -92,6 +105,14 @@ error_status_t logout(unsigned long sessionId)
 	return ERROR_USER_NOT_LOGGED_IN; //user nicht angemeldet
 }
 
+/// <summary>
+/// Auktion starten
+/// </summary>
+/// <param name="sessionId"> SessionId des Users </param>
+/// <param name="articleName"> Artikelname </param>
+/// <param name="startBid"> Startgebot </param>
+/// <param name="auctionNumber"> Auktionsnummer </param>
+/// <returns> Error Status </returns>
 error_status_t offer(unsigned long sessionId, unsigned char *articleName, double startBid, unsigned long* auctionNumber)
 {
 	// Prüfen ob User eingeloggt ist
@@ -125,6 +146,12 @@ error_status_t offer(unsigned long sessionId, unsigned char *articleName, double
 	return RPC_S_OK;
 }
 
+/// <summary>
+/// Auktion starten
+/// </summary>
+/// <param name="sessionId"> SessionId des Users </param>
+/// <param name="auctionNumber"> Auktionsnummer </param>
+/// <returns> Error Status </returns>
 error_status_t interested(unsigned long sessionId, unsigned long auctionNumber)
 {
 	// Prüfen ob User eingeloggt ist
@@ -152,6 +179,15 @@ error_status_t interested(unsigned long sessionId, unsigned long auctionNumber)
 	return RPC_S_OK;
 }
 
+/// <summary>
+/// Liste der Auktionen, die den Eingaben entsprechen
+/// </summary>
+/// <param name="sessionId"> SessionId des Users </param>
+/// <param name="flags"> Option, ob -a oder -A eingegeben wurden </param>
+/// <param name="articleName"> Artikelname </param>
+/// <param name="countAuctions"> Auktionsnummer </param>
+/// <param name="auctions"> Liste der Auktionen serialisiert </param>
+/// <returns> Error Status </returns>
 error_status_t getAuctions(unsigned long sessionId, unsigned long flags, unsigned char *articleName, unsigned long* countAuctions, String_t* auctions)
 {
 	// Prüfen ob User eingeloggt ist
@@ -184,6 +220,13 @@ error_status_t getAuctions(unsigned long sessionId, unsigned long flags, unsigne
 	return RPC_S_OK;
 }
 
+/// <summary>
+/// Gebot abgeben
+/// </summary>
+/// <param name="sessionId"> SessionId des Users </param>
+/// <param name="auctionNumber"> Auktionsnummer </param>
+/// <param name="bidVal"> Gebot </param>
+/// <returns> Error Status </returns>
 error_status_t bid(unsigned long sessionId, unsigned long auctionNumber, double bidVal)
 {
 	// Prüfen ob User eingeloggt ist
@@ -220,6 +263,14 @@ error_status_t bid(unsigned long sessionId, unsigned long auctionNumber, double 
 	return RPC_S_OK;
 }
 
+/// <summary>
+/// Alle Gebote einer Auktion
+/// </summary>
+/// <param name="sessionId"> SessionId des Users </param>
+/// <param name="auctionNumber"> Auktionsnummer </param>
+/// <param name="allBids"> Alle Gebote der Auktion serialisiert </param>
+/// <param name="countBids"> Anzahl der Gebote </param>
+/// <returns> Error Status </returns>
 error_status_t details(unsigned long sessionId, unsigned long auctionNumber, String_t *allBids, unsigned long* countBids)
 {
 	// Prüfen ob User eingeloggt ist
@@ -253,6 +304,12 @@ error_status_t details(unsigned long sessionId, unsigned long auctionNumber, Str
 	return RPC_S_OK;
 }
 
+/// <summary>
+/// Auktion beenden
+/// </summary>
+/// <param name="sessionId"> SessionId des Users </param>
+/// <param name="auctionNumber"> Auktionsnummer </param>
+/// <returns> Error Status </returns>
 error_status_t endauction(unsigned long sessionId, unsigned long auctionNumber)
 {
 	// Prüfen ob User eingeloggt ist
@@ -275,6 +332,14 @@ error_status_t endauction(unsigned long sessionId, unsigned long auctionNumber)
 	return RPC_S_OK;
 }
 
+/// <summary>
+/// Nachrichten für den Client
+/// </summary>
+/// <param name="sessionId"> SessionId des Users </param>
+/// <param name="messageAvailable"> Weitere Nachrichten sind für den Client verfügbar </param>
+/// <param name="messageType"> Nachrichtentyp </param>
+/// <param name="message"> Nachricht serialisiert </param>
+/// <returns> Error Status </returns>
 error_status_t getMessage(unsigned long sessionId, boolean* messageAvailable, unsigned long* messageType, String_t* message)
 {
 	// Prüfen ob User eingeloggt ist
