@@ -1,5 +1,11 @@
-// COMMyBaySrv.cpp : Implementierung von DLL-Exporten.
-
+/************************************************************/
+/*                                                          */
+/* Inhalt:    COMMyBaySrv - Serverregistrierung		        */
+/*                                                          */
+/* Autor:	  Johannes Sauer		                        */
+/* Stand:     23. Jan 2018                                  */
+/*															*/
+/************************************************************/
 
 #include "stdafx.h"
 #include "resource.h"

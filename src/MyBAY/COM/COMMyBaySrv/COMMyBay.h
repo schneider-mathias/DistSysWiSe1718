@@ -1,22 +1,21 @@
-// COMMyBay.h: Deklaration von CCOMMyBay
+/************************************************************/
+/*                                                          */
+/* Inhalt:    COMMyBay - Header						        */
+/*                                                          */
+/* Autor:	  Johannes Sauer		                        */
+/* Stand:     23. Jan 2018                                  */
+/*															*/
+/************************************************************/
 
 #pragma once
-#include "resource.h"       // Hauptsymbole
-
-
-
+#include "resource.h"       
 #include "COMMyBaySrv_i.h"
-
-
 
 #if defined(_WIN32_WCE) && !defined(_CE_DCOM) && !defined(_CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA)
 #error "Singlethread-COM-Objekte werden auf der Windows CE-Plattform nicht vollständig unterstützt. Windows Mobile-Plattformen bieten beispielsweise keine vollständige DCOM-Unterstützung. Definieren Sie _CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA, um ATL zu zwingen, die Erstellung von Singlethread-COM-Objekten zu unterstützen und die Verwendung eigener Singlethread-COM-Objektimplementierungen zu erlauben. Das Threadmodell in der RGS-Datei wurde auf 'Free' festgelegt, da dies das einzige Threadmodell ist, das auf Windows CE-Plattformen ohne DCOM unterstützt wird."
 #endif
 
 using namespace ATL;
-
-
-// CCOMMyBay
 
 class ATL_NO_VTABLE CCOMMyBay :
 	public CComObjectRootEx<CComSingleThreadModel>,

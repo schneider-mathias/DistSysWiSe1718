@@ -15,6 +15,11 @@
 
 using namespace std;
 
+
+/********************************************************************/
+/*						Strukturdefinitionen						*/
+/********************************************************************/
+
 struct bidder
 {
 	wstring userName;
@@ -79,7 +84,11 @@ void addEndAuctionMessage(wstring user, unsigned long auctionNumber, int warning
 void endAuction(unsigned long auctionNumber);
 
 
-// Prüfe ob User bereits eingeloggt ist
+/// <summary>
+/// Prüfe ob User bereits eingeloggt ist
+/// </summary>
+/// <param name="sessionId"> SessionId des Users </param>
+/// <returns> Ob User bereits eingeloggt ist </returns>
 BOOL loggedInCheck(unsigned long sessionId)
 {
 	std::map<std::wstring, unsigned long>::iterator it;
@@ -93,7 +102,11 @@ BOOL loggedInCheck(unsigned long sessionId)
 	return FALSE;
 }
 
-// Prüfe ob User bereits eingeloggt ist #####TEST#####
+/// <summary>
+/// Prüfe ob User bereits eingeloggt ist
+/// </summary>
+/// <param name="username"> Username </param>
+/// <returns> SessionId des Users </returns>
 ULONG loginCheck(unsigned char* username)
 {
 	std::map<std::wstring, unsigned long>::iterator it;
@@ -110,7 +123,11 @@ ULONG loginCheck(unsigned char* username)
 }
 
 
-// Usernamen zur zugehörigen SessionId ermitteln
+/// <summary>
+/// Usernamen zur zugehörigen SessionId ermitteln
+/// </summary>
+/// <param name="sessionId"> SessionId des Users </param>
+/// <returns> Username </returns>
 wstring getUserName(unsigned long sessionId)
 {
 	wstring ret;
@@ -125,7 +142,11 @@ wstring getUserName(unsigned long sessionId)
 	return ret;
 }
 
-// Liefert den Pfad an dem die Userdaten liegen zurück
+/// <summary>
+/// Liefert den Pfad an dem die Userdaten liegen zurück
+/// </summary>
+/// <param name="sessionId"> SessionId des Users </param>
+/// <returns> Pfad für Userdaten </returns>
 wstring getUserDataPath()
 {
 	wstring userDataPath;
@@ -136,7 +157,9 @@ wstring getUserDataPath()
 	return userDataPath;
 }
 
-// Alle Auktionen aus der Datei auslesen und in AuctionList speichern
+/// <summary>
+/// Alle Auktionen aus der Datei auslesen und in AuctionList speichern
+/// </summary>
 void readAuctionsFromFile()
 {
 	std::wifstream auctionsFile;
@@ -237,7 +260,9 @@ void readAuctionsFromFile()
 	}
 }
 
-// Um alle Auktionen persistent zu halten werden alle Auktionen in eine Datei geschrieben
+/// <summary>
+/// Um alle Auktionen persistent zu halten werden alle Auktionen in eine Datei geschrieben
+/// </summary>
 void writeAuctionsToFile()
 {
 	std::wofstream auctionsFile;
@@ -286,7 +311,12 @@ void writeAuctionsToFile()
 	auctionsFile.close();
 }
 
-// Erzeugt neue Auktion und fügt diese der Liste aller Auktionen hinzu
+/// <summary>
+/// Erzeugt neue Auktion und fügt diese der Liste aller Auktionen hinzu
+/// </summary>
+/// <param name="sarticleName"> Artikelname </param>
+/// <param name="startBid"> Startgebot </param>
+/// <returns> Auktionsnummer </returns>
 ULONG addNewAuction(wstring sarticleName, double startBid)
 {
 	// neue Auktion erstellen 
@@ -303,7 +333,11 @@ ULONG addNewAuction(wstring sarticleName, double startBid)
 	return newAuct.auctionNumber;
 }
 
-// Prüft, ob die Auktionsnummer vorhanden ist
+/// <summary>
+/// Prüft, ob die Auktionsnummer vorhanden ist
+/// </summary>
+/// <param name="auctionNumber"> Auktionsnummer </param>
+/// <returns> Auktionsnummer vorhanden </returns>
 BOOL checkAuctionNumber(unsigned long auctionNumber)
 {
 	EnterCriticalSection(critSecWrapper.getInstance());
@@ -319,7 +353,12 @@ BOOL checkAuctionNumber(unsigned long auctionNumber)
 	return FALSE;
 }
 
-// User in die Liste der User hinzufügen, die sich für diese Auktion interessieren
+/// <summary>
+/// User in die Liste der User hinzufügen, die sich für diese Auktion interessieren
+/// </summary>
+/// <param name="user"> Username </param>
+/// <param name="auctionNumber"> Auktionsnummer </param>
+/// <returns> Erfolgreich hinzugefügt </returns>
 BOOL addUserToInterestedUserList(wstring user, unsigned long auctionNumber)
 {
 	EnterCriticalSection(critSecWrapper.getInstance());
@@ -342,7 +381,11 @@ BOOL addUserToInterestedUserList(wstring user, unsigned long auctionNumber)
 	return TRUE;
 }
 
-// Status der Auktion 
+/// <summary>
+/// Status der Auktion 
+/// </summary>
+/// <param name="auctionNumber"> Auktionsnummer </param>
+/// <returns> Auktionsstatus </returns>
 int getAuctionState(unsigned long auctionNumber)
 {
 	EnterCriticalSection(critSecWrapper.getInstance());
@@ -358,7 +401,13 @@ int getAuctionState(unsigned long auctionNumber)
 	return 0;
 }
 
-// Fügt ein Gebot zur Auktion hinzu
+/// <summary>
+/// Fügt ein Gebot zur Auktion hinzu
+/// </summary>
+/// <param name="auctionNumber"> Auktionsnummer </param>
+/// <param name="bidVal"> Gebot </param>
+/// <param name="user"> Username </param>
+/// <returns> Auktion erfolgreich hinzugefügt </returns>
 BOOL addBidToAuction(unsigned long auctionNumber, double bidVal, wstring user)
 {
 	EnterCriticalSection(critSecWrapper.getInstance());
@@ -390,8 +439,11 @@ BOOL addBidToAuction(unsigned long auctionNumber, double bidVal, wstring user)
 	return TRUE;
 }
 
-// Prüft ob Auktion bereits geschlossen oder kurz vor Schluss
-// return TRUE, wenn Auktion noch offen
+/// <summary>
+/// Prüft ob Auktion bereits geschlossen oder kurz vor Schluss
+/// </summary>
+/// <param name="auctionNumber"> Auktionsnummer </param>
+/// <returns> Auktionsstatus </returns>
 BOOL auctionStatusCheck(unsigned long auctionNumber)
 {
 	EnterCriticalSection(critSecWrapper.getInstance());
@@ -407,7 +459,12 @@ BOOL auctionStatusCheck(unsigned long auctionNumber)
 	return FALSE;
 }
 
-// Prüft ob User die Auktion selbst erstellt hat und ob die Auktion mit der angegebenen Auktion überhaupt vorhanden ist
+/// <summary>
+/// Prüft ob User die Auktion selbst erstellt hat und ob die Auktion mit der angegebenen Auktion überhaupt vorhanden ist
+/// </summary>
+/// <param name="user"> Username </param>
+/// <param name="auctionNumber"> Auktionsnummer </param>
+/// <returns> User ist Auktionator der Auktion </returns>
 BOOL userCreatedAuctioncheck(wstring user, unsigned long auctionNumber)
 {
 	EnterCriticalSection(critSecWrapper.getInstance());
@@ -428,7 +485,11 @@ BOOL userCreatedAuctioncheck(wstring user, unsigned long auctionNumber)
 	return FALSE;
 }
 
-// gibt die Länge des Strings zurück, der für die Übertragung aller Gebote einer bestimmten Auktion benötigt wird
+/// <summary>
+/// Größe des zu serialisierenden String
+/// </summary>
+/// <param name="auctionNumber"> Auktionsnummer </param>
+/// <returns> Größe des zu serialisierenden String </returns>
 int getSerializedStrSize(unsigned long auctionNumber)
 {
 	int strSize = 0;
@@ -449,7 +510,11 @@ int getSerializedStrSize(unsigned long auctionNumber)
 	return strSize;
 }
 
-// Anzahl wie viel Gebote für die Auktion abgegeben wurden
+/// <summary>
+/// Anzahl wie viel Gebote für die Auktion abgegeben wurden
+/// </summary>
+/// <param name="auctionNumber"> Auktionsnummer </param>
+/// <returns> Anzahl Gebote </returns>
 unsigned long countBidsOfAuction(unsigned long auctionNumber)
 {
 	unsigned long numBids = 0;
@@ -466,7 +531,11 @@ unsigned long countBidsOfAuction(unsigned long auctionNumber)
 	return numBids;
 }
 
-// Alle Gebote aller Auktionen
+/// <summary>
+/// Sucht alle Gebote der Auktion heraus
+/// </summary>
+/// <param name="auctionNumber"> Auktionsnummer </param>
+/// <returns> Gebote der Auktion </returns>
 vector<wstring> getAllBids(ULONG auctionNumber)
 {
 	vector<wstring> bidsStr;
@@ -488,49 +557,12 @@ vector<wstring> getAllBids(ULONG auctionNumber)
 	return bidsStr;
 }
 
-
-// TODO: wird nicht mehr gebraucht
-// serialisiert die Gebote einer Auktion in chronologischer Reihenfolge
-wstring serializeAuctionDetails(unsigned long auctionNumber)
-{
-	int newStrLen = 0;;
-	BOOL firstCpy = TRUE;
-	wstring serStr = L"";
-
-	EnterCriticalSection(critSecWrapper.getInstance());
-	for (std::vector<auction>::iterator it = AuctionList.begin(); it != AuctionList.end(); ++it)
-	{
-		// Prüfen ob Auktion vorhanden
-		if (auctionNumber == (*it).auctionNumber)
-		{
-			for (std::vector<bidder>::iterator it2 = (*it).BidderList.begin(); it2 != (*it).BidderList.end(); ++it2)
-			{
-				// Gebot zum String hinzufügen
-				// Gebotsnummer
-				wstring tempBidStr1 = to_wstring(distance((*it).BidderList.begin(), it2));
-				serStr += tempBidStr1;
-				serStr += PLACEHOLDER_FOR_SERIALISATION_DESERIALISATION;
-
-				// Bietername
-				wstring tempBidStr2 = (*it2).userName;
-				tempBidStr2 = tempBidStr2 + PLACEHOLDER_FOR_SERIALISATION_DESERIALISATION;			// Platzhalter um Parsen beim Client zu ermöglichen
-				serStr += tempBidStr2;
-
-				// Gebot
-				wstring tempBidStr3 = to_wstring((*it2).bid);
-				//wstring tempBidStrCut = to_wstring((*it2).bid);				
-				tempBidStr3 = tempBidStr3 + PLACEHOLDER_FOR_SERIALISATION_DESERIALISATION;		// Platzhalter um Parsen beim Client zu ermöglichen												
-				serStr += tempBidStr3;
-			}
-		}
-	}
-	LeaveCriticalSection(critSecWrapper.getInstance());
-	if (serStr == L"")
-		serStr = L"NO_DETAILS";
-	return serStr;
-}
-
-// Beendet die Auktion
+/// <summary>
+/// Beendet die Auktion
+/// </summary>
+/// <param name="user"> Username </param>
+/// <param name="auctionNumber"> Auktionsnummer </param>
+/// <returns> Auktion beendet </returns>
 BOOL endAuction(wstring user, unsigned long auctionNumber)
 {
 	EnterCriticalSection(critSecWrapper.getInstance());
@@ -554,7 +586,11 @@ BOOL endAuction(wstring user, unsigned long auctionNumber)
 	return FALSE;
 }
 
-// sucht ob für den User eine Nachricht verfügbar ist
+/// <summary>
+/// Prüft ob für den User eine Nachricht verfügbar ist
+/// </summary>
+/// <param name="user"> Username </param>
+/// <returns> Nachricht für den User </returns>
 vector<wstring> searchForMessage(wstring user)
 {
 	vector<wstring> message;
@@ -575,7 +611,11 @@ vector<wstring> searchForMessage(wstring user)
 	return message;
 }
 
-// Anzahl der Messages die für den User in der Messagebox bereit liegen
+/// <summary>
+/// Anzahl der Messages die für den User in der Messagebox bereit liegen
+/// </summary>
+/// <param name="user"> Username </param>
+/// <returns> Anzahl Nachrichten </returns>
 int countMessages(wstring user)
 {
 	int cnt = 0;
@@ -591,7 +631,11 @@ int countMessages(wstring user)
 	return cnt;
 }
 
-// serialisiert eine Nachricht
+/// <summary>
+/// Serialisiert eine Nachricht
+/// </summary>
+/// <param name="newMessage"> Nachricht </param>
+/// <returns> serialisierte Nachricht </returns>
 wstring serializeMessage(vector<wstring> newMessage)
 {
 	wstring serStr = L"";
@@ -604,7 +648,12 @@ wstring serializeMessage(vector<wstring> newMessage)
 	return serStr;
 }
 
-// Fügt die Nachricht für alle Interessierten der Messagebox hinzu, dass ein neues Gebot abgegeben wurde
+/// <summary>
+/// Fügt die Nachricht für alle Interessierten der Messagebox hinzu, dass ein neues Gebot abgegeben wurde
+/// </summary>
+/// <param name="auctionNumber"> Auktionsnummer </param>
+/// <param name="bidVal"> Gebot </param>
+/// <param name="user"> Username </param>
 void addNewBidToMessages(unsigned long auctionNumber, double bidVal, wstring user)
 {
 	EnterCriticalSection(critSecWrapper.getInstance());
@@ -617,8 +666,6 @@ void addNewBidToMessages(unsigned long auctionNumber, double bidVal, wstring use
 				// neue Nachricht erstellen
 				vector<wstring> newMessage;
 				int messageType = 0;
-				//wstring tmpBidVal = to_wstring(bidVal);
-				//wstring bidValCut = to_wstring(bidVal);
 
 				newMessage.push_back((*it2));												// (0) Name des interessierten Users
 				newMessage.push_back(to_wstring(messageType));								// (1) MessageType
@@ -637,8 +684,11 @@ void addNewBidToMessages(unsigned long auctionNumber, double bidVal, wstring use
 	LeaveCriticalSection(critSecWrapper.getInstance());
 }
 
-// Liefert zu einer Auktionsnummer den entsprechenden Artikelnamen.
-// gibt leeren string zurück, wenn Auktionsnummer nicht vorhanden.
+/// <summary>
+/// Liefert zu einer Auktionsnummer den entsprechenden Artikelnamen. Gibt leeren string zurück, wenn Auktionsnummer nicht vorhanden.
+/// </summary>
+/// <param name="auctionNumber"> Auktionsnummer </param>
+/// <returns> Artikelname </returns>
 wstring getArticleName(unsigned long auctionNumber)
 {
 	wstring articleName = L"";
@@ -655,7 +705,12 @@ wstring getArticleName(unsigned long auctionNumber)
 	return articleName;
 }
 
-// Filtert alle Auktionen, die mit dem Artikelnameteil übereinstimmen
+/// <summary>
+/// Filtert alle Auktionen, die mit dem Artikelnameteil übereinstimmen
+/// </summary>
+/// <param name="user"> Username </param>
+/// <param name="sarticleName"> Artikelname </param>
+/// <returns> gefilterete Auktionen </returns>
 vector<auction> filterArtName(wstring user, wstring sarticleName)
 {
 	vector<auction> filtedArtNameAuctions;
@@ -681,7 +736,13 @@ vector<auction> filterArtName(wstring user, wstring sarticleName)
 	return filtedArtNameAuctions;
 }
 
-// Filtert alle Auktionen, die die Bedingungen der Flags erfüllen
+/// <summary>
+/// Filtert alle Auktionen, die die Bedingungen der Flags erfüllen
+/// </summary>
+/// <param name="user"> Username </param>
+/// <param name="flags"> Optionen </param>
+/// <param name="filteredArtNameAuctions"> Auktionen </param>
+/// <returns> gefilterete Auktionen </returns>
 vector<auction> filterAuctionsByFlags(wstring user, unsigned long flags, vector<auction> filteredArtNameAuctions)
 {
 	vector<auction> filteredAuctionsByFlags;
@@ -722,7 +783,13 @@ vector<auction> filterAuctionsByFlags(wstring user, unsigned long flags, vector<
 	return filteredAuctionsByFlags;
 }
 
-// Suche na allen Auctionen, die unter der Angabe der Flags ([-a][-A]) und eines Artikelnamensteils 
+/// <summary>
+/// Suche na allen Auctionen, die unter der Angabe der Flags ([-a][-A]) und eines Artikelnamensteils 
+/// </summary>
+/// <param name="user"> Username </param>
+/// <param name="flags"> Optionen </param>
+/// <param name="sarticleName"> Artikelname </param>
+/// <returns> alle Auktionen, die die Filterkriterien erfüllen </returns>
 vector<auction> getInterestingAuctions(wstring user, unsigned long flags, wstring sarticleName)
 {
 	vector<auction> filteredArtNameAuctions = filterArtName(user, sarticleName);								// Filterstage 1
@@ -730,7 +797,13 @@ vector<auction> getInterestingAuctions(wstring user, unsigned long flags, wstrin
 	return filteredAuctionsByFlags;
 }
 
-// Filtert die Informationen aus den Auktionen, die für getAuctions interessant sind
+/// <summary>
+/// Filtert die Informationen aus den Auktionen, die für getAuctions interessant sind
+/// </summary>
+/// <param name="interestingAuctions"> interessante Auktionen </param>
+/// <param name="flags"> Optionen </param>
+/// <param name="sarticleName"> Artikelname </param>
+/// <returns> Informationen einer Auktion, die interessant sind </returns>
 vector<wstring> filterInterestingInfos(vector<auction> interestingAuctions)
 {
 	vector<wstring> retStr;
@@ -746,31 +819,11 @@ vector<wstring> filterInterestingInfos(vector<auction> interestingAuctions)
 	return retStr;
 }
 
-// TODO: kann raus, wird nicht verwendet
-// Serialisierung der Auktionen für getAuctions 
-wstring serializeAuctions(vector<auction> interestingAuctions)
-{
-	wstring serStr = L"";
-	EnterCriticalSection(critSecWrapper.getInstance());
-	for (std::vector<auction>::iterator it = interestingAuctions.begin(); it != interestingAuctions.end(); it++)
-	{
-		wstring highestBid = to_wstring((*it).highestBid);
-		wstring highestBidCut = highestBid.substr(0, highestBid.size() - 4);
-		// Gebot zum String hinzufügen
-		serStr += to_wstring((*it).auctionNumber);					// (0) Auktionsnummer
-		serStr += PLACEHOLDER_FOR_SERIALISATION_DESERIALISATION;	// Platzhalter 
-		serStr += (*it).articleName;								// (1) Artikelname
-		serStr += PLACEHOLDER_FOR_SERIALISATION_DESERIALISATION;	// Platzhalter 
-		serStr += to_wstring((*it).BidderList.size());				// (2) Zahl der aktuellen Gebote
-		serStr += PLACEHOLDER_FOR_SERIALISATION_DESERIALISATION;	// Platzhalter 
-		serStr += highestBidCut;									// (3) Höchstgebot
-		serStr += PLACEHOLDER_FOR_SERIALISATION_DESERIALISATION;	// Platzhalter 
-	}
-	LeaveCriticalSection(critSecWrapper.getInstance());
-	return serStr;
-}
-
-// Anzahl der Elemente in einem serialisierten String
+/// <summary>
+/// Anzahl der Elemente in einem serialisierten String
+/// </summary>
+/// <param name="serStr"> serialisierter String </param>
+/// <returns> Anzahl der Elemente im String </returns>
 int numberOfElements(wstring serStr)
 {
 	size_t delimPos;
@@ -791,9 +844,12 @@ int numberOfElements(wstring serStr)
 /*							EndAuktionThread						*/
 /********************************************************************/
 
-// Fügt für jeden an der Auktion interessierten Nutzer eine neue Nachricht in die Messagebox hinzu, dass die Auktion bald beendet wird.
-// Enthält einen Timer, um die Nutzer noch (TODO:) x mal zu benachrichtigen, wie lange sie noch Zeit haben bevor die Auktion
-// entgültig beendet wird.
+
+/// <summary>
+/// Fügt für jeden an der Auktion interessierten Nutzer eine neue Nachricht in die Messagebox hinzu, dass die Auktion bald beendet wird.
+/// </summary>
+/// <param name="user"> Username </param>
+/// <param name="auctionNumber"> Auktionsnummer </param>
 void auctionEndProcess(wstring user, unsigned long auctionNumber)
 {
 	// Message hinzufügen, die sagt, dass in 15 Sekunden die Auktion endet
@@ -812,7 +868,12 @@ void auctionEndProcess(wstring user, unsigned long auctionNumber)
 	endAuction(auctionNumber);
 }
 
-// Erzeugt neue Nachricht, die interessierte Nutzer daraufhinweist, dass Auktion bald endet und fügt diese der Messagebox hinzu.
+/// <summary>
+/// Erzeugt neue Nachricht, die interessierte Nutzer daraufhinweist, dass Auktion bald endet und fügt diese der Messagebox hinzu.
+/// </summary>
+/// <param name="user"> Username </param>
+/// <param name="auctionNumber"> Auktionsnummer </param>
+/// <param name="warningNr"> Warnungsnummer </param>
 void addEndAuctionMessage(wstring user, unsigned long auctionNumber, int warningNr)
 {
 	EnterCriticalSection(critSecWrapper.getInstance());
@@ -842,7 +903,10 @@ void addEndAuctionMessage(wstring user, unsigned long auctionNumber, int warning
 	LeaveCriticalSection(critSecWrapper.getInstance());
 }
 
-// beendet die Auktion TODO: Auktionsende an alle Interessierten
+/// <summary>
+/// Beendet die Auktion
+/// </summary>
+/// <param name="auctionNumber"> Auktionsnummer </param>
 void endAuction(unsigned long auctionNumber)
 {
 	EnterCriticalSection(critSecWrapper.getInstance());
@@ -853,7 +917,6 @@ void endAuction(unsigned long auctionNumber)
 			(*it).auctionStatus = 2;								// Auktionsstatus wird auf "Beendet" geändert
 			for (std::vector<wstring>::iterator it2 = (*it).interestedUserList.begin(); it2 != (*it).interestedUserList.end(); ++it2)
 			{
-				//wstring highestBid = to_wstring((*it).highestBid);
 				wstring highestBidCut = to_wstring((*it).highestBid);
 				// Message, dass Auktion beendet wurde	
 				vector<wstring> newMessage;
