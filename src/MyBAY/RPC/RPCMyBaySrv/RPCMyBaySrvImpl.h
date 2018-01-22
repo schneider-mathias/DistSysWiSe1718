@@ -818,8 +818,6 @@ wstring serializeAuctions(vector<auction> interestingAuctions)
 
 /// <summary>
 /// Fügt für jeden an der Auktion interessierten Nutzer eine neue Nachricht in die Messagebox hinzu, dass die Auktion bald beendet wird.
-/// Enthält einen Timer, um die Nutzer noch (TODO:) x mal zu benachrichtigen, wie lange sie noch Zeit haben bevor die Auktion
-/// entgültig beendet wird.
 /// </summary>
 /// <param name="user"> Username </param>
 /// <param name="auctionNumber"> Auktionsnummer </param>
