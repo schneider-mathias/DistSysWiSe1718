@@ -1,3 +1,13 @@
+/************************************************************/
+/*                                                          */
+/* Inhalt:    Serverimplementierung							*/
+/*			  Logik	mit Hilfsfunktionen			            */
+/*                                                          */
+/* Autor:	  Johannes Sauer		                        */
+/* Stand:     23. Jan 2018                                  */
+/*															*/
+/************************************************************/
+
 #pragma once
 
 #include "Resource.h"
