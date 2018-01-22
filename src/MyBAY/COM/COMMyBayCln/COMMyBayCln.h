@@ -21,12 +21,8 @@
 
 using namespace std;
 
-//static void Bind(void);
-//static void UnBind(void);
-//static void rpcCalls(void);
 void readConsole(ICOMMyBay *p_ICOMMyBaySrv, COSERVERINFO srvInfo);
 BOOL interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::vector<std::wstring> args, boolean *threadAllow);
-
 std::vector<std::wstring> args;					// Eingabeargumente
 
 struct pullMessageParam {
@@ -35,7 +31,12 @@ struct pullMessageParam {
 	boolean *threadAllow;
 };
 
-// Deserialisiert einen char*, dessen Wörter mit Leerzeichen getrennt sind
+/// <summary>
+/// Deserialisiert einen char*, dessen Wörter mit Leerzeichen getrennt sind
+/// </summary>
+/// <param name="inStr"> Input String </param>
+/// <param name="len"> Länge des Input String </param>
+/// <returns> Vektor aus allen Teilen des Strings </returns>
 std::vector<wstring> deserialize(unsigned char *inStr, unsigned long len)
 {
 	vector<wstring> desStr;
@@ -45,9 +46,7 @@ std::vector<wstring> deserialize(unsigned char *inStr, unsigned long len)
 		// solange kein Platzhalter kommt, wird das Wort zusammengesetzt
 		if (inStr[i] != L' ')
 		{
-			//wstring s((char)inStr[i]);
 			tempStr.push_back(inStr[i]);
-			//tempStr += s(char_to_wstring((const char*)inStr[i]));
 		}
 		// Leerzeichen wurde erkannt und somit wird neues Wort der Liste hinzugefügt
 		else
@@ -59,32 +58,11 @@ std::vector<wstring> deserialize(unsigned char *inStr, unsigned long len)
 	return desStr;
 }
 
-//// Deserialisiert einen String, dessen Wörter mit einem Platzhalter getrennt sind
-//std::vector<wstring> deserialize(unsigned char *inStr, unsigned long len)
-//{
-//	vector<wstring> desStr;
-//	wstring tempStr;
-//	for (int i = 0; i < len; i++)
-//	{
-//		// solange kein Platzhalter kommt, wird das Wort zusammengesetzt
-//		if (inStr[i] != (unsigned char)PLACEHOLDER_FOR_SERIALISATION_DESERIALISATION)
-//		{
-//			//wstring s((char)inStr[i]);
-//			tempStr.push_back(inStr[i]);
-//			//tempStr += s(char_to_wstring((const char*)inStr[i]));
-//		}
-//		// Leerzeichen wurde erkannt und somit wird neues Wort der Liste hinzugefügt
-//		else
-//		{
-//			desStr.push_back(tempStr);
-//			tempStr.clear();
-//		}
-//	}
-//	return desStr;
-//}
-
-
-// Ausgabe der empfangenen Nachrichten
+/// <summary>
+/// Ausgabe der empfangenen Nachrichten
+/// </summary>
+/// <param name="messageVec"></param>
+/// <param name="messageType"></param>
 void printMessage(vector<wstring> messageVec, unsigned long messageType)
 {
 	wcout << endl;
@@ -129,8 +107,13 @@ void printMessage(vector<wstring> messageVec, unsigned long messageType)
 	wcout << endl;
 }
 
-// Funktion wird von Thread MessagesThread ausgeführt
-// Pullt alle neuen Nachrichten, die auf dem Server für den Client bereitliegen und gibt diese auf der Console aus
+/// <summary>
+/// Funktion wird von Thread MessagesThread ausgeführt
+/// Pullt alle neuen Nachrichten, die auf dem Server für den Client bereitliegen und gibt diese auf der Console aus
+/// </summary>
+/// <param name="sessionID"></param>
+/// <param name="threadAllow"></param>
+/// <param name="srvInfo"></param>
 void pullMessages(unsigned long* sessionID, boolean* threadAllow, COSERVERINFO srvInfo)
 {
 	CoInitialize(NULL);
@@ -142,7 +125,7 @@ void pullMessages(unsigned long* sessionID, boolean* threadAllow, COSERVERINFO s
 	HRESULT hr;
 	IID IID_tmpICOMMyBay = IID_ICOMMyBay;
 	LPWSTR lpwstr_SrvName = 0;
-	// Verbindungsaufbau auf COM Objekt, da die Interface Instanzen zwischen Threads nur schwer geshared werden können
+	// Verbindungsaufbau auf COM Objekt
 	MULTI_QI multiQi = { &IID_tmpICOMMyBay, 0, 0 };
 	hr = CoCreateInstanceEx(CLSID_COMMyBay, NULL, CLSCTX_REMOTE_SERVER,
 		&srvInfo, 1, &multiQi);
@@ -153,7 +136,7 @@ void pullMessages(unsigned long* sessionID, boolean* threadAllow, COSERVERINFO s
 	{
 		while (*threadAllow == TRUE)
 		{
-			Sleep(1000);	// millisekundne
+			Sleep(1000);
 			// User ist eingeloggt
 			if (*sessionID != 0)
 			{
@@ -182,6 +165,5 @@ void pullMessages(unsigned long* sessionID, boolean* threadAllow, COSERVERINFO s
 				} while (messageAvailable == TRUE);
 			}
 		}
-		//std::terminate();
 	}
 }

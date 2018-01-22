@@ -1,8 +1,11 @@
-// COMMyBaySrv.idl : IDL-Quelle für COMMyBaySrv
-//
-
-// Diese Datei wird mit dem MIDL-Tool bearbeitet,
-// um den Quellcode für die Typbibliothek (COMMyBaySrv.tlb) und den Marshallingcode zu erzeugen.
+/************************************************************/
+/*                                                          */
+/* Inhalt:    COMMyBaySrv - Schnittstellendefinition        */
+/*                                                          */
+/* Autor:	  Johannes Sauer		                        */
+/* Stand:     23. Jan 2018                                  */
+/*															*/
+/************************************************************/
 
 import "oaidl.idl";
 import "ocidl.idl";

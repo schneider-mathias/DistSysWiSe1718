@@ -1,4 +1,11 @@
-//#include "rpc.h"
+/************************************************************/
+/*                                                          */
+/* Inhalt:    MyBay_i.idl						            */
+/*                                                          */
+/* Autor:	  Johannes Sauer		                        */
+/* Stand:     23. Jan 2018                                  */
+/*															*/
+/************************************************************/
 
 [
 	uuid(BEE48EE5-830F-453C-AAE4-9B6B3F4FC270),
@@ -22,27 +29,15 @@ interface MyBay_i
 	
 	typedef struct MyBayAuction_t
 	{
-		/*unsigned long auctionNumber;
-		char *articleName;
-		double startBid;
-		double highestBid;
-		char *highestBidder;
-		struct MyBayAuctionBidder_t bidder;
-		int* interestedUsers;*/
-
 		unsigned long auctionNumber;
 		struct String_t articleName;
 		double startBid;
 		double highestBid;
 		struct String_t highestBidder;
-		struct MyBayAuctionBidder_t bidder;			// wird auch serialisiert und deserialisiert
-		struct String_t interestedUsers;			// string der serialisiert und deserialisiert wird
+		struct MyBayAuctionBidder_t bidder;			
+		struct String_t interestedUsers;			
 		int numInterestedUsers;
 		int numBidder;
-		//int* interestedUsers = (int *) malloc(sizeof(int));
-		// Für mehr Elemente im Array:
-		// Int* temp = realloc(interestedUsers, new_bytes);
-
 	}MyBayAuction_t;
 
 	error_status_t login([in, string] unsigned char *username, [in, string] unsigned char *password, [out] unsigned long* sessionId);

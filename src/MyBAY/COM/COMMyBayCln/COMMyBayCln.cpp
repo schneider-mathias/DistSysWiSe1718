@@ -1,3 +1,12 @@
+/************************************************************/
+/*                                                          */
+/* Inhalt:    COMMyBayCln						            */
+/*                                                          */
+/* Autor:	  Johannes Sauer		                        */
+/* Stand:     23. Jan 2018                                  */
+/*															*/
+/************************************************************/
+
 #include "COMMyBayCln.h"
 #include <atlsafe.h>
 #include <iostream>
@@ -10,6 +19,11 @@
 
 using namespace std;
 
+/// <summary>
+/// Eintrittspunkt für diese Anwendung
+/// </summary>
+/// <param name="argc"> Die Anzahl der Kommandozeilen Argumente </param>
+/// <param name="argv"> Ein Array mit den Kommandozeilen Argumenten als Strings </param>
 int main(int argc, char**argv)
 {
 	CoInitialize(NULL);
@@ -56,7 +70,9 @@ int main(int argc, char**argv)
 	return 0;
 }
 
-// Liest die Eingaben der Console
+/// <summary>
+/// Einlesen der Kommandos von der Kommandozeile und starten des Threads
+/// </summary>
 void readConsole(ICOMMyBay *p_ICOMMyBaySrv, COSERVERINFO srvInfo)
 {
 	std::cout << "----------------------------------------------------------------" << std::endl;
@@ -100,10 +116,15 @@ void readConsole(ICOMMyBay *p_ICOMMyBaySrv, COSERVERINFO srvInfo)
 	}
 	// Main-Thread waretet auf MessageThread bis dieser fertig ist
 	MessageThread.join();
-
 }
 
-// Eingaben werden entsprechend interpretiert
+/// <summary>
+/// Die Kommandozeilen-Eingaben werden entsprechend interpretiert, die zugehörige Funktion ausgeführt
+/// und die Ausgabe erzeugt.
+/// </summary>
+/// <param name="sessionID"> Die SessionId des Clients </param>
+/// <param name="args"> Ein Vector aus Strings mit den Kommandozeilen Argumenten </param>
+/// <param name="threadAllow"> Die Erlaubnis, ob der Thread zum Pullen der Nachrichten ausgeführt wird oder nicht </param>
 BOOL interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::vector<std::wstring> args, boolean *threadAllow)
 {
 	BOOL endClient = FALSE;
@@ -128,6 +149,7 @@ BOOL interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 			cerr << "login <Username> <Passwort>" << endl;
 			return endClient;
 		}
+		// login auf Server ausführen
 		hr = p_ICOMMyBaySrv->login(wstr_to_bstr(args.at(1)), wstr_to_bstr(args.at(2)), sessionID);
 		if (hr == S_OK)
 		{
@@ -314,6 +336,8 @@ BOOL interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 				cerr << "Es ist ein unerwarteter Fehler aufgetreten. Bitte versuche es erneut." << endl;
 		}
 	}
+
+	// Gibt alle Auktionen aus, die den Eingaben entsprechen
 	else if (args.at(0) == L"listauctions")
 	{
 
@@ -357,8 +381,6 @@ BOOL interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 			// Alle Elemente im SAFEARRAY werden in einen Vector übertragen
 			for (int i = 0; i < retAuctions.GetCount(); i++)
 			{
-				//BSTR vari = retAuctions[i].bstrVal;
-				//wstring tmp = bstr_to_wstr(retAuctions[i].bstrVal);
 				allAuctVec.push_back(bstr_to_wstr(retAuctions[i].bstrVal));
 			}
 
@@ -366,7 +388,6 @@ BOOL interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 			int cnt = 0;
 			wcout << endl;
 
-			/* Testprint */
 			int i = 10;
 			std::cout.width(15); std::cout << left << "Auktionsnummer";
 			std::cout.width(20); std::cout << left << "Artikelname";
@@ -374,7 +395,6 @@ BOOL interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 			std::cout.width(15); std::cout << left << "Auktionsstatus";
 			std::cout.width(15); std::cout << left << "Anzahl Gebote" << endl;
 			std::cout << "----------------------------------------------------------------------------------------" << endl;
-			/* End Testprint */
 
 			for (std::vector<wstring>::iterator it = allAuctVec.begin(); it != allAuctVec.end(); it++)
 			{
@@ -439,6 +459,8 @@ BOOL interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 		else
 			cerr << "Es ist ein unerwarteter Fehler aufgetreten. Bitte versuche es erneut." << endl;
 	}
+
+	// Gebot abgeben
 	else if (args.at(0) == L"bid")
 	{
 		if (args.size() < 3)
@@ -522,6 +544,8 @@ BOOL interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 				cerr << "Es ist ein unerwarteter Fehler aufgetreten. Bitte versuche es erneut." << endl;
 		}
 	}
+
+	// Alle Gebote zu einer Auktion anzeigen
 	else if (args.at(0) == L"details")
 	{
 		if (args.size() < 2)
@@ -616,8 +640,9 @@ BOOL interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 			else
 				cerr << "Es ist ein unerwarteter Fehler aufgetreten. Bitte versuche es erneut." << endl;
 		}
-
 	}
+
+	// Auktion beenden
 	else if (args.at(0) == L"endauction")
 	{
 		if (args.size() < 2)
@@ -683,6 +708,8 @@ BOOL interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 				cerr << "Es ist ein unerwarteter Fehler aufgetreten. Bitte versuche es erneut." << endl;
 		}
 	}
+
+	// Zeigt eine Übersicht aller möglichen Befehle an
 	else if (args.at(0) == L"help")
 	{
 		cout << "******************** MyBAY ********************" << endl;
@@ -697,6 +724,8 @@ BOOL interpretCommand(ICOMMyBay *p_ICOMMyBaySrv, unsigned long *sessionID, std::
 		cout << "******************** MyBAY ********************" << endl;
 		cout << endl;
 	}
+
+	// Die Eingaben konnten nicht interpretiert werden
 	else
 	{
 		cout << "Error: keine zulässige Eingabe" << endl;

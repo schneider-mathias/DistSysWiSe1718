@@ -1,10 +1,16 @@
-// COMMyBay.cpp: Implementierung von CCOMMyBay
+/************************************************************/
+/*                                                          */
+/* Inhalt:    COMMyBay - Schnittstellenimplementierung      */
+/*                                                          */
+/* Autor:	  Johannes Sauer		                        */
+/* Stand:     23. Jan 2018                                  */
+/*															*/
+/************************************************************/
 
 #include "stdafx.h"
 #include <fstream>
 #include <iostream>
 #include <string>
-//#include <WinBase.h>
 #include <atlsafe.h>
 #include "COMMyBayLogic.h"
 #include "BstrStringConverter.h"
@@ -12,16 +18,19 @@
 #include "COMMyBay.h"
 
 
-// CCOMMyBay
-
-
-
+/// <summary>
+/// Login
+/// </summary>
+/// <param name="username"> Username </param>
+/// <param name="password"> Passwort </param>
+/// <param name="sessionId"> SessionId des Users </param>
+/// <returns> Error Status </returns>
 STDMETHODIMP CCOMMyBay::login(BSTR username, BSTR password, ULONG* sessionId)
 {
 	std::wifstream csvread;
 	srand((unsigned)time(NULL)); // Zufallsgenerator initialisieren.
 
-								 // Wenn sich der erste Nutzer einloggt, werden die persistent gespeicherten Auktionen aus der Datei ausgelesen
+	// Wenn sich der erste Nutzer einloggt, werden die persistent gespeicherten Auktionen aus der Datei ausgelesen
 	if (users.size() == 0)
 	{
 		AuctionList.clear();
@@ -67,7 +76,11 @@ STDMETHODIMP CCOMMyBay::login(BSTR username, BSTR password, ULONG* sessionId)
 	return ERROR_USERNAME_OR_PASSWORD_WRONG;
 }
 
-
+/// <summary>
+/// Logout
+/// </summary>
+/// <param name="sessionId"> SessionId des Users </param>
+/// <returns> Error Status </returns>
 STDMETHODIMP CCOMMyBay::logout(ULONG sessionId)
 {
 	//überprüfen ob user angemeldet und dann aus Liste entfernen
@@ -83,7 +96,14 @@ STDMETHODIMP CCOMMyBay::logout(ULONG sessionId)
 	return ERROR_USER_NOT_LOGGED_IN; //user nicht angemeldet
 }
 
-
+/// <summary>
+/// Auktion starten
+/// </summary>
+/// <param name="sessionId"> SessionId des Users </param>
+/// <param name="articleName"> Artikelname </param>
+/// <param name="startBid"> Startgebot </param>
+/// <param name="auctionNumber"> Auktionsnummer </param>
+/// <returns> Error Status </returns>
 STDMETHODIMP CCOMMyBay::offer(ULONG sessionId, BSTR articleName, DOUBLE startBid, ULONG* auctionNumber)
 {
 	// Prüfen ob User eingeloggt ist
@@ -116,7 +136,12 @@ STDMETHODIMP CCOMMyBay::offer(ULONG sessionId, BSTR articleName, DOUBLE startBid
 	return S_OK;
 }
 
-
+/// <summary>
+/// Auktion starten
+/// </summary>
+/// <param name="sessionId"> SessionId des Users </param>
+/// <param name="auctionNumber"> Auktionsnummer </param>
+/// <returns> Error Status </returns>
 STDMETHODIMP CCOMMyBay::interested(ULONG sessionId, ULONG auctionNumber)
 {
 	// Prüfen ob User eingeloggt ist
@@ -144,6 +169,15 @@ STDMETHODIMP CCOMMyBay::interested(ULONG sessionId, ULONG auctionNumber)
 	return S_OK;
 }
 
+/// <summary>
+/// Liste der Auktionen, die den Eingaben entsprechen
+/// </summary>
+/// <param name="sessionId"> SessionId des Users </param>
+/// <param name="flags"> Option, ob -a oder -A eingegeben wurden </param>
+/// <param name="articleName"> Artikelname </param>
+/// <param name="countAuctions"> Auktionsnummer </param>
+/// <param name="auctions"> Liste der Auktionen serialisiert </param>
+/// <returns> Error Status </returns>
 STDMETHODIMP CCOMMyBay::getAuctions(ULONG sessionId, ULONG flags, BSTR articleName, ULONG* countAuctions, SAFEARRAY_VAR* auctions)
 {
 	// Prüfen ob User eingeloggt ist
@@ -176,6 +210,13 @@ STDMETHODIMP CCOMMyBay::getAuctions(ULONG sessionId, ULONG flags, BSTR articleNa
 	return S_OK;
 }
 
+/// <summary>
+/// Gebot abgeben
+/// </summary>
+/// <param name="sessionId"> SessionId des Users </param>
+/// <param name="auctionNumber"> Auktionsnummer </param>
+/// <param name="bidValue"> Gebot </param>
+/// <returns> Error Status </returns>
 STDMETHODIMP CCOMMyBay::bid(ULONG sessionId, ULONG auctionNumber, DOUBLE bidValue)
 {
 	// Prüfen ob User eingeloggt ist
@@ -212,6 +253,14 @@ STDMETHODIMP CCOMMyBay::bid(ULONG sessionId, ULONG auctionNumber, DOUBLE bidValu
 	return S_OK;
 }
 
+/// <summary>
+/// Alle Gebote einer Auktion
+/// </summary>
+/// <param name="sessionId"> SessionId des Users </param>
+/// <param name="auctionNumber"> Auktionsnummer </param>
+/// <param name="allBids"> Alle Gebote der Auktion  </param>
+/// <param name="countBids"> Anzahl der Gebote </param>
+/// <returns> Error Status </returns>
 STDMETHODIMP CCOMMyBay::details(ULONG sessionId, ULONG auctionNumber, SAFEARRAY_VAR * allBids, ULONG * countBids)
 {
 	// Prüfen ob User eingeloggt ist
@@ -227,12 +276,8 @@ STDMETHODIMP CCOMMyBay::details(ULONG sessionId, ULONG auctionNumber, SAFEARRAY_
 	{
 		return ERROR_USER_IS_NOT_AUCTIONEER;
 	}
-
-	// Gebote serialisieren
-	//wstring serStr = serializeAuctionDetails(auctionNumber);
 	vector<wstring> bidsStr = getAllBids(auctionNumber);
 	// Speicher für die Übertragung des String_t allokieren
-	// TODO: SAVEARRAY
 	ATL::CComSafeArray<VARIANT> auctionsSafeArray(bidsStr.size());						// SafeArray mit entsprechender Größer initialiseren
 
 	int safeArrIt = 0;
@@ -249,6 +294,12 @@ STDMETHODIMP CCOMMyBay::details(ULONG sessionId, ULONG auctionNumber, SAFEARRAY_
 	return S_OK;
 }
 
+/// <summary>
+/// Auktion beenden
+/// </summary>
+/// <param name="sessionId"> SessionId des Users </param>
+/// <param name="auctionNumber"> Auktionsnummer </param>
+/// <returns> Error Status </returns>
 STDMETHODIMP CCOMMyBay::endauction(ULONG sessionId, ULONG auctionNumber)
 {
 	// Prüfen ob User eingeloggt ist
@@ -271,6 +322,14 @@ STDMETHODIMP CCOMMyBay::endauction(ULONG sessionId, ULONG auctionNumber)
 	return S_OK;
 }
 
+/// <summary>
+/// Nachrichten für den Client
+/// </summary>
+/// <param name="sessionId"> SessionId des Users </param>
+/// <param name="messageAvailable"> Weitere Nachrichten sind für den Client verfügbar </param>
+/// <param name="messageType"> Nachrichtentyp </param>
+/// <param name="message"> Nachricht </param>
+/// <returns> Error Status </returns>
 STDMETHODIMP CCOMMyBay::getMessage(ULONG sessionId, BOOL * messageAvailable, ULONG * messageType, SAFEARRAY_VAR * message)
 {
 	// Prüfen ob User eingeloggt ist
@@ -286,11 +345,6 @@ STDMETHODIMP CCOMMyBay::getMessage(ULONG sessionId, BOOL * messageAvailable, ULO
 		vector<wstring> newMessage = searchForMessage(user);				// Neue Nachticht für den user suchen
 		*messageType = stoul(newMessage.at(1));								// MessageType festlegen
 																			// Nachricht serialisieren
-		//wstring serStr = serializeMessage(newMessage);
-
-		// Speicher für die Übertragung des String_t allokieren
-		// TODO: SAVEARRAY
-
 		ATL::CComSafeArray<VARIANT> auctionsSafeArray(newMessage.size()-2);						// SafeArray mit entsprechender Größer initialiseren
 
 		int safeArrIt = 0;

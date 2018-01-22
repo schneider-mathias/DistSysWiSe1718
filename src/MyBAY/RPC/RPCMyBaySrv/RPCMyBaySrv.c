@@ -12,6 +12,9 @@
 #include "Config.h"
 #include <stdio.h>
 
+/// <summary>
+/// Eintrittspunkt für diese Anwendung
+/// </summary>
 void main(void)
 {
 	RPC_STATUS status;
